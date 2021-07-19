@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:titleTextColor="@android:color/white"
+        app:title="拍照"/>
+
+    <SurfaceView
+        android:id="@+id/activity_camera_surface"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@android:color/darker_gray"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/activity_camera_cancel"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_clear"
+            android:visibility="invisible"/>
+
+        <ImageView
+            android:id="@+id/activity_camera_shoot"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:src="@drawable/ic_camera"/>
+
+        <ImageView
+            android:id="@+id/activity_camera_done"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_done"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
+</LinearLayout>

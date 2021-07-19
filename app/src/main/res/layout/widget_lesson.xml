@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/widget_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    android:orientation="vertical">
+
+<!--    <TextView-->
+<!--        style="@style/TextSmall"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="start|center"-->
+<!--        android:padding="8dp"-->
+<!--        android:text="上午课程"/>-->
+
+    <LinearLayout
+        android:id="@+id/widget_lesson_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText"
+            android:padding="@dimen/widget_margin"
+            android:text="08:00\n09:50" />
+
+        <ImageView
+            android:id="@+id/widget_lesson_1_color"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/widget_margin">
+
+            <TextView
+                style="@style/TextBig"
+                android:id="@+id/widget_lesson_1_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:paddingBottom="@dimen/widget_margin"
+                android:textColor="@android:color/black"
+                android:padding="0dp"
+                android:text="空闲" />
+
+            <TextView
+                style="@style/TextSmall"
+                android:id="@+id/widget_lesson_1_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:textColor="@color/colorSecondaryText"
+                android:padding="0dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextSmall"
+            android:id="@+id/widget_lesson_1_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_lesson_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText"
+            android:padding="@dimen/widget_margin"
+            android:text="10:10\n12:00"/>
+
+        <ImageView
+            android:id="@+id/widget_lesson_2_color"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/widget_margin">
+
+            <TextView
+                style="@style/TextBig"
+                android:id="@+id/widget_lesson_2_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:paddingBottom="@dimen/widget_margin"
+                android:textColor="@android:color/black"
+                android:padding="0dp"
+                android:text="空闲" />
+
+            <TextView
+                style="@style/TextSmall"
+                android:id="@+id/widget_lesson_2_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:textColor="@color/colorSecondaryText"
+                android:padding="0dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextSmall"
+            android:id="@+id/widget_lesson_2_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText" />
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/TextSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start|center"
+        android:padding="8dp"
+        android:text="下午课程"/>
+
+    <LinearLayout
+        android:id="@+id/widget_lesson_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText"
+            android:padding="@dimen/widget_margin"
+            android:text="14:00\n15:50"/>
+
+        <ImageView
+            android:id="@+id/widget_lesson_3_color"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/widget_margin">
+
+            <TextView
+                style="@style/TextBig"
+                android:id="@+id/widget_lesson_3_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:paddingBottom="@dimen/widget_margin"
+                android:textColor="@android:color/black"
+                android:padding="0dp"
+                android:text="空闲" />
+
+            <TextView
+                style="@style/TextSmall"
+                android:id="@+id/widget_lesson_3_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:textColor="@color/colorSecondaryText"
+                android:padding="0dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextSmall"
+            android:id="@+id/widget_lesson_3_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_lesson_4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText"
+            android:padding="@dimen/widget_margin"
+            android:text="16:10\n18:00"/>
+
+        <ImageView
+            android:id="@+id/widget_lesson_4_color"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/widget_margin">
+
+            <TextView
+                style="@style/TextBig"
+                android:id="@+id/widget_lesson_4_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:paddingBottom="@dimen/widget_margin"
+                android:textColor="@android:color/black"
+                android:padding="0dp"
+                android:text="空闲" />
+
+            <TextView
+                style="@style/TextSmall"
+                android:id="@+id/widget_lesson_4_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:textColor="@color/colorSecondaryText"
+                android:padding="0dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextSmall"
+            android:id="@+id/widget_lesson_4_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText" />
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/TextSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start|center"
+        android:padding="8dp"
+        android:text="晚上课程"/>
+
+    <LinearLayout
+        android:id="@+id/widget_lesson_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/item_lesson_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText"
+            android:padding="@dimen/widget_margin"
+            android:text="18:30\n20:20"/>
+
+        <ImageView
+            android:id="@+id/widget_lesson_5_color"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/widget_margin">
+
+            <TextView
+                style="@style/TextBig"
+                android:id="@+id/widget_lesson_5_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:paddingBottom="@dimen/widget_margin"
+                android:textColor="@android:color/black"
+                android:padding="0dp"
+                android:text="空闲" />
+
+            <TextView
+                style="@style/TextSmall"
+                android:id="@+id/widget_lesson_5_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:textColor="@color/colorSecondaryText"
+                android:padding="0dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextSmall"
+            android:id="@+id/widget_lesson_5_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText" />
+
+    </LinearLayout>
+
+</LinearLayout>

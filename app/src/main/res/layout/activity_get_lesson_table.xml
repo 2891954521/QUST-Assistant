@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:navigationIcon="@drawable/ic_back"
+        app:titleTextColor="@android:color/white"
+        app:title="获取课表">
+
+        <ImageView
+            android:id="@+id/activity_get_lesson_table_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|end"
+            android:layout_margin="@dimen/widget_margin"
+            android:padding="@dimen/widget_margin"
+            android:src="@drawable/ic_done"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="@dimen/widget_margin">
+
+        <TextView
+            style="@style/TextNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/widget_margin"
+            android:text="学年"/>
+
+        <EditText
+            android:id="@+id/activity_get_lesson_table_year"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:maxLength="4"
+            android:textSize="14dp" />
+
+        <TextView
+            style="@style/TextNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/widget_margin"
+            android:text="学期"/>
+
+        <RadioGroup
+            android:id="@+id/activity_get_lesson_table_term"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/widget_margin">
+
+            <RadioButton
+                android:id="@+id/activity_get_lesson_table_term1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/widget_margin"
+                android:checked="true"
+                android:text="1" />
+
+            <RadioButton
+                android:id="@+id/activity_get_lesson_table_term2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/widget_margin"
+                android:text="2" />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/activity_get_lesson_table_query"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/widget_margin"
+        android:layout_marginLeft="@dimen/widget_margin"
+        android:layout_marginRight="@dimen/widget_margin"
+        android:text="查询"/>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/activity_get_lesson_table_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

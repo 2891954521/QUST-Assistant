@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="@dimen/widget_margin">
+
+    <TextView
+        android:id="@+id/item_lesson_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorSecondaryText"
+        android:padding="@dimen/widget_margin" />
+
+    <com.university.assistant.widget.BackgroundLesson
+        android:id="@+id/item_lesson_color"
+        android:layout_width="6dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/widget_margin"
+        android:layout_marginBottom="@dimen/widget_margin"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/widget_margin">
+
+        <TextView
+            style="@style/TextBig"
+            android:id="@+id/item_lesson_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start|center"
+            android:paddingBottom="@dimen/widget_margin"
+            android:textColor="@android:color/black"
+            android:padding="0dp"
+            android:text="空闲" />
+
+        <TextView
+            style="@style/TextSmall"
+            android:id="@+id/item_lesson_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start|center"
+            android:textColor="@color/colorSecondaryText"
+            android:padding="0dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/TextSmall"
+        android:id="@+id/item_lesson_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorSecondaryText"
+        android:padding="0dp" />
+
+</LinearLayout>

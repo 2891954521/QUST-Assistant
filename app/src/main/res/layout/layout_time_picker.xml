@@ -1,0 +1,78 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <NumberPicker
+        android:id="@+id/layout_time_picker_year"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:descendantFocusability="blocksDescendants" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="年" />
+
+    <NumberPicker
+        android:id="@+id/layout_time_picker_month"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:descendantFocusability="blocksDescendants" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="月" />
+
+    <NumberPicker
+        android:id="@+id/layout_time_picker_date"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:descendantFocusability="blocksDescendants" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="日" />
+
+    <NumberPicker
+        android:id="@+id/layout_time_picker_hour"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:descendantFocusability="blocksDescendants" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="时" />
+
+    <NumberPicker
+        android:id="@+id/layout_time_picker_minute"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:descendantFocusability="blocksDescendants" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="分" />
+
+</LinearLayout>

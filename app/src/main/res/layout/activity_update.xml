@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/activity_toolbar"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimary"
+        app:titleTextColor="@android:color/white"
+        app:title="更新"/>
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/widget_margin"
+        android:padding="@dimen/widget_margin"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/activity_update_info"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/widget_margin"
+        android:layout_weight="1"
+        android:padding="@dimen/widget_margin"/>
+
+    <Button
+        android:id="@+id/activity_update_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:text="更新"/>
+
+</LinearLayout>

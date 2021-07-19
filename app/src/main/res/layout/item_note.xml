@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="#ffffff"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/widget_margin">
+
+            <TextView
+                style="@style/TextTitle"
+                android:id="@+id/item_note_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center" />
+
+            <TextView
+                style="@style/TextNormal"
+                android:id="@+id/item_note_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center" />
+
+            <LinearLayout
+                android:id="@+id/item_note_items"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+            </LinearLayout>
+
+            <com.university.assistant.widget.PictureGrid
+                android:id="@+id/item_note_photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="false"
+                android:numColumns="3"/>
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/item_note_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:gravity="start|center"
+                    android:padding="@dimen/widget_margin"
+                    android:focusable="false"/>
+
+                <TextView
+                    android:id="@+id/item_note_deadline"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:gravity="start|center"
+                    android:padding="@dimen/widget_margin"
+                    android:focusable="false"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout>

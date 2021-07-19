@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/fragment_timetable_today"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fragment_timetable_navigation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_navigation"
+        android:tint="@android:color/white"
+        app:backgroundTint="@color/colorPrimary"/>
+
+    <com.university.assistant.widget.VerticalSlidingLayout
+        android:id="@+id/fragment_timetable_week"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <TextView
+                style="@style/TextTitle"
+                android:id="@+id/layout_timetable_week"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryText"
+                android:text="第 1 周"/>
+
+            <com.university.assistant.widget.LessonTablePager
+                android:id="@+id/fragment_timetable_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+    </com.university.assistant.widget.VerticalSlidingLayout>
+
+    <include
+        layout="@layout/layout_lesson_info"
+        android:visibility="gone"/>
+
+</RelativeLayout>
