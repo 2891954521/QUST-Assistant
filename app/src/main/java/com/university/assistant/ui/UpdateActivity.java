@@ -1,7 +1,6 @@
 package com.university.assistant.ui;
 
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -61,7 +60,7 @@ public class UpdateActivity extends BaseActivity{
 		
 		app = (App)getApplication();
 		
-		file = new File(getCacheDir(),"release.apk");
+		file = new File(getExternalCacheDir(),"release.apk");
 		
 		findViewById(R.id.activity_update_button).setOnClickListener(v -> {
 			if(url==null){
