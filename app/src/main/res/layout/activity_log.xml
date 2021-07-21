@@ -23,7 +23,7 @@
             android:id="@+id/activity_log_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/activity_vertical_margin"
+            android:padding="@dimen/activity_margin"
             android:textIsSelectable="true" />
 
     </ScrollView>

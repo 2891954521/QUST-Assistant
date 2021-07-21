@@ -5,8 +5,6 @@ import android.os.Build;
 import android.os.Looper;
 import android.widget.Toast;
 
-import com.university.assistant.fragment.lessontable.LessonTableData;
-import com.university.assistant.fragment.pictures.PictureData;
 import com.university.assistant.util.LogUtil;
 
 import androidx.annotation.NonNull;

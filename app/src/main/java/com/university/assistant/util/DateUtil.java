@@ -8,10 +8,13 @@ import java.util.Locale;
 
 public class DateUtil{
 
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.CHINA);
+    public static final SimpleDateFormat YMD_HM = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.CHINA);
     
+    public static final SimpleDateFormat YMD = new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA);
     
-//    public static String getDateString(Calendar c){
+    public static final SimpleDateFormat MD = new SimpleDateFormat("MM-dd",Locale.CHINA);
+    
+    //    public static String getDateString(Calendar c){
 //
 //        StringBuilder sb = new StringBuilder();
 //        sb.append(c.get(Calendar.YEAR));
@@ -38,12 +41,12 @@ public class DateUtil{
 //    }
     
     public static synchronized String getDateString(Calendar c){
-        return FORMATTER.format(c.getTime());
+        return YMD_HM.format(c.getTime());
     }
     
     public static Date getDateString(String s){
         try{
-            return FORMATTER.parse(s);
+            return YMD_HM.parse(s);
         }catch(ParseException e){
             LogUtil.Log(e);
         }

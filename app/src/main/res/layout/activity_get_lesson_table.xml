@@ -90,7 +90,7 @@
         android:layout_marginRight="@dimen/widget_margin"
         android:text="查询"/>
 
-    <androidx.viewpager.widget.ViewPager
+    <com.university.assistant.widget.LessonTable
         android:id="@+id/activity_get_lesson_table_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

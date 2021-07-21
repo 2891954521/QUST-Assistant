@@ -15,12 +15,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.university.assistant.fragment.BaseFragment;
-import com.university.assistant.fragment.home.HomeFragment;
-import com.university.assistant.fragment.lessontable.LessonTableFragment;
+import com.university.assistant.fragment.HomeFragment;
+import com.university.assistant.fragment.LessonTableFragment;
 import com.university.assistant.fragment.note.NoteFragment;
 import com.university.assistant.ui.BaseActivity;
-import com.university.assistant.ui.school.LoginActivity;
 import com.university.assistant.ui.UpdateActivity;
+import com.university.assistant.ui.school.LoginActivity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;

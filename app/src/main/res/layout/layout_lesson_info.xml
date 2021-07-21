@@ -57,26 +57,21 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:background="@drawable/bg_round_background"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:padding="@dimen/base_margin">
+                    android:layout_margin="@dimen/widget_margin">
 
                     <TextView
                         style="@style/TextNormal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/widget_margin"
                         android:text="名称" />
 
                     <EditText
                         android:id="@+id/layout_lesson_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@null"
                         android:gravity="end"
                         android:padding="@dimen/widget_margin"
                         android:layout_marginEnd="@dimen/widget_margin"/>
@@ -84,28 +79,21 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:background="@drawable/bg_round_background"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="16dp"
-                    android:padding="@dimen/base_margin">
+                    android:layout_margin="@dimen/widget_margin">
 
                     <TextView
                         style="@style/TextNormal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/widget_margin"
                         android:text="教室"/>
 
                     <EditText
                         android:id="@+id/layout_lesson_place"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@null"
                         android:padding="@dimen/widget_margin"
                         android:layout_marginEnd="@dimen/widget_margin"
                         android:gravity="end"/>
@@ -113,30 +101,66 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:background="@drawable/bg_round_background"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:padding="@dimen/base_margin">
+                    android:layout_margin="@dimen/widget_margin">
 
                     <TextView
                         style="@style/TextNormal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/widget_margin"
                         android:text="教师"/>
 
                     <EditText
                         android:id="@+id/layout_lesson_teacher"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@null"
                         android:padding="@dimen/widget_margin"
                         android:layout_marginEnd="@dimen/widget_margin"
                         android:gravity="end"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="@dimen/widget_margin"
+                    android:layout_marginEnd="@dimen/widget_margin">
+
+                    <TextView
+                        style="@style/TextNormal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start|center"
+                        android:text="上课节数"/>
+
+                    <ImageView
+                        android:background="@drawable/bg_round_background"
+                        android:id="@+id/layout_lesson_len_remove"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:padding="@dimen/base_margin"
+                        android:src="@drawable/ic_remove"
+                        app:tint="@android:color/black"/>
+
+                    <TextView
+                        style="@style/TextNormal"
+                        android:id="@+id/layout_lesson_len"
+                        android:layout_width="48dp"
+                        android:layout_height="match_parent"/>
+
+                    <ImageView
+                        android:background="@drawable/bg_round_background"
+                        android:id="@+id/layout_lesson_len_add"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:padding="@dimen/base_margin"
+                        android:src="@drawable/ic_add"
+                        app:tint="@android:color/black"/>
+
 
                 </LinearLayout>
 
@@ -159,10 +183,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="@dimen/widget_margin">
+                        android:paddingEnd="@dimen/widget_margin">
 
                         <RadioButton
-                            android:id="@+id/layout_lesson_every"
+                            android:id="@+id/layout_lesson_all"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="全选" />
@@ -187,21 +211,29 @@
                     android:id="@+id/layout_lesson_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/widget_margin"/>
+                    android:layout_marginStart="@dimen/widget_margin"
+                    android:layout_marginEnd="@dimen/widget_margin"/>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/widget_margin">
 
                 <TextView
                     style="@style/TextNormal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/widget_margin"
+                    android:layout_marginStart="@dimen/widget_margin"
                     android:text="颜色"/>
 
                 <com.university.assistant.widget.ColorPicker
                     android:id="@+id/layout_lesson_color"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_margin="@dimen/widget_margin"/>
+                    android:layout_height="48dp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

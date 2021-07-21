@@ -1,4 +1,4 @@
-package com.university.assistant.fragment.lessontable;
+package com.university.assistant.Lesson;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -9,66 +9,78 @@ import android.widget.TextView;
 import com.university.assistant.R;
 import com.university.assistant.util.ColorUtil;
 import com.university.assistant.util.LogUtil;
-import com.university.assistant.util.MingDeUtil;
 import com.university.assistant.widget.BackgroundLesson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import androidx.annotation.Nullable;
 
-public class Lesson implements Serializable{
+public class LessonGroup implements Serializable, Cloneable{
 	
-	public static final String[] LESSON_TIME_WINTER = new String[]{
-			"08:00\n09:50",
-			"08:00\n09:50",
-			"10:10\n12:00",
-			"13:30\n15:20",
-			"15:40\n17:30",
-			"18:00\n19:50"
+	public static final String[][] LESSON_TIME_WINTER = new String[][]{
+			{"08:00", "09:00", "10:10", "11:10", "13:30", "14:30", "15:40", "16:40", "18:00", "19:00"},
+			{"08:50", "09:50", "11:00", "12:00", "14:20", "15:20", "16:30", "17:30", "18:50", "19:50"}
 	};
 	
-	public static final String[] LESSON_TIME_SUMMER = new String[]{
-			"08:00\n09:50",
-			"08:00\n09:50",
-			"10:10\n12:00",
-			"14:00\n15:50",
-			"16:10\n18:00",
-			"18:30\n20:20"
+	public static final String[][] LESSON_TIME_SUMMER = new String[][]{
+			{"08:00", "09:00", "10:10", "11:10", "14:00", "15:00", "16:10", "17:10", "18:30", "19:30"},
+			{"08:50", "09:50", "11:00", "12:00", "14:50", "15:50", "17:00", "18:00", "19:20", "20:20"}
 	};
 	
-	public static final Lesson EMPTY_LESSON = new Lesson();
+	public static final LessonGroup EMPTY_LESSON_GROUP = new LessonGroup(0,0);
 	
-	// 星期几
+	// 星期几 1-7
 	public int week;
-	// 节次
+	// 节次 1-10
 	public int count;
 	
-	public BaseLesson[] lessons;
+	public Lesson[] lessons;
 
-	public Lesson(){
-		lessons = new BaseLesson[0];
+	public LessonGroup(int _week,int _count){
+		week = _week;
+		count = _count;
+		lessons = new Lesson[0];
 	}
 	
 	// 添加一节课程
-	public void addLesson(BaseLesson lesson){
+	public void addLesson(Lesson lesson){
 		lessons = Arrays.copyOf(lessons,lessons.length + 1);
 		lessons[lessons.length - 1] = lesson;
 	}
 	
-	public static Lesson getLesson(Lesson lesson,int week){
-		if(lesson == null) return EMPTY_LESSON;
-		BaseLesson baseLesson = lesson.getCurrentLesson(week);
-		return baseLesson == null ? EMPTY_LESSON : lesson;
+	public void removeLesson(Lesson l){
+		Lesson[] tmp = new Lesson[lessons.length - 1];
+		int index = 0;
+		for(Lesson lesson : lessons){
+			if(lesson.equals(l)) continue;
+			tmp[index++] = lesson;
+		}
+		lessons = tmp;
+	}
+	
+	public void removeLesson(int index){
+		Lesson[] l = new Lesson[lessons.length - 1];
+		int j = 0;
+		for(int i=0;i<lessons.length;i++){
+			if(i == index) continue;
+			l[j++] = lessons[i];
+		}
+		lessons = l;
+	}
+	
+	public static LessonGroup getLesson(LessonGroup lessonGroup,int week){
+		if(lessonGroup== null) return EMPTY_LESSON_GROUP;
+		Lesson baseLesson = lessonGroup.getCurrentLesson(week);
+		return baseLesson == null ?EMPTY_LESSON_GROUP:lessonGroup;
 	}
 	
 	// 解析js为lesson对象
-	public static BaseLesson getLesson(JSONObject json){
-		BaseLesson lesson = new BaseLesson();
+	public static Lesson getLesson(JSONObject json){
+		Lesson lesson = new Lesson();
 		try{
 			String zcd = json.getString("zcd");
 			String[] sp = zcd.split(",");
@@ -102,8 +114,8 @@ public class Lesson implements Serializable{
 	 * 获取当前周的课程
 	 */
 	@Nullable
-	public BaseLesson getCurrentLesson(int week){
-		for(BaseLesson lesson:lessons){
+	public Lesson getCurrentLesson(int week){
+		for(Lesson lesson:lessons){
 			if(lesson.week[week - 1])return lesson;
 		}
 		return null;
@@ -111,16 +123,17 @@ public class Lesson implements Serializable{
 	
 	// 查找最接近当前周的课程，阿巴阿巴，说不明白
 	@Nullable
-	public BaseLesson findLesson(int week){
+	public Lesson findLesson(int week){
+		if(lessons.length == 0) return null;
 		for(int i=week;i>0;i--){
-			for(BaseLesson lesson : lessons){
+			for(Lesson lesson : lessons){
 				if(lesson.week[i - 1]){
 					return lesson;
 				}
 			}
 		}
 		for(int i=0;i<lessons[0].week.length;i++){
-			for(BaseLesson lesson : lessons){
+			for(Lesson lesson : lessons){
 				if(lesson.week[i]){
 					return lesson;
 				}
@@ -129,11 +142,10 @@ public class Lesson implements Serializable{
 		return null;
 	}
 	
-	public View getView(Context context,int hour,int minute){
+	public static View getView(Context context, Lesson lesson, int count, int len, int hour, int minute){
 		View v = LayoutInflater.from(context).inflate(R.layout.item_lesson,null);
-		((TextView)v.findViewById(R.id.item_lesson_time)).setText(LESSON_TIME_SUMMER[count]);
+		((TextView)v.findViewById(R.id.item_lesson_time)).setText(LESSON_TIME_SUMMER[0][count] + "\n" + LESSON_TIME_SUMMER[1][count + len - 1]);
 		TextView n = v.findViewById(R.id.item_lesson_name);
-		BaseLesson lesson = getCurrentLesson(LessonTableData.getInstance().getCurrentWeek());
 		if(lesson == null){
 			n.setText("空闲");
 			n.setTextColor(Color.GRAY);
@@ -168,43 +180,17 @@ public class Lesson implements Serializable{
 		return v;
 	}
 	
-	public boolean isCurrentLesson(int hour,int minute){
-		if(hour>1) return false;
-		else if(hour==1) return minute<=50;
-		else return hour==0;
-	}
+//	public boolean isCurrentLesson(int hour,int minute){
+//		if(hour>1) return false;
+//		else if(hour==1) return minute<=50;
+//		else return hour==0;
+//	}
 	
-	public static class BaseLesson{
-		// 课程颜色
-		public int color;
-		// 课程课时
-		public int len;
-		// 第几周有课
-		public boolean[] week;
-		// 教室
-		public String place;
-		// 名称
-		public String name;
-		// 教师
-		public String teacher;
-		
-		public BaseLesson(){
-			week = new boolean[30];
-			place = "";
-			name = "";
-			teacher = "";
-		}
-		
-		// 填充课程，type -1 正常 1 单周 0 双周
-		public void fillLesson(boolean b, int start, int end, int type){
-			if(type == -1){
-				Arrays.fill(week,start - 1, end, b);
-			}else{
-				for(int i=start-1;i<end;i++){
-					if(i%2 == type)week[i] = b;
-				}
-			}
-		}
+	@Nullable
+	@Override
+	public LessonGroup clone(){
+		LessonGroup b = new LessonGroup(week, count);
+		b.lessons = lessons.clone();
+		return b;
 	}
-	
 }

@@ -12,4 +12,17 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
 
+    <color name="bg1">#E6F4FF</color>
+    <color name="bg2">#FDEBDD</color>
+    <color name="bg3">#DEFBF7</color>
+    <color name="bg4">#EEEDFF</color>
+    <color name="bg5">#FCEBCD</color>
+    <color name="bg6">#FFEFF0</color>
+    <color name="bg7">#EAF2FF</color>
+    <color name="bg8">#FFEEF8</color>
+    <color name="bg9">#E2F9F3</color>
+    <color name="bg10">#FFF9C9</color>
+    <color name="bg11">#FAEDFF</color>
+    <color name="bg12">#F4F2FD</color>
+
 </resources>

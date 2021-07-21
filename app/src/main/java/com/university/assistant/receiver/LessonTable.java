@@ -5,36 +5,20 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
+import com.university.assistant.Lesson.Lesson;
+import com.university.assistant.Lesson.LessonData;
+import com.university.assistant.Lesson.LessonGroup;
 import com.university.assistant.R;
-import com.university.assistant.fragment.lessontable.Lesson;
-import com.university.assistant.fragment.lessontable.LessonTableData;
 import com.university.assistant.util.ColorUtil;
-import com.university.assistant.widget.BackgroundLesson;
-
-import java.util.Calendar;
 
 public class LessonTable extends AppWidgetProvider{
-	
-	private static int[][] ids = {
-			{R.id.widget_lesson_1,R.id.widget_lesson_1_color,R.id.widget_lesson_1_name,R.id.widget_lesson_1_info,R.id.widget_lesson_1_status},
-			{R.id.widget_lesson_2,R.id.widget_lesson_2_color,R.id.widget_lesson_2_name,R.id.widget_lesson_2_info,R.id.widget_lesson_2_status},
-			{R.id.widget_lesson_3,R.id.widget_lesson_3_color,R.id.widget_lesson_3_name,R.id.widget_lesson_3_info,R.id.widget_lesson_3_status},
-			{R.id.widget_lesson_4,R.id.widget_lesson_4_color,R.id.widget_lesson_4_name,R.id.widget_lesson_4_info,R.id.widget_lesson_4_status},
-			{R.id.widget_lesson_5,R.id.widget_lesson_5_color,R.id.widget_lesson_5_name,R.id.widget_lesson_5_info,R.id.widget_lesson_5_status},
-	};
 	
 	private RemoteViews remoteView;
 	
@@ -56,70 +40,79 @@ public class LessonTable extends AppWidgetProvider{
 	
 	private void updateWidget(Context context,AppWidgetManager appWidgetManager,int... appWidgetIds){
 		
-		LessonTableData.init(context);
+		LessonData.init(context);
 		
-		Lesson[] lessons = LessonTableData.getInstance().getLessons()[LessonTableData.getInstance().getWeek()];
+		LessonGroup[] lessonGroups = LessonData.getInstance().getLessonGroups()[LessonData.getInstance().getWeek()];
 		
-		int currentWeek = LessonTableData.getInstance().getCurrentWeek();
+		int currentWeek = LessonData.getInstance().getCurrentWeek();
 		
 		if(remoteView==null){
-			remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_lesson);
+			remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_day_lesson);
 			times = 0;
 		}
 		
 		if(times--==0){
-			LessonTableData.getInstance().updateDay();
+			LessonData.getInstance().updateDate();
 			times = 200;
 			
 			Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 			paint.setAntiAlias(true);
 			paint.setStyle(Paint.Style.FILL);
-
-//			for(int i=0;i<5;i++){
-//				createLesson(remoteView,Lesson.getLesson(lessons[i],currentWeek,i+1),paint,i,i%2!=0);
-//			}
-		}
-		
-		Calendar c = Calendar.getInstance();
-		int h = c.get(Calendar.HOUR_OF_DAY) - 8;
-		int m = c.get(Calendar.MINUTE);
-		
-		for(int i=0;i<5;i++){
-			h -= LessonTableData.summer[i][0];
-			m -= LessonTableData.summer[i][1];
-			if(m<0){
-				h -= 1;
-				m += 60;
+			
+			String[] time = { "上午课程", null, null, null, "下午课程", null, null, null, "晚上课程", null};
+			
+			remoteView.removeAllViews(R.id.widget_day_lesson);
+			
+			for(int i=0;i<lessonGroups.length;i++){
+				if(time[i]!=null){
+					RemoteViews t = new RemoteViews(context.getPackageName(), R.layout.view_text);
+					t.setTextViewText(R.id.view_text, time[i]);
+					remoteView.addView(R.id.widget_day_lesson, t);
+				}
+				createLesson(context, remoteView, lessonGroups[i] == null ? null : lessonGroups[i].getCurrentLesson(currentWeek), paint, i,i%4!=0);
 			}
-//			updateTime(remoteView,Lesson.getLesson(lessons[i],currentWeek,i+1),i,h,m);
 		}
+		
+//		Calendar c = Calendar.getInstance();
+//		int h = c.get(Calendar.HOUR_OF_DAY) - 8;
+//		int m = c.get(Calendar.MINUTE);
+//
+//		for(int i=0;i<5;i++){
+//			h -= LessonData.summer[i][0];
+//			m -= LessonData.summer[i][1];
+//			if(m<0){
+//				h -= 1;
+//				m += 60;
+//			}
+////			updateTime(remoteView,Lesson.getLesson(lessons[i],currentWeek,i+1),i,h,m);
+//		}
 		
 		for(int appWidgetId:appWidgetIds)appWidgetManager.updateAppWidget(appWidgetId,remoteView);
 		
 	}
 	
-	private void createLesson(RemoteViews remoteViews,Lesson lesson,Paint paint,int index,boolean canHide){
-//		if("".equals(lesson.name)){
-//			if(canHide){
-//				remoteViews.setViewVisibility(ids[index][0],View.GONE);
-//			}else{
-//				remoteViews.setTextViewText(ids[index][2],"空闲");
-//				remoteViews.setTextColor(ids[index][2],Color.GRAY);
-//			}
-//		}else{
-//			paint.setColor(ColorUtil.TEXT_COLORS[lesson.color]);
-//			remoteViews.setViewVisibility(ids[index][0],View.VISIBLE);
-//			remoteViews.setImageViewBitmap(ids[index][1],getColorBitmap(paint));
-//			remoteViews.setTextViewText(ids[index][2],lesson.name);
-//			remoteViews.setTextColor(ids[index][2],Color.BLACK);
-//			if("".equals(lesson.place) || "".equals(lesson.teacher))
-//				remoteViews.setTextViewText(ids[index][3],lesson.place + lesson.teacher);
-//			else remoteViews.setTextViewText(ids[index][3],lesson.place + "|" + lesson.teacher);
-//
-//		}
+	private void createLesson(Context context, RemoteViews remoteViews, Lesson lesson, Paint paint, int count, boolean canHide){
+		if(lesson == null && canHide) return;
+		RemoteViews lessonView = new RemoteViews(context.getPackageName(),R.layout.widget_lesson);
+		int len = 0;
+		if(lesson == null){
+			lessonView.setTextViewText(R.id.widget_lesson_name,"空闲");
+			lessonView.setTextColor(R.id.widget_lesson_name,Color.GRAY);
+		}else{
+			len = lesson.len - 1;
+			paint.setColor(ColorUtil.TEXT_COLORS[lesson.color]);
+			lessonView.setImageViewBitmap(R.id.widget_lesson_color, getColorBitmap(paint));
+			lessonView.setTextViewText(R.id.widget_lesson_name, lesson.name);
+			lessonView.setTextColor(R.id.widget_lesson_name, Color.BLACK);
+			if("".equals(lesson.place) || "".equals(lesson.teacher))
+				lessonView.setTextViewText(R.id.widget_lesson_info,lesson.place + lesson.teacher);
+			else lessonView.setTextViewText(R.id.widget_lesson_info,lesson.place + "|" + lesson.teacher);
+		}
+		lessonView.setTextViewText(R.id.widget_lesson_time, LessonGroup.LESSON_TIME_SUMMER[0][count] + "\n" + LessonGroup.LESSON_TIME_SUMMER[1][count + len]);
+		remoteViews.addView(R.id.widget_day_lesson, lessonView);
 	}
 	
-	private void updateTime(RemoteViews remoteViews,Lesson lesson,int index,int hour,int minute){
+	private void updateTime(RemoteViews remoteViews,LessonGroup lesson,int index,int hour,int minute){
 //		if("".equals(lesson.name)){
 //			remoteViews.setTextViewText(ids[index][4],"");
 //			return;
@@ -169,7 +162,7 @@ public class LessonTable extends AppWidgetProvider{
 	@Override
 	public void onEnabled(Context context){
 		super.onEnabled(context);
-		remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_lesson);
+		remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_day_lesson);
 		// Intent mTimerIntent = new Intent(context, WidgetService.class);
 		// context.startService(mTimerIntent);
 	}
@@ -186,6 +179,6 @@ public class LessonTable extends AppWidgetProvider{
 	@Override
 	public void onRestored(Context context,int[] oldWidgetIds,int[] newWidgetIds){
 		super.onRestored(context,oldWidgetIds,newWidgetIds);
-		remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_lesson);
+		remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_day_lesson);
 	}
 }

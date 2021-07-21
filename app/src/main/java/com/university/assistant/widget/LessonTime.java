@@ -8,10 +8,13 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 
-import com.university.assistant.fragment.lessontable.LessonTableData;
+import com.university.assistant.Lesson.LessonData;
 import com.university.assistant.util.ColorUtil;
+
+import java.util.Arrays;
 
 import androidx.annotation.Nullable;
 
@@ -21,11 +24,15 @@ public class LessonTime extends View{
 	
 	private static final int ROW_COUNT = 6;
 	
-	private boolean[] booleans;
-	
 	private int textHeight;
 	
 	private int width,height;
+	
+	private float downX,downY;
+	
+	private boolean[] hasMove;
+	
+	private boolean[] booleans;
 	
 	private Paint paint, paintT;
 	
@@ -39,7 +46,9 @@ public class LessonTime extends View{
 	
 	public LessonTime(Context context,@Nullable AttributeSet attrs,int defStyleAttr){
 		super(context,attrs,defStyleAttr);
-		booleans = new boolean[LessonTableData.getInstance().getTotalWeek()];
+		booleans = new boolean[LessonData.getInstance().getTotalWeek()];
+		hasMove = new boolean[booleans.length];
+		
 		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 		paint.setAntiAlias(true);
 		paint.setStyle(Paint.Style.FILL);
@@ -60,10 +69,44 @@ public class LessonTime extends View{
 	}
 	
 	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev){
+		getParent().requestDisallowInterceptTouchEvent(true);
+		return super.dispatchTouchEvent(ev);
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event){
+		int down = (int)(event.getY() / height) * ROW_COUNT + (int)(event.getX() / width) % ROW_COUNT;
+		if(-1 < down && down < hasMove.length){
+			switch(event.getAction()){
+				case MotionEvent.ACTION_MOVE:
+					if(hasMove[down]){
+						booleans[down] = !booleans[down];
+						hasMove[down] = false;
+						invalidate();
+					}
+					break;
+				case MotionEvent.ACTION_DOWN:
+					downX = event.getX();
+					downY = event.getY();
+					Arrays.fill(hasMove, true);
+					break;
+				case MotionEvent.ACTION_UP:
+					if(downX==event.getX()&&downY==event.getY()){
+						booleans[down] = !booleans[down];
+						invalidate();
+					}
+					break;
+			}
+		}
+		return true;
+	}
+	
+	@Override
 	protected void onDraw(Canvas canvas){
 		super.onDraw(canvas);
 		float t =  paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent;
-		int weeks = LessonTableData.getInstance().getTotalWeek();
+		int weeks = LessonData.getInstance().getTotalWeek();
 		for(int i=0;i<weeks;i++){
 			if(booleans[i]){
 				paint.setColor(ColorUtil.BACKGROUND_COLORS[0]);
@@ -89,5 +132,22 @@ public class LessonTime extends View{
 	
 	public void setBooleans(boolean[] _booleans){
 		booleans = _booleans;
+		invalidate();
 	}
+	
+	public void setFill(){
+		Arrays.fill(booleans, true);
+		invalidate();
+	}
+	
+	public void setSingle(){
+		for(int i=0;i<booleans.length;i++) booleans[i] = i % 2 == 0;
+		invalidate();
+	}
+	
+	public void setDouble(){
+		for(int i=0;i<booleans.length;i++) booleans[i] = i % 2 == 1;
+		invalidate();
+	}
+	
 }

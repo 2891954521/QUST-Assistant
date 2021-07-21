@@ -1,4 +1,4 @@
-package com.university.assistant.fragment.home;
+package com.university.assistant.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,14 +9,13 @@ import android.widget.ImageView;
 
 import com.university.assistant.MainActivity;
 import com.university.assistant.R;
-import com.university.assistant.fragment.BaseFragment;
+import com.university.assistant.ui.PictureActivity;
 import com.university.assistant.ui.school.GetAcademicActivity;
 import com.university.assistant.ui.school.GetExamActivity;
-import com.university.assistant.ui.third.CpDailyActivity;
-import com.university.assistant.ui.third.DrinkActivity;
 import com.university.assistant.ui.school.GetLessonTableActivity;
 import com.university.assistant.ui.school.GetMarkActivity;
-import com.university.assistant.ui.PictureActivity;
+import com.university.assistant.ui.third.CpDailyActivity;
+import com.university.assistant.ui.third.DrinkActivity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

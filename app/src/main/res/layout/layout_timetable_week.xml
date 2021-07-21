@@ -14,6 +14,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_timetable_week_contain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -59,11 +60,6 @@
                 android:text="9-10\n\n18:30\n20:20" />
 
         </LinearLayout>
-
-        <com.university.assistant.widget.LessonTable
-            android:id="@+id/layout_timetable_lessons"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
     </LinearLayout>
 

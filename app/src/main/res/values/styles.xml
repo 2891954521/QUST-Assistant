@@ -10,6 +10,13 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="HomeIcon" parent="TextNormal">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_marginStart">@dimen/activity_margin</item>
+        <item name="android:layout_marginEnd">@dimen/activity_margin</item>
+        <item name="android:drawablePadding">@dimen/widget_margin</item>
+    </style>
+
     <!--默认文本的style-->
     <style name="BaseText">
         <item name="android:gravity">center</item>
