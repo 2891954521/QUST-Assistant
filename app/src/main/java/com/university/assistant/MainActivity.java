@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,8 +20,10 @@ import com.university.assistant.fragment.HomeFragment;
 import com.university.assistant.fragment.LessonTableFragment;
 import com.university.assistant.fragment.note.NoteFragment;
 import com.university.assistant.ui.BaseActivity;
+import com.university.assistant.ui.SettingActivity;
 import com.university.assistant.ui.UpdateActivity;
 import com.university.assistant.ui.school.LoginActivity;
+import com.university.assistant.util.UpdateUtil;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -29,6 +32,7 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 public class MainActivity extends BaseActivity{
@@ -67,11 +71,8 @@ public class MainActivity extends BaseActivity{
 				case R.id.nav_login:
 					startActivity(new Intent(this,LoginActivity.class));
 					break;
-				case R.id.nav_update:
-					startActivity(new Intent(this,UpdateActivity.class));
-					break;
-				case R.id.nav_log:
-					startActivity(new Intent(this,LogActivity.class).putExtra("file","debug.log"));
+				case R.id.nav_setting:
+					startActivity(new Intent(this,SettingActivity.class));
 					break;
 			}
 			return false;
@@ -113,9 +114,24 @@ public class MainActivity extends BaseActivity{
 		});
 		viewPager.setCurrentItem(1);
 		
-		if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED
-			||ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
+		if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+			|| ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
 			ActivityCompat.requestPermissions(this,new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
+		}
+		
+		SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(this);
+
+		if(setting.getBoolean("key_auto_update",true)){
+			long current = System.currentTimeMillis();
+			if(current - setting.getLong("last_update_time",0) > 1000 * 60 * 60 * 24 * 7){
+				new Thread(){
+					@Override
+					public void run(){
+						UpdateUtil.checkUpdate(MainActivity.this);
+					}
+				}.start();
+				setting.edit().putLong("last_update_time", current).apply();
+			}
 		}
 	}
 	
@@ -125,6 +141,13 @@ public class MainActivity extends BaseActivity{
 		for(BaseFragment fragment : fragments){
 			fragment.onResume();
 		}
+	}
+	
+	@Override
+	// 给MainActivity单独设置一个切换动画
+	public void startActivity(Intent intent){
+		super.startActivity(intent);
+		overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
 	}
 	
 	public void navigationTo(int page){

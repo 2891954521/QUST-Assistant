@@ -1,9 +1,8 @@
 package com.university.assistant.ui.school;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +10,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.R;
-import com.university.assistant.ui.BaseActivity;
+import com.university.assistant.util.FileUtil;
 import com.university.assistant.util.LogUtil;
-import com.university.assistant.util.LoginUtil;
 import com.university.assistant.util.WebUtil;
 
 import org.json.JSONArray;
@@ -37,9 +34,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 
-public class GetAcademicActivity extends BaseActivity{
+public class GetAcademicActivity extends BaseSchoolActivity{
 	
 	private static final String[] TYPE = {
 			"","在修","未过","未修","已修",
@@ -53,74 +49,105 @@ public class GetAcademicActivity extends BaseActivity{
 	
 	private int[] child;
 	
+	private String text;
+	
 	private String[] group;
 	
 	private Lesson[] lessonsSort;
 	
 	private ArrayList<Lesson> lessons;
 	
-	private MaterialDialog dialog;
-	
 	private AcademicAdapter adapter;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_get_academic);
 		
 		loadData();
-		
-		((Toolbar)findViewById(R.id.toolbar)).setNavigationOnClickListener(v -> onBackPressed());
 		
 		adapter = new AcademicAdapter();
 		
 		ExpandableListView listView = findViewById(R.id.activity_get_academic_list);
 		listView.setAdapter(adapter);
 		
-		SharedPreferences data = getSharedPreferences("education",Context.MODE_PRIVATE);
+		((TextView)findViewById(R.id.activity_get_academic_text)).setText(text);
 		
-		String name = data.getString("user",null);
-		String password = data.getString("password",null);
-		
-		if(name == null || password == null){
-			toast("请先登录！");
-			startActivity(new Intent(this,LoginActivity.class));
-			finish();
-			return;
-		}
-		
-		dialog = new MaterialDialog.Builder(this).progress(true,0).content("查询中...").build();
-		
-		findViewById(R.id.activity_get_academic_refresh).setOnClickListener(v -> {
-			dialog.show();
-			new Thread(){
-				@Override
-				public void run(){
-					final String session = LoginUtil.login(name,password);
-					if(session==null){
-						runOnUiThread(() -> {
-							dialog.dismiss();
-							toast("登陆失败！用户名或密码错误！");
-						});
-					}else if(session.charAt(0) == '='){
-						String message = getLessons(session.substring(1)) ? "获取课程信息成功！" : "获取课程信息失败！";
-						runOnUiThread(() -> {
-							dialog.dismiss();
-							toast(message);
-							sortByYear();
-							saveData();
-							adapter.notifyDataSetChanged();
-						});
-					}else{
-						runOnUiThread(() -> {
-							dialog.dismiss();
-							toast(session);
-						});
+	}
+	
+	@Override
+	protected String getName(){
+		return "学业情况查询";
+	}
+	
+	@Override
+	protected int getLayout(){
+		return R.layout.activity_get_academic;
+	}
+	
+	@Override
+	protected void doQuery(String session){
+		lessons = new ArrayList<>();
+		try{
+			String response = WebUtil.doGet(
+					"http://jwglxt.qust.edu.cn/jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default",
+					"JSESSIONID=" + session
+			);
+			if(!TextUtils.isEmpty(response)){
+				Matcher matcher = Pattern.compile("id=\"alertBox\"\\s?>(.*?)</div>", Pattern.DOTALL).matcher(response);
+				matcher.find();
+				text = Html.fromHtml(matcher.group(1)).toString().replaceAll("\t","").split(" {2,}")[1];
+				
+				matcher = Pattern.compile(" xfyqjd_id='(.*?)'").matcher(response);
+				HashSet<String> params = new HashSet<>();
+				while(matcher.find()) params.add(matcher.group(1));
+				
+				for(String param : params){
+
+					response = WebUtil.doPost("http://jwglxt.qust.edu.cn/jwglxt/xsxy/xsxyqk_cxJxzxjhxfyqKcxx.html","JSESSIONID=" + session,"xfyqjd_id=" + param);
+					
+					if(TextUtils.isEmpty(response)) continue;
+					
+					JSONArray array = new JSONArray(response);
+					
+					for(int j = 0;j<array.length();j++){
+						JSONObject js = array.getJSONObject(j);
+						Lesson lesson = new Lesson();
+						lesson.name = js.getString("KCMC");
+						lesson.type = js.getString("KCXZMC");
+						lesson.category = js.getString("KCLBMC");
+						lesson.content = js.getString("XSXXXX");
+						
+						lesson.year = js.getString(js.has("XNMC") ? "XNMC" : "JYXDXNMC");
+						
+						lesson.term = Integer.parseInt(js.getString(js.has("XQMMC") ? "XQMMC" : "JYXDXQMC"));
+						
+						lesson.status = Integer.parseInt(js.getString("XDZT"));
+						
+						lesson.credit = js.getString("XF");
+						
+						if(js.has("MAXCJ")) lesson.score = js.getString("MAXCJ");
+						
+						if(js.has("JD")) lesson.gpa = js.getInt("JD");
+						
+						lessons.add(lesson);
 					}
 				}
-			}.start();
-		});
-		
+				runOnUiThread(() -> {
+					dialog.dismiss();
+					toast("查询成功！");
+					((TextView)findViewById(R.id.activity_get_academic_text)).setText(text);
+					sortByYear();
+					saveData();
+					adapter.notifyDataSetChanged();
+				});
+			}
+		}catch(IOException | JSONException e){
+			LogUtil.Log(e);
+			runOnUiThread(() -> {
+				dialog.dismiss();
+				toast("查询失败！");
+			});
+		}
 	}
 	
 	// 载入序列化后的数据
@@ -149,10 +176,14 @@ public class GetAcademicActivity extends BaseActivity{
 				stream.close();
 			}else throw new FileNotFoundException();
 			
+			file = new File(getExternalFilesDir("Academic"),"text");
+			text = FileUtil.readFile(file);
+			
 		}catch(Exception e){
 			group = new String[0];
 			child = new int[0];
 			lessonsSort = new Lesson[0];
+			text = "";
 		}
 	}
 	
@@ -177,74 +208,12 @@ public class GetAcademicActivity extends BaseActivity{
 			stream.flush();
 			stream.close();
 			
+			FileUtil.writeFile(new File(getExternalFilesDir("Academic"),"text"), text);
 		}catch(IOException e){
 			LogUtil.Log(e);
 		}
 	}
 	
-	// 获取全部课程
-	private boolean getLessons(String session){
-		boolean flag = true;
-		lessons = new ArrayList<>();
-		try{
-			String response = WebUtil.doGet(
-					"http://jwglxt.qust.edu.cn/jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default",
-					"JSESSIONID=" + session
-			);
-			if(response == null) return false;
-			
-			Matcher matcher = Pattern.compile(" xfyqjd_id='(.*?)'").matcher(response);
-			HashSet<String> params = new HashSet<>();
-			while (matcher.find()) params.add(matcher.group(1));
-			
-			for(String param : params){
-				LogUtil.debugLog(param);
-				response = WebUtil.doPost(
-						"http://jwglxt.qust.edu.cn/jwglxt/xsxy/xsxyqk_cxJxzxjhxfyqKcxx.html",
-						"JSESSIONID=" + session,
-						"xfyqjd_id=" + param
-				);
-				
-				if(response == null || "".equals(response)){
-					flag = false;
-					continue;
-				}
-				
-				JSONArray array = new JSONArray(response);
-				
-				for(int j = 0;j<array.length();j++){
-					JSONObject js = array.getJSONObject(j);
-					Lesson lesson = new Lesson();
-					lesson.name = js.getString("KCMC");
-					lesson.type = js.getString("KCXZMC");
-					lesson.category = js.getString("KCLBMC");
-					lesson.content = js.getString("XSXXXX");
-					
-					if(js.has("XNMC")){
-						lesson.year = js.getString("XNMC");
-					}else lesson.year = js.getString("JYXDXNMC");
-					
-					if(js.has("XQMMC")){
-						lesson.term = Integer.parseInt(js.getString("XQMMC"));
-					}else lesson.term = Integer.parseInt(js.getString("JYXDXQMC"));
-					
-					lesson.status = Integer.parseInt(js.getString("XDZT"));
-					
-					lesson.credit = js.getString("XF");
-					
-					if(js.has("MAXCJ")) lesson.score = js.getString("MAXCJ");
-					
-					if(js.has("JD")) lesson.gpa = js.getInt("JD");
-					
-					lessons.add(lesson);
-				}
-			}
-		}catch(IOException | JSONException e){
-			LogUtil.Log(e);
-			flag = false;
-		}
-		return flag;
-	}
 	
 	private void sortByYear(){
 		ArrayList<String> g = new ArrayList<>();

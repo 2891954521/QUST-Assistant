@@ -54,11 +54,12 @@ public class LogUtil{
         PrintWriter printWriter = new PrintWriter(stringWriter);
         e.printStackTrace(printWriter);
         String str = stringWriter.toString();
-        File f = new File(DebugLogFile,Integer.toString(str.hashCode())+".log");
-        if(f.exists())debugLog(SimpleDateFormat.getInstance().format(new Date(System.currentTimeMillis()))+" 发生异常:"+str.hashCode());
-        else{
+        File f = new File(DebugLogFile,str.hashCode() + ".log");
+        if(f.exists()){
+            debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + str.hashCode());
+        }else{
             FileUtil.writeFile(f.toString(),str);
-            debugLog(SimpleDateFormat.getInstance().format(new Date(System.currentTimeMillis()))+" 发生异常:"+str.hashCode()+"\n"+e.getClass().getName()+" : "+e.getMessage());
+            debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + str.hashCode() + "\n" + e.getClass().getName() + " : " + e.getMessage());
         }
     }
 }

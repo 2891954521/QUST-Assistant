@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.university.assistant"
-    android:versionCode="7"
-    android:versionName="1.6">
+    android:versionCode="8"
+    android:versionName="1.7">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -23,7 +23,7 @@
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -49,6 +49,8 @@
 
         <activity android:name=".LogActivity"/>
 
+        <activity android:name=".ui.SettingActivity"/>
+
         <activity android:name=".ui.school.LoginActivity"/>
 
         <activity android:name=".ui.school.GetLessonTableActivity"/>
@@ -58,6 +60,8 @@
         <activity android:name=".ui.school.GetMarkActivity"/>
 
         <activity android:name=".ui.school.GetAcademicActivity"/>
+
+        <activity android:name=".ui.school.AutoEvaluationActivity"/>
 
         <activity android:name=".ui.third.DrinkActivity"/>
 

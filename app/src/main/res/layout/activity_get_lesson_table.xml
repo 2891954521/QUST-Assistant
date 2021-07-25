@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -27,10 +28,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="@dimen/widget_margin">
+        android:padding="@dimen/widget_margin"
+        android:gravity="center">
 
         <TextView
             style="@style/TextNormal"
@@ -39,56 +40,69 @@
             android:padding="@dimen/widget_margin"
             android:text="学年"/>
 
-        <EditText
-            android:id="@+id/activity_get_lesson_table_year"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="number"
-            android:maxLength="4"
-            android:textSize="14dp" />
-
-        <TextView
-            style="@style/TextNormal"
+        <NumberPicker
+            android:id="@+id/activity_school_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/widget_margin"
-            android:text="学期"/>
+            android:paddingStart="@dimen/widget_margin"
+            android:paddingEnd="@dimen/widget_margin"
+            android:descendantFocusability="blocksDescendants" />
 
-        <RadioGroup
-            android:id="@+id/activity_get_lesson_table_term"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             android:padding="@dimen/widget_margin">
 
-            <RadioButton
-                android:id="@+id/activity_get_lesson_table_term1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/widget_margin"
-                android:checked="true"
-                android:text="1" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/activity_get_lesson_table_term2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/widget_margin"
-                android:text="2" />
+                <TextView
+                    style="@style/TextNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/widget_margin"
+                    android:text="学期"/>
 
-        </RadioGroup>
+                <RadioGroup
+                    android:id="@+id/activity_school_term"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/widget_margin">
+
+                    <RadioButton
+                        android:id="@+id/activity_school_term1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:padding="8dp"
+                        android:text="1" />
+
+                    <RadioButton
+                        android:id="@+id/activity_school_term2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="2" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/activity_school_query"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="查询"/>
+
+        </LinearLayout>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/activity_get_lesson_table_query"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/widget_margin"
-        android:layout_marginLeft="@dimen/widget_margin"
-        android:layout_marginRight="@dimen/widget_margin"
-        android:text="查询"/>
 
     <com.university.assistant.widget.LessonTable
         android:id="@+id/activity_get_lesson_table_preview"

@@ -46,8 +46,7 @@ public class FileUtil{
             char[] c = new char[1024];
             int len = 0;
             while((len = b.read(c))!=-1)sb.append(c,0,len);
-        }catch(IOException ignored){
-        }
+        }catch(IOException ignored){ }
         return sb.toString();
     }
 

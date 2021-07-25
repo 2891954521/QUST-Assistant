@@ -1,15 +1,16 @@
 <resources>
     <string name="app_name">青科助手</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
 
+<!--    <string name="title_home">Home</string>-->
+<!--    <string name="title_dashboard">Dashboard</string>-->
+<!--    <string name="title_notifications">Notifications</string>-->
 
     <string name="str_date">记录日期：%1$s</string>
     <string name="str_commit">截止日期：%1$s</string>
 
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
+    <string name="text_ok">确定</string>
+    <string name="text_cancel">取消</string>
+
     <string-array name="time">
         <item> </item>
         <item>08:00\n09:50</item>
@@ -18,4 +19,5 @@
         <item>15:40\n17:30</item>
         <item>18:00\n19:50</item>
     </string-array>
+
 </resources>

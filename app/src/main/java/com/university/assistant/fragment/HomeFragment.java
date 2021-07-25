@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.university.assistant.MainActivity;
 import com.university.assistant.R;
 import com.university.assistant.ui.PictureActivity;
+import com.university.assistant.ui.school.AutoEvaluationActivity;
 import com.university.assistant.ui.school.GetAcademicActivity;
 import com.university.assistant.ui.school.GetExamActivity;
 import com.university.assistant.ui.school.GetLessonTableActivity;
@@ -30,15 +31,16 @@ public class HomeFragment extends BaseFragment{
         ViewGroup layout = (ViewGroup)inflater.inflate(R.layout.fragment_home,container,false);
         layout.findViewById(R.id.fragment_home_lesson_table).setOnClickListener(v -> activity.navigationTo(1));
         layout.findViewById(R.id.fragment_home_note).setOnClickListener(v -> activity.navigationTo(2));
-        layout.findViewById(R.id.fragment_home_pictures).setOnClickListener(v -> startActivity(new Intent(getContext(),PictureActivity.class)));
-        layout.findViewById(R.id.fragment_home_drink).setOnClickListener(v -> startActivity(new Intent(getContext(),DrinkActivity.class)));
-        layout.findViewById(R.id.fragment_home_cpdaily).setOnClickListener(v -> startActivity(new Intent(getContext(),CpDailyActivity.class)));
-        layout.findViewById(R.id.fragment_home_school_lesson).setOnClickListener(v -> startActivity(new Intent(getContext(),GetLessonTableActivity.class)));
-        layout.findViewById(R.id.fragment_home_school_mark).setOnClickListener(v -> startActivity(new Intent(getContext(),GetMarkActivity.class)));
-        layout.findViewById(R.id.fragment_home_school_academic).setOnClickListener(v -> startActivity(new Intent(getContext(),GetAcademicActivity.class)));
-        layout.findViewById(R.id.fragment_home_school_course_selection).setOnClickListener(v -> toast("未完成！"));
+        layout.findViewById(R.id.fragment_home_pictures).setOnClickListener(v -> activity.startActivity(new Intent(activity,PictureActivity.class)));
+        layout.findViewById(R.id.fragment_home_drink).setOnClickListener(v -> activity.startActivity(new Intent(activity,DrinkActivity.class)));
+        layout.findViewById(R.id.fragment_home_cpdaily).setOnClickListener(v -> activity.startActivity(new Intent(activity,CpDailyActivity.class)));
+        layout.findViewById(R.id.fragment_home_school_lesson).setOnClickListener(v -> activity.startActivity(new Intent(activity,GetLessonTableActivity.class)));
+        layout.findViewById(R.id.fragment_home_school_mark).setOnClickListener(v -> activity.startActivity(new Intent(activity,GetMarkActivity.class)));
+        layout.findViewById(R.id.fragment_home_school_academic).setOnClickListener(v -> activity.startActivity(new Intent(activity,GetAcademicActivity.class)));
+        layout.findViewById(R.id.fragment_home_school_auto_evaluation).setOnClickListener(v -> activity.startActivity(new Intent(activity, AutoEvaluationActivity.class)));
+        // layout.findViewById(R.id.fragment_home_school_course_selection).setOnClickListener(v -> toast("未完成！"));
         layout.findViewById(R.id.fragment_home_school_empty_class).setOnClickListener(v -> toast("未完成！"));
-        layout.findViewById(R.id.fragment_home_school_exam).setOnClickListener(v -> startActivity(new Intent(getContext(),GetExamActivity.class)));
+        layout.findViewById(R.id.fragment_home_school_exam).setOnClickListener(v -> activity.startActivity(new Intent(activity,GetExamActivity.class)));
     
     
         return layout;

@@ -1,23 +1,14 @@
 package com.university.assistant.ui.school;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.R;
-import com.university.assistant.ui.BaseActivity;
 import com.university.assistant.util.LogUtil;
-import com.university.assistant.util.LoginUtil;
 import com.university.assistant.util.ParamUtil;
 import com.university.assistant.util.WebUtil;
 
@@ -25,134 +16,48 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 
-public class GetMarkActivity extends BaseActivity{
-	
-	private MaterialDialog dialog;
-	
-	private EditText yearText;
-	
-	private String name, password;
-	
-	private BaseAdapter adapter;
+public class GetMarkActivity extends BaseSchoolActivity{
 	
 	private Mark[] marks;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_get_mark);
 		
-		loadData();
+		marks = (Mark[])loadData("Mark","mark");
 		
-		((Toolbar)findViewById(R.id.toolbar)).setNavigationOnClickListener(v -> onBackPressed());
+		if(marks == null) marks = new Mark[0];
 		
-		SharedPreferences data = getSharedPreferences("education",Context.MODE_PRIVATE);
+		initYearAndTermPicker();
 		
-		name = data.getString("user",null);
-		password = data.getString("password",null);
-		
-		dialog = new MaterialDialog.Builder(this).progress(true,0).content("查询中...").build();
-		
-		yearText = findViewById(R.id.activity_get_mark_year);
-		
-		Calendar calendar = Calendar.getInstance();
-		int y = calendar.get(Calendar.YEAR);
-		if(calendar.get(Calendar.MONTH) < Calendar.SEPTEMBER) y--;
-		yearText.setText(String.valueOf(y));
-		
-		findViewById(R.id.activity_get_mark_query).setOnClickListener(v -> {
-			if(name == null || password == null){
-				toast("请先登录！");
-				startActivity(new Intent(this,LoginActivity.class));
-				finish();
-				return;
-			}
-			new Thread(){
-				@Override
-				public void run(){
-					String year = yearText.getText().toString();
-					String term = "3";
-					if(((RadioGroup)findViewById(R.id.activity_get_mark_term)).getCheckedRadioButtonId()==R.id.activity_get_mark_term2){
-						term = "12";
-					}
-					final String session = LoginUtil.login(name,password);
-					if(session==null){
-						runOnUiThread(() -> { dialog.dismiss(); toast("登陆失败！用户名或密码错误！"); });
-					}else if(session.charAt(0) == '='){
-						if(getMark(session.substring(1),year,term)){
-							saveData();
-							runOnUiThread(() -> {
-								dialog.dismiss();
-								toast("查询成功！");
-							});
-						}else{
-							runOnUiThread(() -> { dialog.dismiss(); toast("查询失败！"); });
-						}
-					}else{
-						runOnUiThread(() -> { dialog.dismiss(); toast(session); });
-					}
-				}
-			}.start();
-			dialog.show();
-		});
-		
-		adapter = new MarkAdapter();
-		
-		ListView listView = findViewById(R.id.activity_get_mark_mark);
-		listView.setAdapter(adapter);
+		initList(new MarkAdapter());
 	}
 	
-	// 载入序列化后的数据
-	private void loadData(){
-		try{
-			File file = new File(getExternalFilesDir("Mark"),"mark");
-			
-			if(file.exists()){
-				ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file));
-				marks = (Mark[])stream.readObject();
-				stream.close();
-			}else throw new FileNotFoundException();
-			
-		}catch(Exception e){
-			marks = new Mark[0];
-		}
+	@Override
+	protected String getName(){
+		return "查成绩";
 	}
 	
-	// 储存序列化数据
-	private void saveData(){
-		try{
-			File file = new File(getExternalFilesDir("Mark"),"mark");
-			ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file));
-			stream.writeObject(marks);
-			stream.flush();
-			stream.close();
-		}catch(IOException e){
-			LogUtil.Log(e);
-		}
+	@Override
+	protected int getLayout(){
+		return R.layout.activity_school_query;
 	}
 	
-	private boolean getMark(String session, String year, String term){
+	@Override
+	protected void doQuery(String session){
 		HashMap<String,Mark> markMap = new HashMap<>(10);
 		try{
+			String[] y = getYearAndTerm();
 			String response = WebUtil.doPost(
 					"http://jwglxt.qust.edu.cn/jwglxt/cjcx/cjcx_cxXsKccjList.html",
 					"JSESSIONID=" + session,
-					String.format("xnm=%s&xqm=%s&queryModel.showCount=50",year,term)
+					String.format("xnm=%s&xqm=%s&queryModel.showCount=50",y[0],y[1])
 			);
 			
 			if(response != null && !"".equals(response)){
@@ -185,7 +90,7 @@ public class GetMarkActivity extends BaseActivity{
 			response = WebUtil.doPost(
 					"http://jwglxt.qust.edu.cn/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query",
 					"JSESSIONID=" + session,
-					String.format("xnm=%s&xqm=%s&queryModel.showCount=50",year,term)
+					String.format("xnm=%s&xqm=%s&queryModel.showCount=50",y[0],y[1])
 			);
 			
 			if(response != null && !"".equals(response)){
@@ -203,12 +108,22 @@ public class GetMarkActivity extends BaseActivity{
 				}
 			}
 			marks = markMap.values().toArray(new Mark[0]);
-			runOnUiThread(() -> adapter.notifyDataSetChanged());
-			return true;
+			
+			saveData("Mark","mark", marks);
+			
+			runOnUiThread(() -> {
+				adapter.notifyDataSetChanged();
+				dialog.dismiss();
+				toast("查询成功！");
+			});
+			
 		}catch(IOException | JSONException e){
 			LogUtil.Log(e);
+			runOnUiThread(() -> {
+				dialog.dismiss();
+				toast("查询失败！");
+			});
 		}
-		return false;
 	}
 	
 	private class MarkAdapter extends BaseAdapter{
@@ -234,7 +149,7 @@ public class GetMarkActivity extends BaseActivity{
 			((TextView)convertView.findViewById(R.id.item_mark_ps)).setText(mark.ps == null ? "" : mark.ps + "：" + mark.psMark);
 			((TextView)convertView.findViewById(R.id.item_mark_qm)).setText(mark.qm == null ? "" : mark.qm + "：" + mark.qmMark);
 			((TextView)convertView.findViewById(R.id.item_mark_credit)).setText("学分：" + mark.credit);
-			((TextView)convertView.findViewById(R.id.item_mark_GPA)).setText(ParamUtil.isFloat(mark.mark) ? String.format("绩点：%.2f/5",Math.max((Float.parseFloat(mark.mark) - 50)/10f,0)) : "");
+			((TextView)convertView.findViewById(R.id.item_mark_GPA)).setText(ParamUtil.isFloat(mark.mark) ? String.format("绩点：%.2f",Math.max((Float.parseFloat(mark.mark) - 50)/10f,0)) : "");
 			((TextView)convertView.findViewById(R.id.item_mark_mark)).setText("总成绩：" + mark.mark);
 			return convertView;
 		}

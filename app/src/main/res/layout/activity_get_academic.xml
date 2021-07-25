@@ -1,38 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.university.assistant.widget.SlidingLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/slidingLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
+        android:background="@android:color/white"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        app:navigationIcon="@drawable/ic_back"
-        app:titleTextColor="@android:color/white"
-        app:title="学业情况查询">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/activity_get_academic_refresh"
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:navigationIcon="@drawable/ic_back"
+            app:titleTextColor="@android:color/white"
+            app:title="学业情况查询">
+
+            <ImageView
+                android:id="@+id/activity_school_query"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/widget_margin"
+                android:layout_gravity="end|center"
+                android:padding="@dimen/widget_margin"
+                android:src="@drawable/ic_refresh"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView
+            style="@style/TextNormal"
+            android:id="@+id/activity_get_academic_text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/widget_margin"
-            android:layout_gravity="end|center"
-            android:padding="@dimen/widget_margin"
-            android:src="@drawable/ic_refresh"/>
+            android:inputType="textMultiLine"
+            android:ellipsize="none" />
 
-    </androidx.appcompat.widget.Toolbar>
+        <ExpandableListView
+            android:id="@+id/activity_get_academic_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
-    <TextView
-        android:id="@+id/activity_get_academic_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    </LinearLayout>
 
-    <ExpandableListView
-        android:id="@+id/activity_get_academic_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</LinearLayout>
+</com.university.assistant.widget.SlidingLayout>

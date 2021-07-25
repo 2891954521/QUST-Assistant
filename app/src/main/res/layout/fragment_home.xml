@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -109,13 +110,13 @@
 
             <TextView
                 style="@style/HomeIcon"
-                android:id="@+id/fragment_home_school_course_selection"
+                android:id="@+id/fragment_home_school_auto_evaluation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:drawableTopCompat="@drawable/ic_school"
                 app:drawableTint="@color/colorPrimary"
-                android:text="选课系统" />
+                android:text="自动教评" />
 
             <TextView
                 style="@style/HomeIcon"

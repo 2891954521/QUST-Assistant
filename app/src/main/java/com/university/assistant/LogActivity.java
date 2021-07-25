@@ -10,6 +10,8 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import com.university.assistant.ui.BaseActivity;
+import com.university.assistant.ui.BaseAnimActivity;
 import com.university.assistant.util.FileUtil;
 import com.university.assistant.util.LogUtil;
 
@@ -22,7 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class LogActivity extends AppCompatActivity{
+public class LogActivity extends BaseAnimActivity{
     
     private Pattern pattern = Pattern.compile(":[\\-0-9]+\n");
     
@@ -30,14 +32,11 @@ public class LogActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_back);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         
         String s = getIntent().getStringExtra("file");
-        if(s!=null){
-            File f = new File(LogUtil.DebugLogFile,s);
-            toolbar.setTitle(f.getName());
+        File f = null;
+        if(s != null){
+            f = new File(LogUtil.DebugLogFile,s);
             TextView text = findViewById(R.id.activity_log_message);
             SpannableStringBuilder str = new SpannableStringBuilder(FileUtil.readFile(f));
             // 根据正则匹配出带有超链接的文字
@@ -46,6 +45,9 @@ public class LogActivity extends AppCompatActivity{
             text.setText(str);
             text.setMovementMethod(LinkMovementMethod.getInstance());
         }
+        
+        initToolBar(f == null ? null : f.getName());
+        initSliding(null, null);
     }
 
     private void setClickableSpan(SpannableStringBuilder clickableHtmlBuilder,Matcher matcher){

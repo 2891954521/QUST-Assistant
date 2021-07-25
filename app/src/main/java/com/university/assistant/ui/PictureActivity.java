@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class PictureActivity extends AppCompatActivity{
+public class PictureActivity extends BaseAnimActivity{
 	
 	private BigImage bigImage;
 	
@@ -21,10 +21,6 @@ public class PictureActivity extends AppCompatActivity{
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_picture);
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		toolbar.setNavigationIcon(R.drawable.ic_back);
-		toolbar.setNavigationOnClickListener(v -> onBackPressed());
 		
 		bigImage = findViewById(R.id.activity_picture_image);
 		
@@ -35,5 +31,8 @@ public class PictureActivity extends AppCompatActivity{
 		pictureGrid.setClickListener((imageView,path) -> {
 			bigImage.setImage(imageView,path);
 		});
+		
+		initToolBar(null);
+		initSliding(null, null);
 	}
 }

@@ -69,7 +69,8 @@ public class App extends Application{
 					Looper.loop();
 				}
 			}.start();
-			LogUtil.Log("-------应用异常退出-------",throwable);
+			LogUtil.Log("-------应用发生异常-------",throwable);
+			LogUtil.debugLog("-------应用异常退出-------");
 			if(handler!=null)handler.uncaughtException(thread,throwable);
 		}
 	}

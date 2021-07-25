@@ -11,7 +11,7 @@ import com.university.assistant.util.MingDeUtil;
 
 import androidx.annotation.Nullable;
 
-public class NavigationActivity extends BaseActivity{
+public class NavigationActivity extends BaseAnimActivity{
 	
 	private TextView text;
 	
@@ -66,5 +66,8 @@ public class NavigationActivity extends BaseActivity{
 		}
 		
 		text.setText(s);
+		
+		initToolBar(null);
+		initSliding(null, null);
 	}
 }

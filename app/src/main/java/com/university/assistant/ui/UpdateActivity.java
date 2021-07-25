@@ -26,10 +26,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
-public class UpdateActivity extends BaseActivity{
+public class UpdateActivity extends BaseAnimActivity{
 	
 	private MaterialDialog checkDialog;
 	
@@ -53,10 +52,6 @@ public class UpdateActivity extends BaseActivity{
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_update);
-		
-		Toolbar toolbar = findViewById(R.id.activity_toolbar);
-		toolbar.setNavigationIcon(R.drawable.ic_back);
-		toolbar.setNavigationOnClickListener(v -> onBackPressed());
 		
 		app = (App)getApplication();
 		
@@ -88,7 +83,10 @@ public class UpdateActivity extends BaseActivity{
 		
 		downloadDialog.setCanceledOnTouchOutside(false);
 		
-		toolbar.postDelayed(this::checkUpdate,200);
+		findViewById(R.id.toolbar).postDelayed(this::checkUpdate,200);
+		
+		initToolBar(null);
+		initSliding(null, null);
 		
 	}
 	
@@ -107,7 +105,7 @@ public class UpdateActivity extends BaseActivity{
 								message = json.getString("message");
 								md5 = json.getString("md5");
 								url = json.getString("apkPath");
-								runOnUiThread(() -> ((TextView)findViewById(R.id.activity_update_info)).setText(message));
+								runOnUiThread(() -> ((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：http://139.224.16.208/" + url + "\n" + message));
 							}else{
 								app.toast("当前无新版本！");
 							}

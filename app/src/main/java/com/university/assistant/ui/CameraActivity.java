@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-public class CameraActivity extends BaseActivity{
+public class CameraActivity extends BaseAnimActivity{
 
 	
 	// 如果勾选了不再询问

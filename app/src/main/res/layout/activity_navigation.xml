@@ -1,95 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<com.university.assistant.widget.SlidingLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:titleTextColor="@android:color/white"
-        app:title="导航"/>
+    android:id="@+id/slidingLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/widget_margin"
-        android:padding="@dimen/widget_margin"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <TextView
-            style="@style/TextNormal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="出发点" />
-
-        <RadioGroup
-            android:id="@+id/activity_navigation_start"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/widget_margin">
-
-            <RadioButton
-                android:id="@+id/activity_navigation_current"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="当前教室" />
-
-            <RadioButton
-                android:id="@+id/activity_navigation_north"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="学院楼方向" />
-
-            <RadioButton
-                android:id="@+id/activity_navigation_south"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="弘毅楼方向" />
-
-        </RadioGroup>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/widget_margin"
-        android:padding="@dimen/widget_margin"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <TextView
-            style="@style/TextNormal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="目的地" />
-
-        <TextView
-            android:id="@+id/activity_navigation_destination"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </LinearLayout>
-
-    <TextView
-        style="@style/TextNormal"
-        android:id="@+id/activity_navigation_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/widget_margin"
-        android:singleLine="false"/>
-
-    <TextView
+        android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:text="假装有地图"/>
+        android:orientation="vertical">
 
-</LinearLayout>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="@android:color/white"
+            app:title="导航"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/widget_margin"
+            android:padding="@dimen/widget_margin"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                style="@style/TextNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="出发点" />
+
+            <RadioGroup
+                android:id="@+id/activity_navigation_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/widget_margin">
+
+                <RadioButton
+                    android:id="@+id/activity_navigation_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="当前教室" />
+
+                <RadioButton
+                    android:id="@+id/activity_navigation_north"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="学院楼方向" />
+
+                <RadioButton
+                    android:id="@+id/activity_navigation_south"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="弘毅楼方向" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/widget_margin"
+            android:padding="@dimen/widget_margin"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                style="@style/TextNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="目的地" />
+
+            <TextView
+                android:id="@+id/activity_navigation_destination"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextNormal"
+            android:id="@+id/activity_navigation_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/widget_margin"
+            android:singleLine="false"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="假装有地图"/>
+
+    </LinearLayout>
+
+</com.university.assistant.widget.SlidingLayout>

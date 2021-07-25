@@ -48,7 +48,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-public class NoteEditActivity extends AppCompatActivity{
+public class NoteEditActivity extends BaseAnimActivity{
     // 拍照
     private static final int TAKE_PHOTO = 1;
     // 从相册

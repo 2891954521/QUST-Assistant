@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="课表 ">
+
+        <Preference
+            android:key="key_set_start_day"
+            android:title="设置开学时间 "/>
+
+       <Preference
+            android:key="key_set_total_week"
+            android:title="设置总周数"/>
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="杂项">
+
+        <SwitchPreference
+            android:key="key_auto_update"
+            android:defaultValue="true"
+            android:summaryOn="一周检查一次更新"
+            android:summaryOff="不检查更新"
+            android:title="自动检查更新"/>
+
+        <Preference
+            android:key="key_update"
+            android:title="检查更新"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="调试">
+
+        <SwitchPreference
+            android:key="key_debug"
+            android:defaultValue="false"
+            android:summaryOn="生成调试信息"
+            android:summaryOff="不生成调试信息"
+            android:title="调试模式"/>
+
+        <Preference
+            android:key="key_log"
+            android:title="运行日志"/>
+
+        <Preference
+            android:key="key_clear_log"
+            android:title="清除Log"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

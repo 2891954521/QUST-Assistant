@@ -87,12 +87,9 @@ public class SlidingLayout extends FrameLayout{
         super(context,attrs,defStyleAttr);
         setWillNotDraw(false);
         
-        mScroller = new Scroller(context,new Interpolator(){
-            @Override
-            public float getInterpolation(float t){
-                t -= 1.0f;
-                return t * t * t * t * t + 1.0f;
-            }
+        mScroller = new Scroller(context,t -> {
+            t -= 1.0f;
+            return t * t * t * t * t + 1.0f;
         });
         
         mLeftShadow = ResourcesCompat.getDrawable(getResources(),R.drawable.shadow_bottom,null);
@@ -144,7 +141,6 @@ public class SlidingLayout extends FrameLayout{
                 // 继续判断是否需要拦截
                 determineDrag(ev);
                 break;
-            case MotionEvent.ACTION_UP: break;
             case MotionEvent.ACTION_POINTER_UP:
                 // 这里做了对多点触摸的处理，当有多个手指触摸的时候依然能正确的滑动
                 onSecondaryPointerUp(ev);

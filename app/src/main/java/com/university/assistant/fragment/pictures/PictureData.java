@@ -56,7 +56,7 @@ public class PictureData{
 		thumbnailPath = new File(context.getExternalCacheDir(),"Thumbnails");
 		if(!thumbnailPath.exists())thumbnailPath.mkdir();
 		
-		emptyImage = BitmapFactory.decodeResource(context.getResources(),R.drawable.example_appwidget_preview);
+		emptyImage = BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher);
 		
 		// 获取系统分配给每个应用程序的最大内存，每个应用系统分配32M
 		int maxMemory = (int)Runtime.getRuntime().maxMemory();

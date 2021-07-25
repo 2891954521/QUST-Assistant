@@ -1,31 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.university.assistant.widget.SlidingLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/slidingLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_height="?attr/actionBarSize"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
-        app:titleTextColor="@android:color/white"
-        app:title="Log"/>
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/activity_log_message"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="?attr/actionBarSize"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/activity_margin"
-            android:textIsSelectable="true" />
+            android:background="@color/colorPrimary"
+            app:titleTextColor="@android:color/white"
+            app:title="Log"/>
 
-    </ScrollView>
+        <com.university.assistant.widget.BounceScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/activity_log_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_margin"
+                android:textIsSelectable="true" />
+
+        </com.university.assistant.widget.BounceScrollView>
+
+    </LinearLayout>
+
+</com.university.assistant.widget.SlidingLayout>

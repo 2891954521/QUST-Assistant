@@ -8,12 +8,13 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.university.assistant.R;
 import com.university.assistant.ui.BaseActivity;
+import com.university.assistant.ui.BaseAnimActivity;
 import com.university.assistant.util.LoginUtil;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
-public class LoginActivity extends BaseActivity{
+public class LoginActivity extends BaseAnimActivity{
 	
 	private TextInputLayout nameText, passwordText;
 	
@@ -24,8 +25,6 @@ public class LoginActivity extends BaseActivity{
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_login);
-		
-		((Toolbar)findViewById(R.id.toolbar)).setNavigationOnClickListener(v -> onBackPressed());
 		
 		SharedPreferences data = getSharedPreferences("education",Context.MODE_PRIVATE);
 		
@@ -69,5 +68,9 @@ public class LoginActivity extends BaseActivity{
 			}.start();
 			dialog.show();
 		});
+		
+		initToolBar(null);
+		initSliding(null, null);
+		
 	}
 }

@@ -38,6 +38,7 @@ import com.university.assistant.widget.LessonTime;
 import com.university.assistant.widget.VerticalSlidingLayout;
 
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
@@ -101,7 +102,7 @@ public class LessonTableFragment extends BaseFragment{
 	public void onReceive(String action){
 		if(App.APP_UPDATE_LESSON_TABLE.equals(action)){
 			initDayLesson(LayoutInflater.from(getContext()));
-			lessonTable.getAdapter().notifyDataSetChanged();
+			lessonTable.initAdapter(null);
 		}
 	}
 	
@@ -115,51 +116,7 @@ public class LessonTableFragment extends BaseFragment{
 	@Override
 	public void onCreateMenu(ImageView view){
 		if(!isCreated)return;
-		view.setVisibility(View.VISIBLE);
-		view.setImageResource(R.drawable.ic_more);
-		view.setOnClickListener(v -> {
-			PopupMenu popup = new PopupMenu(activity,v);
-			MenuInflater inflater = popup.getMenuInflater();
-			inflater.inflate(R.menu.fragment_lessontable,popup.getMenu());
-			popup.setOnMenuItemClickListener(item -> {
-                        switch(item.getItemId()){
-                            case R.id.menu_timetable_set_start_day:
-                                final Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT+8:00"));
-                                final DatePicker picker = new DatePicker(getContext());
-                                picker.init(c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH),null);
-                                new MaterialDialog.Builder(activity).customView(picker,false)
-                                        .negativeText("取消").onNegative((dialog,which) -> dialog.dismiss())
-                                        .positiveText("确定").onPositive((dialog,which) -> {
-                                            c.set(picker.getYear(),picker.getMonth(),picker.getDayOfMonth());
-                                            LessonData.getInstance().setStartDay(DateUtil.YMD.format(c.getTime()));
-                                            toast("设置完成!");
-                                            dialog.dismiss();
-                                }).show();
-                                break;
-                            case R.id.menu_timetable_get_lesson_table:
-                            	activity.startActivity(new Intent(getContext(),GetLessonTableActivity.class));
-                                break;
-                            case R.id.menu_timetable_set_total_week:
-                            	new MaterialDialog.Builder(activity).title("学期总周数")
-			                            .input("输入周数","",(dialog,input) -> {})
-			                            .inputType(InputType.TYPE_CLASS_NUMBER)
-			                            .negativeText("取消").onNegative((dialog,which) -> dialog.dismiss())
-			                            .positiveText("确定").onPositive((dialog,which) -> {
-				                            LessonData.getInstance().setTotalWeek(week);
-		                                    lessonTable.initAdapter(null);
-			                            	
-	                            }).show();
-                            	break;
-	                        case R.id.menu_timetable_save:
-	                        	LessonData.getInstance().saveLessonData();
-	                        	break;
-                        }
-                        return false;
-                    }
-            );
-			popup.show();
-		});
-		
+		view.setVisibility(View.GONE);
 		if(!isInitLessonTable){
 			initLessonTale();
 			isInitLessonTable = true;
@@ -276,20 +233,38 @@ public class LessonTableFragment extends BaseFragment{
 		
 		lessonInfo.findViewById(R.id.layout_lesson_done).setOnClickListener(v -> {
 			
-			int len = Integer.parseInt(lessonLen.getText().toString());
+			boolean[] booleans = lessonTime.getBooleans();
+			boolean hasLesson = false;
+			for(boolean b : booleans){
+				if(b){
+					hasLesson = true;
+					break;
+				}
+			}
+			if(!hasLesson){
+				toast("请选择上课时间！");
+				return;
+			}
 			
+			int len = Integer.parseInt(lessonLen.getText().toString());
 			if(LessonData.getInstance().isConflict(week, count, editLesson, len, lessonTime.getBooleans())){
 				toast("课程时间冲突！");
 				return;
 			}
 			
-			editLesson.name = lessonName.getText().toString();
+			String name = lessonName.getText().toString();
+			if("".equals(name)){
+				toast("请输入课程名称！");
+				return;
+			}
+			editLesson.name = name;
+			
 			editLesson.place = lessonPlace.getText().toString();
 			editLesson.teacher = lessonTeacher.getText().toString();
 			
 			editLesson.len = len;
 			
-			editLesson.week = lessonTime.getBooleans();
+			editLesson.week = booleans;
 			
 			editLesson.color = lessonColor.getChoose();
 

@@ -20,23 +20,17 @@ public class UpdateUtil{
 	
 	public static void checkUpdate(Activity activity){
 		try{
-			URL url = new URL("http://139.224.16.208/cloud/apk/checkUpdate.php");
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-			connection.setConnectTimeout(5000);
-			connection.connect();
-			if(connection.getResponseCode()==HttpURLConnection.HTTP_OK){
-				JSONObject js = new JSONObject(WebUtil.inputStream2string(connection.getInputStream()));
+			JSONObject js = getUpdateInfo();
+			if(js.getInt("code") == 200){
 				JSONObject data = js.getJSONObject("data");
 				if(checkVersion(activity,data.getInt("version"))){
 					activity.runOnUiThread(new Thread(){
 						@Override
 						public void run(){
 							try{
-								new MaterialDialog.Builder(activity)
-										.title("更新")
+								DialogUtil.getBaseDialog(activity).title("更新")
 										.content("检查到新版本，是否更新？\n" + data.getString("message"))
-										.negativeText("取消").onNegative((dialog,which) -> dialog.dismiss())
-										.positiveText("确定").onPositive((dialog,which) -> activity.startActivity(new Intent(activity,UpdateActivity.class))).show();
+										.onPositive((dialog,which) -> activity.startActivity(new Intent(activity,UpdateActivity.class))).show();
 							}catch(JSONException e){
 								LogUtil.Log(e);
 							}
@@ -44,19 +38,16 @@ public class UpdateUtil{
 					});
 				}
 			}
-		}catch(IOException | JSONException e){
+		}catch(JSONException e){
 			LogUtil.Log(e);
 		}
 	}
 	
 	public static JSONObject getUpdateInfo(){
 		try{
-			URL url = new URL("http://139.224.16.208/cloud/apk/getUpdateInfo.php");
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-			connection.setConnectTimeout(5000);
-			connection.connect();
-			if(connection.getResponseCode()==HttpURLConnection.HTTP_OK){
-				return new JSONObject(WebUtil.inputStream2string(connection.getInputStream()));
+			String response = WebUtil.doGet("http://139.224.16.208/cloud/apk/getUpdateInfo.php",null);
+			if(response != null){
+				return new JSONObject(response);
 			}
 		}catch(IOException | JSONException e){
 			LogUtil.Log(e);

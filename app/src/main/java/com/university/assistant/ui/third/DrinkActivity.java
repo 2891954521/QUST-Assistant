@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.App;
 import com.university.assistant.R;
+import com.university.assistant.ui.BaseActivity;
+import com.university.assistant.ui.BaseAnimActivity;
 import com.university.assistant.util.FileUtil;
 
 import java.io.File;
@@ -24,7 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
-public class DrinkActivity extends AppCompatActivity{
+public class DrinkActivity extends BaseAnimActivity{
 	
 	private File file;
 	
@@ -32,9 +34,6 @@ public class DrinkActivity extends AppCompatActivity{
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_drink);
-		
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		toolbar.setNavigationOnClickListener(v -> onBackPressed());
 		
 		findViewById(R.id.activity_drink_set_image).setOnClickListener(v -> choosePicture());
 		
@@ -51,6 +50,10 @@ public class DrinkActivity extends AppCompatActivity{
 		if(file.exists()){
 			((ImageView)findViewById(R.id.activity_drink_code)).setImageBitmap(BitmapFactory.decodeFile(file.toString()));
 		}
+		
+		initToolBar(null);
+		initSliding(null, null);
+		
 	}
 	
 	@Override

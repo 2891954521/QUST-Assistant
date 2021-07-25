@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.university.assistant.widget.SlidingLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/slidingLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_height="?attr/actionBarSize"
+    <LinearLayout
+        android:background="@android:color/white"
         android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
-        app:title="相册"
-        app:titleTextColor="@android:color/white"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.university.assistant.widget.PictureGrid
-            android:id="@+id/activity_picture_grid"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="?attr/actionBarSize"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:numColumns="3" />
+            android:background="@color/colorPrimary"
+            app:title="相册"
+            app:titleTextColor="@android:color/white"/>
 
-        <com.university.assistant.widget.BigImage
-            android:id="@+id/activity_picture_image"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
-    </RelativeLayout>
+            <com.university.assistant.widget.PictureGrid
+                android:id="@+id/activity_picture_grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:numColumns="3" />
 
-</LinearLayout>
+            <com.university.assistant.widget.BigImage
+                android:id="@+id/activity_picture_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</com.university.assistant.widget.SlidingLayout>

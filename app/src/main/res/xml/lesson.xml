@@ -4,13 +4,12 @@
     android:initialLayout="@layout/widget_day_lesson"
     android:minHeight="110dp"
     android:minWidth="250dp"
-    android:previewImage="@drawable/example_appwidget_preview"
+    android:previewImage="@drawable/lesson_preview"
     android:updatePeriodMillis="300000"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen|keyguard">
 
     <!--    android:minHeight="200dp"-->
     <!--    android:minWidth="400dp"-->
-
 
 </appwidget-provider>

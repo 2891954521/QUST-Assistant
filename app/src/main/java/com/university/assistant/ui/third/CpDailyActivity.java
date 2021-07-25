@@ -15,6 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.university.assistant.R;
 import com.university.assistant.ui.BaseActivity;
+import com.university.assistant.ui.BaseAnimActivity;
 import com.university.assistant.util.LogUtil;
 import com.university.assistant.util.WebUtil;
 
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
-public class CpDailyActivity extends BaseActivity{
+public class CpDailyActivity extends BaseAnimActivity{
 	
 	private static final String[] FORM_TITLE = {
 			"今天你的所在地是？",
@@ -71,8 +72,6 @@ public class CpDailyActivity extends BaseActivity{
 		setContentView(R.layout.activity_cpdaily);
 		
 		forms = new ArrayList<>();
-		
-		((Toolbar)findViewById(R.id.toolbar)).setNavigationOnClickListener(v -> onBackPressed());
 		
 		SharedPreferences data = getSharedPreferences("education",Context.MODE_PRIVATE);
 		
@@ -119,6 +118,9 @@ public class CpDailyActivity extends BaseActivity{
 			}.start();
 			dialog.show();
 		});
+		
+		initToolBar(null);
+		initSliding(null, null);
 		
 	}
 
