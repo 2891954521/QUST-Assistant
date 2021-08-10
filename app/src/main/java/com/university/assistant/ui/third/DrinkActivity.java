@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.App;
 import com.university.assistant.R;
-import com.university.assistant.ui.BaseActivity;
 import com.university.assistant.ui.BaseAnimActivity;
 import com.university.assistant.util.FileUtil;
 
@@ -22,8 +21,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
 public class DrinkActivity extends BaseAnimActivity{

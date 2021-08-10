@@ -1,6 +1,8 @@
 package com.university.assistant.ui.school;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.university.assistant.R;
+import com.university.assistant.util.ColorUtil;
 import com.university.assistant.util.FileUtil;
 import com.university.assistant.util.LogUtil;
 import com.university.assistant.util.WebUtil;
@@ -34,6 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 
 public class GetAcademicActivity extends BaseSchoolActivity{
 	
@@ -47,15 +51,26 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 			"学业预警不审核课程"
 	};
 	
+	// 每组课程的开始
 	private int[] child;
+	
+	// 课程是否选中
+	private boolean[] isChoose;
+	
+	// 每组课程的名称
+	private String[] group;
+	
+	// 按时间排序后的课程
+	private Lesson[] lessonsSort;
+	
+	// 全部课程
+	private ArrayList<Lesson> lessons;
+	
+	private boolean isCalculateMode;
 	
 	private String text;
 	
-	private String[] group;
-	
-	private Lesson[] lessonsSort;
-	
-	private ArrayList<Lesson> lessons;
+	private TextView textView;
 	
 	private AcademicAdapter adapter;
 	
@@ -67,11 +82,24 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 		
 		adapter = new AcademicAdapter();
 		
+		isChoose = new boolean[lessonsSort.length];
+		
 		ExpandableListView listView = findViewById(R.id.activity_get_academic_list);
 		listView.setAdapter(adapter);
+
+		textView = findViewById(R.id.activity_get_academic_text);
+		textView.setText(text);
 		
-		((TextView)findViewById(R.id.activity_get_academic_text)).setText(text);
-		
+		findViewById(R.id.activity_school_calculate_gpa).setOnClickListener(v -> {
+			isCalculateMode = !isCalculateMode;
+			isChoose = new boolean[lessonsSort.length];
+			if(isCalculateMode){
+				calculateGpa();
+			}else{
+				adapter.notifyDataSetInvalidated();
+				textView.setText(text);
+			}
+		});
 	}
 	
 	@Override
@@ -86,6 +114,10 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 	
 	@Override
 	protected void doQuery(String session){
+		Message message = new Message();
+		message.obj = "正在查询";
+		handler.sendMessage(message);
+		
 		lessons = new ArrayList<>();
 		try{
 			String response = WebUtil.doGet(
@@ -101,9 +133,16 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 				HashSet<String> params = new HashSet<>();
 				while(matcher.find()) params.add(matcher.group(1));
 				
+				message = new Message();
+				message.obj = "正在查询课程";
+				handler.sendMessage(message);
+				
 				for(String param : params){
 
-					response = WebUtil.doPost("http://jwglxt.qust.edu.cn/jwglxt/xsxy/xsxyqk_cxJxzxjhxfyqKcxx.html","JSESSIONID=" + session,"xfyqjd_id=" + param);
+					response = WebUtil.doPost(
+							"http://jwglxt.qust.edu.cn/jwglxt/xsxy/xsxyqk_cxJxzxjhxfyqKcxx.html",
+							"JSESSIONID=" + session,
+							"xfyqjd_id=" + param + "&xh_id=" + name);
 					
 					if(TextUtils.isEmpty(response)) continue;
 					
@@ -127,7 +166,7 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 						
 						if(js.has("MAXCJ")) lesson.score = js.getString("MAXCJ");
 						
-						if(js.has("JD")) lesson.gpa = js.getInt("JD");
+						if(js.has("JD")) lesson.gpa = (float)js.getDouble("JD");
 						
 						lessons.add(lesson);
 					}
@@ -135,9 +174,10 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 				runOnUiThread(() -> {
 					dialog.dismiss();
 					toast("查询成功！");
-					((TextView)findViewById(R.id.activity_get_academic_text)).setText(text);
+					textView.setText(text);
 					sortByYear();
 					saveData();
+					isChoose = new boolean[lessonsSort.length];
 					adapter.notifyDataSetChanged();
 				});
 			}
@@ -214,7 +254,6 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 		}
 	}
 	
-	
 	private void sortByYear(){
 		ArrayList<String> g = new ArrayList<>();
 		for(Lesson lesson : lessons){
@@ -246,6 +285,24 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 				child[position++] = i;
 			}
 		}
+	}
+	
+	private void calculateGpa(){
+		int total = 0;
+		float totalCredit = 0;
+		float totalGPA = 0;
+		for(int i=0;i<isChoose.length;i++){
+			if(isChoose[i]){
+				total++;
+				Lesson lesson = lessonsSort[i];
+				float credit = Float.parseFloat(lesson.credit);
+				totalCredit += credit;
+				if(lesson.score != null){
+					totalGPA += credit * lesson.gpa;
+				}
+			}
+		}
+		textView.setText(String.format("选择了%d门课程，总学分%.2f，平均绩点%.2f", total, totalCredit, totalGPA / totalCredit));
 	}
 	
 	private class AcademicAdapter extends BaseExpandableListAdapter{
@@ -289,12 +346,24 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 			if(convertView == null){
 				convertView = LayoutInflater.from(GetAcademicActivity.this).inflate(R.layout.item_academic_child,null);
 			}
-			Lesson lesson = lessonsSort[child[groupPosition] + childPosition];
 			
-			((TextView)convertView.findViewById(R.id.item_academic_status)).setText(TYPE[lesson.status]);
+			int index = child[groupPosition] + childPosition;
+			Lesson lesson = lessonsSort[index];
+			
+			CardView cardView = convertView.findViewById(R.id.item_academic_card);
+			cardView.setCardBackgroundColor(isChoose[index] ? ColorUtil.BACKGROUND_COLORS[0] : Color.WHITE);
+			cardView.setOnClickListener(v -> {
+				if(!isCalculateMode) return;
+				isChoose[index] = !isChoose[index];
+				calculateGpa();
+				adapter.notifyDataSetInvalidated();
+			});
+			
+			TextView status = convertView.findViewById(R.id.item_academic_status);
+			status.setTextColor(lesson.status == 2 ? Color.RED : Color.BLACK);
+			status.setText(TYPE[lesson.status]);
+			
 			((TextView)convertView.findViewById(R.id.item_academic_name)).setText(lesson.name);
-			
-			((TextView)convertView.findViewById(R.id.item_academic_term)).setText(lesson.year + " 第" + lesson.term + "学期");
 			
 			((TextView)convertView.findViewById(R.id.item_academic_type)).setText(lesson.type);
 			((TextView)convertView.findViewById(R.id.item_academic_category)).setText(lesson.category);
@@ -336,7 +405,7 @@ public class GetAcademicActivity extends BaseSchoolActivity{
 		// 成绩
 		public String score;
 		// 绩点
-		public int gpa;
+		public float gpa;
 	}
 	
 	/*

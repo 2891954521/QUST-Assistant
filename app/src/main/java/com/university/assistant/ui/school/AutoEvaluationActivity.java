@@ -1,6 +1,7 @@
 package com.university.assistant.ui.school;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,14 +10,9 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.R;
 import com.university.assistant.util.LogUtil;
 import com.university.assistant.util.WebUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -53,6 +49,10 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 	
 	@Override
 	protected void doQuery(String _session){
+		Message message = new Message();
+		message.obj = "正在查询教评";
+		handler.sendMessage(message);
+		
 		session = _session;
 		lessons = new ArrayList<>();
 		try{
@@ -63,6 +63,43 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 			);
 			if(!TextUtils.isEmpty(response)){
 				
+				Matcher table = Pattern.compile("<tbody(.*?)</tbody>", Pattern.DOTALL).matcher(response);
+				if(table.find()){
+					Matcher tr = Pattern.compile("<tr(.*?)</tr>", Pattern.DOTALL).matcher(table.group(1));
+					Pattern tjzt = Pattern.compile("tjzt=\"([0-9a-zA-Z]*?)\"");
+					Pattern xsdm = Pattern.compile("xsdm=\"([0-9a-zA-Z]*?)\"");
+					Pattern jxb_id = Pattern.compile("jxb_id=\"([0-9a-zA-Z]*?)\"");
+					Pattern kch_id = Pattern.compile("kch_id=\"([0-9a-zA-Z]*?)\"");
+					Pattern jgh_id = Pattern.compile("jgh_id=\"([0-9a-zA-Z]*?)\"");
+					Pattern td = Pattern.compile("<td.*?>(.*?)</td>", Pattern.DOTALL);
+					while(tr.find()){
+						String text = tr.group(1);
+						EvaluationLesson lesson = new EvaluationLesson();
+						Matcher tmp = tjzt.matcher(text);
+						if(tmp.find()) lesson.tjzt = tmp.group(1);
+						tmp = xsdm.matcher(text);
+						if(tmp.find()) lesson.xsdm = tmp.group(1);
+						tmp = jxb_id.matcher(text);
+						if(tmp.find()) lesson.jxb_id = tmp.group(1);
+						tmp = kch_id.matcher(text);
+						if(tmp.find()) lesson.kch_id = tmp.group(1);
+						tmp = jgh_id.matcher(text);
+						if(tmp.find()) lesson.jgh_id = tmp.group(1);
+						tmp = td.matcher(text);
+						tmp.find();
+						if(tmp.find()) lesson.name = tmp.group(1).trim();
+						tmp.find();
+						if(tmp.find()) lesson.teacher = tmp.group(1).trim();
+						lessons.add(lesson);
+					}
+				}else{
+					runOnUiThread(() -> {
+						dialog.dismiss();
+						toast("查询失败！");
+					});
+				}
+				
+				/* SB教务系统
 				JSONArray array = new JSONObject(response).getJSONArray("items");
 				
 				for(int i=0;i<array.length();i++){
@@ -77,7 +114,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 					lesson.jgh_id = js.getString("jgh_id");
 					lesson.pjzt = js.getString("pjzt");
 					lessons.add(lesson);
-				}
+				}*/
 				
 				runOnUiThread(() -> {
 					dialog.dismiss();
@@ -85,7 +122,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 					adapter.notifyDataSetChanged();
 				});
 			}
-		}catch(IOException | JSONException e){
+		}catch(IOException e){
 			LogUtil.Log(e);
 			runOnUiThread(() -> {
 				dialog.dismiss();
@@ -95,8 +132,8 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 	}
 	
 	private void autoSubmitEvaluation(int position){
-		final MaterialDialog dialog1 = new MaterialDialog.Builder(this).progress(true,0).content("提交中...").build();
-		dialog1.show();
+		dialog.setContent("正在查询教评详情");
+		dialog.show();
 		
 		new Thread(){
 			@Override
@@ -114,13 +151,17 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 					);
 					if(!TextUtils.isEmpty(response)){
 						
+						Message message = new Message();
+						message.obj = "正在自动提交教评";
+						handler.sendMessage(message);
+						
 						StringBuilder postData = fillEvaluation(response);
 						postData.append("tjzt=").append(lesson.tjzt);
 						postData.append("&xsdm=").append(lesson.xsdm);
 						postData.append("&jxb_id=").append(lesson.jxb_id);
 						postData.append("&kch_id=").append(lesson.kch_id);
 						postData.append("&jgh_id=").append(lesson.jgh_id);
-						postData.append("&modelList[0].pjzt=").append(lesson.pjzt);
+						//postData.append("&modelList[0].pjzt=").append(lesson.pjzt);
 						postData.append("modelList[0].py=&ztpjbl=100&jszdpjbl=0&xykzpjbl=0");
 						
 						response = WebUtil.doPost(
@@ -132,13 +173,13 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 						if(!TextUtils.isEmpty(response) && "\"提交成功!\"".equals(response)){
 							runOnUiThread(() -> {
 								lesson.tjzt = "1";
-								dialog1.dismiss();
+								dialog.dismiss();
 								toast("提交成功！");
 								adapter.notifyDataSetChanged();
 							});
 						}else{
 							runOnUiThread(() -> {
-								dialog1.dismiss();
+								dialog.dismiss();
 								toast("提交失败！");
 							});
 						}
@@ -146,7 +187,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 				}catch(Exception e){
 					LogUtil.Log(e);
 					runOnUiThread(() -> {
-						dialog1.dismiss();
+						dialog.dismiss();
 						toast("提交失败！");
 					});
 				}
@@ -266,7 +307,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 		
 		public String jgh_id;
 		
-		public String pjzt;
+		//public String pjzt;
 
 	}
 	

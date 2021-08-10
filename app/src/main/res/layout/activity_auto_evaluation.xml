@@ -35,6 +35,7 @@
             android:id="@+id/activity_school_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:divider="@color/divider"
             android:paddingTop="@dimen/widget_margin"
             android:paddingBottom="@dimen/widget_margin"/>
 

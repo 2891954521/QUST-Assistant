@@ -14,6 +14,8 @@ public class DateUtil{
     
     public static final SimpleDateFormat MD = new SimpleDateFormat("MM-dd",Locale.CHINA);
     
+    public static final SimpleDateFormat HM = new SimpleDateFormat("HH:mm",Locale.CHINA);
+    
     //    public static String getDateString(Calendar c){
 //
 //        StringBuilder sb = new StringBuilder();
@@ -51,5 +53,26 @@ public class DateUtil{
             LogUtil.Log(e);
         }
         return new Date();
+    }
+    
+    public static String timeDifference(String s,String e){
+        try{
+            Date fromDate = YMD_HM.parse(s);
+            Date toDate = YMD_HM.parse(e);
+            long from = fromDate.getTime();
+            long to = toDate.getTime();
+            int hours = (int)((to - from) / (1000 * 60 * 60));
+            int minutes = (int) ((to - from) / (1000 * 60)) % 60;
+            if(hours != 0){
+                if(minutes == 0){
+                    return hours + "小时";
+                }else{
+                    return hours + "小时" + minutes + "分钟";
+                }
+            }else{
+                return minutes + "分钟";
+            }
+        }catch(ParseException ignored){ }
+        return "";
     }
 }

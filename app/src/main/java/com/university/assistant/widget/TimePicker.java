@@ -2,7 +2,6 @@ package com.university.assistant.widget;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 
@@ -12,7 +11,6 @@ import com.university.assistant.util.LogUtil;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;

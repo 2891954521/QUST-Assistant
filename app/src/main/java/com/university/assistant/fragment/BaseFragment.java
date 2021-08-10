@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.university.assistant.MainActivity;
+import com.university.assistant.ui.MainActivity;
 
 import androidx.fragment.app.Fragment;
 

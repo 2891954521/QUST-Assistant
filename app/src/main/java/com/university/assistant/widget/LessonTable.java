@@ -17,7 +17,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.university.assistant.Lesson.Lesson;
@@ -27,6 +26,7 @@ import com.university.assistant.R;
 import com.university.assistant.util.ColorUtil;
 import com.university.assistant.util.DateUtil;
 import com.university.assistant.util.LogUtil;
+import com.university.assistant.util.ParamUtil;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -39,7 +39,7 @@ import androidx.viewpager.widget.ViewPager;
 
 public class LessonTable extends ViewPager{
 	
-	private static final String[] WEEK_STRING = {"周一","周二","周三","周四","周五","周六","周日"};
+	private static final String[] WEEK_STRING = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
 	
 	private static final int LESSON_PADDING = 3;
 	
@@ -52,6 +52,9 @@ public class LessonTable extends ViewPager{
 	
 	// 解决滑动冲突
 	private ViewPager viewPager;
+	
+	// 记录开学日期
+	private Calendar start;
 	
 	private int totalWeek;
 	
@@ -68,7 +71,7 @@ public class LessonTable extends ViewPager{
 	private LessonGroup[][] lessonGroups;
 	
 	// 菜单功能
-	private int time;
+	private int longPressTime;
 	
 	private boolean isMenuShowing;
 	
@@ -93,6 +96,7 @@ public class LessonTable extends ViewPager{
 		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 		paint.setStyle(Paint.Style.FILL);
 		paint.setAntiAlias(true);
+		paint.setStrokeWidth(3);
 		
 		paintT = new Paint();
 		paintT.setDither(true);
@@ -103,11 +107,13 @@ public class LessonTable extends ViewPager{
 		
 		textHeight = (int)(paintT.getTextSize() + 3);
 		
-		time = ViewConfiguration.getLongPressTimeout();
+		longPressTime = ViewConfiguration.getLongPressTimeout();
 		
 		touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		
 		totalWeek = LessonData.getInstance().getTotalWeek();
+		
+		start = Calendar.getInstance();
 		
 	}
 	
@@ -150,10 +156,7 @@ public class LessonTable extends ViewPager{
 	
 	private class LessonTableAdapter extends PagerAdapter{
 		
-		private Calendar start;
-		
 		public LessonTableAdapter(){
-			start = Calendar.getInstance();
 			try{
 				Date date = DateUtil.YMD.parse(LessonData.getInstance().getStartDay());
 				if(date!=null)start.setTime(date);
@@ -166,31 +169,6 @@ public class LessonTable extends ViewPager{
 		@Override
 		public Object instantiateItem(@NonNull ViewGroup container,int position){
 			ViewGroup layout = (ViewGroup)LayoutInflater.from(getContext()).inflate(R.layout.layout_timetable_week,null);
-			
-			LinearLayout l = layout.findViewById(R.id.layout_timetable_day);
-			
-			Calendar current = Calendar.getInstance();
-			Calendar c = (Calendar)start.clone();
-			
-			c.add(Calendar.WEEK_OF_YEAR,position);
-			int dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
-			c.add(Calendar.DATE, - dayOfWeek);
-			
-			for(int i=0;i<7;i++){
-				TextView t = new TextView(getContext());
-				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0,ViewGroup.LayoutParams.WRAP_CONTENT);
-				lp.weight = 1;
-				t.setLayoutParams(lp);
-				t.setPadding(10,20,10,20);
-				t.setGravity(Gravity.CENTER);
-				t.setText(WEEK_STRING[i] + "\n" + DateUtil.MD.format(c.getTime()));
-				t.setTextSize(12);
-				if(current.get(Calendar.DATE)==c.get(Calendar.DATE)&&current.get(Calendar.MONTH)==c.get(Calendar.MONTH))
-					t.setTextColor(ColorUtil.TEXT_COLORS[0]);
-				else t.setTextColor(Color.GRAY);
-				l.addView(t);
-				c.add(Calendar.DATE,1);
-			}
 			
 			LessonView lessonView = new LessonView(getContext());
 			lessonView.setWeek(position + 1);
@@ -219,11 +197,19 @@ public class LessonTable extends ViewPager{
 		
 		private int popX, popY;
 		
+		// 最小的一节课的大小
 		private int width, height;
 		
+		// 上一次点击的课程
+		private int lastWeek, lastCount;
+		// 按下的坐标
 		private float downX, downY;
 		
 		private Runnable runnable;
+		
+		private Calendar current;
+		
+		private int timeWidth, dateHeight;
 		
 		public LessonView(Context context){ this(context,null); }
 		
@@ -232,8 +218,19 @@ public class LessonTable extends ViewPager{
 		private LessonView(Context context,@Nullable AttributeSet attrs,int defStyleAttr){
 			super(context,attrs,defStyleAttr);
 			
+			current = Calendar.getInstance();
+			
+			timeWidth = ParamUtil.dp2px(context, 48);
+			
+			dateHeight = 40 + textHeight * 2;
+			
+			lastWeek = lastCount = -1;
+			
 			runnable = () -> {
 				isMenuShowing = true;
+				lastWeek = week;
+				lastCount = count;
+				invalidate();
 				menu.show(popX,popY,showWeek);
 			};
 		}
@@ -241,8 +238,8 @@ public class LessonTable extends ViewPager{
 		@Override
 		protected void onMeasure(int widthMeasureSpec,int heightMeasureSpec){
 			super.onMeasure(widthMeasureSpec,heightMeasureSpec);
-			width = getMeasuredWidth() / lessonGroups.length;
-			height = getMeasuredHeight() / lessonGroups[0].length;
+			width = (getMeasuredWidth() - timeWidth) / lessonGroups.length;
+			height = (getMeasuredHeight() - dateHeight) / lessonGroups[0].length;
 		}
 		
 		@Override
@@ -257,9 +254,9 @@ public class LessonTable extends ViewPager{
 					downX = event.getX();
 					downY = event.getY();
 					
-					int y = (int)downY;
+					int y = (int)(downY - dateHeight);
 					
-					week = (int)(downX / width);
+					week = (int)((downX - timeWidth) / width);
 					count = -1;
 					
 					lesson = null;
@@ -277,7 +274,9 @@ public class LessonTable extends ViewPager{
 						i += len;
 					}
 					
-					if(count!=-1) postDelayed(runnable,time);
+					if(count!=-1){
+						postDelayed(runnable,longPressTime);
+					}
 					break;
 				
 				case MotionEvent.ACTION_MOVE:
@@ -286,7 +285,15 @@ public class LessonTable extends ViewPager{
 				
 				case MotionEvent.ACTION_UP:
 					if(!isMenuShowing && downX==event.getX() && downY==event.getY()){
-						if(count!=-1) click.clickLesson(week + 1,count + 1,lesson);
+						if(count!=-1){
+							if(lastWeek == week && lastCount == count){
+								click.clickLesson(week + 1,count + 1,lesson);
+							}else{
+								lastWeek = week;
+								lastCount = count;
+								invalidate();
+							}
+						}
 					}
 					removeCallbacks(runnable);
 					break;
@@ -297,10 +304,18 @@ public class LessonTable extends ViewPager{
 		@Override
 		protected void onDraw(Canvas canvas){
 			super.onDraw(canvas);
+			
+			drawDate(canvas);
+			
+			drawTime(canvas);
+			
 			for(int i = 0;i<lessonGroups.length;i++){
 				for(int j = 0;j<lessonGroups[0].length;j++){
+					
 					if(lessonGroups[i][j]==null) continue;
+					
 					Lesson lesson = lessonGroups[i][j].getCurrentLesson(showWeek);
+					
 					if(lesson==null){
 						lesson = lessonGroups[i][j].findLesson(showWeek);
 						if(lesson==null) continue;
@@ -310,19 +325,21 @@ public class LessonTable extends ViewPager{
 						paint.setColor(ColorUtil.BACKGROUND_COLORS[lesson.color]);
 						paintT.setColor(ColorUtil.TEXT_COLORS[lesson.color]);
 					}
+					
 					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-						canvas.drawRoundRect(i * width,j * height,i * width + width - LESSON_PADDING,j * height + height * lesson.len - LESSON_PADDING,16,16,paint);
+						canvas.drawRoundRect(i * width + timeWidth,j * height + dateHeight,i * width + width + timeWidth - LESSON_PADDING,j * height + height * lesson.len + dateHeight - LESSON_PADDING,16,16,paint);
 					}else{
-						canvas.drawRoundRect(new RectF(i * width,j * height,i * width + width - LESSON_PADDING,j * height + height * lesson.len - LESSON_PADDING),16,16,paint);
+						canvas.drawRoundRect(new RectF(i * width + timeWidth,j * height + dateHeight,i * width + width + timeWidth - LESSON_PADDING,j * height + height * lesson.len + dateHeight - LESSON_PADDING),16,16,paint);
 					}
+					
 					// 储存每行文字
 					String[] str = new String[3 * lesson.len + 1];
 					int line = splitString(lesson.name,str,width - (LESSON_PADDING << 2), 0, lesson.len + 1);
 					line += splitString(lesson.place,str,width - (LESSON_PADDING << 2), lesson.len + 1, lesson.len);
 					line += splitString(lesson.teacher,str,width - (LESSON_PADDING << 2),lesson.len * 2 + 1, lesson.len);
 					
-					float x = i * width + (LESSON_PADDING << 2);
-					float y = j * height + paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent;
+					float x = i * width + timeWidth + (LESSON_PADDING << 2);
+					float y = j * height + dateHeight + paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent;
 					
 					y += (height * lesson.len - textHeight * line) / 2;
 					for(String s : str){
@@ -331,6 +348,57 @@ public class LessonTable extends ViewPager{
 						y += textHeight;
 					}
 				}
+			}
+			
+			if(lastWeek != -1 && lastCount != -1){
+				int len = lesson == null ? 1 : lesson.len;
+				paint.setStyle(Paint.Style.STROKE);
+				paint.setColor(Color.rgb(0,176,255));
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+					canvas.drawRoundRect(lastWeek * width + timeWidth,lastCount * height + dateHeight,lastWeek * width + width + timeWidth - LESSON_PADDING,lastCount * height + height * len + dateHeight - LESSON_PADDING,16,16,paint);
+				}else{
+					canvas.drawRoundRect(new RectF(lastWeek * width + timeWidth,lastCount * height + dateHeight,lastWeek * width + width + timeWidth - LESSON_PADDING,lastCount * height + height * len + dateHeight - LESSON_PADDING),16,16,paint);
+				}
+				paint.setStyle(Paint.Style.FILL);
+			}
+		}
+		
+		private void  drawDate(Canvas canvas){
+			
+			Calendar c = (Calendar)start.clone();
+			
+			c.add(Calendar.WEEK_OF_YEAR, showWeek - 1);
+			int dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
+			c.add(Calendar.DATE, - dayOfWeek);
+			
+			int weekStart = (int)((width - paintT.measureText(WEEK_STRING[0])) / 2);
+			int y = (int)(20 + paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent);
+			for(int i=0;i<7;i++){
+				String day = DateUtil.MD.format(c.getTime());
+				int dayStart = (int)((width - paintT.measureText(day)) / 2);
+				
+				if(current.get(Calendar.DATE)==c.get(Calendar.DATE)&&current.get(Calendar.MONTH)==c.get(Calendar.MONTH)){
+					paintT.setColor(ColorUtil.TEXT_COLORS[0]);
+				}else{
+					paintT.setColor(Color.GRAY);
+				}
+				
+				canvas.drawText(WEEK_STRING[i], timeWidth + weekStart + i * width, y, paintT);
+				canvas.drawText(day, timeWidth + dayStart + i * width, y + textHeight, paintT);
+
+				c.add(Calendar.DATE,1);
+			}
+		}
+		
+		private void drawTime(Canvas canvas){
+			paintT.setColor(Color.GRAY);
+			int x = (int)((timeWidth - paintT.measureText(LessonGroup.LESSON_TIME_SUMMER[0][0])) / 2);
+			int y = (int)(dateHeight + paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent);
+			y += (height - textHeight * 2) / 2;
+			for(int i=0;i<lessonGroups[0].length;i++){
+				canvas.drawText(LessonGroup.LESSON_TIME_SUMMER[0][i],  x,y, paintT);
+				canvas.drawText(LessonGroup.LESSON_TIME_SUMMER[1][i],  x,y + textHeight, paintT);
+				y += textHeight << 2;
 			}
 		}
 		
@@ -360,25 +428,31 @@ public class LessonTable extends ViewPager{
 	
 	private class LessonMenu extends PopupWindow{
 		
-		private View copy;
-		
 		private View paste;
-		
-		private View delete;
 		
 		private View addLesson;
 		
+		private int width, height;
+		
 		public LessonMenu(Context context){
 			super(context);
-			setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-			setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-			setOutsideTouchable(true);
+			
 			setFocusable(true);
+			setOutsideTouchable(true);
+			setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+			setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+			setAnimationStyle(R.style.MenuAnimation);
 			setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-			View contentView = LayoutInflater.from(context).inflate(R.layout.menu_lesson,null);
-			copy = contentView.findViewById(R.id.menu_lesson_copy);
+			
+			View contentView = LayoutInflater.from(context).inflate(R.layout.menu_lesson, null);
+			contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+			
+			width = contentView.getMeasuredWidth() / 4;
+			height = contentView.getMeasuredHeight();
+			
+			View copy = contentView.findViewById(R.id.menu_lesson_copy);
 			paste = contentView.findViewById(R.id.menu_lesson_paste);
-			delete = contentView.findViewById(R.id.menu_lesson_delete);
+			View delete = contentView.findViewById(R.id.menu_lesson_delete);
 			addLesson = contentView.findViewById(R.id.menu_lesson_new);
 			copy.setOnClickListener(v -> {
 				copyLesson = lesson;
@@ -410,11 +484,11 @@ public class LessonTable extends ViewPager{
 		}
 		
 		public void show(int x,int y, int week){
-			showAtLocation(LessonTable.this,Gravity.TOP | Gravity.START, x, y);
-			copy.setVisibility(lesson == null ? GONE : VISIBLE);
-			paste.setVisibility(copyLesson == null ? GONE : VISIBLE);
-			delete.setVisibility(lesson == null ? GONE : VISIBLE);
-			addLesson.setVisibility(lesson == null || lesson.week[week - 1] ? GONE : VISIBLE);
+			if(lesson != null){
+				paste.setVisibility(copyLesson == null ? GONE : VISIBLE);
+				addLesson.setVisibility(lesson.week[week - 1] ? GONE : VISIBLE);
+				showAtLocation(LessonTable.this,Gravity.START | Gravity.TOP, x - width, y - height);
+			}
 		}
 	}
 	

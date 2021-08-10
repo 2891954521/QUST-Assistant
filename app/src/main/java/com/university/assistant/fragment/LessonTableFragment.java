@@ -1,19 +1,15 @@
 package com.university.assistant.fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -22,15 +18,12 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.App;
 import com.university.assistant.Lesson.Lesson;
 import com.university.assistant.Lesson.LessonData;
 import com.university.assistant.Lesson.LessonGroup;
-import com.university.assistant.MainActivity;
 import com.university.assistant.R;
-import com.university.assistant.ui.school.GetLessonTableActivity;
-import com.university.assistant.util.DateUtil;
+import com.university.assistant.ui.MainActivity;
 import com.university.assistant.widget.ColorPicker;
 import com.university.assistant.widget.DialogRoundTop;
 import com.university.assistant.widget.LessonTable;
@@ -38,12 +31,9 @@ import com.university.assistant.widget.LessonTime;
 import com.university.assistant.widget.VerticalSlidingLayout;
 
 import java.util.Calendar;
-import java.util.Objects;
-import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.viewpager.widget.ViewPager;
 
 public class LessonTableFragment extends BaseFragment{

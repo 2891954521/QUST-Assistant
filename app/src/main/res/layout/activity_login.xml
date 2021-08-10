@@ -61,7 +61,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/activity_login_login"
+            android:id="@+id/activity_school_query"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/widget_margin"

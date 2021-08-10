@@ -9,10 +9,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.university.assistant.App;
-import com.university.assistant.MainActivity;
 import com.university.assistant.R;
 import com.university.assistant.fragment.BaseFragment;
 import com.university.assistant.fragment.pictures.PictureData;
+import com.university.assistant.ui.MainActivity;
 import com.university.assistant.ui.NoteEditActivity;
 import com.university.assistant.widget.BigImage;
 

@@ -1,14 +1,12 @@
 package com.university.assistant;
 
 import android.app.Application;
-import android.os.Build;
 import android.os.Looper;
 import android.widget.Toast;
 
 import com.university.assistant.util.LogUtil;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 public class App extends Application{
 	
@@ -35,9 +33,10 @@ public class App extends Application{
 					"`date` DATETIME" +
 					");";
 	
+	public static final int DEV_VERSION = 0;
+	
 	private Thread.UncaughtExceptionHandler handler;
 	
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	public void onCreate(){
 		super.onCreate();

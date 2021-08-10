@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
@@ -47,7 +47,7 @@
 
         <activity android:name=".ui.UpdateActivity"/>
 
-        <activity android:name=".LogActivity"/>
+        <activity android:name=".ui.LogActivity"/>
 
         <activity android:name=".ui.SettingActivity"/>
 
@@ -66,6 +66,12 @@
         <activity android:name=".ui.third.DrinkActivity"/>
 
         <activity android:name=".ui.third.CpDailyActivity"/>
+
+        <activity android:name=".ui.third.fake.LeaveListActivity"/>
+
+        <activity android:name=".ui.third.fake.LeaveInfoActivity"/>
+
+        <activity android:name=".ui.third.fake.NewLeaveActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -18,6 +18,9 @@ import java.util.Arrays;
 
 import androidx.annotation.Nullable;
 
+/**
+ * 设置课程上课周数的组件
+ */
 public class LessonTime extends View{
 	
 	private static final int TIME_PADDING = 8;

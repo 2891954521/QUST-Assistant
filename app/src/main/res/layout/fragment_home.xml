@@ -173,9 +173,12 @@
 
             <TextView
                 style="@style/HomeIcon"
+                android:id="@+id/fragment_home_fake_daily"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                app:drawableTopCompat="@mipmap/cpdaily"
+                android:text="今曰校园" />
 
         </LinearLayout>
 

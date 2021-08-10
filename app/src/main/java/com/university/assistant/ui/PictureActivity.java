@@ -8,8 +8,6 @@ import com.university.assistant.widget.BigImage;
 import com.university.assistant.widget.PictureGrid;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class PictureActivity extends BaseAnimActivity{
 	

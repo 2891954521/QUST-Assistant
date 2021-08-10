@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.university.assistant.MainActivity;
 import com.university.assistant.R;
+import com.university.assistant.ui.MainActivity;
 import com.university.assistant.ui.PictureActivity;
 import com.university.assistant.ui.school.AutoEvaluationActivity;
 import com.university.assistant.ui.school.GetAcademicActivity;
@@ -17,6 +17,7 @@ import com.university.assistant.ui.school.GetLessonTableActivity;
 import com.university.assistant.ui.school.GetMarkActivity;
 import com.university.assistant.ui.third.CpDailyActivity;
 import com.university.assistant.ui.third.DrinkActivity;
+import com.university.assistant.ui.third.fake.LeaveListActivity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,8 +33,12 @@ public class HomeFragment extends BaseFragment{
         layout.findViewById(R.id.fragment_home_lesson_table).setOnClickListener(v -> activity.navigationTo(1));
         layout.findViewById(R.id.fragment_home_note).setOnClickListener(v -> activity.navigationTo(2));
         layout.findViewById(R.id.fragment_home_pictures).setOnClickListener(v -> activity.startActivity(new Intent(activity,PictureActivity.class)));
+        
         layout.findViewById(R.id.fragment_home_drink).setOnClickListener(v -> activity.startActivity(new Intent(activity,DrinkActivity.class)));
         layout.findViewById(R.id.fragment_home_cpdaily).setOnClickListener(v -> activity.startActivity(new Intent(activity,CpDailyActivity.class)));
+        layout.findViewById(R.id.fragment_home_fake_daily).setOnClickListener(v -> activity.startActivity(new Intent(activity,LeaveListActivity.class)));
+    
+    
         layout.findViewById(R.id.fragment_home_school_lesson).setOnClickListener(v -> activity.startActivity(new Intent(activity,GetLessonTableActivity.class)));
         layout.findViewById(R.id.fragment_home_school_mark).setOnClickListener(v -> activity.startActivity(new Intent(activity,GetMarkActivity.class)));
         layout.findViewById(R.id.fragment_home_school_academic).setOnClickListener(v -> activity.startActivity(new Intent(activity,GetAcademicActivity.class)));

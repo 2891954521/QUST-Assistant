@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.university.assistant"
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 28
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

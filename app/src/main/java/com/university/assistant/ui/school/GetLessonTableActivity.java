@@ -2,6 +2,7 @@ package com.university.assistant.ui.school;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 
 import com.university.assistant.App;
 import com.university.assistant.Lesson.LessonData;
@@ -63,6 +64,10 @@ public class GetLessonTableActivity extends BaseSchoolActivity{
 	
 	@Override
 	protected void doQuery(String session){
+		Message message = new Message();
+		message.obj = "正在查询课表";
+		handler.sendMessage(message);
+		
 		try{
 			String[] y = getYearAndTerm();
 			String response = WebUtil.doPost(
@@ -103,10 +108,12 @@ public class GetLessonTableActivity extends BaseSchoolActivity{
 	public void onBackPressed(){
 		if(needSave){
 			DialogUtil.getBaseDialog(this).title("提示").content("课表信息未保存，是否保存？")
-					.onPositive((dialog,which) -> {
-						updateLesson();
-						dialog.dismiss();
-					}).show();
+				.onPositive((dialog,which) -> {
+					updateLesson();
+					dialog.dismiss();
+				})
+				.onNegative((dialog, which) -> super.onBackPressed())
+				.show();
 		}else super.onBackPressed();
 	}
 }

@@ -5,61 +5,10 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/layout_timetable_day"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:orientation="horizontal">
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/layout_timetable_week_contain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="1-2\n\n08:00\n09:50" />
-
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="3-4\n\n10:10\n12:00" />
-
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="5-6\n\n14:00\n15:50" />
-
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="7-8\n\n16:10\n18:00" />
-
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="9-10\n\n18:30\n20:20" />
-
-        </LinearLayout>
 
     </LinearLayout>
 

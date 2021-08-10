@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.university.assistant.R;
-import com.university.assistant.ui.BaseActivity;
 import com.university.assistant.ui.BaseAnimActivity;
 import com.university.assistant.util.LogUtil;
 import com.university.assistant.util.WebUtil;
@@ -24,11 +23,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 
 public class CpDailyActivity extends BaseAnimActivity{
 	
@@ -140,7 +137,13 @@ public class CpDailyActivity extends BaseAnimActivity{
 			if(js.has("cookies")){
 				cookie = js.getString("cookies");
 				return true;
-			}else toast(js.getString("msg"));
+			}else{
+				runOnUiThread(() -> {
+					try{
+						toast(js.getString("msg"));
+					}catch(JSONException ignored){ }
+				});
+			}
 			
 		}catch(IOException | JSONException e){
 			LogUtil.Log(e);
@@ -161,7 +164,7 @@ public class CpDailyActivity extends BaseAnimActivity{
 			
 			JSONArray array = new JSONObject(str).getJSONObject("datas").getJSONArray("rows");
 			if(array.length()==0){
-				toast("没有新问卷要填");
+				runOnUiThread(() -> toast("没有新问卷要填"));
 				return false;
 			}
 			for(int i=0;i<array.length();i++){

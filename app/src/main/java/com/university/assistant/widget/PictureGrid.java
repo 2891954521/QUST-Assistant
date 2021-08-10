@@ -1,8 +1,6 @@
 package com.university.assistant.widget;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -14,7 +12,6 @@ import android.widget.ImageView;
 
 import com.university.assistant.R;
 import com.university.assistant.fragment.pictures.PictureData;
-import com.university.assistant.util.LogUtil;
 
 import java.util.ArrayList;
 

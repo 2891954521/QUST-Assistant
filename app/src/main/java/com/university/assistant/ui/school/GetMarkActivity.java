@@ -1,6 +1,7 @@
 package com.university.assistant.ui.school;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,13 +52,17 @@ public class GetMarkActivity extends BaseSchoolActivity{
 	
 	@Override
 	protected void doQuery(String session){
+		Message message = new Message();
+		message.obj = "正在查询成绩";
+		handler.sendMessage(message);
+		
 		HashMap<String,Mark> markMap = new HashMap<>(10);
 		try{
 			String[] y = getYearAndTerm();
 			String response = WebUtil.doPost(
 					"http://jwglxt.qust.edu.cn/jwglxt/cjcx/cjcx_cxXsKccjList.html",
 					"JSESSIONID=" + session,
-					String.format("xnm=%s&xqm=%s&queryModel.showCount=50",y[0],y[1])
+					String.format("xnm=%s&xqm=%s&queryModel.showCount=50", y[0], y[1])
 			);
 			
 			if(response != null && !"".equals(response)){
@@ -146,8 +151,15 @@ public class GetMarkActivity extends BaseSchoolActivity{
 			}
 			Mark mark = marks[position];
 			((TextView)convertView.findViewById(R.id.item_mark_name)).setText(mark.name);
-			((TextView)convertView.findViewById(R.id.item_mark_ps)).setText(mark.ps == null ? "" : mark.ps + "：" + mark.psMark);
-			((TextView)convertView.findViewById(R.id.item_mark_qm)).setText(mark.qm == null ? "" : mark.qm + "：" + mark.qmMark);
+			
+			TextView ps = convertView.findViewById(R.id.item_mark_ps);
+			ps.setVisibility(mark.ps == null ? View.GONE : View.VISIBLE);
+			ps.setText(mark.ps + "：" + mark.psMark);
+			
+			TextView qm = convertView.findViewById(R.id.item_mark_qm);
+			qm.setVisibility(mark.qm == null ?View.GONE : View.VISIBLE);
+			qm.setText(mark.qm + "：" + mark.qmMark);
+			
 			((TextView)convertView.findViewById(R.id.item_mark_credit)).setText("学分：" + mark.credit);
 			((TextView)convertView.findViewById(R.id.item_mark_GPA)).setText(ParamUtil.isFloat(mark.mark) ? String.format("绩点：%.2f",Math.max((Float.parseFloat(mark.mark) - 50)/10f,0)) : "");
 			((TextView)convertView.findViewById(R.id.item_mark_mark)).setText("总成绩：" + mark.mark);

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="课表 ">
+    <PreferenceCategory android:title="课表">
 
         <Preference
             android:key="key_set_start_day"
-            android:title="设置开学时间 "/>
+            android:title="设置开学时间" />
 
        <Preference
             android:key="key_set_total_week"
@@ -14,7 +14,7 @@
     </PreferenceCategory>
 
 
-    <PreferenceCategory android:title="杂项">
+    <PreferenceCategory android:title="更新">
 
         <SwitchPreference
             android:key="key_auto_update"
@@ -22,6 +22,13 @@
             android:summaryOn="一周检查一次更新"
             android:summaryOff="不检查更新"
             android:title="自动检查更新"/>
+
+        <SwitchPreference
+            android:key="key_update_dev"
+            android:defaultValue="false"
+            android:summaryOn="接收开发版更新"
+            android:summaryOff="不接收开发版更新"
+            android:title="接收开发版推送"/>
 
         <Preference
             android:key="key_update"

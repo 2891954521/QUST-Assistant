@@ -4,11 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
-import android.widget.RadioGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.R;
@@ -28,15 +29,22 @@ import androidx.annotation.Nullable;
 
 public abstract class BaseSchoolActivity extends BaseAnimActivity{
 	
-	private String name, password;
+	protected String name, password;
 	
-	private RadioGroup termPicker;
+	protected LoginUtil loginUtil;
 	
 	private NumberPicker yearPicker;
 	
 	protected BaseAdapter adapter;
 	
 	protected MaterialDialog dialog;
+	
+	protected Handler handler = new Handler(Looper.getMainLooper()){
+		@Override
+		public void handleMessage(Message msg) {
+			dialog.setContent((String)msg.obj);
+		}
+	};
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
@@ -53,6 +61,8 @@ public abstract class BaseSchoolActivity extends BaseAnimActivity{
 		
 		dialog = new MaterialDialog.Builder(this).progress(true,0).content("查询中...").build();
 		
+		loginUtil = LoginUtil.getInstance();
+		
 		findViewById(R.id.activity_school_query).setOnClickListener(v -> {
 			if(name == null || password == null){
 				toast("请先登录！");
@@ -63,13 +73,11 @@ public abstract class BaseSchoolActivity extends BaseAnimActivity{
 			new Thread(){
 				@Override
 				public void run(){
-					final String session = LoginUtil.login(name,password);
-					if(session==null){
-						runOnUiThread(() -> { dialog.dismiss(); toast("登陆失败！用户名或密码错误！"); });
-					}else if(session.charAt(0) == '='){
-						doQuery(session.substring(1));
+					String errorMsg = loginUtil.login(handler, name, password);
+					if(errorMsg == null){
+						doQuery(loginUtil.JSESSIONID);
 					}else{
-						runOnUiThread(() -> { dialog.dismiss(); toast(session); });
+						runOnUiThread(() -> { dialog.dismiss(); toast(errorMsg); });
 					}
 				}
 			}.start();
@@ -86,19 +94,25 @@ public abstract class BaseSchoolActivity extends BaseAnimActivity{
 	
 	protected void initYearAndTermPicker(){
 		yearPicker = findViewById(R.id.activity_school_year);
-		yearPicker.setMaxValue(2050);
-		yearPicker.setMinValue(2010);
 		
-		termPicker = findViewById(R.id.activity_school_term);
+		String[] term = new String[50];
+		
+		for(int i=0;i<term.length;i++){
+			term[i] = (2010 + i / 2) + "-" + (2011 + i / 2) + (i % 2 == 0 ? " 第1学期" : " 第2学期");
+		}
+		
+		yearPicker.setDisplayedValues(term);
+		
+		yearPicker.setMinValue(0);
+		yearPicker.setMaxValue(term.length - 1);
 		
 		Calendar calendar = Calendar.getInstance();
 		int y = calendar.get(Calendar.YEAR);
-		if(calendar.get(Calendar.MONTH) < Calendar.SEPTEMBER){
-			yearPicker.setValue(y - 1);
-			termPicker.check(R.id.activity_school_term2);
+		if(y < 2010){
+			yearPicker.setValue(0);
 		}else{
-			yearPicker.setValue(y);
-			termPicker.check(R.id.activity_school_term1);
+			y = (y - 2010) * 2 - (calendar.get(Calendar.MONTH) < Calendar.SEPTEMBER ? 1 : 0);
+			yearPicker.setValue(y < term.length - 1 ? y : term.length - 1);
 		}
 	}
 	
@@ -110,8 +124,8 @@ public abstract class BaseSchoolActivity extends BaseAnimActivity{
 	
 	protected String[] getYearAndTerm(){
 		return new String[] {
-				String.valueOf(yearPicker.getValue()),
-				termPicker.getCheckedRadioButtonId() == R.id.activity_school_term1 ? "3" : "12"
+				String.valueOf(2010 + yearPicker.getValue() / 2),
+				yearPicker.getValue() % 2 == 0 ? "3" : "12"
 		};
 	}
 	

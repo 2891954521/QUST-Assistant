@@ -1,4 +1,4 @@
-package com.university.assistant;
+package com.university.assistant.ui;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -15,13 +15,12 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.university.assistant.App;
+import com.university.assistant.R;
 import com.university.assistant.fragment.BaseFragment;
 import com.university.assistant.fragment.HomeFragment;
 import com.university.assistant.fragment.LessonTableFragment;
 import com.university.assistant.fragment.note.NoteFragment;
-import com.university.assistant.ui.BaseActivity;
-import com.university.assistant.ui.SettingActivity;
-import com.university.assistant.ui.UpdateActivity;
 import com.university.assistant.ui.school.LoginActivity;
 import com.university.assistant.util.UpdateUtil;
 
@@ -121,13 +120,16 @@ public class MainActivity extends BaseActivity{
 		
 		SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(this);
 
+		// 检查更新
 		if(setting.getBoolean("key_auto_update",true)){
+			boolean isDev = setting.getBoolean("key_update_dev",false);
 			long current = System.currentTimeMillis();
-			if(current - setting.getLong("last_update_time",0) > 1000 * 60 * 60 * 24 * 7){
+			long frequency = isDev ? 1000 * 60 * 60 * 24 * 3 : 1000 * 60 * 60 * 24 * 7;
+			if(current - setting.getLong("last_update_time",0) > frequency){
 				new Thread(){
 					@Override
 					public void run(){
-						UpdateUtil.checkUpdate(MainActivity.this);
+						UpdateUtil.checkUpdate(MainActivity.this, isDev);
 					}
 				}.start();
 				setting.edit().putLong("last_update_time", current).apply();

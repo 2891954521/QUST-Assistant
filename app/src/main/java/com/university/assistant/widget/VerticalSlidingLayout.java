@@ -3,21 +3,13 @@ package com.university.assistant.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
-import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.Scroller;
 
-import com.university.assistant.R;
-
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.MotionEventCompat;
 
 public class VerticalSlidingLayout extends FrameLayout{

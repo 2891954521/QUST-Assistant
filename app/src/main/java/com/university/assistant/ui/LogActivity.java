@@ -1,4 +1,4 @@
-package com.university.assistant;
+package com.university.assistant.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,8 +10,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import com.university.assistant.ui.BaseActivity;
-import com.university.assistant.ui.BaseAnimActivity;
+import com.university.assistant.R;
 import com.university.assistant.util.FileUtil;
 import com.university.assistant.util.LogUtil;
 
@@ -21,8 +20,6 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class LogActivity extends BaseAnimActivity{
     

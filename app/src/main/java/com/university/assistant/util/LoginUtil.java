@@ -1,5 +1,7 @@
 package com.university.assistant.util;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Base64;
 
 import org.json.JSONException;
@@ -8,7 +10,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
@@ -22,40 +23,95 @@ import androidx.annotation.Nullable;
 
 public class LoginUtil{
 	
+	public static LoginUtil loginUtil;
+	
+	private static final Pattern JESSIONID_PATTERN = Pattern.compile("JSESSIONID=(.*?);");
+	
+	public String JSESSIONID;
+	
+	private LoginUtil(){
+	
+	}
+	
+	public static void init(){
+		synchronized(LoginUtil.class){
+			loginUtil = new LoginUtil();
+		}
+	}
+	
+	public static LoginUtil getInstance(){
+		if(loginUtil == null)init();
+		return loginUtil;
+	}
+	
 	@Nullable
-	public static String login(String name,String password){
-		String[] param = getJSESSIONID();
-		if(param[0]==null||param[1]==null){
-			return "登陆失败！服务器异常！";
-		}
-		String key = getPublicKey(param[0]);
-		if(key==null){
-			return "登陆失败！服务器异常！";
-		}
-		String rsaPassword = encrypt(password,key);
-		if(rsaPassword==null){
-			return "登陆失败！RSA加密出错！";
-		}
+	public String login(Handler handler, String name, String password){
 		try{
+			if(JSESSIONID != null){
+				
+				Message message = new Message();
+				message.obj = "正在检查登陆状态";
+				handler.sendMessage(message);
+				
+				HttpURLConnection connection = WebUtil.get(
+						"http://jwglxt.qust.edu.cn/jwglxt/xtgl/index_initMenu.html",
+						"JSESSIONID=" + JSESSIONID);
+				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
+					return null;
+				}
+			}
+			
+			Message message = new Message();
+			message.obj = "正在获取JSESSIONID";
+			handler.sendMessage(message);
+			
+			String[] param = getLoginParam();
+			if(param[0] == null || param[1] == null){
+				return "登陆失败！服务器异常！";
+			}
+			
+			message = new Message();
+			message.obj = "正在获取RSA公钥";
+			handler.sendMessage(message);
+			
+			String key = getPublicKey(param[0]);
+			if(key == null){
+				return "登陆失败！服务器异常！";
+			}
+			
+			String rsaPassword = encrypt(password,key);
+			if(rsaPassword == null){
+				return "登陆失败！RSA加密出错！";
+			}
+			
+			message = new Message();
+			message.obj = "正在尝试登陆";
+			handler.sendMessage(message);
+			
 			HttpURLConnection connection = WebUtil.post(
 					"http://jwglxt.qust.edu.cn/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
 					"JSESSIONID=" + param[0],
 					"csrftoken=" + param[1] + "&language=zh_CN&yhm=" + name + "&mm=" + URLEncoder.encode(rsaPassword,"utf-8")
 			);
-			if(connection.getResponseCode()==HttpURLConnection.HTTP_MOVED_TEMP || connection.getResponseCode()==HttpURLConnection.HTTP_OK){
+			
+			if(connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP || connection.getResponseCode() == HttpURLConnection.HTTP_OK){
 				String s = connection.getHeaderField("Set-Cookie");
-				Matcher matcher = Pattern.compile("JSESSIONID=(.*?);").matcher(s);
+				Matcher matcher = JESSIONID_PATTERN.matcher(s);
 				if(matcher.find()){
-					return "=" + matcher.group(1);
+					JSESSIONID = matcher.group(1);
+					return null;
+				}else if("http://jwglxt.qust.edu.cn/jwglxt/xtgl/index_initMenu.html".equals(connection.getHeaderField("Location"))){
+					JSESSIONID = param[0];
+					return null;
 				}
 			}
 		}catch(IOException e){
 			LogUtil.Log(e);
 		}
-		return null;
+		return "登陆失败!";
 	}
 	
-	private static String[] getJSESSIONID(){
+	private String[] getLoginParam(){
 		String[] result = new String[2];
 		String html = null;
 		try{
@@ -63,8 +119,7 @@ public class LoginUtil{
 			if(connection.getResponseCode()==HttpURLConnection.HTTP_OK){
 				String s = connection.getHeaderField("Set-Cookie");
 				if(s != null){
-					Pattern pattern = Pattern.compile("JSESSIONID=(.*?);");
-					Matcher matcher = pattern.matcher(s);
+					Matcher matcher = JESSIONID_PATTERN.matcher(s);
 					if(matcher.find()){
 						result[0] = matcher.group(1);
 					}
@@ -88,6 +143,7 @@ public class LoginUtil{
 		}
 		return result;
 	}
+	
 	
 	@Nullable
 	private static String getPublicKey(String JSESSIONID){

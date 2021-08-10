@@ -7,7 +7,6 @@ import android.widget.DatePicker;
 
 import com.university.assistant.App;
 import com.university.assistant.Lesson.LessonData;
-import com.university.assistant.LogActivity;
 import com.university.assistant.R;
 import com.university.assistant.util.DateUtil;
 import com.university.assistant.util.DialogUtil;
@@ -32,26 +31,6 @@ public class SettingActivity extends BaseAnimActivity{
 		initToolBar(null);
 		initSliding(null,null);
 	}
-	
-//	@Override
-//	protected void onActivityResult(int requestCode,int resultCode,Intent data){
-//		super.onActivityResult(requestCode,resultCode,data);
-//		if(requestCode==222){
-//			if(Build.VERSION.SDK_INT>=23){
-//				if(!Settings.canDrawOverlays(this)){
-//					DialogUtil.getBaseDialog(SettingActivity.this).title("提示").content("请允许应用获取悬浮窗权限后才能显示桌面歌词")
-//							.onPositive(new MaterialDialog.SingleButtonCallback(){
-//								@Override
-//								public void onClick(@NonNull MaterialDialog dialog,@NonNull DialogAction which){
-//									Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,Uri.parse("package:"+getPackageName()));
-//									startActivityForResult(i,222);
-//								}
-//							}).show();
-//				}
-//
-//			}
-//		}
-//	}
 	
 	public static class PrefsFragment extends PreferenceFragmentCompat{
 		

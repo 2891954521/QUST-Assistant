@@ -1,6 +1,7 @@
 package com.university.assistant.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -27,6 +28,7 @@ import java.net.URL;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
 
 public class UpdateActivity extends BaseAnimActivity{
 	
@@ -91,21 +93,23 @@ public class UpdateActivity extends BaseAnimActivity{
 	}
 	
 	private void checkUpdate(){
+		SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean isDev = setting.getBoolean("key_update_dev",false);
 		checkDialog.show();
 		new Thread(){
 			@Override
 			public void run(){
-				JSONObject js = UpdateUtil.getUpdateInfo();
+				JSONObject js = UpdateUtil.getUpdateInfo(isDev);
 				try{
 					if(js.has("code")){
 						if(js.getInt("code")==200){
 							JSONObject json = js.getJSONObject("data");
 							version = json.getInt("version");
-							if(UpdateUtil.checkVersion(UpdateActivity.this,version)){
+							if(UpdateUtil.checkVersion(UpdateActivity.this, version, isDev)){
 								message = json.getString("message");
 								md5 = json.getString("md5");
-								url = json.getString("apkPath");
-								runOnUiThread(() -> ((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：http://139.224.16.208/" + url + "\n" + message));
+								url = json.getString("apkUrl");
+								runOnUiThread(() -> ((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：" + url + "\n" + message));
 							}else{
 								app.toast("当前无新版本！");
 							}
@@ -130,7 +134,7 @@ public class UpdateActivity extends BaseAnimActivity{
 			@Override
 			public void run(){
 				try{
-					HttpURLConnection con = (HttpURLConnection)new URL("http://139.224.16.208/"+ url).openConnection();
+					HttpURLConnection con = (HttpURLConnection)new URL(url).openConnection();
 					con.setReadTimeout(5000);
 					con.setConnectTimeout(5000);
 					con.setRequestMethod("GET");

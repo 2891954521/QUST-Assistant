@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import androidx.annotation.Nullable;
+
 public class WebUtil{
 	
 	public static String inputStream2string(InputStream inputStream){
@@ -21,6 +23,7 @@ public class WebUtil{
 		}
 	}
 	
+	@Nullable
 	public static String doGet(String url, String cookie, String... params) throws IOException {
 		HttpURLConnection connection = get(url, cookie, params);
 		if(connection.getResponseCode()==HttpURLConnection.HTTP_OK){

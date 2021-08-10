@@ -1,15 +1,10 @@
 package com.university.assistant.util;
 
 import android.content.Context;
-import android.os.Looper;
-import android.widget.Toast;
-
-import com.university.assistant.App;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LogUtil{

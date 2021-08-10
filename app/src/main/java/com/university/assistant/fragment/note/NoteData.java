@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.university.assistant.App;
-import com.university.assistant.util.LogUtil;
 
 import java.util.ArrayList;
 

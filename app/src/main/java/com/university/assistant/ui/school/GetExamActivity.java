@@ -1,6 +1,7 @@
 package com.university.assistant.ui.school;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,10 @@ public class GetExamActivity extends BaseSchoolActivity{
 	
 	@Override
 	protected void doQuery(String session){
+		Message message = new Message();
+		message.obj = "正在查询考试";
+		handler.sendMessage(message);
+		
 		try{
 			String[] y = getYearAndTerm();
 			

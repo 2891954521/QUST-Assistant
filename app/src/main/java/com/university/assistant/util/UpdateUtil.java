@@ -6,24 +6,22 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.university.assistant.App;
 import com.university.assistant.ui.UpdateActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class UpdateUtil{
 	
-	public static void checkUpdate(Activity activity){
+	public static void checkUpdate(Activity activity, boolean isDev){
 		try{
-			JSONObject js = getUpdateInfo();
+			JSONObject js = getUpdateInfo(isDev);
 			if(js.getInt("code") == 200){
 				JSONObject data = js.getJSONObject("data");
-				if(checkVersion(activity,data.getInt("version"))){
+				if(checkVersion(activity, data.getInt("version"), isDev)){
 					activity.runOnUiThread(new Thread(){
 						@Override
 						public void run(){
@@ -43,9 +41,21 @@ public class UpdateUtil{
 		}
 	}
 	
-	public static JSONObject getUpdateInfo(){
+	public static JSONObject getUpdateInfo(boolean isDev){
 		try{
-			String response = WebUtil.doGet("http://139.224.16.208/cloud/apk/getUpdateInfo.php",null);
+			String response = WebUtil.doGet("http://139.224.16.208/guide.json", null);
+			String url = "http://139.224.16.208/cloud/apk/getUpdateInfo.php";
+			
+			if(response != null){
+				JSONObject js = new JSONObject(response);
+				if(isDev){
+					if(js.has("getDevInfo")) url = js.getString("getDevInfo");
+				}else{
+					if(js.has("getUpdateInfo")) url = js.getString("getUpdateInfo");
+				}
+			}
+			
+			response = WebUtil.doGet(url,null);
 			if(response != null){
 				return new JSONObject(response);
 			}
@@ -56,7 +66,12 @@ public class UpdateUtil{
 	}
 	
 	
-	public static boolean checkVersion(Context context,int newVersion){
+	public static boolean checkVersion(Context context, int newVersion, boolean isDev){
+		
+		if(isDev){
+			return App.DEV_VERSION < newVersion;
+		}
+		
 		int versionCode = -1;
 		
 		try {
