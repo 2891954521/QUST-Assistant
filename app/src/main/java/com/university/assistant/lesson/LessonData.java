@@ -1,4 +1,4 @@
-package com.university.assistant.Lesson;
+package com.university.assistant.lesson;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -193,7 +193,7 @@ public class LessonData{
 		
 		c = Calendar.getInstance(TimeZone.getTimeZone("GMT+8:00"));
 		
-		currentWeek = c.get(Calendar.WEEK_OF_YEAR) - startWeek + 1;
+		currentWeek = Math.max(1, c.get(Calendar.WEEK_OF_YEAR) - startWeek + 1);
 		
 		week = c.get(Calendar.DAY_OF_WEEK);
 		if(week==Calendar.SUNDAY) week = 6;

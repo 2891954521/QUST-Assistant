@@ -61,20 +61,57 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/activity_cpdaily_login"
+            android:id="@+id/activity_cpdaily_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/widget_margin"
             android:layout_marginLeft="@dimen/widget_margin"
             android:layout_marginRight="@dimen/widget_margin"
-            android:text="登录"/>
+            android:text="自动填写"/>
 
-        <ListView
-            android:id="@+id/activity_cpdaily_list"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="@dimen/widget_margin"
-            android:paddingBottom="@dimen/widget_margin"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/widget_margin">
+
+            <NumberPicker
+                android:id="@+id/activity_cpdaily_location_province"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/activity_margin"
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:descendantFocusability="blocksDescendants" />
+
+            <NumberPicker
+                android:id="@+id/activity_cpdaily_location_city"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/activity_margin"
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:descendantFocusability="blocksDescendants" />
+
+           <NumberPicker
+                android:id="@+id/activity_cpdaily_location_county"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/activity_margin"
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:descendantFocusability="blocksDescendants" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/activity_cpdaily_update_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/widget_margin"
+            android:layout_marginLeft="@dimen/widget_margin"
+            android:layout_marginRight="@dimen/widget_margin"
+            android:text="更新地理位置"/>
 
     </LinearLayout>
 

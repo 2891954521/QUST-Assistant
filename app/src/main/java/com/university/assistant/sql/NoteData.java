@@ -1,39 +1,31 @@
-package com.university.assistant.fragment.note;
+package com.university.assistant.sql;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
-import com.university.assistant.App;
+import com.university.assistant.fragment.note.Note;
 
 import java.util.ArrayList;
 
 public class NoteData{
     
-//    public static final String TEST_ADD =
-//            "INSERT INTO `Note` " +
-//                    "(`isFinish`,`title`,`text`,`items`,`date`,`deadline`,`pictures`) " +
-//                    "VALUES " +
-//                    "(1,'test_title','test_text','[false,\"test items\"]','2020-01-20 2:0:0','2021-01-20 2:0:0','[\"test.png\"]');";
-
     private static NoteData noteData;
-    
-    private NoteDataHelper data;
 
     private ArrayList<Note> notes;
     
     private Note editingNote;
     
     private NoteData(Context context){
-        data = new NoteDataHelper(context);
         initData();
     }
 
     public static void init(Context context){
         synchronized(NoteData.class){
-            noteData = new NoteData(context);
+            if(noteData == null){
+                noteData = new NoteData(context);
+            }
         }
     }
 
@@ -43,7 +35,7 @@ public class NoteData{
 
     public void initData(){
         notes = new ArrayList<>(20);
-        SQLiteDatabase db = data.getReadableDatabase();
+        SQLiteDatabase db = DataBase.getInstance().getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM `Note`;", null);
         if(cursor.getCount() > 0){
             while(cursor.moveToNext()) notes.add(new Note(cursor));
@@ -54,7 +46,7 @@ public class NoteData{
 
     public int insertData(){
         if(editingNote==null)return -1;
-        SQLiteDatabase write = data.getWritableDatabase();
+        SQLiteDatabase write = DataBase.getInstance().getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("isFinish",editingNote.isFinish);
         values.put("title",editingNote.title);
@@ -75,7 +67,7 @@ public class NoteData{
     
     public int update(){
         if(editingNote==null)return -1;
-        SQLiteDatabase db = data.getWritableDatabase();
+        SQLiteDatabase db = DataBase.getInstance().getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("isFinish",editingNote.isFinish);
         values.put("title",editingNote.title);
@@ -92,7 +84,7 @@ public class NoteData{
     }
     
     public void updateIsFinish(Note note){
-        SQLiteDatabase db = data.getWritableDatabase();
+        SQLiteDatabase db = DataBase.getInstance().getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("items", note.items2Json().toString());
         // 返回值大于0代表修改更新成功
@@ -101,7 +93,7 @@ public class NoteData{
     }
     
     public void delete(int id){
-        SQLiteDatabase db = data.getWritableDatabase();
+        SQLiteDatabase db = DataBase.getInstance().getWritableDatabase();
         // 返回值为受影响的行数，大于0代表成功
         int i = db.delete("Note", "id = ?",new String[]{ String.valueOf(id) });
         db.close();
@@ -115,31 +107,6 @@ public class NoteData{
     
     public void setEditingNote(Note _editingNote){
         editingNote = _editingNote;
-    }
-    
-    public static class NoteDataHelper extends SQLiteOpenHelper{
-        
-        public NoteDataHelper(Context context){
-            super(context,"Database.db",null,1);
-        }
-        
-        // 第一次创建数据库时调用 在这方法里面可以进行建表
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL(App.CREATE_NOTE_TABLE);
-            db.execSQL(App.CREATE_PICTURE_TABLE);
-        }
-        
-        // 版本更新的时候调用
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            //		switch (oldVersion){
-            //			case 1:
-            //				db.execSQL(sql1);
-            //				break;
-            //		}
-        }
-        
     }
     
 }

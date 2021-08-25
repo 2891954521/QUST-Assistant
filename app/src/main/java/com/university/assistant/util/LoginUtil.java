@@ -23,24 +23,36 @@ import androidx.annotation.Nullable;
 
 public class LoginUtil{
 	
+	public static final String[] SEVER_HOSTS = {
+			"http://jwglxt.qust.edu.cn/",
+			"http://jwglxt1.qust.edu.cn/",
+			"http://jwglxt2.qust.edu.cn/",
+			"http://jwglxt3.qust.edu.cn/",
+			"http://jwglxt4.qust.edu.cn/",
+			"http://jwglxt5.qust.edu.cn/",
+			"http://jwglxt6.qust.edu.cn/",
+	};
+	
+	public static String HOST = SEVER_HOSTS[0];
+	
 	public static LoginUtil loginUtil;
 	
 	private static final Pattern JESSIONID_PATTERN = Pattern.compile("JSESSIONID=(.*?);");
 	
 	public String JSESSIONID;
 	
-	private LoginUtil(){
-	
+	private LoginUtil(int sever){
+		HOST = SEVER_HOSTS[sever];
 	}
 	
-	public static void init(){
+	public static void init(int sever){
 		synchronized(LoginUtil.class){
-			loginUtil = new LoginUtil();
+			loginUtil = new LoginUtil(sever);
 		}
 	}
 	
 	public static LoginUtil getInstance(){
-		if(loginUtil == null)init();
+		if(loginUtil == null)init(0);
 		return loginUtil;
 	}
 	

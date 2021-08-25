@@ -11,9 +11,10 @@ import android.widget.ListView;
 import com.university.assistant.App;
 import com.university.assistant.R;
 import com.university.assistant.fragment.BaseFragment;
-import com.university.assistant.fragment.pictures.PictureData;
+import com.university.assistant.sql.NoteData;
+import com.university.assistant.sql.PictureData;
 import com.university.assistant.ui.MainActivity;
-import com.university.assistant.ui.NoteEditActivity;
+import com.university.assistant.ui.note.NoteEditActivity;
 import com.university.assistant.widget.BigImage;
 
 import androidx.annotation.NonNull;

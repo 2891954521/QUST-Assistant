@@ -1,4 +1,4 @@
-package com.university.assistant.Lesson;
+package com.university.assistant.lesson;
 
 import android.content.Context;
 import android.graphics.Color;

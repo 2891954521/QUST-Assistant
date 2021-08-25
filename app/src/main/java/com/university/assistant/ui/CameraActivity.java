@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.R;
-import com.university.assistant.fragment.pictures.PictureData;
+import com.university.assistant.sql.PictureData;
 import com.university.assistant.util.LogUtil;
 
 import java.io.File;

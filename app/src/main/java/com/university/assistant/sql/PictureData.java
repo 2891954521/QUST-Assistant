@@ -1,19 +1,18 @@
-package com.university.assistant.fragment.pictures;
+package com.university.assistant.sql;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.ImageView;
 
-import com.university.assistant.App;
 import com.university.assistant.R;
+import com.university.assistant.fragment.pictures.Picture;
 import com.university.assistant.util.LogUtil;
 
 import java.io.File;
@@ -37,8 +36,6 @@ public class PictureData{
 	// 缓存
 	private static LruCache<Integer,Bitmap> imageCache;
 	
-	private PictureDataHelper data;
-	
 	private PictureData(Context context){
 		
 		picturePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Note");
@@ -60,8 +57,6 @@ public class PictureData{
 				return value.getRowBytes() * value.getHeight();
 			}
 		};
-		
-		data = new PictureDataHelper(context);
 	}
 	
 	public static void init(Context context){
@@ -73,7 +68,7 @@ public class PictureData{
 	}
 	
 	public int addPicture(String path,String time){
-		SQLiteDatabase write = data.getWritableDatabase();
+		SQLiteDatabase write = DataBase.getInstance().getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put("file",path);
 		values.put("date",time);
@@ -84,7 +79,7 @@ public class PictureData{
 	
 	public ArrayList<String> getPicture(){
 		ArrayList<String> p = new ArrayList<>();
-		SQLiteDatabase db = data.getReadableDatabase();
+		SQLiteDatabase db = DataBase.getInstance().getReadableDatabase();
 		Cursor cursor = db.rawQuery("SELECT `file` FROM `Picture` ORDER BY `date`", null);
 		if(cursor.getCount() > 0){
 			while(cursor.moveToNext()) p.add(cursor.getString(cursor.getColumnIndex("file")));
@@ -96,7 +91,7 @@ public class PictureData{
 	
 	public Picture getPicture(int id){
 		Picture p = new Picture();
-		SQLiteDatabase db = data.getReadableDatabase();
+		SQLiteDatabase db = DataBase.getInstance().getReadableDatabase();
 		Cursor cursor = db.rawQuery("SELECT id FROM `Picture` WHERE id = " + id + ";", null);
 		if(cursor.getCount() > 0){
 			cursor.moveToNext();
@@ -167,19 +162,4 @@ public class PictureData{
 		}.execute(path);
 	}
 	
-	private static class PictureDataHelper extends SQLiteOpenHelper{
-		
-		public PictureDataHelper(Context context){
-			super(context,"Database.db",null,1);
-		}
-		
-		@Override
-		public void onCreate(SQLiteDatabase db){
-			db.execSQL(App.CREATE_NOTE_TABLE);
-			db.execSQL(App.CREATE_PICTURE_TABLE);
-		}
-		
-		@Override
-		public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){ }
-	}
 }

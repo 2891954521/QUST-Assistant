@@ -48,7 +48,6 @@
             android:layout_marginEnd="@dimen/activity_margin"
             android:descendantFocusability="blocksDescendants" />
 
-
             <Button
                 android:id="@+id/activity_school_query"
                 android:layout_width="wrap_content"

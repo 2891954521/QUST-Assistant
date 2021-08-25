@@ -3,7 +3,7 @@ package com.university.assistant.ui;
 import android.os.Bundle;
 
 import com.university.assistant.R;
-import com.university.assistant.fragment.pictures.PictureData;
+import com.university.assistant.sql.PictureData;
 import com.university.assistant.widget.BigImage;
 import com.university.assistant.widget.PictureGrid;
 

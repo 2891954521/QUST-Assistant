@@ -32,7 +32,7 @@ public class LoginActivity extends BaseSchoolActivity{
 				@Override
 				public void run(){
 					String errorMsg = loginUtil.login(handler, user, password);
-					if(errorMsg==null){
+					if(errorMsg == null){
 						SharedPreferences.Editor editor = data.edit();
 						editor.putString("user", user);
 						editor.putString("password", password);
@@ -40,6 +40,7 @@ public class LoginActivity extends BaseSchoolActivity{
 						runOnUiThread(() -> {
 							dialog.dismiss();
 							toast("登陆成功！");
+							finish();
 						});
 					}else{
 						runOnUiThread(() -> {

@@ -11,7 +11,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.university.assistant.R;
-import com.university.assistant.fragment.pictures.PictureData;
+import com.university.assistant.sql.PictureData;
 
 import java.util.ArrayList;
 

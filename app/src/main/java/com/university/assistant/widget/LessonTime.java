@@ -11,7 +11,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.university.assistant.Lesson.LessonData;
+import com.university.assistant.lesson.LessonData;
 import com.university.assistant.util.ColorUtil;
 
 import java.util.Arrays;

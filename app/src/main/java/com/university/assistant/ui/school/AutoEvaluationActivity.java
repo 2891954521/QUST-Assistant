@@ -14,6 +14,10 @@ import com.university.assistant.R;
 import com.university.assistant.util.LogUtil;
 import com.university.assistant.util.WebUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -62,7 +66,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 					"queryModel.showCount=30"
 			);
 			if(!TextUtils.isEmpty(response)){
-				
+				/* SB教务系统
 				Matcher table = Pattern.compile("<tbody(.*?)</tbody>", Pattern.DOTALL).matcher(response);
 				if(table.find()){
 					Matcher tr = Pattern.compile("<tr(.*?)</tr>", Pattern.DOTALL).matcher(table.group(1));
@@ -97,9 +101,8 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 						dialog.dismiss();
 						toast("查询失败！");
 					});
-				}
+				}*/
 				
-				/* SB教务系统
 				JSONArray array = new JSONObject(response).getJSONArray("items");
 				
 				for(int i=0;i<array.length();i++){
@@ -114,7 +117,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 					lesson.jgh_id = js.getString("jgh_id");
 					lesson.pjzt = js.getString("pjzt");
 					lessons.add(lesson);
-				}*/
+				}
 				
 				runOnUiThread(() -> {
 					dialog.dismiss();
@@ -122,7 +125,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 					adapter.notifyDataSetChanged();
 				});
 			}
-		}catch(IOException e){
+		}catch(IOException | JSONException e){
 			LogUtil.Log(e);
 			runOnUiThread(() -> {
 				dialog.dismiss();
@@ -161,7 +164,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 						postData.append("&jxb_id=").append(lesson.jxb_id);
 						postData.append("&kch_id=").append(lesson.kch_id);
 						postData.append("&jgh_id=").append(lesson.jgh_id);
-						//postData.append("&modelList[0].pjzt=").append(lesson.pjzt);
+						postData.append("&modelList[0].pjzt=").append(lesson.pjzt);
 						postData.append("modelList[0].py=&ztpjbl=100&jszdpjbl=0&xykzpjbl=0");
 						
 						response = WebUtil.doPost(
@@ -307,7 +310,7 @@ public class AutoEvaluationActivity extends BaseSchoolActivity{
 		
 		public String jgh_id;
 		
-		//public String pjzt;
+		public String pjzt;
 
 	}
 	

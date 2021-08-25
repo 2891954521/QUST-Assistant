@@ -67,7 +67,6 @@ public abstract class BaseSchoolActivity extends BaseAnimActivity{
 			if(name == null || password == null){
 				toast("请先登录！");
 				startActivity(new Intent(this,LoginActivity.class));
-				finish();
 				return;
 			}
 			new Thread(){

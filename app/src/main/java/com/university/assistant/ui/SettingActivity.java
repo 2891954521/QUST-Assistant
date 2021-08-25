@@ -6,8 +6,8 @@ import android.text.InputType;
 import android.widget.DatePicker;
 
 import com.university.assistant.App;
-import com.university.assistant.Lesson.LessonData;
 import com.university.assistant.R;
+import com.university.assistant.lesson.LessonData;
 import com.university.assistant.util.DateUtil;
 import com.university.assistant.util.DialogUtil;
 import com.university.assistant.util.LogUtil;

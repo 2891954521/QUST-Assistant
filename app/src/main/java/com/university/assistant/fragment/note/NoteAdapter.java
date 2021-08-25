@@ -17,7 +17,8 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.App;
 import com.university.assistant.R;
-import com.university.assistant.ui.NoteEditActivity;
+import com.university.assistant.sql.NoteData;
+import com.university.assistant.ui.note.NoteEditActivity;
 import com.university.assistant.widget.PictureGrid;
 
 import java.util.ArrayList;

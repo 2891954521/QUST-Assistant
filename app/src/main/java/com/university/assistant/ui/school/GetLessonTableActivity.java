@@ -5,9 +5,9 @@ import android.os.Bundle;
 import android.os.Message;
 
 import com.university.assistant.App;
-import com.university.assistant.Lesson.LessonData;
-import com.university.assistant.Lesson.LessonGroup;
 import com.university.assistant.R;
+import com.university.assistant.lesson.LessonData;
+import com.university.assistant.lesson.LessonGroup;
 import com.university.assistant.util.DialogUtil;
 import com.university.assistant.util.FileUtil;
 import com.university.assistant.util.LogUtil;

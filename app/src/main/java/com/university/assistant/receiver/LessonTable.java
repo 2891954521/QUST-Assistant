@@ -12,10 +12,10 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
-import com.university.assistant.Lesson.Lesson;
-import com.university.assistant.Lesson.LessonData;
-import com.university.assistant.Lesson.LessonGroup;
 import com.university.assistant.R;
+import com.university.assistant.lesson.Lesson;
+import com.university.assistant.lesson.LessonData;
+import com.university.assistant.lesson.LessonGroup;
 import com.university.assistant.util.ColorUtil;
 
 public class LessonTable extends AppWidgetProvider{

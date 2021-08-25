@@ -1,4 +1,4 @@
-package com.university.assistant.Lesson;
+package com.university.assistant.lesson;
 
 import com.university.assistant.util.LogUtil;
 

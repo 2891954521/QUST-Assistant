@@ -30,10 +30,14 @@ public class HomeFragment extends BaseFragment{
         if(activity==null) activity = (MainActivity)getContext();
         isCreated = true;
         ViewGroup layout = (ViewGroup)inflater.inflate(R.layout.fragment_home,container,false);
+        
         layout.findViewById(R.id.fragment_home_lesson_table).setOnClickListener(v -> activity.navigationTo(1));
         layout.findViewById(R.id.fragment_home_note).setOnClickListener(v -> activity.navigationTo(2));
         layout.findViewById(R.id.fragment_home_pictures).setOnClickListener(v -> activity.startActivity(new Intent(activity,PictureActivity.class)));
         
+        // layout.findViewById(R.id.fragment_home_account).setOnClickListener(v -> activity.startActivity(new Intent(activity,AccountsActivity.class)));
+        // layout.findViewById(R.id.fragment_home_navigation).setOnClickListener(v -> activity.startActivity(new Intent(activity,NavigationActivity.class)));
+    
         layout.findViewById(R.id.fragment_home_drink).setOnClickListener(v -> activity.startActivity(new Intent(activity,DrinkActivity.class)));
         layout.findViewById(R.id.fragment_home_cpdaily).setOnClickListener(v -> activity.startActivity(new Intent(activity,CpDailyActivity.class)));
         layout.findViewById(R.id.fragment_home_fake_daily).setOnClickListener(v -> activity.startActivity(new Intent(activity,LeaveListActivity.class)));

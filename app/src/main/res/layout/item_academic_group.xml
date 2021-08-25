@@ -5,13 +5,14 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@android:color/white"
-    android:padding="@dimen/widget_margin">
+    android:elevation="4dp">
 
     <TextView
         style="@style/TextNormal"
         android:id="@+id/item_academic_name"
+        android:background="?attr/selectableItemBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/widget_margin"/>
+        android:padding="@dimen/activity_margin" />
 
 </LinearLayout>

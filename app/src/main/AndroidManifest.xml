@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.university.assistant"
-    android:versionCode="8"
-    android:versionName="1.7">
+    android:versionCode="10"
+    android:versionName="1.8.2">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -41,7 +41,7 @@
 
         <activity android:name=".ui.PictureActivity"/>
 
-        <activity android:name=".ui.NoteEditActivity"/>
+        <activity android:name=".ui.note.NoteEditActivity"/>
 
         <activity android:name=".ui.NavigationActivity"/>
 
@@ -62,6 +62,10 @@
         <activity android:name=".ui.school.GetAcademicActivity"/>
 
         <activity android:name=".ui.school.AutoEvaluationActivity"/>
+
+        <activity android:name=".ui.accounts.AccountsActivity"/>
+
+        <activity android:name=".ui.accounts.RecordActivity"/>
 
         <activity android:name=".ui.third.DrinkActivity"/>
 

@@ -19,10 +19,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.university.assistant.App;
-import com.university.assistant.Lesson.Lesson;
-import com.university.assistant.Lesson.LessonData;
-import com.university.assistant.Lesson.LessonGroup;
 import com.university.assistant.R;
+import com.university.assistant.lesson.Lesson;
+import com.university.assistant.lesson.LessonData;
+import com.university.assistant.lesson.LessonGroup;
 import com.university.assistant.ui.MainActivity;
 import com.university.assistant.widget.ColorPicker;
 import com.university.assistant.widget.DialogRoundTop;
@@ -172,10 +172,7 @@ public class LessonTableFragment extends BaseFragment{
 	
 	// 初始化总课表
 	private void initLessonTale(){
-		// 每周课表界面关闭回调
-		weekLayout = layout.findViewById(R.id.fragment_timetable_week);
-		weekLayout.setBackListener(b -> isLessonTableShowing = !b);
-		
+		// 显示第几周的TextView
 		weekText = layout.findViewById(R.id.layout_timetable_week);
 		
 		lessonTable = layout.findViewById(R.id.fragment_timetable_pager);
@@ -201,6 +198,13 @@ public class LessonTableFragment extends BaseFragment{
 		});
 		
 		lessonTable.setCurrentItem(LessonData.getInstance().getCurrentWeek() - 1);
+		
+		// 总课表关闭回调
+		weekLayout = layout.findViewById(R.id.fragment_timetable_week);
+		weekLayout.setBackListener(b -> {
+			isLessonTableShowing = !b;
+			if(b) lessonTable.clearMenu();
+		});
 		
 		isInitLessonTable = true;
 	}
