@@ -87,7 +87,7 @@ public class LessonGroup implements Serializable, Cloneable{
 			for(String a:sp){
 				int type = -1;
 				if(a.endsWith(")")){
-					type = a.charAt(a.length()-2)=='单' ? 1 : 0;
+					type = a.charAt(a.length()-2)=='单' ? 0 : 1;
 					a = a.substring(0,a.length()-4);
 				}else a = a.substring(0,a.length()-1);
 				if(a.contains("-")){
@@ -98,11 +98,11 @@ public class LessonGroup implements Serializable, Cloneable{
 				}
 			}
 			
-			lesson.place = json.getString("cdmc");
+			lesson.place = json.getString("cdmc").trim();
 			
-			lesson.name = json.getString("kcmc");
+			lesson.name = json.getString("kcmc").trim();
 			
-			lesson.teacher = json.getString("xm");
+			lesson.teacher = json.getString("xm").trim();
 			
 		}catch(JSONException e){
 			LogUtil.Log(e);

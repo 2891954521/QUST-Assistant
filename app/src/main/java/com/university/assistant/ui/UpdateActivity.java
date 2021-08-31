@@ -60,14 +60,14 @@ public class UpdateActivity extends BaseAnimActivity{
 		file = new File(getExternalCacheDir(),"release.apk");
 		
 		findViewById(R.id.activity_update_button).setOnClickListener(v -> {
-			if(url==null){
+			if(url == null){
 				checkUpdate();
 			}else{
-				if(file.exists()){
-					checkPackage();
-				}else{
+//				if(file.exists()){
+//					checkPackage();
+//				}else{
 					downloadApk();
-				}
+//				}
 			}
 		});
 		
@@ -158,7 +158,7 @@ public class UpdateActivity extends BaseAnimActivity{
 							checkPackage();
 						});
 						return;
-					}else if(con.getResponseCode()==404){
+					}else if(con.getResponseCode() == 404){
 						app.toast("新版本文件不存在！");
 					}else app.toast("连接服务器失败！");
 					

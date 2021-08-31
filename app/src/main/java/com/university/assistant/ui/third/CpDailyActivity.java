@@ -28,6 +28,8 @@ public class CpDailyActivity extends BaseAnimActivity{
 	
 	private MaterialDialog dialog;
 	
+	private NumberPicker province, city, county;
+	
 	private Node[] provinceNode;
 	
 	private Node[] cityNode;
@@ -86,32 +88,28 @@ public class CpDailyActivity extends BaseAnimActivity{
 		
 		loadCity();
 		
-		NumberPicker province = findViewById(R.id.activity_cpdaily_location_province);
-		NumberPicker city = findViewById(R.id.activity_cpdaily_location_city);
-		NumberPicker county = findViewById(R.id.activity_cpdaily_location_county);
+		province = findViewById(R.id.activity_cpdaily_location_province);
+		city = findViewById(R.id.activity_cpdaily_location_city);
+		county = findViewById(R.id.activity_cpdaily_location_county);
 		
 		province.setMinValue(0);
 		city.setMinValue(0);
 		county.setMinValue(0);
 		
 		province.setDisplayedValues(getPlaceName(provinceNode));
+		city.setDisplayedValues(new String[]{"-"});
+		county.setDisplayedValues(new String[]{"-"});
+		
 		province.setMaxValue(provinceNode.length - 1);
+		city.setMaxValue(0);
+		county.setMaxValue(0);
 		
 		province.setOnValueChangedListener((picker,oldVal,newVal) -> {
-			cityNode = provinceNode[newVal].child;
-			city.setValue(0);
-			city.setMaxValue(1);
-			city.setDisplayedValues(getPlaceName(cityNode));
-			city.setMaxValue(cityNode.length - 1);
+			setCity(newVal);
+			setCounty(0);
 		});
 		
-		city.setOnValueChangedListener((picker,oldVal,newVal) -> {
-			countyNode = cityNode[newVal].child;
-			county.setValue(0);
-			county.setMaxValue(1);
-			county.setDisplayedValues(getPlaceName(countyNode));
-			county.setMaxValue(countyNode.length - 1);
-		});
+		city.setOnValueChangedListener((picker,oldVal,newVal) -> setCounty(newVal));
 
 		findViewById(R.id.activity_cpdaily_update_location).setOnClickListener(v -> {
 			toast("未完成！");
@@ -175,6 +173,28 @@ public class CpDailyActivity extends BaseAnimActivity{
 		}
 	}
 	
+	private void setCity(int position){
+		cityNode = provinceNode[position].child;
+		city.setValue(0);
+		city.setMaxValue(0);
+		if(cityNode == null){
+			city.setDisplayedValues(new String[]{"-"});
+		}else{
+			city.setDisplayedValues(getPlaceName(cityNode));
+			city.setMaxValue(cityNode.length - 1);
+		}
+	}
+	
+	private void setCounty(int position){
+		county.setValue(0);
+		county.setMaxValue(0);
+		if(cityNode == null || (countyNode = cityNode[position].child) == null){
+			county.setDisplayedValues(new String[]{"-"});
+		}else{
+			county.setDisplayedValues(getPlaceName(countyNode));
+			county.setMaxValue(countyNode.length - 1);
+		}
+	}
 	
 	private String[] getPlaceName(Node[] nodes){
 		if(nodes.length == 0) return new String[]{"请选择"};
@@ -193,6 +213,7 @@ public class CpDailyActivity extends BaseAnimActivity{
 		 	name = json.getString("name");
 		 	if(json.has("children")){
 			    JSONArray array = json.getJSONArray("children");
+			    if(array.length() == 0) return;
 			    child = new Node[array.length()];
 			    for(int i=0;i<child.length;i++){
 				    child[i] = new Node(array.getJSONObject(i));

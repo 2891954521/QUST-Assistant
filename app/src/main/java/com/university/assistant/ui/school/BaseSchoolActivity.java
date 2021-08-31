@@ -110,7 +110,7 @@ public abstract class BaseSchoolActivity extends BaseAnimActivity{
 		if(y < 2010){
 			yearPicker.setValue(0);
 		}else{
-			y = (y - 2010) * 2 - (calendar.get(Calendar.MONTH) < Calendar.SEPTEMBER ? 1 : 0);
+			y = (y - 2010) * 2 - (calendar.get(Calendar.MONTH) < Calendar.AUGUST ? 1 : 0);
 			yearPicker.setValue(y < term.length - 1 ? y : term.length - 1);
 		}
 	}

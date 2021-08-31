@@ -22,14 +22,14 @@ public class Lesson implements Serializable, Cloneable{
 	public String teacher;
 	
 	public Lesson(){
-		week = new boolean[30];
+		week = new boolean[24];
 		place = "";
 		name = "";
 		teacher = "";
 		len = 1;
 	}
 	
-	// 填充课程上课周，type -1 正常 1 单周 0 双周
+	// 填充课程上课周，type -1 正常 0 单周 1 双周
 	public void fillLesson(boolean b, int start, int end, int type){
 		if(type == -1){
 			Arrays.fill(week,start - 1, end, b);

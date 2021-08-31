@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.university.assistant.lesson.LessonData;
 import com.university.assistant.util.ColorUtil;
@@ -68,7 +69,7 @@ public class LessonTime extends View{
 	protected void onMeasure(int widthMeasureSpec,int heightMeasureSpec){
 		width = getMeasuredWidth() / ROW_COUNT;
 		height = width * 2 / 3;
-		setMeasuredDimension(widthMeasureSpec,height + height * booleans.length / ROW_COUNT);
+		setMeasuredDimension(widthMeasureSpec,height * booleans.length / ROW_COUNT);
 	}
 	
 	@Override
@@ -135,6 +136,9 @@ public class LessonTime extends View{
 	
 	public void setBooleans(boolean[] _booleans){
 		booleans = _booleans;
+		ViewGroup.LayoutParams layoutParams = getLayoutParams();
+		layoutParams.height = height * booleans.length / ROW_COUNT;
+		setLayoutParams(layoutParams);
 		invalidate();
 	}
 	

@@ -77,13 +77,19 @@ public class LessonTableFragment extends BaseFragment{
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater,@Nullable ViewGroup container,@Nullable Bundle savedInstanceState){
-		if(activity==null) activity = (MainActivity)getContext();
+		if(activity == null) activity = (MainActivity)getContext();
+		
 		LessonData.init(getContext());
-		layout = (RelativeLayout)inflater.inflate(R.layout.fragment_lessontable,container,false);
+		
 		inputManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		initDayLesson(inflater);
+		
+		layout = (RelativeLayout)inflater.inflate(R.layout.fragment_lessontable,container,false);
 		layout.findViewById(R.id.fragment_timetable_navigation).setOnClickListener(v -> navigation());
+		
+		initDayLesson(inflater);
+		
 		isCreated = true;
+		
 		onCreateMenu(activity.getMenu());
 		return layout;
 	}
@@ -180,10 +186,10 @@ public class LessonTableFragment extends BaseFragment{
 		lessonTable.setViewPager(activity.getViewPager());
 		lessonTable.setLessonClickListener((week, count, lesson) -> {
 			if(!isInitLessonInfo){
-				initLessonInfoLayout();
+				initLessonInfoDialog();
 				isInitLessonInfo = true;
 			}
-			lessonInfoDialog(week, count, lesson);
+			showLessonInfoDialog(week, count, lesson);
 		});
 		lessonTable.setUpdateListener(this::updateLesson);
 		lessonTable.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
@@ -210,7 +216,7 @@ public class LessonTableFragment extends BaseFragment{
 	}
 	
 	// 初始化课程编辑界面
-	private void initLessonInfoLayout(){
+	private void initLessonInfoDialog(){
 		lessonInfoBack = layout.findViewById(R.id.layout_lesson_info_back);
 		lessonInfo = layout.findViewById(R.id.layout_lesson_info);
 		
@@ -324,7 +330,7 @@ public class LessonTableFragment extends BaseFragment{
 	}
 	
 	// 显示课程编辑框
-	private void lessonInfoDialog(int _week,int _count,Lesson lesson){
+	private void showLessonInfoDialog(int _week,int _count,Lesson lesson){
 		
 		isLessonInfoShowing = true;
 		
@@ -352,7 +358,7 @@ public class LessonTableFragment extends BaseFragment{
 		
 		lessonLen.setText(String.valueOf(editLesson.len));
 		
-		lessonTime.setBooleans(editLesson.week);
+		lessonTime.setBooleans(editLesson.week.clone());
 		
 		lessonColor.setChoose(editLesson.color);
 
