@@ -1,4 +1,4 @@
-package com.university.assistant.fragment.note;
+package com.university.assistant.ui.fragment.note;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +10,10 @@ import android.widget.ListView;
 
 import com.university.assistant.App;
 import com.university.assistant.R;
-import com.university.assistant.fragment.BaseFragment;
 import com.university.assistant.sql.NoteData;
 import com.university.assistant.sql.PictureData;
 import com.university.assistant.ui.MainActivity;
+import com.university.assistant.ui.fragment.BaseFragment;
 import com.university.assistant.ui.note.NoteEditActivity;
 import com.university.assistant.widget.BigImage;
 

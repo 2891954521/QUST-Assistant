@@ -320,7 +320,6 @@ public class LessonTable extends ViewPager{
 							}
 						}
 					}
-					clearMenu();
 					break;
 			}
 			return true;
@@ -418,11 +417,11 @@ public class LessonTable extends ViewPager{
 		
 		private void drawTime(Canvas canvas){
 			paintT.setColor(Color.GRAY);
-			int x = (int)((timeWidth - paintT.measureText(LessonGroup.LESSON_TIME_SUMMER[0][0])) / 2);
+			int x = (int)((timeWidth - paintT.measureText(LessonData.Lesson_Time_Text[0][0])) / 2);
 			int y = dateHeight + baseLine + (height - textHeight * 2) / 2;
 			for(int i=0;i<lessonGroups[0].length;i++){
-				canvas.drawText(LessonGroup.LESSON_TIME_SUMMER[0][i],  x, y, paintT);
-				canvas.drawText(LessonGroup.LESSON_TIME_SUMMER[1][i],  x,y + textHeight, paintT);
+				canvas.drawText(LessonData.Lesson_Time_Text[0][i],  x, y, paintT);
+				canvas.drawText(LessonData.Lesson_Time_Text[1][i],  x,y + textHeight, paintT);
 				y += height;
 			}
 		}

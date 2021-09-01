@@ -15,7 +15,7 @@ public class App extends Application{
 	
 	public static final int APP_REQUEST_CODE = 10;
 	
-	public static final int DEV_VERSION = 2;
+	public static final int DEV_VERSION = 3;
 	
 	private Thread.UncaughtExceptionHandler handler;
 	

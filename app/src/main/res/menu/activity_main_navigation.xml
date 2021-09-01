@@ -13,10 +13,4 @@
         android:icon="@drawable/ic_notifications"
         android:title="课表" />
 
-    <item
-        android:orderInCategory="2"
-        android:id="@+id/nav_note"
-        android:icon="@drawable/ic_edit"
-        android:title="笔记" />
-
 </menu>

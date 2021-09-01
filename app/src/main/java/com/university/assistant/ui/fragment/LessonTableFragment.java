@@ -1,4 +1,4 @@
-package com.university.assistant.fragment;
+package com.university.assistant.ui.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -24,6 +24,7 @@ import com.university.assistant.lesson.Lesson;
 import com.university.assistant.lesson.LessonData;
 import com.university.assistant.lesson.LessonGroup;
 import com.university.assistant.ui.MainActivity;
+import com.university.assistant.util.ColorUtil;
 import com.university.assistant.widget.ColorPicker;
 import com.university.assistant.widget.DialogRoundTop;
 import com.university.assistant.widget.LessonTable;
@@ -146,31 +147,66 @@ public class LessonTableFragment extends BaseFragment{
 		
 		String[] time = { "上午课程", null, null, null, "下午课程", null, null, null, "晚上课程", null};
 		
+		int pass = 0;
+		
 		boolean needEmpty = false;
 		
-		for(int i=0;i<time.length;){
-//			h -= LessonTableData.summer[i][0];
-//			m -= LessonTableData.summer[i][1];
-//			if(m<0){
-//				h -= 1;
-//				m += 60;
-//			}
-			if(time[i]!=null){
-				needEmpty = true;
-				TextView t = (TextView)inflater.inflate(R.layout.view_text,null);
-				t.setText(time[i]);
-				content.addView(t);
-			}
-			Lesson lesson;
-			if(lessonGroups[i] == null || (lesson = lessonGroups[i].getCurrentLesson(currentWeek)) == null){
-				if(needEmpty){
-					needEmpty = false;
-					content.addView(LessonGroup.getView(getContext(),null, i, 1, h, m));
+		View view = null;
+		
+		Lesson lesson = null;
+		
+		for(int i=0;i<time.length;i++){
+			if(pass == 0){
+				if(time[i] != null){
+					needEmpty = true;
+					TextView t = (TextView)inflater.inflate(R.layout.view_text, null);
+					t.setText(time[i]);
+					content.addView(t);
 				}
-				i++;
-			}else{
-				content.addView(LessonGroup.getView(getContext(),lesson, i , lesson.len, h, m));
-				i += lesson.len;
+				
+				if(lessonGroups[i] == null || (lesson = lessonGroups[i].getCurrentLesson(currentWeek)) == null){
+					if(needEmpty){
+						needEmpty = false;
+						content.addView(LessonGroup.getView(getContext(),null, i, 1));
+					}
+				}else{
+					view = LessonGroup.getView(getContext(), lesson, i, lesson.len);
+					pass = lesson.len;
+				}
+			}
+			
+			h -= LessonData.Lesson_Time[i][0];
+			m -= LessonData.Lesson_Time[i][1];
+			if(m < 0){ h -= 1; m += 60; }
+			
+			if(pass > 0){
+				if(view == null) continue;
+				if(h > 0){
+					if(pass == 1){
+						((TextView)view.findViewById(R.id.item_lesson_status)).setText("已结束");
+						content.addView(view);
+					}
+				}else if(h == 0){
+					if(m > 50){
+						if(pass == 1){
+							((TextView)view.findViewById(R.id.item_lesson_status)).setText("已结束");
+							content.addView(view);
+						}
+					}else{
+						TextView t = view.findViewById(R.id.item_lesson_status);
+						t.setText((50 - m) + "min后下课");
+						t.setTextColor(ColorUtil.TEXT_COLORS[0]);
+						TextView n = view.findViewById(R.id.item_lesson_name);
+						n.getPaint().setFakeBoldText(true);
+						content.addView(view);
+						view = null;
+					}
+				}else{
+					((TextView)view.findViewById(R.id.item_lesson_status)).setText("未开始");
+					content.addView(view);
+					view = null;
+				}
+				pass--;
 			}
 		}
 		isInitDayLesson = true;

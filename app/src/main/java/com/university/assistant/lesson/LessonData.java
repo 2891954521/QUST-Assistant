@@ -24,18 +24,41 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import androidx.preference.PreferenceManager;
+
+/**
+ * 储存所有课程信息的类
+ */
 public class LessonData{
 
 	private static LessonData data;
 	
-	public static final int[][] winter = {
-			{0,0},{2,10},{3,20},{2,10},{2,20},
+	// 时间
+	public static final String[][][] LESSON_TIME_TEXT = new String[][][]{
+		{
+			{"08:00", "09:00", "10:10", "11:10", "13:30", "14:30", "15:40", "16:40", "18:00", "19:00"},
+			{"08:50", "09:50", "11:00", "12:00", "14:20", "15:20", "16:30", "17:30", "18:50", "19:50"}
+		},{
+			{"08:00", "09:00", "10:10", "11:10", "14:00", "15:00", "16:10", "17:10", "18:30", "19:30"},
+			{"08:50", "09:50", "11:00", "12:00", "14:50", "15:50", "17:00", "18:00", "19:20", "20:20"}
+		},
 	};
 	
-	public static final int[][] summer = {
-			{0,0},{2,10},{3,50},{2,40},{2,50},
+	// 时间差
+	public static final int[][][] LESSON_TIME = {
+		{
+			// 冬季
+			{0,0},{1,0}, {1,10},{1,0}, {2,20},{1,0}, {1,10},{1,0}, {1,20},{1,0}
+		},{
+			// 夏季
+			{0,0},{1,0}, {1,10},{1,0}, {2,50},{1,0}, {1,10},{1,0}, {1,20}, {1,0}
+		}
 	};
 	
+	public static int[][] Lesson_Time;
+	
+	public static String[][] Lesson_Time_Text;
+
 	private LessonGroup[][] lessonGroups;
 	
 	// 开学时间
@@ -54,14 +77,6 @@ public class LessonData{
 	
 	private SharedPreferences sp;
 	
-	public static LessonData getInstance(){ return data; }
-	
-	public static void init(Context context){
-		synchronized(LessonData.class){
-			if(data==null) data = new LessonData(context);
-		}
-	}
-	
 	private LessonData(final Context context){
 		
 		sp = context.getSharedPreferences("timetable",Context.MODE_PRIVATE);
@@ -73,7 +88,26 @@ public class LessonData{
 		
 		lessonGroups = new LessonGroup[7][10];
 		
+		initLessonTime(context);
+		
 		initLesson(context);
+	}
+	
+
+	
+	public static void init(Context context){
+		synchronized(LessonData.class){
+			if(data == null) data = new LessonData(context);
+		}
+	}
+	
+	public static LessonData getInstance(){ return data; }
+	
+	// 初始化课程时间
+	public void initLessonTime(Context context){
+		int time = PreferenceManager.getDefaultSharedPreferences(context).getInt("lessonTime", 0);
+		Lesson_Time = LESSON_TIME[time];
+		Lesson_Time_Text = LESSON_TIME_TEXT[time];
 	}
 	
 	// 初始化课表

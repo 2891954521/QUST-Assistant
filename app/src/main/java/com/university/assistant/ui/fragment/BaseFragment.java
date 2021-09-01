@@ -1,4 +1,4 @@
-package com.university.assistant.fragment;
+package com.university.assistant.ui.fragment;
 
 import android.content.Intent;
 import android.view.View;

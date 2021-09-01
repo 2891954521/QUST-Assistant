@@ -1,6 +1,7 @@
 package com.university.assistant.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.DatePicker;
@@ -19,6 +20,7 @@ import java.util.TimeZone;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 public class SettingActivity extends BaseAnimActivity{
 	
@@ -83,6 +85,17 @@ public class SettingActivity extends BaseAnimActivity{
 							activity.toast("设置完成!");
 							dialog.dismiss();
 				}).show();
+				return true;
+			});
+			
+			findPreference("key_set_lesson_time").setOnPreferenceClickListener(p -> {
+				DialogUtil.getBaseDialog(activity).title("课程时间")
+						.items(new String[]{"冬季", "夏季"})
+						.itemsCallback((dialog,itemView,position,text) -> {
+							SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(activity);
+							setting.edit().putInt("lessonTime",position).apply();
+						})
+						.onPositive((dialog,which) -> dialog.dismiss()).show();
 				return true;
 			});
 			

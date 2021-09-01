@@ -1,4 +1,4 @@
-package com.university.assistant.fragment.note;
+package com.university.assistant.ui.fragment.note;
 
 import android.app.Activity;
 import android.content.Context;

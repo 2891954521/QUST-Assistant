@@ -21,16 +21,6 @@ import androidx.annotation.Nullable;
 
 public class LessonGroup implements Serializable, Cloneable{
 	
-	public static final String[][] LESSON_TIME_WINTER = new String[][]{
-			{"08:00", "09:00", "10:10", "11:10", "13:30", "14:30", "15:40", "16:40", "18:00", "19:00"},
-			{"08:50", "09:50", "11:00", "12:00", "14:20", "15:20", "16:30", "17:30", "18:50", "19:50"}
-	};
-	
-	public static final String[][] LESSON_TIME_SUMMER = new String[][]{
-			{"08:00", "09:00", "10:10", "11:10", "14:00", "15:00", "16:10", "17:10", "18:30", "19:30"},
-			{"08:50", "09:50", "11:00", "12:00", "14:50", "15:50", "17:00", "18:00", "19:20", "20:20"}
-	};
-	
 	public static final LessonGroup EMPTY_LESSON_GROUP = new LessonGroup(0,0);
 	
 	// 星期几 1-7
@@ -39,7 +29,7 @@ public class LessonGroup implements Serializable, Cloneable{
 	public int count;
 	
 	public Lesson[] lessons;
-
+	
 	public LessonGroup(int _week,int _count){
 		week = _week;
 		count = _count;
@@ -73,7 +63,7 @@ public class LessonGroup implements Serializable, Cloneable{
 	}
 	
 	public static LessonGroup getLesson(LessonGroup lessonGroup,int week){
-		if(lessonGroup== null) return EMPTY_LESSON_GROUP;
+		if(lessonGroup == null) return EMPTY_LESSON_GROUP;
 		Lesson baseLesson = lessonGroup.getCurrentLesson(week);
 		return baseLesson == null ?EMPTY_LESSON_GROUP:lessonGroup;
 	}
@@ -142,9 +132,9 @@ public class LessonGroup implements Serializable, Cloneable{
 		return null;
 	}
 	
-	public static View getView(Context context, Lesson lesson, int count, int len, int hour, int minute){
+	public static View getView(Context context, Lesson lesson, int count, int len){
 		View v = LayoutInflater.from(context).inflate(R.layout.item_lesson,null);
-		((TextView)v.findViewById(R.id.item_lesson_time)).setText(LESSON_TIME_SUMMER[0][count] + "\n" + LESSON_TIME_SUMMER[1][count + len - 1]);
+		((TextView)v.findViewById(R.id.item_lesson_time)).setText(LessonData.Lesson_Time_Text[0][count] + "\n" + LessonData.Lesson_Time_Text[1][count + len - 1]);
 		TextView n = v.findViewById(R.id.item_lesson_name);
 		if(lesson == null){
 			n.setText("空闲");
@@ -156,26 +146,6 @@ public class LessonGroup implements Serializable, Cloneable{
 			if("".equals(lesson.place) || "".equals(lesson.teacher))
 				((TextView)v.findViewById(R.id.item_lesson_info)).setText(lesson.place + lesson.teacher);
 			else ((TextView)v.findViewById(R.id.item_lesson_info)).setText(lesson.place +" | " + lesson.teacher);
-//			TextView t = v.findViewById(R.id.item_lesson_status);
-//			if(hour>1){
-//				t.setText("已结束");
-//			}else if(hour==1){
-//				if(minute>50){
-//					t.setText("已结束");
-//				}else{
-//					t.setText((50 - minute) + "min后下课");
-//					t.setTextColor(ColorUtil.TEXT_COLORS[1]);
-//					n.getPaint().setFakeBoldText(true);
-//				}
-//			}else if(hour==0){
-//				if(minute>50){
-//					t.setText((110 - minute) + "min后下课");
-//				}else t.setText("1h" + (50 - minute) + "min后下课");
-//				t.setTextColor(ColorUtil.TEXT_COLORS[1]);
-//				n.getPaint().setFakeBoldText(true);
-//			}else if(hour<0){
-//				t.setText("未开始");
-//			}
 		}
 		return v;
 	}

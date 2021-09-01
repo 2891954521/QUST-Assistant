@@ -1,4 +1,4 @@
-package com.university.assistant.fragment;
+package com.university.assistant.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.university.assistant.R;
 import com.university.assistant.ui.MainActivity;
+import com.university.assistant.ui.NavigationActivity;
 import com.university.assistant.ui.PictureActivity;
 import com.university.assistant.ui.school.AutoEvaluationActivity;
 import com.university.assistant.ui.school.GetAcademicActivity;
@@ -36,7 +37,7 @@ public class HomeFragment extends BaseFragment{
         layout.findViewById(R.id.fragment_home_pictures).setOnClickListener(v -> activity.startActivity(new Intent(activity,PictureActivity.class)));
         
         // layout.findViewById(R.id.fragment_home_account).setOnClickListener(v -> activity.startActivity(new Intent(activity,AccountsActivity.class)));
-        // layout.findViewById(R.id.fragment_home_navigation).setOnClickListener(v -> activity.startActivity(new Intent(activity,NavigationActivity.class)));
+        layout.findViewById(R.id.fragment_home_navigation).setOnClickListener(v -> activity.startActivity(new Intent(activity,NavigationActivity.class)));
     
         layout.findViewById(R.id.fragment_home_drink).setOnClickListener(v -> activity.startActivity(new Intent(activity,DrinkActivity.class)));
         layout.findViewById(R.id.fragment_home_cpdaily).setOnClickListener(v -> activity.startActivity(new Intent(activity,CpDailyActivity.class)));

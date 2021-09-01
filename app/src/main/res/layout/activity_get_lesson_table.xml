@@ -1,64 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.university.assistant.widget.SlidingLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/slidingLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:orientation="vertical">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        app:navigationIcon="@drawable/ic_back"
-        app:titleTextColor="@android:color/white"
-        app:title="获取课表">
-
-        <ImageView
-            android:id="@+id/activity_get_lesson_table_done"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|end"
-            android:layout_margin="@dimen/widget_margin"
-            android:padding="@dimen/widget_margin"
-            android:src="@drawable/ic_done"/>
-
-    </androidx.appcompat.widget.Toolbar>
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:orientation="horizontal"
-        android:padding="@dimen/widget_margin"
-        android:gravity="center">
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical">
 
-        <TextView
-            style="@style/TextNormal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/widget_margin"
-            android:text="学期"/>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:navigationIcon="@drawable/ic_back"
+            app:titleTextColor="@android:color/white"
+            app:title="获取课表">
 
-        <NumberPicker
-            android:id="@+id/activity_school_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_margin"
-            android:layout_marginEnd="@dimen/activity_margin"
-            android:descendantFocusability="blocksDescendants" />
-
-            <Button
-                android:id="@+id/activity_school_query"
+            <ImageView
+                android:id="@+id/activity_get_lesson_table_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="查询"/>
+                android:layout_gravity="center|end"
+                android:layout_margin="@dimen/widget_margin"
+                android:padding="@dimen/widget_margin"
+                android:src="@drawable/ic_done"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="horizontal"
+            android:padding="@dimen/widget_margin"
+            android:gravity="center">
+
+            <TextView
+                style="@style/TextNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/widget_margin"
+                android:text="学期"/>
+
+            <NumberPicker
+                android:id="@+id/activity_school_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/activity_margin"
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:descendantFocusability="blocksDescendants" />
+
+                <Button
+                    android:id="@+id/activity_school_query"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="查询"/>
+
+        </LinearLayout>
+
+        <com.university.assistant.widget.LessonTable
+            android:id="@+id/activity_get_lesson_table_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
-    <com.university.assistant.widget.LessonTable
-        android:id="@+id/activity_get_lesson_table_preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</LinearLayout>
+</com.university.assistant.widget.SlidingLayout>

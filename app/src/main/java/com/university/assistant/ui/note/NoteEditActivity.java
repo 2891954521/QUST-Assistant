@@ -21,11 +21,11 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.R;
-import com.university.assistant.fragment.note.Note;
-import com.university.assistant.fragment.note.NoteFragment;
 import com.university.assistant.sql.NoteData;
 import com.university.assistant.sql.PictureData;
 import com.university.assistant.ui.BaseAnimActivity;
+import com.university.assistant.ui.fragment.note.Note;
+import com.university.assistant.ui.fragment.note.NoteFragment;
 import com.university.assistant.util.DateUtil;
 import com.university.assistant.util.LogUtil;
 import com.university.assistant.widget.BigImage;

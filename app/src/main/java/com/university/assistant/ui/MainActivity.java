@@ -17,10 +17,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.university.assistant.App;
 import com.university.assistant.R;
-import com.university.assistant.fragment.BaseFragment;
-import com.university.assistant.fragment.HomeFragment;
-import com.university.assistant.fragment.LessonTableFragment;
-import com.university.assistant.fragment.note.NoteFragment;
+import com.university.assistant.ui.fragment.BaseFragment;
+import com.university.assistant.ui.fragment.HomeFragment;
+import com.university.assistant.ui.fragment.LessonTableFragment;
 import com.university.assistant.ui.school.LoginActivity;
 import com.university.assistant.util.UpdateUtil;
 
@@ -40,7 +39,7 @@ public class MainActivity extends BaseActivity{
 	
 	public ViewPager viewPager;
 	
-	private BaseFragment[] fragments = new BaseFragment[3];
+	private BaseFragment[] fragments;
 	
 	private Toolbar toolbar;
 	
@@ -60,9 +59,10 @@ public class MainActivity extends BaseActivity{
 		toolbar = findViewById(R.id.toolbar);
 		toolbar.setNavigationOnClickListener(v -> getDrawer().open());
 		
-		fragments[0] = new HomeFragment().setActivity(this);
-		fragments[1] = new LessonTableFragment().setActivity(this);
-		fragments[2] = new NoteFragment().setActivity(this);
+		fragments = new BaseFragment[]{
+				new HomeFragment().setActivity(this),
+				new LessonTableFragment().setActivity(this)
+		};
 		
 		NavigationView nav = findViewById(R.id.nav_view);
 		nav.setNavigationItemSelectedListener(item -> {

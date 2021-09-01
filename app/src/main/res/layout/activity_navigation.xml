@@ -23,66 +23,74 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/widget_margin"
-            android:padding="@dimen/widget_margin"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:paddingTop="@dimen/activity_margin">
 
             <TextView
-                style="@style/TextNormal"
-                android:layout_width="wrap_content"
+                style="@style/TextBig"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="出发点" />
+                android:layout_weight="1"
+                android:padding="0dp"
+                android:text="起点"/>
 
-            <RadioGroup
-                android:id="@+id/activity_navigation_start"
-                android:layout_width="match_parent"
+            <TextView
+                style="@style/TextBig"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/widget_margin">
-
-                <RadioButton
-                    android:id="@+id/activity_navigation_current"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="当前教室" />
-
-                <RadioButton
-                    android:id="@+id/activity_navigation_north"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="学院楼方向" />
-
-                <RadioButton
-                    android:id="@+id/activity_navigation_south"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="弘毅楼方向" />
-
-            </RadioGroup>
+                android:layout_weight="1"
+                android:padding="0dp"
+                android:text="终点"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/widget_margin"
-            android:padding="@dimen/widget_margin"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:padding="@dimen/widget_margin">
 
-            <TextView
-                style="@style/TextNormal"
-                android:layout_width="wrap_content"
+            <NumberPicker
+                android:id="@+id/activity_navigation_start_floor"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="目的地" />
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/widget_margin"
+                android:descendantFocusability="blocksDescendants" />
 
-            <TextView
-                android:id="@+id/activity_navigation_destination"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+            <NumberPicker
+                android:id="@+id/activity_navigation_start_place"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/widget_margin"
+                android:descendantFocusability="blocksDescendants" />
+
+            <NumberPicker
+                android:id="@+id/activity_navigation_end_floor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/activity_margin"
+                android:descendantFocusability="blocksDescendants" />
+
+            <NumberPicker
+                android:id="@+id/activity_navigation_end_place"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/widget_margin"
+                android:layout_marginEnd="@dimen/widget_margin"
+                android:descendantFocusability="blocksDescendants" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/activity_navigation_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/widget_margin"
+            android:text="导航"/>
 
         <TextView
             style="@style/TextNormal"
