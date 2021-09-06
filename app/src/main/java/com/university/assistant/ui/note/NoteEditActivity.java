@@ -24,8 +24,6 @@ import com.university.assistant.R;
 import com.university.assistant.sql.NoteData;
 import com.university.assistant.sql.PictureData;
 import com.university.assistant.ui.BaseAnimActivity;
-import com.university.assistant.ui.fragment.note.Note;
-import com.university.assistant.ui.fragment.note.NoteFragment;
 import com.university.assistant.util.DateUtil;
 import com.university.assistant.util.LogUtil;
 import com.university.assistant.widget.BigImage;
@@ -119,7 +117,7 @@ public class NoteEditActivity extends BaseAnimActivity{
             data.items = item;
             
             data.pictures = pictures;
-            setResult(RESULT_OK,getIntent().putExtra("class",NoteFragment.class.getName()));
+            setResult(RESULT_OK,getIntent().putExtra("class",NoteActivity.class.getName()));
             finish();
         });
 

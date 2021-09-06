@@ -1,9 +1,10 @@
-package com.university.assistant.ui;
+package com.university.assistant.ui.picture;
 
 import android.os.Bundle;
 
 import com.university.assistant.R;
 import com.university.assistant.sql.PictureData;
+import com.university.assistant.ui.BaseAnimActivity;
 import com.university.assistant.widget.BigImage;
 import com.university.assistant.widget.PictureGrid;
 
@@ -19,6 +20,8 @@ public class PictureActivity extends BaseAnimActivity{
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_picture);
+		
+		PictureData.init(this);
 		
 		bigImage = findViewById(R.id.activity_picture_image);
 		

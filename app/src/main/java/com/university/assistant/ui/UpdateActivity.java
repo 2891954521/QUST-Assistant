@@ -87,6 +87,11 @@ public class UpdateActivity extends BaseAnimActivity{
 		
 		findViewById(R.id.toolbar).postDelayed(this::checkUpdate,200);
 		
+		try{
+			PackageInfo pkg = getPackageManager().getPackageInfo(getPackageName(), 0);
+			((TextView)findViewById(R.id.activity_update_current_version)).setText("当前版本：" + pkg.versionName);
+		}catch(PackageManager.NameNotFoundException ignore){ }
+		
 		initToolBar(null);
 		initSliding(null, null);
 		

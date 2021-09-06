@@ -180,7 +180,6 @@ public class LessonTable extends ViewPager{
 		}
 	}
 	
-	
 	private class LessonTableAdapter extends PagerAdapter{
 		
 		public LessonTableAdapter(){
@@ -299,18 +298,18 @@ public class LessonTable extends ViewPager{
 						i += len;
 					}
 					
-					if(count!=-1){
-						postDelayed(runnable,longPressTime);
+					if(count != -1){
+						postDelayed(runnable, longPressTime);
 					}
 					break;
 				
 				case MotionEvent.ACTION_MOVE:
-					if(downX!=event.getX() || downY!=event.getY()) clearMenu();
+					if(Math.abs(downX - event.getX()) > touchSlop || Math.abs(downY - event.getY()) > touchSlop) clearMenu();
 					break;
 				
 				case MotionEvent.ACTION_UP:
-					if(!isMenuShowing && downX==event.getX() && downY==event.getY()){
-						if(count!=-1){
+					if(!isMenuShowing && downX == event.getX() && downY == event.getY()){
+						if(count != -1){
 							if(lastWeek == week && lastCount == count){
 								click.clickLesson(week + 1,count + 1,lesson);
 							}else{
@@ -319,6 +318,7 @@ public class LessonTable extends ViewPager{
 								invalidate();
 							}
 						}
+						clearMenu();
 					}
 					break;
 			}
@@ -423,6 +423,14 @@ public class LessonTable extends ViewPager{
 				canvas.drawText(LessonData.Lesson_Time_Text[0][i],  x, y, paintT);
 				canvas.drawText(LessonData.Lesson_Time_Text[1][i],  x,y + textHeight, paintT);
 				y += height;
+			}
+		}
+		
+		public void clearMenu(){
+			if(isMenuShowing){
+				menu.dismiss();
+			}else{
+				removeCallbacks(runnable);
 			}
 		}
 		

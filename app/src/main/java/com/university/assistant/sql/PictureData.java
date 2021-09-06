@@ -12,7 +12,7 @@ import android.os.Environment;
 import android.widget.ImageView;
 
 import com.university.assistant.R;
-import com.university.assistant.ui.fragment.pictures.Picture;
+import com.university.assistant.ui.picture.Picture;
 import com.university.assistant.util.LogUtil;
 
 import java.io.File;

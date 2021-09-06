@@ -1,4 +1,4 @@
-package com.university.assistant.ui.fragment.note;
+package com.university.assistant.ui.note;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,7 +18,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.university.assistant.App;
 import com.university.assistant.R;
 import com.university.assistant.sql.NoteData;
-import com.university.assistant.ui.note.NoteEditActivity;
 import com.university.assistant.widget.PictureGrid;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.university.assistant.ui.fragment.pictures;
+package com.university.assistant.ui.picture;
 
 import java.io.Serializable;
 

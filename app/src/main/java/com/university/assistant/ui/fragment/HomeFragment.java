@@ -10,7 +10,8 @@ import android.widget.ImageView;
 import com.university.assistant.R;
 import com.university.assistant.ui.MainActivity;
 import com.university.assistant.ui.NavigationActivity;
-import com.university.assistant.ui.PictureActivity;
+import com.university.assistant.ui.note.NoteActivity;
+import com.university.assistant.ui.picture.PictureActivity;
 import com.university.assistant.ui.school.AutoEvaluationActivity;
 import com.university.assistant.ui.school.GetAcademicActivity;
 import com.university.assistant.ui.school.GetExamActivity;
@@ -33,8 +34,8 @@ public class HomeFragment extends BaseFragment{
         ViewGroup layout = (ViewGroup)inflater.inflate(R.layout.fragment_home,container,false);
         
         layout.findViewById(R.id.fragment_home_lesson_table).setOnClickListener(v -> activity.navigationTo(1));
-        layout.findViewById(R.id.fragment_home_note).setOnClickListener(v -> activity.navigationTo(2));
-        layout.findViewById(R.id.fragment_home_pictures).setOnClickListener(v -> activity.startActivity(new Intent(activity,PictureActivity.class)));
+        layout.findViewById(R.id.fragment_home_note).setOnClickListener(v -> activity.startActivity(new Intent(activity, NoteActivity.class)));
+        layout.findViewById(R.id.fragment_home_pictures).setOnClickListener(v -> activity.startActivity(new Intent(activity, PictureActivity.class)));
         
         // layout.findViewById(R.id.fragment_home_account).setOnClickListener(v -> activity.startActivity(new Intent(activity,AccountsActivity.class)));
         layout.findViewById(R.id.fragment_home_navigation).setOnClickListener(v -> activity.startActivity(new Intent(activity,NavigationActivity.class)));

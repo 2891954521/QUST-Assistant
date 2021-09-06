@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.university.assistant.ui.fragment.note.Note;
+import com.university.assistant.ui.note.Note;
 
 import java.util.ArrayList;
 

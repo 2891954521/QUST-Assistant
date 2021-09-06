@@ -1,4 +1,4 @@
-package com.university.assistant.ui.fragment.note;
+package com.university.assistant.ui.note;
 
 import android.database.Cursor;
 

@@ -1,6 +1,7 @@
 package com.university.assistant.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import com.university.assistant.lesson.Lesson;
 import com.university.assistant.lesson.LessonData;
 import com.university.assistant.lesson.LessonGroup;
 import com.university.assistant.ui.MainActivity;
+import com.university.assistant.ui.NavigationActivity;
 import com.university.assistant.util.ColorUtil;
 import com.university.assistant.widget.ColorPicker;
 import com.university.assistant.widget.DialogRoundTop;
@@ -106,8 +108,11 @@ public class LessonTableFragment extends BaseFragment{
 	@Override
 	public void onResume(){
 		super.onResume();
-		if(isInitDayLesson) initDayLesson(LayoutInflater.from(getContext()));
-		if(isCreated&&!isInitLessonTable) initLessonTale();
+		if(isCreated){
+			// TODO: 不知道干啥的
+			// if(isInitDayLesson) initDayLesson(LayoutInflater.from(getContext()));
+			if(!isInitLessonTable) initLessonTale();
+		}
 	}
 	
 	@Override
@@ -180,15 +185,16 @@ public class LessonTableFragment extends BaseFragment{
 			if(m < 0){ h -= 1; m += 60; }
 			
 			if(pass > 0){
+				pass--;
 				if(view == null) continue;
 				if(h > 0){
-					if(pass == 1){
+					if(pass == 0){
 						((TextView)view.findViewById(R.id.item_lesson_status)).setText("已结束");
 						content.addView(view);
 					}
 				}else if(h == 0){
 					if(m > 50){
-						if(pass == 1){
+						if(pass == 0){
 							((TextView)view.findViewById(R.id.item_lesson_status)).setText("已结束");
 							content.addView(view);
 						}
@@ -206,7 +212,6 @@ public class LessonTableFragment extends BaseFragment{
 					content.addView(view);
 					view = null;
 				}
-				pass--;
 			}
 		}
 		isInitDayLesson = true;
@@ -410,60 +415,58 @@ public class LessonTableFragment extends BaseFragment{
 		lessonTable.setCurrentItem(currentWeek);
 	}
 	
-	// TODO:暂时屏蔽导航功能
 	private void navigation(){
-//
-//		Lesson[] lessons = LessonTableData.getInstance().getLessons()[LessonTableData.getInstance().getWeek()];
-//
-//		Calendar c = Calendar.getInstance();
-//		int h = c.get(Calendar.HOUR_OF_DAY) - 8;
-//		int m = c.get(Calendar.MINUTE);
-//
-//		int currentWeek = LessonTableData.getInstance().getCurrentWeek();
-//
-//		int nextLesson = 0;
-//
-//		for(int i=0;i<5;i++){
-//			h -= LessonTableData.summer[i][0];
-//			m -= LessonTableData.summer[i][1];
-//			if(m<0){
-//				h -= 1;
-//				m += 60;
-//			}
-//			if(h<0){
-//				nextLesson = i;
-//				break;
-//			}
-//		}
-//
-//		String s = "";
-//
-//		Lesson next = Lesson.getLesson(lessons[nextLesson],currentWeek,nextLesson+1);
-//
-//		if(nextLesson==0){
-//			if(next.place.startsWith("明")){
-//				Intent i = new Intent(activity,NavigationActivity.class);
-//				i.putExtra("start","学院楼");
-//				i.putExtra("destination",next.place);
-//				startActivity(i);
-//			}else if("".equals(next.place)){
-//				toast("当前没有课");
-//			}else{
-//				toast("暂不支持导航");
-//			}
-//		}else{
-//			Lesson current = Lesson.getLesson(lessons[nextLesson-1],currentWeek,nextLesson);
-//			if(next.place.startsWith("明")){
-//				Intent i = new Intent(activity,NavigationActivity.class);
-//				i.putExtra("start",current.place);
-//				i.putExtra("destination",next.place);
-//				startActivity(i);
-//			}else if("".equals(next.place)){
-//				toast("当前没有课");
-//			}else{
-//				toast("暂不支持导航");
-//			}
-//		}
+
+		LessonGroup[] lessonGroups = LessonData.getInstance().getLessonGroups()[LessonData.getInstance().getWeek()];
+		
+		int currentWeek = LessonData.getInstance().getCurrentWeek();
+		
+		Calendar c = Calendar.getInstance();
+		int h = c.get(Calendar.HOUR_OF_DAY) - 8;
+		int m = c.get(Calendar.MINUTE);
+		
+		int pass = 0;
+		
+		Lesson lesson = null;
+		
+		Lesson currentLesson = null;
+		
+		int current = 0;
+		
+		for(int i=0;i<lessonGroups.length;i++){
+			if(pass == 0){
+				if(lessonGroups[i] != null && (lesson = lessonGroups[i].getCurrentLesson(currentWeek)) != null){
+					current = i;
+					currentLesson = lesson;
+					pass = lesson.len;
+				}
+			}
+			
+			h -= LessonData.Lesson_Time[i][0];
+			m -= LessonData.Lesson_Time[i][1];
+			if(m < 0){ h -= 1; m += 60; }
+			
+			if(pass > 0){
+				pass--;
+				if(h == 0){
+					break;
+				}
+			}
+		}
+		
+		Lesson nextLesson = null;
+		
+		if(lessonGroups[current + 1] == null || (nextLesson = lessonGroups[current + 1].getCurrentLesson(currentWeek)) == null){
+			startActivity(new Intent(activity,NavigationActivity.class));
+		}else if(nextLesson.place.startsWith("明")){
+			startActivity(new Intent(activity,NavigationActivity.class)
+					.putExtra("start",currentLesson == null ? "学院楼" : currentLesson.place)
+					.putExtra("destination",nextLesson.place)
+			);
+		}else{
+			toast("暂不支持导航");
+			startActivity(new Intent(activity,NavigationActivity.class));
+		}
 	}
 	
 	@Override
