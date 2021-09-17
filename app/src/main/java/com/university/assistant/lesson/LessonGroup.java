@@ -84,7 +84,7 @@ public class LessonGroup implements Serializable, Cloneable{
 					String[] p = a.split("-");
 					lesson.fillLesson(true,Integer.parseInt(p[0]),Integer.parseInt(p[1]),type);
 				}else{
-					lesson.week[Integer.parseInt(a)] = true;
+					lesson.week[Integer.parseInt(a) - 1] = true;
 				}
 			}
 			
@@ -106,7 +106,7 @@ public class LessonGroup implements Serializable, Cloneable{
 	@Nullable
 	public Lesson getCurrentLesson(int week){
 		for(Lesson lesson:lessons){
-			if(lesson.week[week - 1])return lesson;
+			if(lesson.week.length >= week && lesson.week[week - 1])return lesson;
 		}
 		return null;
 	}

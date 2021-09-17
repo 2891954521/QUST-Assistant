@@ -61,7 +61,6 @@ public class SettingActivity extends BaseAnimActivity{
 						.customView(picker,false)
 						.onPositive((dialog, which) -> {
 							c.set(picker.getYear(), picker.getMonth(), picker.getDayOfMonth());
-							
 							LessonData.getInstance().setStartDay(DateUtil.YMD.format(c.getTime()));
 							activity.sendBroadcast(new Intent(App.APP_UPDATE_LESSON_TABLE));
 							activity.toast("设置完成!");

@@ -59,8 +59,6 @@ public class LessonTableFragment extends BaseFragment{
 	// 课程编辑相关
 	private TextView lessonLen;
 	
-	private RadioGroup lessonType;
-	
 	private LessonTime lessonTime;
 	
 	private ColorPicker lessonColor;
@@ -87,7 +85,8 @@ public class LessonTableFragment extends BaseFragment{
 		inputManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 		
 		layout = (RelativeLayout)inflater.inflate(R.layout.fragment_lessontable,container,false);
-		layout.findViewById(R.id.fragment_timetable_navigation).setOnClickListener(v -> navigation());
+		
+		layout.findViewById(R.id.fragment_timetable_current).setOnClickListener(v -> lessonTable.setCurrentItem(LessonData.getInstance().getCurrentWeek() - 1));
 		
 		initDayLesson(inflater);
 		
@@ -109,7 +108,7 @@ public class LessonTableFragment extends BaseFragment{
 	public void onResume(){
 		super.onResume();
 		if(isCreated){
-			// TODO: 不知道干啥的
+			// TODO:resume时更新课表时间
 			// if(isInitDayLesson) initDayLesson(LayoutInflater.from(getContext()));
 			if(!isInitLessonTable) initLessonTale();
 		}
@@ -338,7 +337,7 @@ public class LessonTableFragment extends BaseFragment{
 		
 		lessonTime = lessonInfo.findViewById(R.id.layout_lesson_time);
 		
-		lessonType = lessonInfo.findViewById(R.id.layout_lesson_type);
+		RadioGroup lessonType = lessonInfo.findViewById(R.id.layout_lesson_type);
 		lessonType.setOnCheckedChangeListener((group,checkedId) -> {
 			switch(checkedId){
 				case R.id.layout_lesson_all:

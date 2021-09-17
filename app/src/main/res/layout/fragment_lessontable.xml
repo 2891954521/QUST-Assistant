@@ -14,13 +14,13 @@
         android:orientation="vertical"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fragment_timetable_navigation"
+        android:id="@+id/fragment_timetable_current"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/widget_margin"
-        android:src="@drawable/ic_navigation"
+        android:layout_margin="@dimen/activity_margin"
+        android:src="@drawable/ic_current"
         android:tint="@android:color/white"
         app:backgroundTint="@color/colorPrimary"/>
 

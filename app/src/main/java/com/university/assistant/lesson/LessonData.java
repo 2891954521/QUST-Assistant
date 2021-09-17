@@ -254,6 +254,7 @@ public class LessonData{
 	
 	public void setStartDay(String _startDay){
 		startDay = _startDay;
+		updateDate();
 		sp.edit().putString("startDay",startDay).apply();
 	}
 	

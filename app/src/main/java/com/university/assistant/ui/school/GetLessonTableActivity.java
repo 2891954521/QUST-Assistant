@@ -8,6 +8,7 @@ import com.university.assistant.App;
 import com.university.assistant.R;
 import com.university.assistant.lesson.LessonData;
 import com.university.assistant.lesson.LessonGroup;
+import com.university.assistant.util.DateUtil;
 import com.university.assistant.util.DialogUtil;
 import com.university.assistant.util.FileUtil;
 import com.university.assistant.util.LogUtil;
@@ -19,16 +20,25 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import androidx.annotation.Nullable;
 
 public class GetLessonTableActivity extends BaseSchoolActivity{
+	
+	private static final Pattern TIME_MATCHER = Pattern.compile("([0-9]{4}-[0-9]{4})学年([0-9])学期\\((\\d{4}-\\d{2}-\\d{2})至(\\d{4}-\\d{2}-\\d{2})");
 	
 	private LessonTable lessonTable;
 	
 	private LessonGroup[][] lessonGroups;
 	
 	private boolean needSave;
+	
+	private String startTime;
+	
+	private int totalWeek;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
@@ -70,10 +80,28 @@ public class GetLessonTableActivity extends BaseSchoolActivity{
 		
 		try{
 			String[] y = getYearAndTerm();
-			String response = WebUtil.doPost(
-					"http://jwglxt.qust.edu.cn/jwglxt/kbcx/xskbcx_cxXsKb.html",
-					"JSESSIONID=" + session ,
-					"xnm=" + y[0] +"&xqm=" + y[1] + "&kzlx=ck"
+			String response = WebUtil.doGet(
+				"http://jwglxt.qust.edu.cn/jwglxt/xtgl/index_cxAreaFive.html?localeKey=zh_CN&gnmkdm=index",
+				"JSESSIONID=" + session
+			);
+			if(response != null && !"".equals(response)){
+				Matcher matcher = TIME_MATCHER.matcher(response);
+				if(matcher.find()){
+					startTime = matcher.group(3);
+					String endTime = matcher.group(4);
+					try{
+						totalWeek = DateUtil.calcWeekOffset(DateUtil.YMD.parse(startTime), DateUtil.YMD.parse(endTime));
+					}catch(ParseException ignored){
+						startTime = null;
+						totalWeek = -1;
+					}
+				}
+			}
+				
+			response = WebUtil.doPost(
+				"http://jwglxt.qust.edu.cn/jwglxt/kbcx/xskbcx_cxXsKb.html",
+				"JSESSIONID=" + session ,
+				"xnm=" + y[0] +"&xqm=" + y[1] + "&kzlx=ck"
 			);
 			if(response != null && !"".equals(response)){
 				lessonGroups = new LessonGroup[7][10];
@@ -97,6 +125,10 @@ public class GetLessonTableActivity extends BaseSchoolActivity{
 	}
 	
 	private void updateLesson(){
+		if(startTime != null && totalWeek != -1){
+			LessonData.getInstance().setStartDay(startTime);
+			LessonData.getInstance().setTotalWeek(totalWeek);
+		}
 		LessonData data = LessonData.getInstance();
 		data.setLessonGroups(lessonGroups);
 		data.saveLessonData();
