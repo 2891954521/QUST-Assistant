@@ -24,7 +24,7 @@
         android:tint="@android:color/white"
         app:backgroundTint="@color/colorPrimary"/>
 
-    <com.university.assistant.widget.VerticalSlidingLayout
+    <com.qust.assistant.widget.VerticalSlidingLayout
         android:id="@+id/fragment_timetable_week"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -45,14 +45,14 @@
                 android:textColor="@color/colorPrimaryText"
                 android:text="第 1 周"/>
 
-            <com.university.assistant.widget.LessonTable
+            <com.qust.assistant.widget.LessonTable
                 android:id="@+id/fragment_timetable_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
         </LinearLayout>
 
-    </com.university.assistant.widget.VerticalSlidingLayout>
+    </com.qust.assistant.widget.VerticalSlidingLayout>
 
     <include
         layout="@layout/layout_lesson_info"

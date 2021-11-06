@@ -83,7 +83,7 @@
                 android:orientation="horizontal"
                 android:padding="4dp">
 
-                <com.university.assistant.widget.RequiredTextView
+                <com.qust.assistant.widget.RequiredTextView
                     style="@style/defaultText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                 android:gravity="center"
                 android:padding="4dp">
 
-                <com.university.assistant.widget.RequiredTextView
+                <com.qust.assistant.widget.RequiredTextView
                     style="@style/defaultText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -164,7 +164,7 @@
                 android:orientation="horizontal"
                 android:padding="4dp">
 
-                <com.university.assistant.widget.RequiredTextView
+                <com.qust.assistant.widget.RequiredTextView
                     style="@style/defaultText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -208,7 +208,7 @@
                 android:orientation="horizontal"
                 android:padding="4dp">
 
-                <com.university.assistant.widget.RequiredTextView
+                <com.qust.assistant.widget.RequiredTextView
                     style="@style/defaultText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
                 android:orientation="horizontal"
                 android:padding="4dp">
 
-                <com.university.assistant.widget.RequiredTextView
+                <com.qust.assistant.widget.RequiredTextView
                     style="@style/defaultText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -338,7 +338,7 @@
                     android:orientation="horizontal"
                     android:padding="4dp">
 
-                    <com.university.assistant.widget.RequiredTextView
+                    <com.qust.assistant.widget.RequiredTextView
                         style="@style/defaultText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -364,7 +364,7 @@
                     android:orientation="horizontal"
                     android:padding="4dp">
 
-                    <com.university.assistant.widget.RequiredTextView
+                    <com.qust.assistant.widget.RequiredTextView
                         style="@style/defaultText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -442,7 +442,7 @@
                 android:orientation="horizontal"
                 android:padding="4dp">
 
-                <com.university.assistant.widget.RequiredTextView
+                <com.qust.assistant.widget.RequiredTextView
                     style="@style/defaultText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -510,7 +510,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.university.assistant.widget.RequiredTextView
+                    <com.qust.assistant.widget.RequiredTextView
                         style="@style/defaultText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

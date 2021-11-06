@@ -5,7 +5,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.university.assistant"
+        applicationId "com.qust.assistant"
         minSdkVersion 19
         targetSdkVersion 28
 

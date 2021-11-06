@@ -42,7 +42,7 @@
 
             </LinearLayout>
 
-            <com.university.assistant.widget.PictureGrid
+            <com.qust.assistant.widget.PictureGrid
                 android:id="@+id/item_note_photo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

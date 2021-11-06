@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.university.assistant"
-    android:versionCode="14"
-    android:versionName="1.8.6">
+    package="com.qust.assistant"
+    android:versionCode="15"
+    android:versionName="1.8.7">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name=".App"
+        android:name="com.qust.assistant.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.qust.assistant.ui.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
@@ -37,51 +37,51 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.CameraActivity"/>
+        <activity android:name="com.qust.assistant.ui.CameraActivity"/>
 
-        <activity android:name=".ui.picture.PictureActivity"/>
+        <activity android:name="com.qust.assistant.ui.picture.PictureActivity"/>
 
-        <activity android:name=".ui.note.NoteActivity"/>
+        <activity android:name="com.qust.assistant.ui.note.NoteActivity"/>
 
-        <activity android:name=".ui.note.NoteEditActivity"/>
+        <activity android:name="com.qust.assistant.ui.note.NoteEditActivity"/>
 
-        <activity android:name=".ui.NavigationActivity"/>
+        <activity android:name="com.qust.assistant.ui.NavigationActivity"/>
 
-        <activity android:name=".ui.UpdateActivity"/>
+        <activity android:name="com.qust.assistant.ui.UpdateActivity"/>
 
-        <activity android:name=".ui.LogActivity"/>
+        <activity android:name="com.qust.assistant.ui.LogActivity"/>
 
-        <activity android:name=".ui.SettingActivity"/>
+        <activity android:name="com.qust.assistant.ui.SettingActivity"/>
 
-        <activity android:name=".ui.school.LoginActivity"/>
+        <activity android:name="com.qust.assistant.ui.school.LoginActivity"/>
 
-        <activity android:name=".ui.school.GetLessonTableActivity"/>
+        <activity android:name="com.qust.assistant.ui.school.GetLessonTableActivity"/>
 
-        <activity android:name=".ui.school.GetExamActivity"/>
+        <activity android:name="com.qust.assistant.ui.school.GetExamActivity"/>
 
-        <activity android:name=".ui.school.GetMarkActivity"/>
+        <activity android:name="com.qust.assistant.ui.school.GetMarkActivity"/>
 
-        <activity android:name=".ui.school.GetAcademicActivity"/>
+        <activity android:name="com.qust.assistant.ui.school.GetAcademicActivity"/>
 
-        <activity android:name=".ui.school.AutoEvaluationActivity"/>
+        <activity android:name="com.qust.assistant.ui.school.AutoEvaluationActivity"/>
 
-        <activity android:name=".ui.accounts.AccountsActivity"/>
+        <activity android:name="com.qust.assistant.ui.accounts.AccountsActivity"/>
 
-        <activity android:name=".ui.accounts.RecordActivity"/>
+        <activity android:name="com.qust.assistant.ui.accounts.RecordActivity"/>
 
-        <activity android:name=".ui.third.DrinkActivity"/>
+        <activity android:name="com.qust.assistant.ui.third.DrinkActivity"/>
 
-        <activity android:name=".ui.third.CpDailyActivity"/>
+        <activity android:name="com.qust.assistant.ui.third.CpDailyActivity"/>
 
-        <activity android:name=".ui.third.fake.LeaveListActivity"/>
+        <activity android:name="com.qust.assistant.ui.third.fake.LeaveListActivity"/>
 
-        <activity android:name=".ui.third.fake.LeaveInfoActivity"/>
+        <activity android:name="com.qust.assistant.ui.third.fake.LeaveInfoActivity"/>
 
-        <activity android:name=".ui.third.fake.NewLeaveActivity"/>
+        <activity android:name="com.qust.assistant.ui.third.fake.NewLeaveActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.university.assistant"
+            android:authorities="com.qust.assistant"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -91,7 +91,7 @@
 
         <!-- 桌面小部件 -->
         <receiver
-            android:name=".receiver.LessonTable"
+            android:name="com.qust.assistant.receiver.LessonTable"
             android:label="课表">
 
             <intent-filter>

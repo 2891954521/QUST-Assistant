@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.university.assistant.widget.SlidingLayout
+<com.qust.assistant.widget.SlidingLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/slidingLayout"
@@ -62,11 +62,11 @@
 
         </LinearLayout>
 
-        <com.university.assistant.widget.LessonTable
+        <com.qust.assistant.widget.LessonTable
             android:id="@+id/activity_get_lesson_table_preview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
     </LinearLayout>
 
-</com.university.assistant.widget.SlidingLayout>
+</com.qust.assistant.widget.SlidingLayout>

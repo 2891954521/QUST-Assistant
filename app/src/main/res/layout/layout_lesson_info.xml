@@ -8,7 +8,7 @@
     android:background="#802C2C2C"
     android:layout_alignParentBottom="true">
 
-    <com.university.assistant.widget.DialogRoundTop
+    <com.qust.assistant.widget.DialogRoundTop
         android:id="@+id/layout_lesson_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                     android:orientation="horizontal"
                     android:layout_margin="@dimen/widget_margin">
 
-                    <com.university.assistant.widget.RequiredTextView
+                    <com.qust.assistant.widget.RequiredTextView
                         style="@style/TextNormal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -174,7 +174,7 @@
                     android:orientation="horizontal"
                     android:layout_margin="@dimen/widget_margin">
 
-                    <com.university.assistant.widget.RequiredTextView
+                    <com.qust.assistant.widget.RequiredTextView
                         style="@style/TextNormal"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -211,7 +211,7 @@
 
                 </LinearLayout>
 
-                <com.university.assistant.widget.LessonTime
+                <com.qust.assistant.widget.LessonTime
                     android:id="@+id/layout_lesson_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -232,7 +232,7 @@
                     android:layout_marginStart="@dimen/widget_margin"
                     android:text="颜色"/>
 
-                <com.university.assistant.widget.ColorPicker
+                <com.qust.assistant.widget.ColorPicker
                     android:id="@+id/layout_lesson_color"
                     android:layout_width="match_parent"
                     android:layout_height="48dp" />
@@ -243,6 +243,6 @@
 
         </ScrollView>
 
-    </com.university.assistant.widget.DialogRoundTop>
+    </com.qust.assistant.widget.DialogRoundTop>
 
 </FrameLayout>

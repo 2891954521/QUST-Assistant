@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.university.assistant.widget.SlidingLayout
+<com.qust.assistant.widget.SlidingLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/slidingLayout"
@@ -105,8 +105,8 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="16sp"
-            android:text="假装有地图"/>
+            android:text="功能未完成，路线仅供参考"/>
 
     </LinearLayout>
 
-</com.university.assistant.widget.SlidingLayout>
+</com.qust.assistant.widget.SlidingLayout>

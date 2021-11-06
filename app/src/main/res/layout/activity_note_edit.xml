@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"/>
 
-                <com.university.assistant.widget.PictureGrid
+                <com.qust.assistant.widget.PictureGrid
                     android:id="@+id/activity_note_edit_photo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
 
     </LinearLayout>
 
-    <com.university.assistant.widget.BigImage
+    <com.qust.assistant.widget.BigImage
         android:id="@+id/activity_note_edit_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

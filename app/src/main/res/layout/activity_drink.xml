@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.university.assistant.widget.SlidingLayout
+<com.qust.assistant.widget.SlidingLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/slidingLayout"
@@ -41,11 +41,71 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-        <ImageView
-            android:id="@+id/activity_drink_code"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/activity_drink_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="64dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_brightness"
+                    android:tint="#C8C8C8"/>
+
+                <SeekBar
+                    style="@style/SeekBarWhite"
+                    android:id="@+id/activity_drink_brightness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:maxHeight="48dp"
+                    android:minHeight="32dp"
+                    android:max="255"
+                    android:thumb="@null"
+                    android:duplicateParentState="true"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+            <LinearLayout
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="64dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_brightness"
+                    android:tint="#C8C8C8"/>
+
+                <SeekBar
+                    style="@style/SeekBarWhite"
+                    android:id="@+id/activity_drink_brightness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:maxHeight="48dp"
+                    android:minHeight="32dp"
+                    android:max="255"
+                    android:thumb="@null"
+                    android:duplicateParentState="true"/>
+
+            </LinearLayout>
 
     </LinearLayout>
 
-</com.university.assistant.widget.SlidingLayout>
+</com.qust.assistant.widget.SlidingLayout>
