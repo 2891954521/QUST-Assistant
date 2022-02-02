@@ -10,9 +10,15 @@
 
     <dimen name="activity_margin">16dp</dimen>
 
+    <dimen name="float_button_margin">32dp</dimen>
+
+    <!-- 文本尺寸 -->
     <dimen name="text_micro">12sp</dimen>
+
     <dimen name="text_small">14sp</dimen>
+
     <dimen name="text_medium">18sp</dimen>
+
     <dimen name="text_large">22sp</dimen>
 
 </resources>

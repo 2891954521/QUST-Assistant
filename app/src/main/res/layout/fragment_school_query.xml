@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/widget_margin">
+
+        <TextView
+            style="@style/TextNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/widget_margin"
+            android:text="学期" />
+
+        <NumberPicker
+            android:id="@+id/fragment_school_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:descendantFocusability="blocksDescendants" />
+
+        <Button
+            android:id="@+id/fragment_school_query"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="查询" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/fragment_school_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/divider" />
+
+</LinearLayout>

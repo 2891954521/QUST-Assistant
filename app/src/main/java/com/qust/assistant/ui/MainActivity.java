@@ -4,208 +4,247 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.fragment.BaseFragment;
-import com.qust.assistant.ui.fragment.HomeFragment;
 import com.qust.assistant.ui.fragment.LessonTableFragment;
+import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.UpdateUtil;
+import com.qust.assistant.widget.slide.DragType;
+import com.qust.assistant.widget.slide.SlidingMenu;
+
+import java.util.Stack;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.preference.PreferenceManager;
-import androidx.viewpager.widget.ViewPager;
 
 public class MainActivity extends BaseActivity{
 	
 	private static final int NOT_NOTICE = 2;
 	
-	public ViewPager viewPager;
+	private Stack<BaseFragment> fragments;
 	
-	private BaseFragment[] fragments;
+	private SlidingMenu drawer;
 	
-	private Toolbar toolbar;
+	private FrameLayout layout;
 	
-	private ImageView menuView;
+	private Animation animFadeOut;
 	
-	private DrawerLayout drawer;
+	private Animation animIn, animOut;
 	
-	private BottomNavigationView navigationView;
-	
-	private int position;
+	private boolean isFading;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);
+	protected void onCreate(Bundle paramBundle){
+		super.onCreate(paramBundle);
 		setContentView(R.layout.activity_main);
 		
-		toolbar = findViewById(R.id.toolbar);
-		toolbar.setNavigationOnClickListener(v -> getDrawer().open());
+		fragments = new Stack<>();
 		
-		fragments = new BaseFragment[]{
-				new HomeFragment().setActivity(this),
-				new LessonTableFragment().setActivity(this)
-		};
+		layout = findViewById(R.id.main_frame);
 		
-		NavigationView nav = findViewById(R.id.nav_view);
-//		nav.setNavigationItemSelectedListener(item -> {
-//			switch(item.getItemId()){
-//				case R.id.nav_login:
-//					startActivity(new Intent(this,LoginActivity.class));
-//					break;
-//				case R.id.nav_setting:
-//					startActivity(new Intent(this,SettingActivity.class));
-//					break;
-//			}
-//			return false;
-//		});
+		drawer = findViewById(R.id.main_drawer);
 		
-		drawer = findViewById(R.id.drawer_layout);
+		drawer.setDragType(DragType.LEFT);
 		
-		menuView = findViewById(R.id.main_menu);
+		initHome();
 		
-		navigationView = findViewById(R.id.main_navigation);
-		navigationView.setOnNavigationItemSelectedListener(item -> {
-			viewPager.setCurrentItem(item.getOrder());
-			return true;
-		});
-		
-		viewPager = findViewById(R.id.main_view_pager);
-		viewPager.setOffscreenPageLimit(2);
-		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
-			@Override
-			public void onPageScrolled(int position,float positionOffset,int positionOffsetPixels){ }
-			
-			@Override
-			public void onPageSelected(int _position){
-				position = _position;
-				navigationView.getMenu().getItem(position).setChecked(true);
-				toolbar.setTitle(fragments[position].getTitle());
-				fragments[position].onCreateMenu(menuView);
-			}
-			
-			@Override
-			public void onPageScrollStateChanged(int state){ }
-		});
-		
-		viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-			@NonNull @Override
-			public Fragment getItem(int position) { return fragments[position]; }
-			@Override
-			public int getCount() { return fragments.length; }
-		});
-		viewPager.setCurrentItem(1);
+		initAnim();
 		
 		if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-			|| ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
+				|| ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
 			ActivityCompat.requestPermissions(this,new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
 		}
 		
-		SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(this);
-
-		// 检查更新
-		if(setting.getBoolean("key_auto_update",true)){
-			boolean isDev = setting.getBoolean("key_update_dev",false);
-			long current = System.currentTimeMillis();
-			long frequency = isDev ? 1000 * 60 * 60 * 24 * 3 : 1000 * 60 * 60 * 24 * 7;
-			if(current - setting.getLong("last_update_time",0) > frequency){
-				new Thread(){
-					@Override
-					public void run(){
-						UpdateUtil.checkUpdate(MainActivity.this, isDev);
-					}
-				}.start();
-				setting.edit().putLong("last_update_time", current).apply();
+		UpdateUtil.checkUpdate(this);
+	}
+	
+	private void initAnim(){
+		
+		animIn = AnimationUtils.loadAnimation(this, R.anim.anim_right_in);
+		animIn.setAnimationListener(new Animation.AnimationListener(){
+			@Override
+			public void onAnimationEnd(Animation param1Animation){ isFading = false; }
+			
+			@Override
+			public void onAnimationRepeat(Animation param1Animation){}
+			
+			@Override
+			public void onAnimationStart(Animation param1Animation){}
+		});
+		
+		animOut = AnimationUtils.loadAnimation(this, R.anim.anim_rigth_out);
+		animOut.setAnimationListener(new Animation.AnimationListener(){
+			@Override
+			public void onAnimationEnd(Animation param1Animation){
+				layout.removeView(fragments.pop().getView());
+				
+				fragments.peek().getView().setFocusable(true);
+				
+				if(fragments.size() > 1){
+					fragments.get(fragments.size() - 2).getView().setVisibility(View.VISIBLE);
+				}else{
+					drawer.setDragType(DragType.LEFT);
+				}
+				
+				isFading = false;
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animation param1Animation){}
+			
+			@Override
+			public void onAnimationStart(Animation param1Animation){}
+		});
+		
+		animFadeOut = AnimationUtils.loadAnimation((Context)this, R.anim.anim_fade_out);
+	}
+	
+	private void initHome(){
+		BaseFragment home = null;
+		
+		try{
+			Class<?> object = Class.forName(SettingUtil.setting.getString("defaultHome", LessonTableFragment.class.getName()));
+			if(BaseFragment.class.isAssignableFrom(object)){
+				home = ((BaseFragment)object.newInstance()).init(this, true);
+			}else{
+				home = new LessonTableFragment().init(this, true);
+			}
+		}catch(ClassNotFoundException e){
+			home = new LessonTableFragment().init(this, true);
+		}catch(InstantiationException | IllegalAccessException ignored){ }
+		
+		fragments.push(home);
+		
+		layout.addView(home.getView());
+	}
+	
+	public synchronized void addView(Class<? extends BaseFragment> newFragment){
+		if(isFading) return;
+		try{
+			if(fragments.size() > 1) fragments.get(fragments.size() - 2).getView().setVisibility(View.GONE);
+			
+			BaseFragment a = fragments.peek();
+			a.getView().setFocusable(false);
+			
+			BaseFragment b = ((BaseFragment)newFragment.newInstance()).init(this, false);
+			fragments.push(b);
+			layout.addView(b.getView());
+			
+			a.getView().startAnimation(animFadeOut);
+			b.getView().startAnimation(animIn);
+			
+			drawer.setDragType(DragType.RIGHT);
+			isFading = true;
+		}catch(IllegalAccessException | InstantiationException ignored){ }
+	}
+	
+	public synchronized void removeTopView(){
+		if(isFading) return;
+		isFading = true;
+		fragments.peek().getView().startAnimation(animOut);
+	}
+	
+	@Override
+	public void onBackPressed(){
+		if(isFading){
+			// Do nothing
+		}else if(drawer.isMenuShowing()){
+			drawer.hideMenu();
+		}else if(fragments.peek().onBackPressed()){
+			if(fragments.size() == 1){
+				super.onBackPressed();
+			}else{
+				removeTopView();
 			}
 		}
 	}
-	
-	@Override
-	protected void onResume(){
-		super.onResume();
-		for(BaseFragment fragment : fragments){
-			fragment.onResume();
-		}
-	}
-	
-	@Override
-	// 给MainActivity单独设置一个切换动画
-	public void startActivity(Intent intent){
-		super.startActivity(intent);
-		overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
-	}
-	
-	public void navigationTo(int page){
-		viewPager.setCurrentItem(page);
-	}
-	
-	public ImageView getMenu(){
-		return menuView;
-	}
-	
-	public ViewPager getViewPager(){ return viewPager; }
-	
-	public DrawerLayout getDrawer(){ return drawer; }
 	
 	@Override
 	protected void registerReceiver(){
 		registerReceiver(new BroadcastReceiver(){
 			@Override
-			public void onReceive(Context context,Intent intent){
-				if(intent.getAction()==null) return;
-				for(BaseFragment fragment: fragments)fragment.onReceive(intent.getAction());
+			public void onReceive(Context context, Intent intent){
+				if(intent.getAction() == null) return;
+				for(BaseFragment fragment : fragments) fragment.onReceive(intent.getAction());
 			}
-		},App.APP_UPDATE_LESSON_TABLE);
+		}, App.APP_UPDATE_LESSON_TABLE);
+	}
+	
+	public void openMenu(){ drawer.openMenu(); }
+	
+	public void closeMenu(){ drawer.hideMenuNoAnim(); }
+	
+	public void disableDrag(){
+		drawer.disableDrag();;
+	}
+	
+	public void allowDrag(){
+		drawer.allowDrag();
 	}
 	
 	@Override
-	public void onRequestPermissionsResult(int requestCode,@NonNull String[] permissions,@NonNull int[] grantResults){
-		super.onRequestPermissionsResult(requestCode,permissions,grantResults);
-		if(requestCode==1){
-			for(int i = 0;i<permissions.length;i++){
-				if(grantResults[i]==PackageManager.PERMISSION_GRANTED){
-					// 选择了“始终允许”
-					Toast.makeText(this,"权限" + permissions[i] + "申请成功",Toast.LENGTH_SHORT).show();
-				}else{
-					// 用户选择了禁止不再询问
-					if(!ActivityCompat.shouldShowRequestPermissionRationale(this,permissions[i])){
-						new MaterialDialog.Builder(this).title("权限").content("请允许应用访问相机以进行拍照！")
-								.positiveText("取消").onPositive((dialog,which) -> {
-							Toast.makeText(this,"没有相机权限，无法进行拍照",Toast.LENGTH_SHORT).show();
-							finish();
-						}).negativeText("确定").onNegative((dialog,which) -> {
-							Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-							Uri uri = Uri.fromParts("package",getPackageName(),null);//注意就是"package",不用改成自己的包名
-							intent.setData(uri);
-							startActivityForResult(intent,NOT_NOTICE);
-							dialog.dismiss();
-						}).show();
+	public void onResume(){
+		super.onResume();
+		fragments.peek().onResume();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data){
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == NOT_NOTICE){
+			// 由于不知道是否选择了允许所以需要再次判断
+			if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+			}
+		}else{
+			fragments.peek().onResult(requestCode, resultCode, data);
+		}
+	}
+	
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if(requestCode == 1){
+			for(int i = 0; i < permissions.length; i++){
+				if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+					if(!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])){
+						// 用户选择了禁止不再询问
+						new MaterialDialog.Builder(this).title("权限").content("请给予应用运行所必要的权限！")
+							.positiveText(R.string.text_cancel).onPositive((dialog, which) -> {
+								toast("请给予应用运行所必要的权限！");
+								finish();
+						}).negativeText(R.string.text_ok).onNegative((dialog, which) -> {
+								Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+								// 注意就是"package",不用改成自己的包名
+								Uri uri = Uri.fromParts("package", getPackageName(), null);
+								intent.setData(uri);
+								startActivityForResult(intent, NOT_NOTICE);
+								dialog.dismiss();
+							}).show();
+						break;
 					}else{
 						// 选择禁止
-						new MaterialDialog.Builder(this).title("权限").content("请允许应用访问相机以进行拍照！")
-								.positiveText("取消").onPositive((dialog,which) -> {
-							Toast.makeText(this,"没有相机权限，无法进行拍照",Toast.LENGTH_SHORT).show();
-							finish();
-						}).negativeText("确定").onNegative((dialog,which) -> {
-							ActivityCompat.requestPermissions(MainActivity.this,new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
-							dialog.dismiss();
-						}).show();
+						new MaterialDialog.Builder(this).title("权限").content("请给予应用运行所必要的权限！")
+							.positiveText(R.string.text_cancel).onPositive((dialog, which) -> {
+								toast("请给予应用运行所必要的权限！");
+								finish();
+							}).negativeText(R.string.text_ok).onNegative((dialog, which) -> {
+								ActivityCompat.requestPermissions(MainActivity.this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
+								dialog.dismiss();
+							}).show();
+						break;
 					}
 				}
 			}
@@ -213,22 +252,8 @@ public class MainActivity extends BaseActivity{
 	}
 	
 	@Override
-	protected void onActivityResult(int requestCode,int resultCode,Intent data){
-		if(requestCode==NOT_NOTICE){
-			// 由于不知道是否选择了允许所以需要再次判断
-			if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED
-					||ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
-				ActivityCompat.requestPermissions(this,new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
-			}
-		}
-		if(resultCode==RESULT_OK){
-			fragments[position].onResume(data.getStringExtra("class"),data);
-		}
-		super.onActivityResult(requestCode,resultCode,data);
-	}
-	
-	@Override
-	public void onBackPressed(){
-		if(fragments[position].onBackPressed())super.onBackPressed();
+	public void startActivity(Intent intent){
+		super.startActivity(intent);
+		overridePendingTransition(R.anim.anim_right_in, 0);
 	}
 }

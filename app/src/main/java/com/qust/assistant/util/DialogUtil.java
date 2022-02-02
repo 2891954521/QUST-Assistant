@@ -13,7 +13,7 @@ public class DialogUtil{
 	}
 	
 	// 无限加载条
-	public static MaterialDialog.Builder getIndeterminateProgressDialog(Context context,String message){
+	public static MaterialDialog.Builder getIndeterminateProgressDialog(Context context, String message){
 		return new MaterialDialog.Builder(context).progress(true,0).content(message);
 	}
 	

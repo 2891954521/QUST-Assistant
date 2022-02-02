@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qust.assistant"
     android:versionCode="15"
-    android:versionName="1.8.7">
+    android:versionName="1.8.8">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -39,8 +39,6 @@
 
         <activity android:name="com.qust.assistant.ui.CameraActivity"/>
 
-        <activity android:name="com.qust.assistant.ui.picture.PictureActivity"/>
-
         <activity android:name="com.qust.assistant.ui.note.NoteActivity"/>
 
         <activity android:name="com.qust.assistant.ui.note.NoteEditActivity"/>
@@ -53,31 +51,13 @@
 
         <activity android:name="com.qust.assistant.ui.SettingActivity"/>
 
-        <activity android:name="com.qust.assistant.ui.school.LoginActivity"/>
+        <activity android:name="com.qust.assistant.ui.fragment.third.CpDailyActivity"/>
 
-        <activity android:name="com.qust.assistant.ui.school.GetLessonTableActivity"/>
+        <activity android:name="com.qust.assistant.ui.fragment.third.fake.LeaveListActivity"/>
 
-        <activity android:name="com.qust.assistant.ui.school.GetExamActivity"/>
+        <activity android:name="com.qust.assistant.ui.fragment.third.fake.LeaveInfoActivity"/>
 
-        <activity android:name="com.qust.assistant.ui.school.GetMarkActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.school.GetAcademicActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.school.AutoEvaluationActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.accounts.AccountsActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.accounts.RecordActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.third.DrinkActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.third.CpDailyActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.third.fake.LeaveListActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.third.fake.LeaveInfoActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.third.fake.NewLeaveActivity"/>
+        <activity android:name="com.qust.assistant.ui.fragment.third.fake.NewLeaveActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

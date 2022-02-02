@@ -1,54 +1,51 @@
 package com.qust.assistant.ui.fragment;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.Lesson;
 import com.qust.assistant.lesson.LessonData;
 import com.qust.assistant.lesson.LessonGroup;
-import com.qust.assistant.ui.MainActivity;
-import com.qust.assistant.ui.NavigationActivity;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.DialogRoundTop;
 import com.qust.assistant.widget.LessonTable;
 import com.qust.assistant.widget.LessonTime;
-import com.qust.assistant.widget.VerticalSlidingLayout;
+import com.qust.assistant.widget.slide.DragType;
+import com.qust.assistant.widget.slide.VerticalSlidingLayout;
 
 import java.util.Calendar;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
 public class LessonTableFragment extends BaseFragment{
 	
+	private DragType menuDragType;
+	
 	// 周数显示
 	private TextView weekText;
 	
-	private RelativeLayout layout;
-	
+	// 周课表
 	private LessonTable lessonTable;
 	
 	private VerticalSlidingLayout weekLayout;
+	
+	// 跳转到当前周
+	private FloatingActionButton currentWeek;
 	
 	private InputMethodManager inputManager;
 	
@@ -69,96 +66,58 @@ public class LessonTableFragment extends BaseFragment{
 	
 	private EditText lessonName, lessonPlace, lessonTeacher;
 	
-	private Animation animIn,animOut;
+	private Animation animIn, animOut;
 	
 	private int week, count;
 	
 	private Lesson editLesson;
 	
-	@Nullable
 	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater,@Nullable ViewGroup container,@Nullable Bundle savedInstanceState){
-		if(activity == null) activity = (MainActivity)getContext();
-		
-		LessonData.init(getContext());
-		
+	protected void initLayout(LayoutInflater inflater){
 		inputManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 		
-		layout = (RelativeLayout)inflater.inflate(R.layout.fragment_lessontable,container,false);
-		
-		layout.findViewById(R.id.fragment_timetable_current).setOnClickListener(v -> lessonTable.setCurrentItem(LessonData.getInstance().getCurrentWeek() - 1));
+		currentWeek = findViewById(R.id.fragment_timetable_current);
+		currentWeek.setOnClickListener(v -> lessonTable.setCurrentItem(LessonData.getInstance().getCurrentWeek() - 1));
+		currentWeek.hide();
 		
 		initDayLesson(inflater);
-		
-		isCreated = true;
-		
-		onCreateMenu(activity.getMenu());
-		return layout;
+		initLessonTale();
+	}
+	
+	@Override
+	public void onResume(){
+		if(isCreated){
+			if(isInitDayLesson){
+				initDayLesson(LayoutInflater.from(activity));
+			}
+			if(!isInitLessonTable){
+				initLessonTale();
+			}
+		}
 	}
 	
 	@Override
 	public void onReceive(String action){
 		if(App.APP_UPDATE_LESSON_TABLE.equals(action)){
-			initDayLesson(LayoutInflater.from(getContext()));
+			initDayLesson(LayoutInflater.from(activity));
 			lessonTable.initAdapter(null);
 		}
 	}
 	
-	@Override
-	public void onResume(){
-		super.onResume();
-		if(isCreated){
-			// TODO:resume时更新课表时间
-			// if(isInitDayLesson) initDayLesson(LayoutInflater.from(getContext()));
-			if(!isInitLessonTable) initLessonTale();
-		}
-	}
-	
-	@Override
-	public void onCreateMenu(ImageView view){
-		if(!isCreated)return;
-		view.setVisibility(View.GONE);
-		if(!isInitLessonTable){
-			initLessonTale();
-			isInitLessonTable = true;
-		}
-	}
-	
-	@Override
-	public boolean onBackPressed(){
-		if(isLessonInfoShowing){
-			lessonInfo.startAnimation(animOut);
-			return false;
-		}else if(isLessonTableShowing){
-			weekLayout.setBack(true);
-			return false;
-		}else return super.onBackPressed();
-	}
-	
-	// 加载当日课表
 	private void initDayLesson(LayoutInflater inflater){
-		
-		LinearLayout content = layout.findViewById(R.id.fragment_timetable_today);
+
+		LinearLayout content = findViewById(R.id.fragment_timetable_today);
 		content.removeAllViews();
-		
 		LessonGroup[] lessonGroups = LessonData.getInstance().getLessonGroups()[LessonData.getInstance().getWeek()];
-		
 		Calendar c = Calendar.getInstance();
 		int h = c.get(Calendar.HOUR_OF_DAY) - 8;
 		int m = c.get(Calendar.MINUTE);
-		
 		int currentWeek = LessonData.getInstance().getCurrentWeek();
-		
-		String[] time = { "上午课程", null, null, null, "下午课程", null, null, null, "晚上课程", null};
-		
+		String[] time = {"上午课程", null, null, null, "下午课程", null, null, null, "晚上课程", null};
 		int pass = 0;
-		
 		boolean needEmpty = false;
-		
 		View view = null;
-		
 		Lesson lesson = null;
-		
 		for(int i=0;i<time.length;i++){
 			if(pass == 0){
 				if(time[i] != null){
@@ -167,22 +126,20 @@ public class LessonTableFragment extends BaseFragment{
 					t.setText(time[i]);
 					content.addView(t);
 				}
-				
 				if(lessonGroups[i] == null || (lesson = lessonGroups[i].getCurrentLesson(currentWeek)) == null){
 					if(needEmpty){
 						needEmpty = false;
-						content.addView(LessonGroup.getView(getContext(),null, i, 1));
+						content.addView(LessonGroup.getView(activity, null, i, 1));
 					}
 				}else{
-					view = LessonGroup.getView(getContext(), lesson, i, lesson.len);
+					view = LessonGroup.getView(activity, lesson, i, lesson.len);
 					pass = lesson.len;
 				}
 			}
 			
 			h -= LessonData.Lesson_Time[i][0];
 			m -= LessonData.Lesson_Time[i][1];
-			if(m < 0){ h -= 1; m += 60; }
-			
+			if(m < 0){ h--; m += 60; }
 			if(pass > 0){
 				pass--;
 				if(view == null) continue;
@@ -216,14 +173,16 @@ public class LessonTableFragment extends BaseFragment{
 		isInitDayLesson = true;
 	}
 	
-	// 初始化总课表
+	/**
+	 * 初始化总课表
+ 	 */
 	private void initLessonTale(){
 		// 显示第几周的TextView
-		weekText = layout.findViewById(R.id.layout_timetable_week);
+		weekText = findViewById(R.id.layout_timetable_week);
 		
-		lessonTable = layout.findViewById(R.id.fragment_timetable_pager);
+		lessonTable = findViewById(R.id.fragment_timetable_pager);
 		lessonTable.initAdapter(null);
-		lessonTable.setViewPager(activity.getViewPager());
+		
 		lessonTable.setLessonClickListener((week, count, lesson) -> {
 			if(!isInitLessonInfo){
 				initLessonInfoDialog();
@@ -231,6 +190,7 @@ public class LessonTableFragment extends BaseFragment{
 			}
 			showLessonInfoDialog(week, count, lesson);
 		});
+		
 		lessonTable.setUpdateListener(this::updateLesson);
 		lessonTable.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
 			@Override
@@ -246,19 +206,29 @@ public class LessonTableFragment extends BaseFragment{
 		lessonTable.setCurrentItem(LessonData.getInstance().getCurrentWeek() - 1);
 		
 		// 总课表关闭回调
-		weekLayout = layout.findViewById(R.id.fragment_timetable_week);
-		weekLayout.setBackListener(b -> {
-			isLessonTableShowing = !b;
-			if(b) lessonTable.clearMenu();
+		weekLayout = findViewById(R.id.fragment_lesson_table_week);
+		
+		weekLayout.setOnPageChangeListener(isBack -> {
+			isLessonTableShowing = !isBack;
+			if(isLessonTableShowing){
+				lessonTable.clearMenu();
+				activity.disableDrag();
+				currentWeek.show();
+			}else{
+				activity.allowDrag();
+				currentWeek.hide();
+			}
 		});
 		
 		isInitLessonTable = true;
 	}
 	
-	// 初始化课程编辑界面
+	/**
+	 * 初始化课程编辑界面
+ 	 */
 	private void initLessonInfoDialog(){
-		lessonInfoBack = layout.findViewById(R.id.layout_lesson_info_back);
-		lessonInfo = layout.findViewById(R.id.layout_lesson_info);
+		lessonInfoBack = findViewById(R.id.layout_lesson_info_back);
+		lessonInfo = findViewById(R.id.layout_lesson_info);
 		
 		FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)lessonInfo.getLayoutParams();
 		WindowManager mWindow = (WindowManager)activity.getSystemService(Context.WINDOW_SERVICE);
@@ -338,24 +308,20 @@ public class LessonTableFragment extends BaseFragment{
 		lessonTime = lessonInfo.findViewById(R.id.layout_lesson_time);
 		
 		RadioGroup lessonType = lessonInfo.findViewById(R.id.layout_lesson_type);
-		lessonType.setOnCheckedChangeListener((group,checkedId) -> {
-			switch(checkedId){
-				case R.id.layout_lesson_all:
-					lessonTime.setFill();
-					break;
-				case R.id.layout_lesson_single:
-					lessonTime.setSingle();
-					break;
-				case R.id.layout_lesson_double:
-					lessonTime.setDouble();
-					break;
+		lessonType.setOnCheckedChangeListener((group, checkedId) -> {
+			if(checkedId == R.id.layout_lesson_all){
+				lessonTime.setFill();
+			}else if(checkedId == R.id.layout_lesson_single){
+				lessonTime.setSingle();
+			}else if(checkedId == R.id.layout_lesson_double){
+				lessonTime.setDouble();
 			}
 		});
 		
 		lessonColor = lessonInfo.findViewById(R.id.layout_lesson_color);
 		
-		animIn = AnimationUtils.loadAnimation(getContext(),R.anim.anim_bottom_in);
-		animOut = AnimationUtils.loadAnimation(getContext(),R.anim.anim_bottom_out);
+		animIn = AnimationUtils.loadAnimation(activity, R.anim.anim_bottom_in);
+		animOut = AnimationUtils.loadAnimation(activity, R.anim.anim_bottom_out);
 		animOut.setAnimationListener(new Animation.AnimationListener(){
 			@Override
 			public void onAnimationStart(Animation animation){ }
@@ -370,7 +336,7 @@ public class LessonTableFragment extends BaseFragment{
 	}
 	
 	// 显示课程编辑框
-	private void showLessonInfoDialog(int _week,int _count,Lesson lesson){
+	private void showLessonInfoDialog(int _week, int _count, Lesson lesson){
 		
 		isLessonInfoShowing = true;
 		
@@ -416,60 +382,76 @@ public class LessonTableFragment extends BaseFragment{
 	
 	private void navigation(){
 
-		LessonGroup[] lessonGroups = LessonData.getInstance().getLessonGroups()[LessonData.getInstance().getWeek()];
-		
-		int currentWeek = LessonData.getInstance().getCurrentWeek();
-		
-		Calendar c = Calendar.getInstance();
-		int h = c.get(Calendar.HOUR_OF_DAY) - 8;
-		int m = c.get(Calendar.MINUTE);
-		
-		int pass = 0;
-		
-		Lesson lesson = null;
-		
-		Lesson currentLesson = null;
-		
-		int current = 0;
-		
-		for(int i=0;i<lessonGroups.length;i++){
-			if(pass == 0){
-				if(lessonGroups[i] != null && (lesson = lessonGroups[i].getCurrentLesson(currentWeek)) != null){
-					current = i;
-					currentLesson = lesson;
-					pass = lesson.len;
-				}
-			}
-			
-			h -= LessonData.Lesson_Time[i][0];
-			m -= LessonData.Lesson_Time[i][1];
-			if(m < 0){ h -= 1; m += 60; }
-			
-			if(pass > 0){
-				pass--;
-				if(h == 0){
-					break;
-				}
-			}
-		}
-		
-		Lesson nextLesson = null;
-		
-		if(lessonGroups[current + 1] == null || (nextLesson = lessonGroups[current + 1].getCurrentLesson(currentWeek)) == null){
-			startActivity(new Intent(activity,NavigationActivity.class));
-		}else if(nextLesson.place.startsWith("明")){
-			startActivity(new Intent(activity,NavigationActivity.class)
-					.putExtra("start",currentLesson == null ? "学院楼" : currentLesson.place)
-					.putExtra("destination",nextLesson.place)
-			);
-		}else{
-			toast("暂不支持导航");
-			startActivity(new Intent(activity,NavigationActivity.class));
-		}
+//		LessonGroup[] lessonGroups = LessonData.getInstance().getLessonGroups()[LessonData.getInstance().getWeek()];
+//
+//		int currentWeek = LessonData.getInstance().getCurrentWeek();
+//
+//		Calendar c = Calendar.getInstance();
+//		int h = c.get(Calendar.HOUR_OF_DAY) - 8;
+//		int m = c.get(Calendar.MINUTE);
+//
+//		int pass = 0;
+//
+//		Lesson lesson = null;
+//
+//		Lesson currentLesson = null;
+//
+//		int current = 0;
+//
+//		for(int i=0;i<lessonGroups.length;i++){
+//			if(pass == 0){
+//				if(lessonGroups[i] != null && (lesson = lessonGroups[i].getCurrentLesson(currentWeek)) != null){
+//					current = i;
+//					currentLesson = lesson;
+//					pass = lesson.len;
+//				}
+//			}
+//
+//			h -= LessonData.Lesson_Time[i][0];
+//			m -= LessonData.Lesson_Time[i][1];
+//			if(m < 0){ h -= 1; m += 60; }
+//
+//			if(pass > 0){
+//				pass--;
+//				if(h == 0){
+//					break;
+//				}
+//			}
+//		}
+//
+//		Lesson nextLesson = null;
+//
+//		if(lessonGroups[current + 1] == null || (nextLesson = lessonGroups[current + 1].getCurrentLesson(currentWeek)) == null){
+//			startActivity(new Intent(activity,NavigationActivity.class));
+//		}else if(nextLesson.place.startsWith("明")){
+//			startActivity(new Intent(activity,NavigationActivity.class)
+//					.putExtra("start",currentLesson == null ? "学院楼" : currentLesson.place)
+//					.putExtra("destination",nextLesson.place)
+//			);
+//		}else{
+//			toast("暂不支持导航");
+//			startActivity(new Intent(activity,NavigationActivity.class));
+//		}
 	}
 	
 	@Override
-	public String getTitle(){
+	public boolean onBackPressed(){
+		if(isLessonInfoShowing){
+			lessonInfo.startAnimation(animOut);
+			return false;
+		}else if(isLessonTableShowing){
+			weekLayout.setBack(true);
+			return false;
+		}else return super.onBackPressed();
+	}
+	
+	@Override
+	protected int getLayout(){
+		return R.layout.fragment_lessontable;
+	}
+	
+	@Override
+	public String getName(){
 		return "课表";
 	}
 }

@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.qust.assistant.R;
-import com.qust.assistant.widget.SlidingLayout;
+import com.qust.assistant.widget.slide.SlidingLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,23 +45,20 @@ public class BaseActivity extends AppCompatActivity{
 	}
 	
 	// 初始化滑动返回
-	protected void initSliding(@Nullable SlidingLayout.OnAnimListener listener,@Nullable View disallowView){
+	protected void initSliding(@Nullable SlidingLayout.onAnimListener listener, @Nullable View disallowView){
 		SlidingLayout slidingLayout = findViewById(R.id.slidingLayout);
-		if(slidingLayout==null) return;
-		if(listener!=null)slidingLayout.setOnAnimListener(listener);
+		if(slidingLayout == null) return;
+		if(listener != null)slidingLayout.setOnAnimListener(listener);
 		slidingLayout.setDisallowView(disallowView);
-		slidingLayout.setOnPageChangeListener(new SlidingLayout.OnPageChangeListener(){
-			@Override public void onPageScrolled(int position,float positionOffset,int positionOffsetPixels){
-				if(position==1)finish();
-			}
-			@Override public void isBack(boolean isBack){ }
+		slidingLayout.setOnPageChangeListener(isBack -> {
+			if(isBack) finish();
 		});
 	}
 	
 	// 初始化ToolBar并设置标题
 	protected void initToolBar(@Nullable String title){
 		Toolbar toolbar = findViewById(R.id.toolbar);
-		if(toolbar==null) return;
+		if(toolbar == null) return;
 		if(title != null) toolbar.setTitle(title);
 		toolbar.setNavigationIcon(R.drawable.ic_back);
 		toolbar.setNavigationOnClickListener(v -> onBackPressed());

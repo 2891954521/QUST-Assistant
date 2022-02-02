@@ -11,13 +11,4 @@
     <string name="text_ok">确定</string>
     <string name="text_cancel">取消</string>
 
-    <string-array name="time">
-        <item> </item>
-        <item>08:00\n09:50</item>
-        <item>10:10\n12:00</item>
-        <item>13:30\n15:20</item>
-        <item>15:40\n17:30</item>
-        <item>18:00\n19:50</item>
-    </string-array>
-
 </resources>

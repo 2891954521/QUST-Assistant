@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:name="课表"
+        android:isDefault="true"
+        android:icon="@drawable/ic_dashboard"
+        android:text="com.qust.assistant.ui.fragment.LessonTableFragment" />
+
+    <item
+        android:name="笔记"
+        android:isDefault="true"
+        android:icon="@drawable/ic_edit"
+        android:text="com.qust.assistant.ui.note.NoteActivity" />
+
+    <item
+        android:name="相册"
+        android:isDefault="true"
+        android:icon="@drawable/ic_image"
+        android:text="com.qust.assistant.ui.fragment.picture.PictureFragment" />
+
+    <item
+        android:name="记账"
+        android:isDefault="true"
+        android:icon="@drawable/ic_calculate"
+        android:text="com.qust.assistant.ui.fragment.accounts.AccountsFragment" />
+
+    <item
+        android:name="导航"
+        android:isDefault="true"
+        android:icon="@drawable/ic_navigation"
+        android:text="com.qust.assistant.ui.NavigationActivity" />
+
+    <item
+        android:name="登陆"
+        android:isDefault="true"
+        android:icon="@drawable/ic_school"
+        android:text="com.qust.assistant.ui.fragment.school.LoginFragment" />
+
+    <item
+        android:name="课表查询"
+        android:isDefault="true"
+        android:icon="@drawable/ic_school"
+        android:text="com.qust.assistant.ui.fragment.school.GetLessonTableFragment" />
+
+    <item
+        android:name="成绩查询"
+        android:isDefault="true"
+        android:icon="@drawable/ic_school"
+        android:text="com.qust.assistant.ui.fragment.school.GetMarkFragment" />
+
+    <item
+        android:name="学业查询"
+        android:isDefault="true"
+        android:icon="@drawable/ic_school"
+        android:text="com.qust.assistant.ui.fragment.school.GetAcademicFragment" />
+
+    <item
+        android:name="自动教评"
+        android:isDefault="true"
+        android:icon="@drawable/ic_school"
+        android:text="com.qust.assistant.ui.fragment.school.AutoEvaluationFragment" />
+
+    <item
+        android:name="空教室查询"
+        android:isDefault="true"
+        android:icon="@drawable/ic_school"
+        android:text="com.qust.assistant.ui.fragment.school.GetLessonTableFragment" />
+
+    <item
+        android:name="考试查询"
+        android:isDefault="true"
+        android:icon="@drawable/ic_school"
+        android:text="com.qust.assistant.ui.fragment.school.GetExamFragment" />
+
+    <item
+        android:name="饮水码"
+        android:isDefault="false"
+        android:icon="@mipmap/duocai"
+        android:text="com.qust.assistant.ui.fragment.third.DrinkFragment" />
+
+    <item
+        android:name="今曰校园"
+        android:isDefault="false"
+        android:icon="@mipmap/cpdaily"
+        android:text="com.qust.assistant.ui.fragment.third.fake.LeaveListActivity" />
+
+    <item
+        android:name="设置"
+        android:isDefault="true"
+        android:icon="@drawable/ic_setting"
+        android:text="com.qust.assistant.ui.SettingActivity" />
+
+</menu>

@@ -17,6 +17,13 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="杂项">
+
+        <Preference
+            android:key="key_quick_display_drink_code"
+            android:title="主页下拉显示饮水码" />
+
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="更新">
 

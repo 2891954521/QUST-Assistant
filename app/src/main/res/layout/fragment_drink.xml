@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/fragment_drink_code"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:padding="@dimen/base_margin"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:src="@drawable/ic_brightness"
+            app:tint="#C8C8C8" />
+
+        <SeekBar
+            style="@style/SeekBarWhite"
+            android:id="@+id/fragment_drink_brightness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="true"
+            android:max="255"
+            android:maxHeight="48dp"
+            android:minHeight="32dp"
+            android:padding="@dimen/activity_margin"
+            android:thumb="@null" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/fragment_drink_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:inputType="phone"
+        android:hint="手机号码" />
+
+    <EditText
+        android:id="@+id/fragment_drink_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:inputType="textPassword"
+        android:hint="密码" />
+
+    <Button
+        android:id="@+id/fragment_drink_get_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="获取饮水码"/>
+
+</LinearLayout>

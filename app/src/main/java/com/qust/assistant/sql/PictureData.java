@@ -12,7 +12,7 @@ import android.os.Environment;
 import android.widget.ImageView;
 
 import com.qust.assistant.R;
-import com.qust.assistant.ui.picture.Picture;
+import com.qust.assistant.ui.fragment.picture.Picture;
 import com.qust.assistant.util.LogUtil;
 
 import java.io.File;

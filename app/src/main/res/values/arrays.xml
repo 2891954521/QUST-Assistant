@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<resources>
+    <array name="menuIcon">
+        <item>@drawable/ic_dashboard</item>
+        <item>@drawable/ic_edit</item>
+        <item>@drawable/ic_image</item>
+        <item>@drawable/ic_calculate</item>
+        <item>@drawable/ic_navigation</item>
+        <item>0</item>
+        <item>@drawable/ic_school</item>
+        <item>@drawable/ic_school</item>
+        <item>@drawable/ic_school</item>
+        <item>@drawable/ic_school</item>
+        <item>@drawable/ic_school</item>
+        <item>@drawable/ic_school</item>
+        <item>0</item>
+        <item>@mipmap/duocai</item>
+        <item>@mipmap/cpdaily</item>
+        <item>@drawable/ic_setting</item>
+    </array>
+
+    <array name="menuTarget">
+        <item>com.qust.assistant.ui.fragment.LessonTableFragment</item>
+        <item>com.qust.assistant.ui.fragment.LessonTableFragment</item>
+        <item>com.qust.assistant.ui.fragment.picture.PictureFragment</item>
+        <item>com.qust.assistant.ui.fragment.accounts.AccountsFragment</item>
+        <item>com.qust.assistant.ui.fragment.NavigationFragment</item>
+        <item>@null</item>
+        <item>com.qust.assistant.ui.fragment.school.GetLessonTableFragment</item>
+        <item>com.qust.assistant.ui.fragment.school.GetMarkFragment</item>
+        <item>com.qust.assistant.ui.fragment.school.GetAcademicFragment</item>
+        <item>com.qust.assistant.ui.fragment.school.AutoEvaluationFragment</item>
+        <item>com.qust.assistant.ui.fragment.school.GetLessonTableFragment</item>
+        <item>com.qust.assistant.ui.fragment.school.GetExamFragment</item>
+        <item>@null</item>
+        <item>com.qust.assistant.ui.fragment.third.DrinkFragment</item>
+        <item>com.qust.assistant.ui.fragment.third.fake.LeaveListActivity</item>
+        <item>com.qust.assistant.ui.SettingActivity</item>
+    </array>
+
+    <array name="menuText">
+        <item>课表</item>
+        <item>笔记</item>
+        <item>相册</item>
+        <item>记账</item>
+        <item>导航</item>
+        <item>@null</item>
+        <item>课表查询</item>
+        <item>成绩查询</item>
+        <item>学业查询</item>
+        <item>自动教评</item>
+        <item>空教室查询</item>
+        <item>考试查询</item>
+        <item>@null</item>
+        <item>饮水码</item>
+        <item>今曰校园</item>
+        <item>设置</item>
+    </array>
+
+    <array name="time">
+        <item>@null</item>
+        <item>08:00\n09:50</item>
+        <item>10:10\n12:00</item>
+        <item>13:30\n15:20</item>
+        <item>15:40\n17:30</item>
+        <item>18:00\n19:50</item>
+    </array>
+
+</resources>

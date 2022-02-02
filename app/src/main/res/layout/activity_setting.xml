@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.qust.assistant.widget.SlidingLayout
+<com.qust.assistant.widget.slide.SlidingLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/slidingLayout"
@@ -17,8 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            app:titleTextColor="@android:color/white"
-            app:title="设置"/>
+            app:titleTextColor="@android:color/white" />
 
         <LinearLayout
             android:id="@+id/activity_setting_contain"
@@ -28,4 +27,4 @@
 
     </LinearLayout>
 
-</com.qust.assistant.widget.SlidingLayout>
+</com.qust.assistant.widget.slide.SlidingLayout>

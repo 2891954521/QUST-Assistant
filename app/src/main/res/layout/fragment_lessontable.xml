@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@android:color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,21 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/activity_margin"
-        android:orientation="vertical"/>
+        android:orientation="vertical" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fragment_timetable_current"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/activity_margin"
-        android:src="@drawable/ic_current"
-        android:tint="@android:color/white"
-        app:backgroundTint="@color/colorPrimary"/>
-
-    <com.qust.assistant.widget.VerticalSlidingLayout
-        android:id="@+id/fragment_timetable_week"
+    <com.qust.assistant.widget.slide.VerticalSlidingLayout
+        android:id="@+id/fragment_lesson_table_week"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -35,27 +24,39 @@
             android:layout_height="match_parent"
             android:background="@android:color/white"
             android:orientation="vertical"
-            android:paddingBottom="16dp">
+            android:paddingBottom="@dimen/activity_margin">
 
             <TextView
-                style="@style/TextTitle"
                 android:id="@+id/layout_timetable_week"
+                style="@style/TextTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimaryText"
-                android:text="第 1 周"/>
+                android:textColor="@color/colorPrimaryText" />
 
             <com.qust.assistant.widget.LessonTable
                 android:id="@+id/fragment_timetable_pager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 
-    </com.qust.assistant.widget.VerticalSlidingLayout>
+    </com.qust.assistant.widget.slide.VerticalSlidingLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fragment_timetable_current"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_current"
+        android:tint="@android:color/white"
+        android:layout_gravity="end|bottom"
+        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginBottom="@dimen/float_button_margin"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="4dp"
+        app:pressedTranslationZ="8dp" />
 
     <include
         layout="@layout/layout_lesson_info"
-        android:visibility="gone"/>
-
-</RelativeLayout>
+        android:visibility="gone" />
+    
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

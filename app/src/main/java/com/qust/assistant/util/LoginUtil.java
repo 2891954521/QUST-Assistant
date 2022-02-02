@@ -24,13 +24,13 @@ import androidx.annotation.Nullable;
 public class LoginUtil{
 	
 	public static final String[] SEVER_HOSTS = {
-			"http://jwglxt.qust.edu.cn/",
-			"http://jwglxt1.qust.edu.cn/",
-			"http://jwglxt2.qust.edu.cn/",
-			"http://jwglxt3.qust.edu.cn/",
-			"http://jwglxt4.qust.edu.cn/",
-			"http://jwglxt5.qust.edu.cn/",
-			"http://jwglxt6.qust.edu.cn/",
+			"https://jwglxt.qust.edu.cn",
+			"https://jwglxt1.qust.edu.cn",
+			"https://jwglxt2.qust.edu.cn",
+			"https://jwglxt3.qust.edu.cn",
+			"https://jwglxt4.qust.edu.cn",
+			"https://jwglxt5.qust.edu.cn",
+			"https://jwglxt6.qust.edu.cn",
 	};
 	
 	public static String HOST = SEVER_HOSTS[0];
@@ -66,7 +66,7 @@ public class LoginUtil{
 				handler.sendMessage(message);
 				
 				HttpURLConnection connection = WebUtil.get(
-						"http://jwglxt.qust.edu.cn/jwglxt/xtgl/index_initMenu.html",
+						LoginUtil.HOST + "/jwglxt/xtgl/index_initMenu.html",
 						"JSESSIONID=" + JSESSIONID);
 				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
 					return null;
@@ -101,7 +101,7 @@ public class LoginUtil{
 			handler.sendMessage(message);
 			
 			HttpURLConnection connection = WebUtil.post(
-					"http://jwglxt.qust.edu.cn/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
+					LoginUtil.HOST + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
 					"JSESSIONID=" + param[0],
 					"csrftoken=" + param[1] + "&language=zh_CN&yhm=" + name + "&mm=" + URLEncoder.encode(rsaPassword,"utf-8")
 			);
@@ -112,7 +112,7 @@ public class LoginUtil{
 				if(matcher.find()){
 					JSESSIONID = matcher.group(1);
 					return null;
-				}else if("http://jwglxt.qust.edu.cn/jwglxt/xtgl/index_initMenu.html".equals(connection.getHeaderField("Location"))){
+				}else if((LoginUtil.HOST + "/jwglxt/xtgl/index_initMenu.html").equals(connection.getHeaderField("Location"))){
 					JSESSIONID = param[0];
 					return null;
 				}
@@ -127,7 +127,7 @@ public class LoginUtil{
 		String[] result = new String[2];
 		String html = null;
 		try{
-			HttpURLConnection connection = WebUtil.get("http://jwglxt.qust.edu.cn/jwglxt/xtgl/login_slogin.html","");
+			HttpURLConnection connection = WebUtil.get(LoginUtil.HOST + "/jwglxt/xtgl/login_slogin.html","");
 			if(connection.getResponseCode()==HttpURLConnection.HTTP_OK){
 				String s = connection.getHeaderField("Set-Cookie");
 				if(s != null){
@@ -161,7 +161,7 @@ public class LoginUtil{
 	private static String getPublicKey(String JSESSIONID){
 		try{
 			String str = WebUtil.doGet(
-					"http://jwglxt.qust.edu.cn/jwglxt/xtgl/login_getPublicKey.html",
+					LoginUtil.HOST + "/jwglxt/xtgl/login_getPublicKey.html",
 					"JSESSIONID=" + JSESSIONID
 			);
 			if(str == null) return null;

@@ -28,15 +28,16 @@ public class SettingActivity extends BaseAnimActivity{
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
+		
 		getSupportFragmentManager().beginTransaction().replace(R.id.activity_setting_contain, new PrefsFragment(this)).commit();
 		
-		initToolBar(null);
-		initSliding(null,null);
+		initToolBar("设置");
+		initSliding(null, null);
 	}
 	
 	public static class PrefsFragment extends PreferenceFragmentCompat{
 		
-		private SettingActivity activity;
+		private final SettingActivity activity;
 		
 		public PrefsFragment(SettingActivity _activity){
 			activity = _activity;
@@ -123,20 +124,4 @@ public class SettingActivity extends BaseAnimActivity{
 		}
 		
 	}
-
-	/*private BroadcastReceiver receiver = new BroadcastReceiver(){
-        @Override
-        public void onReceive(Context context,Intent intent){
-            if(intent.getAction()==null)return;
-            switch(intent.getAction()){
-                case SHOW_FLOAT:
-                    //findPreference(SHOW_FLOAT).notifyDependencyChange(intent.getBooleanExtra(intent.getAction(),false));
-                    break;
-                case LOCK_FLOAT:
-					//findPreference(LOCK_FLOAT).notifyDependencyChange(intent.getBooleanExtra(intent.getAction(),false));
-                	break;
-            }
-        }
-    };*/
-	
 }

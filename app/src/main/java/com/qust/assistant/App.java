@@ -4,8 +4,10 @@ import android.app.Application;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.qust.assistant.lesson.LessonData;
 import com.qust.assistant.sql.DataBase;
 import com.qust.assistant.util.LogUtil;
+import com.qust.assistant.util.SettingUtil;
 
 import androidx.annotation.NonNull;
 
@@ -15,25 +17,40 @@ public class App extends Application{
 	
 	public static final int APP_REQUEST_CODE = 10;
 	
+	/**
+	 * 开发版版本号
+	 */
 	public static final int DEV_VERSION = 6;
+	
+	/**
+	 * Handler 公用的 what 值
+	 */
+	// 关闭 Dialog 并 Toast
+	public static final int DISMISS_TOAST = 1;
+	//
+	public static final int NOTIFY_TOAST = 2;
+	// 更新 Dialog
+	public static final int UPDATE_DIALOG = 0;
 	
 	private Thread.UncaughtExceptionHandler handler;
 	
 	@Override
 	public void onCreate(){
 		super.onCreate();
+		SettingUtil.init(this);
 		DataBase.init(this);
 		LogUtil.init(this);
+		LessonData.init(this);
 		handler = Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 	}
 	
-	public void toast(String message){
+	public void toast(final String message){
 		new Thread(){
 			@Override
 			public void run(){
 				Looper.prepare();
-				Toast.makeText(App.this,message,Toast.LENGTH_LONG).show();
+				Toast.makeText(App.this, message, Toast.LENGTH_LONG).show();
 				Looper.loop();
 			}
 		}.start();
@@ -42,19 +59,11 @@ public class App extends Application{
 	// 捕获异常
 	private class ExceptionHandler implements Thread.UncaughtExceptionHandler{
 		@Override
-		public void uncaughtException(@NonNull Thread thread,@NonNull final Throwable throwable){
-			new Thread(){
-				@Override
-				public void run(){
-					Looper.prepare();
-					Toast.makeText(App.this,"应用发生错误，错误类型：" + throwable.getClass().toString(),Toast.LENGTH_LONG).show();
-					Looper.loop();
-				}
-			}.start();
-			LogUtil.Log("-------应用发生异常-------",throwable);
+		public void uncaughtException(@NonNull Thread thread, @NonNull final Throwable throwable){
+			toast("应用发生错误，错误类型：" + throwable.getClass().toString());
+			LogUtil.Log("-------应用发生异常-------", throwable);
 			LogUtil.debugLog("-------应用异常退出-------");
-			if(handler!=null)handler.uncaughtException(thread,throwable);
+			if(handler != null) handler.uncaughtException(thread, throwable);
 		}
 	}
-	
 }
