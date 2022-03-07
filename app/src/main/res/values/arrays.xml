@@ -15,7 +15,6 @@
         <item>@drawable/ic_school</item>
         <item>0</item>
         <item>@mipmap/duocai</item>
-        <item>@mipmap/cpdaily</item>
         <item>@drawable/ic_setting</item>
     </array>
 
@@ -34,7 +33,6 @@
         <item>com.qust.assistant.ui.fragment.school.GetExamFragment</item>
         <item>@null</item>
         <item>com.qust.assistant.ui.fragment.third.DrinkFragment</item>
-        <item>com.qust.assistant.ui.fragment.third.fake.LeaveListActivity</item>
         <item>com.qust.assistant.ui.SettingActivity</item>
     </array>
 
@@ -53,7 +51,6 @@
         <item>考试查询</item>
         <item>@null</item>
         <item>饮水码</item>
-        <item>今曰校园</item>
         <item>设置</item>
     </array>
 

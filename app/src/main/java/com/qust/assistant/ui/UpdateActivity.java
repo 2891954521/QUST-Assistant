@@ -207,7 +207,7 @@ public class UpdateActivity extends BaseAnimActivity{
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		Uri data;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			data = FileProvider.getUriForFile(this, "com.university.assistant", file);
+			data = FileProvider.getUriForFile(this, "com.qust.assistant", file);
 			// 给目标应用一个临时授权
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		} else {

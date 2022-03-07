@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qust.assistant"
-    android:versionCode="15"
-    android:versionName="1.8.8">
+    android:versionCode="16"
+    android:versionName="1.8.9">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -50,14 +50,6 @@
         <activity android:name="com.qust.assistant.ui.LogActivity"/>
 
         <activity android:name="com.qust.assistant.ui.SettingActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.fragment.third.CpDailyActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.fragment.third.fake.LeaveListActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.fragment.third.fake.LeaveInfoActivity"/>
-
-        <activity android:name="com.qust.assistant.ui.fragment.third.fake.NewLeaveActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

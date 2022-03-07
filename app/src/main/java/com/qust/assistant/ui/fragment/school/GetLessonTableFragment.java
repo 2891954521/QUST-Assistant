@@ -58,7 +58,7 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		
 		setSlidingParam(null, lessonTable);
 		
-		addMenuItem(inflater, R.drawable.ic_done, v -> updateLesson());
+		addMenuItem(inflater, R.drawable.ic_done, v -> saveData());
 		
 	}
 	
@@ -73,7 +73,7 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 					LoginUtil.HOST + "/jwglxt/xtgl/index_cxAreaFive.html?localeKey=zh_CN&gnmkdm=index",
 				"JSESSIONID=" + session
 			);
-			if(response != null && !"".equals(response)){
+			if(!"".equals(response)){
 				Matcher matcher = TIME_MATCHER.matcher(response);
 				if(matcher.find()){
 					startTime = matcher.group(3);
@@ -92,7 +92,7 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 				"JSESSIONID=" + session ,
 				"xnm=" + y[0] +"&xqm=" + y[1] + "&kzlx=ck"
 			);
-			if(response != null && !"".equals(response)){
+			if(!"".equals(response)){
 				lessonGroups = new LessonGroup[7][10];
 				if(LessonData.getInstance().loadFromJson(new JSONObject(response),lessonGroups)){
 					FileUtil.writeFile(new File(activity.getExternalFilesDir("LessonTable"),"data.json"), response);
@@ -111,15 +111,29 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	}
 	
 	private void updateLesson(){
-		if(startTime != null && totalWeek != -1){
-			LessonData.getInstance().setStartDay(startTime);
-			LessonData.getInstance().setTotalWeek(totalWeek);
-		}
 		LessonData data = LessonData.getInstance();
 		data.setLessonGroups(lessonGroups);
 		data.saveLessonData();
 		activity.sendBroadcast(new Intent(App.APP_UPDATE_LESSON_TABLE));
 		finish();
+	}
+	
+	private void saveData(){
+		if(totalWeek != 1){
+			LessonData.getInstance().setTotalWeek(totalWeek);
+		}
+		if(startTime != null && !startTime.equals(LessonData.getInstance().getStartDay())){
+			DialogUtil.getBaseDialog(activity).title("提示").content("开学日期不一致, 是否更新？\n当前: " + LessonData.getInstance().getStartDay() + "\n最新: " + startTime).onPositive((dialog, which) -> {
+				LessonData.getInstance().setStartDay(startTime);
+				updateLesson();
+				dialog.dismiss();
+			}).onNegative((dialog, which) -> {
+				updateLesson();
+				dialog.dismiss();
+			}).show();
+		}else{
+			updateLesson();
+		}
 	}
 	
 	@Override
@@ -136,9 +150,12 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	public boolean onBackPressed(){
 		if(needSave){
 			DialogUtil.getBaseDialog(activity).title("提示").content("课表信息未保存，是否保存？").onPositive((dialog, which) -> {
-				updateLesson();
+				saveData();
 				dialog.dismiss();
-			}).onNegative((dialog, which) -> finish()).show();
+			}).onNegative((dialog, which) -> {
+				finish();
+				dialog.dismiss();
+			}).show();
 			return false;
 		}else return super.onBackPressed();
 	}

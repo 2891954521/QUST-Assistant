@@ -81,12 +81,6 @@
         android:text="com.qust.assistant.ui.fragment.third.DrinkFragment" />
 
     <item
-        android:name="今曰校园"
-        android:isDefault="false"
-        android:icon="@mipmap/cpdaily"
-        android:text="com.qust.assistant.ui.fragment.third.fake.LeaveListActivity" />
-
-    <item
         android:name="设置"
         android:isDefault="true"
         android:icon="@drawable/ic_setting"

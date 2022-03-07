@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_lesson_info_back"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#802C2C2C"
-    android:layout_alignParentBottom="true">
+    android:background="#802C2C2C">
 
     <com.qust.assistant.widget.DialogRoundTop
         android:id="@+id/layout_lesson_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:focusable="true"
         android:clickable="true">
@@ -245,4 +244,4 @@
 
     </com.qust.assistant.widget.DialogRoundTop>
 
-</FrameLayout>
+</RelativeLayout>

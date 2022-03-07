@@ -127,10 +127,10 @@ public class LessonData{
 		
 		try{
 			// 从文件中读取课表
-			loadFromJson(new JSONObject(FileUtil.readFile(new File(context.getExternalFilesDir("LessonTable"),"data.json"))),lessonGroups);
-		}catch(JSONException e1){
-			Toast.makeText(context,"载入课表出错！",Toast.LENGTH_SHORT).show();
-			LogUtil.Log(e1);
+			loadFromJson(new JSONObject(FileUtil.readFile(new File(context.getExternalFilesDir("LessonTable"), "data.json"))), lessonGroups);
+		}catch(JSONException e){
+			Toast.makeText(context, "载入课表出错！", Toast.LENGTH_SHORT).show();
+			LogUtil.Log(e);
 		}finally{
 			saveLessonData();
 		}
@@ -162,13 +162,13 @@ public class LessonData{
 				
 				for(int j=0;j<colors.size();j++){
 					if(colors.get(j).equals(lesson.name)){
-						lesson.color = j + 1;
+						lesson.color = j % (ColorUtil.BACKGROUND_COLORS.length - 1) + 1;
 						break;
 					}
 				}
 				
-				if(lesson.color==0){
-					if(++index==ColorUtil.BACKGROUND_COLORS.length) index = 1;
+				if(lesson.color == 0){
+					if(++index == ColorUtil.BACKGROUND_COLORS.length) index = 1;
 					lesson.color = index;
 					colors.add(lesson.name);
 				}
@@ -217,9 +217,13 @@ public class LessonData{
 	// 更新日期
 	public void updateDate(){
 		Date date = new Date();
+		
 		try{
 			date = DateUtil.YMD.parse(startDay);
-		}catch(ParseException e){ LogUtil.Log(e); }
+		}catch(ParseException e){
+			LogUtil.Log(e);
+		}
+		
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
 		
@@ -230,7 +234,7 @@ public class LessonData{
 		currentWeek = Math.max(1, c.get(Calendar.WEEK_OF_YEAR) - startWeek + 1);
 		
 		week = c.get(Calendar.DAY_OF_WEEK);
-		if(week==Calendar.SUNDAY) week = 6;
+		if(week == Calendar.SUNDAY) week = 6;
 		else week -= 2;
 	}
 	
@@ -255,7 +259,7 @@ public class LessonData{
 	public void setStartDay(String _startDay){
 		startDay = _startDay;
 		updateDate();
-		sp.edit().putString("startDay",startDay).apply();
+		sp.edit().putString("startDay", startDay).apply();
 	}
 	
 	public void setTotalWeek(int _totalWeek){
@@ -275,7 +279,7 @@ public class LessonData{
 	 * 获取开学时间 yyyy-MM-dd
 	 */
 	public String getStartDay(){
-		return startDay==null ? "" : startDay;
+		return startDay == null ? "" : startDay;
 	}
 	
 	/**

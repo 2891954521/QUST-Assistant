@@ -1,15 +1,14 @@
 package com.qust.assistant.ui.fragment;
 
 import android.content.Context;
-import android.view.Display;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -60,7 +59,7 @@ public class LessonTableFragment extends BaseFragment{
 	
 	private ColorPicker lessonColor;
 	
-	private FrameLayout lessonInfoBack;
+	private ViewGroup lessonInfoBack;
 	
 	private DialogRoundTop lessonInfo;
 	
@@ -205,6 +204,8 @@ public class LessonTableFragment extends BaseFragment{
 		
 		lessonTable.setCurrentItem(LessonData.getInstance().getCurrentWeek() - 1);
 		
+		weekText.setText("第 " + (lessonTable.getCurrentItem() + 1) + " 周");
+		
 		// 总课表关闭回调
 		weekLayout = findViewById(R.id.fragment_lesson_table_week);
 		
@@ -230,11 +231,10 @@ public class LessonTableFragment extends BaseFragment{
 		lessonInfoBack = findViewById(R.id.layout_lesson_info_back);
 		lessonInfo = findViewById(R.id.layout_lesson_info);
 		
-		FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)lessonInfo.getLayoutParams();
-		WindowManager mWindow = (WindowManager)activity.getSystemService(Context.WINDOW_SERVICE);
-		Display display = mWindow.getDefaultDisplay();
-		layoutParams.height = display.getHeight()/4*3;
-		lessonInfo.setLayoutParams(layoutParams);
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+		((ViewGroup.LayoutParams) lessonInfo.getLayoutParams()).height = displayMetrics.heightPixels / 4 * 3;
 		
 		lessonInfo.findViewById(R.id.layout_lesson_back).setOnClickListener(v -> {
 			inputManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
@@ -376,6 +376,7 @@ public class LessonTableFragment extends BaseFragment{
 	private void updateLesson(){
 		LessonData.getInstance().saveLessonData();
 		int currentWeek = lessonTable.getCurrentItem();
+		weekText.setText("第 " + (currentWeek + 1) + " 周");
 		lessonTable.setAdapter(lessonTable.getAdapter());
 		lessonTable.setCurrentItem(currentWeek);
 	}
