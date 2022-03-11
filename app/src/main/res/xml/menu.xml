@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:name="主页"
+        android:isDefault="true"
+        android:icon="@drawable/ic_home"
+        android:text="com.qust.assistant.ui.fragment.HomeFragment" />
+
+    <item
         android:name="课表"
         android:isDefault="true"
         android:icon="@drawable/ic_dashboard"

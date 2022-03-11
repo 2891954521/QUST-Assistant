@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 
 import com.qust.assistant.R;
 import com.qust.assistant.sql.PictureData;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.widget.BigImage;
 import com.qust.assistant.widget.PictureGrid;
@@ -14,8 +15,14 @@ public class PictureFragment extends BaseFragment{
 	
 	private PictureGrid pictureGrid;
 	
+	public PictureFragment(MainActivity activity){
+		super(activity);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
+		super.initLayout(inflater);
+		
 		PictureData.init(activity);
 		
 		bigImage = findViewById(R.id.activity_picture_image);
@@ -30,7 +37,7 @@ public class PictureFragment extends BaseFragment{
 	}
 	
 	@Override
-	protected int getLayout(){
+	protected int getLayoutId(){
 		return R.layout.fragment_picture;
 	}
 	

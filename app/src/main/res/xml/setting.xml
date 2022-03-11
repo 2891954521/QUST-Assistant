@@ -19,7 +19,7 @@
 
     <PreferenceCategory android:title="杂项">
 
-        <Preference
+        <SwitchPreference
             android:key="key_quick_display_drink_code"
             android:title="主页下拉显示饮水码" />
 
@@ -30,7 +30,7 @@
         <SwitchPreference
             android:key="key_auto_update"
             android:defaultValue="true"
-            android:summaryOn="一周检查一次更新"
+            android:summaryOn="3天检查一次更新"
             android:summaryOff="不检查更新"
             android:title="自动检查更新"/>
 

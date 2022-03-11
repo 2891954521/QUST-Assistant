@@ -7,6 +7,7 @@ import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.LessonData;
 import com.qust.assistant.lesson.LessonGroup;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.FileUtil;
@@ -37,6 +38,10 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	private String startTime;
 	
 	private int totalWeek;
+	
+	public GetLessonTableFragment(MainActivity activity){
+		super(activity);
+	}
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
@@ -142,7 +147,7 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected int getLayout(){
+	protected int getLayoutId(){
 		return R.layout.fragment_get_lesson_table;
 	}
 	

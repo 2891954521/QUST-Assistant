@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.qust.assistant.R;
 import com.qust.assistant.accounts.Account;
 import com.qust.assistant.sql.AccountsData;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.DateUtil;
 
@@ -18,8 +19,14 @@ public class AccountsFragment extends BaseFragment{
 	
 	private AccountsData accountsData;
 	
+	public AccountsFragment(MainActivity activity){
+		super(activity);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
+		super.initLayout(inflater);
+		
 		AccountsData.init(activity);
 		
 		accountsData = AccountsData.getInstance();
@@ -31,7 +38,7 @@ public class AccountsFragment extends BaseFragment{
 	}
 	
 	@Override
-	protected int getLayout(){
+	protected int getLayoutId(){
 		return R.layout.fragment_accounts;
 	}
 	

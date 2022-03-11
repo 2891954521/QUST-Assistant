@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.NumberPicker;
@@ -12,6 +13,7 @@ import android.widget.NumberPicker;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.LoginUtil;
 
@@ -66,42 +68,50 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 		}
 	};
 	
-	@Override
-	protected void initLayout(LayoutInflater inflater){
-		
-		loginUtil = LoginUtil.getInstance();
-		
+	public BaseSchoolFragment(MainActivity activity){
+		super(activity);
 		SharedPreferences sharedPreferences = activity.getSharedPreferences("education", 0);
 		
 		name = sharedPreferences.getString("user", null);
 		password = sharedPreferences.getString("password", null);
+	}
+	
+	@Override
+	protected void initLayout(LayoutInflater inflater){
+		super.initLayout(inflater);
+		
+		loginUtil = LoginUtil.getInstance();
 		
 		dialog = new MaterialDialog.Builder(activity).progress(true, 0).content("查询中...").build();
 		
-		findViewById(R.id.fragment_school_query).setOnClickListener(v -> {
-			if(name == null || password == null){
-				toast("请先登录！");
-				activity.addView(LoginFragment.class);
-				return;
-			}
-			new Thread(){
-				@Override
-				public void run(){
-					String errorMsg = loginUtil.login(handler, name, password);
-					if(errorMsg == null){
-						doQuery(loginUtil.JSESSIONID);
-					}else{
-						sendMessage(App.DISMISS_TOAST, errorMsg);
-					}
-				}
-			}.start();
-			dialog.show();
-		});
+		View view = findViewById(R.id.fragment_school_query);
+		
+		if(view != null) view.setOnClickListener(v -> doLogin());
 	}
 	
 	protected void initList(BaseAdapter adapter){
 		this.adapter = adapter;
 		((ListView)findViewById(R.id.fragment_school_list)).setAdapter(adapter);
+	}
+	
+	protected void doLogin(){
+		if(name == null || password == null){
+			toast("请先登录！");
+			activity.addView(LoginFragment.class);
+			return;
+		}
+		new Thread(){
+			@Override
+			public void run(){
+				String errorMsg = loginUtil.login(handler, name, password);
+				if(errorMsg == null){
+					doQuery(loginUtil.JSESSIONID);
+				}else{
+					sendMessage(App.DISMISS_TOAST, errorMsg);
+				}
+			}
+		}.start();
+		dialog.show();
 	}
 	
 	/**
@@ -127,6 +137,15 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 		}
 	}
 	
+	@Override
+	public void onReceive(String msg){
+		if(msg.equals(App.APP_USER_LOGIN)){
+			SharedPreferences sharedPreferences = activity.getSharedPreferences("education", 0);
+			name = sharedPreferences.getString("user", null);
+			password = sharedPreferences.getString("password", null);
+		}
+	}
+	
 	/**
 	 * 执行查询的函数
 	 * @param JSESSIONID cookie
@@ -134,7 +153,7 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	protected abstract void doQuery(String JSESSIONID);
 	
 	@Override
-	protected abstract int getLayout();
+	protected abstract int getLayoutId();
 	
 	@Override
 	protected abstract String getName();

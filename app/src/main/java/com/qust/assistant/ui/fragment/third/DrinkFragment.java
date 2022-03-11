@@ -12,6 +12,7 @@ import android.widget.SeekBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.qust.assistant.R;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.ParamUtil;
@@ -29,7 +30,9 @@ public class DrinkFragment extends BaseFragment{
 	
 	private WindowManager.LayoutParams layoutParams;
 	
-	private float screenBrightness;
+	private int screenBrightness;
+	
+	private float defaultBrightness;
 	
 	private SharedPreferences sp;
 	
@@ -49,8 +52,13 @@ public class DrinkFragment extends BaseFragment{
 	
 	private boolean isRunning;
 	
+	public DrinkFragment(MainActivity activity){
+		super(activity);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
+		super.initLayout(inflater);
 		
 		sp = activity.getSharedPreferences("drink", Context.MODE_PRIVATE);
 		
@@ -151,15 +159,32 @@ public class DrinkFragment extends BaseFragment{
 		});
 		
 		layoutParams = activity.getWindow().getAttributes();
-		screenBrightness = layoutParams.screenBrightness;
 		
-		int i = SettingUtil.setting.getInt("drinkBrightness", (int)screenBrightness);
+		defaultBrightness = layoutParams.screenBrightness;
 		
-		seekBar.setProgress(i);
-		setBrightness(i);
+		screenBrightness = SettingUtil.setting.getInt("drinkBrightness", (int)(defaultBrightness * 255f));
+		
+		seekBar.setProgress(screenBrightness);
 		
 		createCode();
 		
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		if(isCreated()){
+			layoutParams.screenBrightness = defaultBrightness;
+			activity.getWindow().setAttributes(layoutParams);
+		}
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		if(isCreated()){
+			setBrightness(screenBrightness);
+		}
 	}
 	
 	private void createCode(){
@@ -173,84 +198,15 @@ public class DrinkFragment extends BaseFragment{
 		return true;
 	}
 	
-//	@Override
-//	public void onResult(int requestCode, int resultCode, @Nullable Intent data){
-//		if(requestCode == App.APP_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-//			String filePath = null;
-//			Uri uri = data.getData();
-//			if(DocumentsContract.isDocumentUri(activity, uri)){
-//				// 如果是document类型的 uri, 则通过document id来进行处理
-//				String documentId = DocumentsContract.getDocumentId(uri);
-//				if("com.android.providers.media.documents".equals(uri.getAuthority())){
-//					// MediaProvider
-//					// 使用':'分割
-//					String id = documentId.split(":")[1];
-//					String selection = MediaStore.Images.Media._ID + "=?";
-//					String[] selectionArgs = {id};
-//					filePath = getDataColumn(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection, selectionArgs);
-//				}else if("com.android.providers.downloads.documents".equals(uri.getAuthority())){
-//					// DownloadsProvider
-//					Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.parseLong(documentId));
-//					filePath = getDataColumn(contentUri, null, null);
-//				}
-//			}else if("content".equalsIgnoreCase(uri.getScheme())){
-//				// 如果是 content 类型的 Uri
-//				filePath = getDataColumn(uri, null, null);
-//			}else if("file".equals(uri.getScheme())){
-//				// 如果是 file 类型的 Uri,直接获取图片对应的路径
-//				filePath = uri.getPath();
-//			}
-//
-//			try{
-//				FileUtil.copyFile(new FileInputStream(filePath), file);
-//			}catch(FileNotFoundException ignored){ }
-//
-//			((ImageView)findViewById(R.id.fragment_drink_code)).setImageBitmap(BitmapFactory.decodeFile(filePath));
-//		}
-//	}
-//
-//	private void choosePicture(){
-//		Intent intent = new Intent("android.intent.action.GET_CONTENT");
-//		Uri imageUri;
-//		if(android.os.Build.VERSION.SDK_INT > 24){
-//			intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//			imageUri = FileProvider.getUriForFile(activity, "com.qust.assistant", file);
-//		}else{
-//			imageUri = Uri.fromFile(file);
-//		}
-//		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-//		intent.putExtra("crop", true);
-//		intent.setType("image/*");
-//		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-//		activity.startActivityForResult(intent, App.APP_REQUEST_CODE);
-//	}
-//
-//	private String getDataColumn(Uri uri, String selection, String[] selectionArgs) {
-//		String path = null;
-//
-//		String[] projection = new String[]{MediaStore.Images.Media.DATA};
-//		Cursor cursor = null;
-//		try {
-//			cursor = activity.getContentResolver().query(uri, projection, selection, selectionArgs, null);
-//			if (cursor != null && cursor.moveToFirst()) {
-//				int columnIndex = cursor.getColumnIndexOrThrow(projection[0]);
-//				path = cursor.getString(columnIndex);
-//			}
-//		} catch (Exception e) {
-//			if (cursor != null) {
-//				cursor.close();
-//			}
-//		}
-//		return path;
-//	}
-	
 	private void setBrightness(int paramInt){
 		layoutParams.screenBrightness = paramInt / 255.0f;
 		activity.getWindow().setAttributes(layoutParams);
 	}
 	
 	@Override
-	protected int getLayout(){ return R.layout.fragment_drink; }
+	protected int getLayoutId(){
+		return R.layout.fragment_drink;
+	}
 	
 	@Override
 	public String getName(){

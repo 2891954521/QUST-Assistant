@@ -26,7 +26,7 @@ public class UpdateUtil{
 		
 		boolean isDev = setting.getBoolean("key_update_dev", false);
 		
-		long frequency = isDev ? 1000 * 60 * 60 * 24 * 3 : 1000 * 60 * 60 * 24 * 7;
+		long frequency = isDev ? 1000 * 60 * 60 * 24 * 1 : 1000 * 60 * 60 * 24 * 3;
 		
 		long current = System.currentTimeMillis();
 		

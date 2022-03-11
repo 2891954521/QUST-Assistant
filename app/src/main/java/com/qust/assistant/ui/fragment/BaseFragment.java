@@ -9,25 +9,30 @@ import android.widget.ImageView;
 
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
+import com.qust.assistant.ui.layout.BaseLayout;
 import com.qust.assistant.widget.slide.DragType;
 import com.qust.assistant.widget.slide.SlidingLayout;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 import androidx.appcompat.widget.Toolbar;
 
-public abstract class BaseFragment{
-	
-	protected boolean isCreated;
+public abstract class BaseFragment implements BaseLayout{
 	
 	protected MainActivity activity;
 	
 	protected SlidingLayout rootView;
 	
+	protected ViewGroup layout;
+	
 	protected Toolbar toolbar;
 	
-	public BaseFragment init(MainActivity activity, boolean isRoot){
+	public BaseFragment(MainActivity activity){
 		this.activity = activity;
+	}
+	
+	public BaseFragment init(boolean isRoot){
 		
 		LayoutInflater layoutInflater = LayoutInflater.from(activity);
 		
@@ -43,8 +48,6 @@ public abstract class BaseFragment{
 			rootView.setOnPageChangeListener(isBack -> { if(isBack) activity.onBackPressed(); });
 		}
 		
-		((ViewGroup)rootView.findViewById(R.id.fragment_base_content)).addView(layoutInflater.inflate(getLayout(), null));
-
 		toolbar = rootView.findViewById(R.id.toolbar);
 		
 		if(toolbar != null){
@@ -57,22 +60,33 @@ public abstract class BaseFragment{
 			}
 		}
 		
-		initLayout(layoutInflater);
+		if(layout == null) initLayout(layoutInflater);
 		
-		isCreated = true;
+		((ViewGroup)rootView.findViewById(R.id.fragment_base_content)).addView(layout);
 		
 		return this;
 	}
-
+	
+	public void onPause(){ };
+	
 	public void onResume(){ }
 	
+	/**
+	 * 接收广播
+	 * @param msg
+	 */
 	public void onReceive(String msg){ }
 	
+	/**
+	 * 来自 onActivityResult
+	 */
 	public void onResult(int requestCode, int resultCode, Intent data){ }
 	
 	protected void setSlidingParam(SlidingLayout.onAnimListener anim, View disallowView){
-		if(anim != null) rootView.setOnAnimListener(anim);
-		rootView.setDisallowView(disallowView);
+		if(rootView != null){
+			if(anim != null) rootView.setOnAnimListener(anim);
+			rootView.setDisallowView(disallowView);
+		}
 	}
 	
 	/**
@@ -87,19 +101,24 @@ public abstract class BaseFragment{
 		imageView.setImageResource(icon);
 		imageView.setOnClickListener(listener);
 		
-		((Toolbar.LayoutParams)imageView.getLayoutParams()).gravity = Gravity.CENTER | Gravity.END;
+		if(toolbar != null){
+			((Toolbar.LayoutParams)imageView.getLayoutParams()).gravity = Gravity.CENTER | Gravity.END;
+			toolbar.addView(imageView);
+		}
 		
-		toolbar.addView(imageView);
 		return imageView;
 	}
 	
-	protected abstract void initLayout(LayoutInflater inflater);
+	protected void initLayout(LayoutInflater inflater){
+		layout = (ViewGroup)inflater.inflate(getLayoutId(), null);
+	}
 	
 	/**
 	 * 获取 Fragment 布局
 	 * @return 布局文件 id
 	 */
-	protected abstract int getLayout();
+	@LayoutRes
+	protected abstract int getLayoutId();
 	
 	/**
 	 * 获取 Fragment 的名字，用于显示在 ToolBar 上
@@ -113,11 +132,22 @@ public abstract class BaseFragment{
 	 */
 	public boolean onBackPressed(){ return true; }
 	
-	public View getView(){ return rootView; }
+	public final View getView(){ return rootView; }
+	
+	@Override
+	public final View getLayout(){
+		if(layout == null) initLayout(LayoutInflater.from(activity));
+		
+		return layout;
+	}
+	
+	public boolean isCreated(){
+		return layout != null;
+	}
 	
 	public void finish(){ activity.removeTopView(); }
 	
-	protected <T extends View> T findViewById(@IdRes int id){ return rootView.findViewById(id); }
+	protected <T extends View> T findViewById(@IdRes int id){ return layout.findViewById(id); }
 	
 	protected void toast(String msg){ activity.toast(msg); }
 	

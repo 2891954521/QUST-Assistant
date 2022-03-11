@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.FileUtil;
 import com.qust.assistant.util.LogUtil;
@@ -69,13 +70,16 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	
 	private AcademicAdapter adapter;
 	
+	public GetAcademicFragment(MainActivity activity){
+		super(activity);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		
-		addMenuItem(inflater, R.drawable.ic_refresh, null).setId(R.id.fragment_school_query);
-		
 		super.initLayout(inflater);
-
+		
+		addMenuItem(inflater, R.drawable.ic_refresh, v -> doLogin());
+		
 		loadData();
 		
 		adapter = new AcademicAdapter();
@@ -271,7 +275,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected int getLayout(){
+	protected int getLayoutId(){
 		return R.layout.fragment_get_academic;
 	}
 	

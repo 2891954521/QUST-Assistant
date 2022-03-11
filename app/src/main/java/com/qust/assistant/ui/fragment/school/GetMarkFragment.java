@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.LoginUtil;
 import com.qust.assistant.util.ParamUtil;
@@ -29,6 +30,10 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	private Mark[] marks;
 	
 	private MarkAdapter adapter;
+	
+	public GetMarkFragment(MainActivity activity){
+		super(activity);
+	}
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
@@ -131,7 +136,7 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected int getLayout(){
+	protected int getLayoutId(){
 		return R.layout.fragment_get_mark;
 	}
 	

@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.LoginUtil;
 import com.qust.assistant.util.WebUtil;
@@ -24,6 +25,10 @@ import java.util.ArrayList;
 public class GetExamFragment extends BaseSchoolFragment{
 	
 	private Exam[] exams;
+	
+	public GetExamFragment(MainActivity activity){
+		super(activity);
+	}
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
@@ -48,7 +53,7 @@ public class GetExamFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected int getLayout(){
+	protected int getLayoutId(){
 		return R.layout.fragment_school_query;
 	}
 	

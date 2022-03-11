@@ -17,7 +17,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.fragment.BaseFragment;
-import com.qust.assistant.ui.fragment.LessonTableFragment;
+import com.qust.assistant.ui.fragment.HomeFragment;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.UpdateUtil;
 import com.qust.assistant.widget.slide.DragType;
@@ -91,6 +91,7 @@ public class MainActivity extends BaseActivity{
 				layout.removeView(fragments.pop().getView());
 				
 				fragments.peek().getView().setFocusable(true);
+				fragments.peek().getView().setClickable(true);
 				
 				if(fragments.size() > 1){
 					fragments.get(fragments.size() - 2).getView().setVisibility(View.VISIBLE);
@@ -112,18 +113,18 @@ public class MainActivity extends BaseActivity{
 	}
 	
 	private void initHome(){
-		BaseFragment home = null;
+		BaseFragment home;
 		
 		try{
-			Class<?> object = Class.forName(SettingUtil.setting.getString("defaultHome", LessonTableFragment.class.getName()));
+			Class<?> object = Class.forName(SettingUtil.setting.getString("defaultHome", HomeFragment.class.getName()));
 			if(BaseFragment.class.isAssignableFrom(object)){
-				home = ((BaseFragment)object.newInstance()).init(this, true);
+				home = ((BaseFragment)object.getConstructor(MainActivity.class).newInstance(this)).init(true);
 			}else{
-				home = new LessonTableFragment().init(this, true);
+				home = new HomeFragment(this).init(true);
 			}
-		}catch(ClassNotFoundException e){
-			home = new LessonTableFragment().init(this, true);
-		}catch(InstantiationException | IllegalAccessException ignored){ }
+		}catch(ReflectiveOperationException e){
+			home = new HomeFragment(this).init(true);
+		}
 		
 		fragments.push(home);
 		
@@ -137,8 +138,10 @@ public class MainActivity extends BaseActivity{
 			
 			BaseFragment a = fragments.peek();
 			a.getView().setFocusable(false);
+			a.getView().setClickable(false);
 			
-			BaseFragment b = ((BaseFragment)newFragment.newInstance()).init(this, false);
+			BaseFragment b = ((BaseFragment)newFragment.getConstructor(MainActivity.class).newInstance(this)).init(false);
+			
 			fragments.push(b);
 			layout.addView(b.getView());
 			
@@ -147,7 +150,7 @@ public class MainActivity extends BaseActivity{
 			
 			drawer.setDragType(DragType.RIGHT);
 			isFading = true;
-		}catch(IllegalAccessException | InstantiationException ignored){ }
+		}catch(ReflectiveOperationException ignored){ }
 	}
 	
 	public synchronized void removeTopView(){

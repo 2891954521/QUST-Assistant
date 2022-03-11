@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.LoginUtil;
 import com.qust.assistant.util.WebUtil;
@@ -32,12 +33,15 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 	
 	private String session;
 	
+	public AutoEvaluationFragment(MainActivity activity){
+		super(activity);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		
-		addMenuItem(inflater, R.drawable.ic_refresh, null).setId(R.id.fragment_school_query);
-		
 		super.initLayout(inflater);
+		
+		addMenuItem(inflater, R.drawable.ic_refresh, v -> doLogin());
 		
 		lessons = new ArrayList<>();
 		
@@ -243,7 +247,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected int getLayout(){
+	protected int getLayoutId(){
 		return R.layout.view_list;
 	}
 	

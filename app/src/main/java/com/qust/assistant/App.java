@@ -15,12 +15,14 @@ public class App extends Application{
 	
 	public static final String APP_UPDATE_LESSON_TABLE = "update.lesson.table";
 	
+	public static final String APP_USER_LOGIN = "user_login";
+	
 	public static final int APP_REQUEST_CODE = 10;
 	
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 6;
+	public static final int DEV_VERSION = 7;
 	
 	/**
 	 * Handler 公用的 what 值
