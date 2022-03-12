@@ -2,6 +2,7 @@ package com.qust.assistant.widget;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -20,6 +21,7 @@ import com.qust.assistant.R;
 import com.qust.assistant.ui.BaseActivity;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
+import com.qust.assistant.util.ColorUtil;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -110,15 +112,21 @@ public class MenuList extends ListView implements AdapterView.OnItemClickListene
 			}
 			
 			Item item = items.get(position);
-			
+
 			((TextView)convertView.findViewById(R.id.item_menu_title)).setText(item.title);
 			
 			ImageView icon = convertView.findViewById(R.id.item_menu_icon);
 			icon.setImageResource(item.icon);
 			
 			if(item.hasMask){
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) icon.setImageTintList(getContext().getColorStateList(R.color.colorAccent));
-				else icon.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+				
+				int color = ColorUtil.TEXT_COLORS[position % (ColorUtil.BACKGROUND_COLORS.length - 1) + 1];
+				
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+					icon.setImageTintList(new ColorStateList(new int[][]{{android.R.attr.state_checked }, {-android.R.attr.state_checked}}, new int[]{color, color}));
+				}else{
+					icon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+				}
 			}else{
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) icon.setImageTintList(null);
 				else icon.clearColorFilter();

@@ -3,40 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:name="主页"
-        android:isDefault="true"
-        android:icon="@drawable/ic_home"
-        android:text="com.qust.assistant.ui.fragment.HomeFragment" />
-
-    <item
         android:name="课表"
         android:isDefault="true"
         android:icon="@drawable/ic_dashboard"
-        android:text="com.qust.assistant.ui.fragment.LessonTableFragment" />
-
-    <item
-        android:name="笔记"
-        android:isDefault="true"
-        android:icon="@drawable/ic_edit"
-        android:text="com.qust.assistant.ui.note.NoteActivity" />
-
-    <item
-        android:name="相册"
-        android:isDefault="true"
-        android:icon="@drawable/ic_image"
-        android:text="com.qust.assistant.ui.fragment.picture.PictureFragment" />
-
-    <item
-        android:name="记账"
-        android:isDefault="true"
-        android:icon="@drawable/ic_calculate"
-        android:text="com.qust.assistant.ui.fragment.accounts.AccountsFragment" />
-
-    <item
-        android:name="导航"
-        android:isDefault="true"
-        android:icon="@drawable/ic_navigation"
-        android:text="com.qust.assistant.ui.NavigationActivity" />
+        android:text="com.qust.assistant.ui.fragment.TermLessonFragment" />
 
     <item
         android:name="登陆"
@@ -67,12 +37,6 @@
         android:isDefault="true"
         android:icon="@drawable/ic_school"
         android:text="com.qust.assistant.ui.fragment.school.AutoEvaluationFragment" />
-
-    <item
-        android:name="空教室查询"
-        android:isDefault="true"
-        android:icon="@drawable/ic_school"
-        android:text="com.qust.assistant.ui.fragment.school.GetLessonTableFragment" />
 
     <item
         android:name="考试查询"

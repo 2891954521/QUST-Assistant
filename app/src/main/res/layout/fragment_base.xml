@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.qust.assistant.widget.slide.SlidingLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_base_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorLight"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/fragment_base_content"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"
-        android:orientation="vertical">
+        android:layout_height="?actionBarSize"
+        android:background="@color/colorLight"
+        app:navigationIcon="@drawable/ic_back"
+        app:titleTextColor="@color/colorPrimaryText" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="@color/colorPrimary"
-            android:elevation="@dimen/widget_margin"
-            app:navigationIcon="@drawable/ic_back"
-            app:titleTextColor="@android:color/white" />
-
-    </LinearLayout>
-
-</com.qust.assistant.widget.slide.SlidingLayout>
+</LinearLayout>

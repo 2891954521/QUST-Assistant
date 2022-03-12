@@ -7,10 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.billy.android.swipe.SmartSwipe;
+import com.billy.android.swipe.SmartSwipeWrapper;
+import com.billy.android.swipe.SwipeConsumer;
+import com.billy.android.swipe.consumer.TranslucentSlidingConsumer;
+import com.billy.android.swipe.listener.SimpleSwipeListener;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.layout.BaseLayout;
-import com.qust.assistant.widget.slide.DragType;
 import com.qust.assistant.widget.slide.SlidingLayout;
 
 import androidx.annotation.DrawableRes;
@@ -22,11 +26,13 @@ public abstract class BaseFragment implements BaseLayout{
 	
 	protected MainActivity activity;
 	
-	protected SlidingLayout rootView;
+	protected ViewGroup rootView;
 	
 	protected ViewGroup layout;
 	
 	protected Toolbar toolbar;
+	
+	protected TranslucentSlidingConsumer consumer;
 	
 	public BaseFragment(MainActivity activity){
 		this.activity = activity;
@@ -36,17 +42,21 @@ public abstract class BaseFragment implements BaseLayout{
 		
 		LayoutInflater layoutInflater = LayoutInflater.from(activity);
 		
-		rootView = (SlidingLayout)layoutInflater.inflate(R.layout.fragment_base, null);
+		consumer = SmartSwipe.wrap(layoutInflater.inflate(R.layout.fragment_base, null))
+				.addConsumer(new TranslucentSlidingConsumer());
 		
-		if(isRoot){
-			rootView.setFocusable(false);
-			rootView.setFocusableInTouchMode(false);
-			rootView.setDragType(DragType.NONE);
-		}else{
-			rootView.setFocusable(true);
-			rootView.setFocusableInTouchMode(true);
-			rootView.setOnPageChangeListener(isBack -> { if(isBack) activity.onBackPressed(); });
+		if(!isRoot){
+			consumer.enableLeft();
 		}
+		
+		consumer.addListener(new SimpleSwipeListener(){
+			@Override
+			public void onSwipeOpened(SmartSwipeWrapper wrapper, SwipeConsumer consumer, int direction) {
+				activity.onBackPressed();
+			}
+		});
+		
+		rootView = consumer.getWrapper();
 		
 		toolbar = rootView.findViewById(R.id.toolbar);
 		
@@ -83,10 +93,10 @@ public abstract class BaseFragment implements BaseLayout{
 	public void onResult(int requestCode, int resultCode, Intent data){ }
 	
 	protected void setSlidingParam(SlidingLayout.onAnimListener anim, View disallowView){
-		if(rootView != null){
-			if(anim != null) rootView.setOnAnimListener(anim);
-			rootView.setDisallowView(disallowView);
-		}
+//		if(rootView != null){
+//			if(anim != null) rootView.setOnAnimListener(anim);
+//			rootView.setDisallowView(disallowView);
+//		}
 	}
 	
 	/**

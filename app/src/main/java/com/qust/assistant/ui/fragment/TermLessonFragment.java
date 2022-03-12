@@ -256,6 +256,12 @@ public class TermLessonFragment extends BaseFragment{
 	}
 	
 	@Override
+	public void onPause(){
+		super.onPause();
+		lessonTable.clearMenu();
+	}
+	
+	@Override
 	public boolean onBackPressed(){
 		lessonTable.clearMenu();
 		if(isLessonInfoShowing){

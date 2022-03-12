@@ -55,6 +55,8 @@ public class UpdateActivity extends BaseAnimActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_update);
 		
+		initStatusBar(true);
+		
 		app = (App)getApplication();
 		
 		file = new File(getExternalCacheDir(),"release.apk");
@@ -93,7 +95,6 @@ public class UpdateActivity extends BaseAnimActivity{
 		}catch(PackageManager.NameNotFoundException ignore){ }
 		
 		initToolBar(null);
-		initSliding(null, null);
 		
 	}
 	

@@ -1,52 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.qust.assistant.widget.slide.SlidingLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/slidingLayout"
+    android:background="@color/colorLight"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:background="@android:color/white"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="?actionBarSize"
+        android:background="@color/colorLight"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="更新"
+        app:titleTextColor="@color/colorPrimaryText" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_width="match_parent"
-            android:background="@color/colorPrimary"
-            app:titleTextColor="@android:color/white"
-            app:title="更新"/>
+    <TextView
+        style="@style/TextNormal"
+        android:id="@+id/activity_update_current_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/widget_margin"
+        android:padding="@dimen/widget_margin"
+        app:drawableStartCompat="@mipmap/ic_launcher" />
 
+    <Button
+        android:id="@+id/activity_update_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:text="自动更新"/>
 
-        <TextView
-            style="@style/TextNormal"
-            android:id="@+id/activity_update_current_version"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/widget_margin"
-            android:padding="@dimen/widget_margin"
-            android:drawableStart="@mipmap/ic_launcher"/>
+    <TextView
+        android:id="@+id/activity_update_info"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/widget_margin"
+        android:layout_weight="1"
+        android:autoLink="web"
+        android:padding="@dimen/widget_margin"/>
 
-        <TextView
-            android:id="@+id/activity_update_info"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="@dimen/widget_margin"
-            android:layout_weight="1"
-            android:autoLink="web"
-            android:padding="@dimen/widget_margin"/>
+</LinearLayout>
 
-        <Button
-            android:id="@+id/activity_update_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/widget_margin"
-            android:text="更新"/>
-
-    </LinearLayout>
-
-</com.qust.assistant.widget.slide.SlidingLayout>

@@ -1,11 +1,14 @@
 package com.qust.assistant;
 
 import android.app.Application;
+import android.os.Build;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.billy.android.swipe.SmartSwipeBack;
 import com.qust.assistant.lesson.LessonData;
 import com.qust.assistant.sql.DataBase;
+import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
 
@@ -22,7 +25,7 @@ public class App extends Application{
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 7;
+	public static final int DEV_VERSION = 8;
 	
 	/**
 	 * Handler 公用的 what 值
@@ -39,12 +42,25 @@ public class App extends Application{
 	@Override
 	public void onCreate(){
 		super.onCreate();
+		
 		SettingUtil.init(this);
+		
 		DataBase.init(this);
+		
 		LogUtil.init(this);
+		
 		LessonData.init(this);
+		
 		handler = Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+		
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+			// use bezier back before LOLLIPOP
+			SmartSwipeBack.activityBezierBack(this, activitySwipeBackFilter);
+		} else {
+			// add relative moving slide back
+			SmartSwipeBack.activitySlidingBack(this, activitySwipeBackFilter);
+		}
 	}
 	
 	public void toast(final String message){
@@ -68,4 +84,6 @@ public class App extends Application{
 			if(handler != null) handler.uncaughtException(thread, throwable);
 		}
 	}
+	
+	private final SmartSwipeBack.ActivitySwipeBackFilter activitySwipeBackFilter = activity -> !(activity instanceof MainActivity);
 }

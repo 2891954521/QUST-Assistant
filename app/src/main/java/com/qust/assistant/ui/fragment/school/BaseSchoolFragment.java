@@ -11,6 +11,8 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.billy.android.swipe.SmartSwipe;
+import com.billy.android.swipe.consumer.SpaceConsumer;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
@@ -91,7 +93,9 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	
 	protected void initList(BaseAdapter adapter){
 		this.adapter = adapter;
-		((ListView)findViewById(R.id.fragment_school_list)).setAdapter(adapter);
+		ListView listView = findViewById(R.id.fragment_school_list);
+		listView.setAdapter(adapter);
+		SmartSwipe.wrap(listView).addConsumer(new SpaceConsumer()).enableVertical();
 	}
 	
 	protected void doLogin(){

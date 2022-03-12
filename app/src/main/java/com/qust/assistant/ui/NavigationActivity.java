@@ -85,7 +85,6 @@ public class NavigationActivity extends BaseAnimActivity{
 		updatePath();
 		
 		initToolBar(null);
-		initSliding(null, null);
 	}
 	
 	private void setStart(String code){

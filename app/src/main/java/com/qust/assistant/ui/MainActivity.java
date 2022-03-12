@@ -8,20 +8,25 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.billy.android.swipe.SmartSwipe;
+import com.billy.android.swipe.SwipeConsumer;
+import com.billy.android.swipe.consumer.SpaceConsumer;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.ui.fragment.HomeFragment;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.UpdateUtil;
-import com.qust.assistant.widget.slide.DragType;
-import com.qust.assistant.widget.slide.SlidingMenu;
+import com.qust.assistant.widget.swipe.MainDrawer;
 
 import java.util.Stack;
 
@@ -35,7 +40,7 @@ public class MainActivity extends BaseActivity{
 	
 	private Stack<BaseFragment> fragments;
 	
-	private SlidingMenu drawer;
+	private MainDrawer drawer;
 	
 	private FrameLayout layout;
 	
@@ -48,16 +53,17 @@ public class MainActivity extends BaseActivity{
 	@Override
 	protected void onCreate(Bundle paramBundle){
 		super.onCreate(paramBundle);
+		
 		setContentView(R.layout.activity_main);
+		
+		initStatusBar(true);
 		
 		fragments = new Stack<>();
 		
 		layout = findViewById(R.id.main_frame);
 		
-		drawer = findViewById(R.id.main_drawer);
-		
-		drawer.setDragType(DragType.LEFT);
-		
+		initDrawer();
+
 		initHome();
 		
 		initAnim();
@@ -70,12 +76,32 @@ public class MainActivity extends BaseActivity{
 		UpdateUtil.checkUpdate(this);
 	}
 	
+	private void initDrawer(){
+		
+		drawer = SmartSwipe.wrap(this).addConsumer(new MainDrawer());
+		
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+		
+		View drawerView = LayoutInflater.from(this).inflate(R.layout.nav_main, drawer.getWrapper(), false);
+		
+		drawerView.setLayoutParams(new ViewGroup.LayoutParams(displayMetrics.widthPixels / 4 * 3, ViewGroup.LayoutParams.MATCH_PARENT));
+		
+		drawer.setHorizontalDrawerView(drawerView).setScrimColor(0x2F000000).disableRight();
+		
+		SmartSwipe.wrap(drawerView.findViewById(R.id.nav_main_menu)).addConsumer(new SpaceConsumer()).enableVertical();
+	}
+	
 	private void initAnim(){
 		
 		animIn = AnimationUtils.loadAnimation(this, R.anim.anim_right_in);
 		animIn.setAnimationListener(new Animation.AnimationListener(){
 			@Override
-			public void onAnimationEnd(Animation param1Animation){ isFading = false; }
+			public void onAnimationEnd(Animation param1Animation){
+				isFading = false;
+				drawer.enableRight();
+				drawer.disableLeft();
+			}
 			
 			@Override
 			public void onAnimationRepeat(Animation param1Animation){}
@@ -96,7 +122,8 @@ public class MainActivity extends BaseActivity{
 				if(fragments.size() > 1){
 					fragments.get(fragments.size() - 2).getView().setVisibility(View.VISIBLE);
 				}else{
-					drawer.setDragType(DragType.LEFT);
+					drawer.enableLeft();
+					drawer.disableRight();
 				}
 				
 				isFading = false;
@@ -135,11 +162,13 @@ public class MainActivity extends BaseActivity{
 		if(isFading) return;
 		try{
 			if(fragments.size() > 1) fragments.get(fragments.size() - 2).getView().setVisibility(View.GONE);
-			
+
 			BaseFragment a = fragments.peek();
 			a.getView().setFocusable(false);
 			a.getView().setClickable(false);
 			
+			drawer.close();
+
 			BaseFragment b = ((BaseFragment)newFragment.getConstructor(MainActivity.class).newInstance(this)).init(false);
 			
 			fragments.push(b);
@@ -148,23 +177,23 @@ public class MainActivity extends BaseActivity{
 			a.getView().startAnimation(animFadeOut);
 			b.getView().startAnimation(animIn);
 			
-			drawer.setDragType(DragType.RIGHT);
 			isFading = true;
 		}catch(ReflectiveOperationException ignored){ }
 	}
 	
 	public synchronized void removeTopView(){
-		if(isFading) return;
-		isFading = true;
-		fragments.peek().getView().startAnimation(animOut);
+		if(!isFading && fragments.size() > 1){
+			isFading = true;
+			fragments.peek().getView().startAnimation(animOut);
+		}
 	}
 	
 	@Override
 	public void onBackPressed(){
 		if(isFading){
 			// Do nothing
-		}else if(drawer.isMenuShowing()){
-			drawer.hideMenu();
+		}else if(drawer.isOpened()){
+			drawer.close(true);
 		}else if(fragments.peek().onBackPressed()){
 			if(fragments.size() == 1){
 				super.onBackPressed();
@@ -185,17 +214,9 @@ public class MainActivity extends BaseActivity{
 		}, App.APP_UPDATE_LESSON_TABLE);
 	}
 	
-	public void openMenu(){ drawer.openMenu(); }
+	public void openMenu(){ drawer.open(true, SwipeConsumer.DIRECTION_LEFT); }
 	
-	public void closeMenu(){ drawer.hideMenuNoAnim(); }
-	
-	public void disableDrag(){
-		drawer.disableDrag();;
-	}
-	
-	public void allowDrag(){
-		drawer.allowDrag();
-	}
+	public void closeMenu(){ drawer.close(true); }
 	
 	@Override
 	public void onResume(){

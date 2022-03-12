@@ -16,7 +16,6 @@ import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.ParamUtil;
-import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONException;
@@ -154,7 +153,7 @@ public class DrinkFragment extends BaseFragment{
 			public void onStartTrackingTouch(SeekBar seekBar){ }
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar){
-				SettingUtil.setting.edit().putInt("drinkBrightness", seekBar.getProgress()).apply();
+				screenBrightness = seekBar.getProgress();
 			}
 		});
 		
@@ -162,7 +161,7 @@ public class DrinkFragment extends BaseFragment{
 		
 		defaultBrightness = layoutParams.screenBrightness;
 		
-		screenBrightness = SettingUtil.setting.getInt("drinkBrightness", (int)(defaultBrightness * 255f));
+		screenBrightness = (int)(defaultBrightness * 255f);
 		
 		seekBar.setProgress(screenBrightness);
 		
@@ -179,21 +178,13 @@ public class DrinkFragment extends BaseFragment{
 		}
 	}
 	
-	@Override
-	public void onResume(){
-		super.onResume();
-		if(isCreated()){
-			setBrightness(screenBrightness);
-		}
-	}
-	
 	private void createCode(){
 		image.setImageBitmap(ParamUtil.createBarCode(code));
 	}
 	
 	@Override
 	public boolean onBackPressed(){
-		layoutParams.screenBrightness = screenBrightness;
+		layoutParams.screenBrightness = defaultBrightness;
 		activity.getWindow().setAttributes(layoutParams);
 		return true;
 	}

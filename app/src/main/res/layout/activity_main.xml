@@ -2,31 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@android:color/white"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/colorLight">
 
-    <com.qust.assistant.widget.slide.SlidingMenu
-        android:id="@+id/main_drawer"
+    <FrameLayout
+        android:id="@+id/main_base"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:background="@android:color/black">
 
-        <include layout="@layout/nav_main" />
-
-        <LinearLayout
-            android:id="@+id/main_base"
+        <FrameLayout
+            android:id="@+id/main_frame"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@android:color/black">
+            android:clickable="true"
+            android:focusable="true" />
 
-            <FrameLayout
-                android:id="@+id/main_frame"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:clickable="true"
-                android:focusable="true" />
-
-        </LinearLayout>
-
-    </com.qust.assistant.widget.slide.SlidingMenu>
+    </FrameLayout>
 
 </RelativeLayout>

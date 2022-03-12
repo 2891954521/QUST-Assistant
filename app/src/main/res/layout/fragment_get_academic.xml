@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:background="@android:color/white"
+    <TextView
+        style="@style/TextNormal"
+        android:id="@+id/activity_get_academic_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_margin"
+        android:elevation="@dimen/widget_margin"
+        android:inputType="textMultiLine"
+        android:ellipsize="none" />
 
-        <TextView
-            style="@style/TextNormal"
-            android:id="@+id/activity_get_academic_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/activity_margin"
-            android:elevation="@dimen/widget_margin"
-            android:inputType="textMultiLine"
-            android:ellipsize="none" />
+    <ExpandableListView
+        android:id="@+id/activity_get_academic_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-        <ExpandableListView
-            android:id="@+id/activity_get_academic_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

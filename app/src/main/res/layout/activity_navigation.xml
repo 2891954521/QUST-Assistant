@@ -1,112 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.qust.assistant.widget.slide.SlidingLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/slidingLayout"
+    android:background="@android:color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:titleTextColor="@android:color/white"
+        app:title="导航"/>
 
     <LinearLayout
-        android:background="@android:color/white"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:titleTextColor="@android:color/white"
-            app:title="导航"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/activity_margin">
-
-            <TextView
-                style="@style/TextBig"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="0dp"
-                android:text="起点"/>
-
-            <TextView
-                style="@style/TextBig"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="0dp"
-                android:text="终点"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="@dimen/widget_margin">
-
-            <NumberPicker
-                android:id="@+id/activity_navigation_start_floor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="@dimen/widget_margin"
-                android:descendantFocusability="blocksDescendants" />
-
-            <NumberPicker
-                android:id="@+id/activity_navigation_start_place"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="@dimen/widget_margin"
-                android:descendantFocusability="blocksDescendants" />
-
-            <NumberPicker
-                android:id="@+id/activity_navigation_end_floor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="@dimen/activity_margin"
-                android:descendantFocusability="blocksDescendants" />
-
-            <NumberPicker
-                android:id="@+id/activity_navigation_end_place"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="@dimen/widget_margin"
-                android:layout_marginEnd="@dimen/widget_margin"
-                android:descendantFocusability="blocksDescendants" />
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/activity_navigation_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/widget_margin"
-            android:text="导航"/>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/activity_margin">
 
         <TextView
-            style="@style/TextNormal"
-            android:id="@+id/activity_navigation_text"
-            android:layout_width="match_parent"
+            style="@style/TextBig"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/widget_margin"
-            android:singleLine="false"/>
+            android:layout_weight="1"
+            android:padding="0dp"
+            android:text="起点"/>
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="16sp"
-            android:text="功能未完成，路线仅供参考"/>
+            style="@style/TextBig"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="0dp"
+            android:text="终点"/>
 
     </LinearLayout>
 
-</com.qust.assistant.widget.slide.SlidingLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/widget_margin">
+
+        <NumberPicker
+            android:id="@+id/activity_navigation_start_floor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/widget_margin"
+            android:descendantFocusability="blocksDescendants" />
+
+        <NumberPicker
+            android:id="@+id/activity_navigation_start_place"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/widget_margin"
+            android:descendantFocusability="blocksDescendants" />
+
+        <NumberPicker
+            android:id="@+id/activity_navigation_end_floor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:descendantFocusability="blocksDescendants" />
+
+        <NumberPicker
+            android:id="@+id/activity_navigation_end_place"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/widget_margin"
+            android:layout_marginEnd="@dimen/widget_margin"
+            android:descendantFocusability="blocksDescendants" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/activity_navigation_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/widget_margin"
+        android:text="导航"/>
+
+    <TextView
+        style="@style/TextNormal"
+        android:id="@+id/activity_navigation_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/widget_margin"
+        android:singleLine="false"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:text="功能未完成，路线仅供参考"/>
+
+</LinearLayout>

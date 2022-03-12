@@ -29,10 +29,13 @@ public class SettingActivity extends BaseAnimActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
 		
+		initStatusBar(true);
+		
 		getSupportFragmentManager().beginTransaction().replace(R.id.activity_setting_contain, new PrefsFragment(this)).commit();
 		
+		// SwipeConsumer consumer = SmartSwipe.wrap(findViewById(R.id.activity_setting_contain)).addConsumer(new SpaceConsumer()).enableVertical();
+		
 		initToolBar("设置");
-		initSliding(null, null);
 	}
 	
 	public static class PrefsFragment extends PreferenceFragmentCompat{

@@ -45,7 +45,6 @@ public class NoteActivity extends BaseAnimActivity{
 		list.setAdapter(adapter);
 
 		initToolBar(null);
-		initSliding(null, null);
 	}
 	
 
