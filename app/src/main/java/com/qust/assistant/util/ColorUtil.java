@@ -6,19 +6,19 @@ public class ColorUtil{
 	
 	public static final int[] BACKGROUND_COLORS = {
 			
-			Color.rgb(230,244,255),
-			Color.rgb(253,235,221),
-			Color.rgb(222,251,247),
-			Color.rgb(238,237,255),
-			Color.rgb(252,235,205),
-			Color.rgb(255,239,240),
+			Color.argb(192,230,244,255),
+			Color.argb(192,253,235,221),
+			Color.argb(192,222,251,247),
+			Color.argb(192,238,237,255),
+			Color.argb(192,252,235,205),
+			Color.argb(192,255,239,240),
 			
-			Color.rgb(234,242,255),
-			Color.rgb(255,238,248),
-			Color.rgb(226,249,243),
-			Color.rgb(255,249,201),
-			Color.rgb(250,237,255),
-			Color.rgb(244,242,253),
+			Color.argb(192,234,242,255),
+			Color.argb(192,255,238,248),
+			Color.argb(192,226,249,243),
+			Color.argb(192,255,249,201),
+			Color.argb(192,250,237,255),
+			Color.argb(192,244,242,253),
 		
 	};
 	

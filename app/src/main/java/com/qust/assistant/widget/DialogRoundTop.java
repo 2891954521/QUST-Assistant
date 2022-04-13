@@ -2,11 +2,12 @@ package com.qust.assistant.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+
+import com.qust.assistant.R;
 
 import androidx.annotation.Nullable;
 
@@ -28,7 +29,7 @@ public class DialogRoundTop extends LinearLayout{
 		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 		paint.setAntiAlias(true);
 		paint.setStyle(Paint.Style.FILL);
-		paint.setColor(Color.WHITE);
+		paint.setColor(getResources().getColor(R.color.colorLight));
 		//rec = new RectF(0,0,0,0;
 		//setWillNotDraw(false);
 	}
@@ -36,7 +37,7 @@ public class DialogRoundTop extends LinearLayout{
 	@Override
 	protected void onMeasure(int widthMeasureSpec,int heightMeasureSpec){
 		super.onMeasure(widthMeasureSpec,heightMeasureSpec);
-		rec = new RectF(0, 0, getMeasuredWidth(), getMeasuredHeight()+48);
+		rec = new RectF(0, 0, getMeasuredWidth(), getMeasuredHeight() + 48);
 	}
 	
 	@Override

@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="BaseTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -25,12 +25,6 @@
         <item name="android:layout_marginStart">@dimen/activity_margin</item>
         <item name="android:layout_marginEnd">@dimen/activity_margin</item>
         <item name="android:drawablePadding">@dimen/widget_margin</item>
-    </style>
-
-    <style name="defaultText">
-        <item name="android:padding">8dp</item>
-        <item name="android:textColor">#464c5c</item>
-        <item name="android:textSize">14sp</item>
     </style>
 
     <!--默认文本的style-->

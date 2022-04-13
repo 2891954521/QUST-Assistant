@@ -5,14 +5,14 @@
     android:id="@+id/fragment_base_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorLight"
+    android:background="@color/colorBackground"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:background="@color/colorLight"
+        android:background="@color/colorBackground"
         app:navigationIcon="@drawable/ic_back"
         app:titleTextColor="@color/colorPrimaryText" />
 

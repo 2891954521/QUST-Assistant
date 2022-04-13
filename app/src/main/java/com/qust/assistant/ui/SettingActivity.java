@@ -29,7 +29,7 @@ public class SettingActivity extends BaseAnimActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
 		
-		initStatusBar(true);
+		initStatusBar();
 		
 		getSupportFragmentManager().beginTransaction().replace(R.id.activity_setting_contain, new PrefsFragment(this)).commit();
 		

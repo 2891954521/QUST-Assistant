@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:foreground="?attr/selectableItemBackground"
-        app:cardBackgroundColor="@android:color/white"
+        app:cardBackgroundColor="@color/colorLight"
         app:cardCornerRadius="8dp"
         app:cardElevation="6dp">
 
@@ -29,7 +29,8 @@
                     style="@style/TextSmall"
                     android:id="@+id/item_academic_status"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/widget_margin" />
 
                 <TextView
                     style="@style/TextNormal"

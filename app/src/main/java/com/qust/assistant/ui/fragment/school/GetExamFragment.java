@@ -37,7 +37,6 @@ public class GetExamFragment extends BaseSchoolFragment{
 		try{
 			exams = (Exam[])loadData("Exam","exam");
 		}catch(Exception e){
-			LogUtil.Log(e);
 			exams = new Exam[0];
 		}
 		

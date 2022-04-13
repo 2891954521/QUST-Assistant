@@ -1,6 +1,5 @@
 package com.qust.assistant.ui.fragment.school;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,6 @@ public class GetMarkFragment extends BaseSchoolFragment{
 		try{
 			marks = (Mark[])loadData("Mark", "mark");
 		}catch(Exception e){
-			LogUtil.Log(e);
 			marks = new Mark[0];
 		}
 
@@ -172,8 +170,8 @@ public class GetMarkFragment extends BaseSchoolFragment{
 				convertView = LayoutInflater.from(activity).inflate(R.layout.item_mark_group, null);
 			}
 			((TextView)convertView.findViewById(R.id.item_mark_name)).setText(marks[groupPosition].name);
-			TextView textView = (TextView)convertView.findViewById(R.id.item_mark_value);
-			textView.setTextColor(marks[groupPosition].mark < 60 ? Color.RED : Color.BLACK);
+			TextView textView = convertView.findViewById(R.id.item_mark_value);
+			textView.setTextColor(activity.getResources().getColor(marks[groupPosition].mark < 60 ? R.color.colorError : R.color.colorPrimaryText));
 			textView.setText("成绩: " + marks[groupPosition].mark);
 			return convertView;
 		}

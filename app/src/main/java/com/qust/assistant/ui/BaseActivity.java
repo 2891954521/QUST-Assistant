@@ -2,6 +2,7 @@ package com.qust.assistant.ui;
 
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,7 +27,7 @@ public class BaseActivity extends AppCompatActivity{
 		registerReceiver();
 	}
 	
-	protected void initStatusBar(boolean darkStatusBar) {
+	protected void initStatusBar() {
 		
 		View decorView = getWindow().getDecorView();
 		
@@ -34,14 +35,20 @@ public class BaseActivity extends AppCompatActivity{
 		
 		if(isInMultiWindowMode){
 			// 多窗口模式下不修改状态栏
-			return;
 		}else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 		}else{
-			int systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-			if (darkStatusBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+			int systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+			
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+				int mode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+				if(mode == Configuration.UI_MODE_NIGHT_YES) {
+					systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+				} else if(mode == Configuration.UI_MODE_NIGHT_NO) {
+					systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+				}
 			}
+
 			decorView.setSystemUiVisibility(systemUiVisibility);
 			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

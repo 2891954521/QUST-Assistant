@@ -32,7 +32,7 @@ public class LogActivity extends BaseAnimActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
     
-        initStatusBar(true);
+        initStatusBar();
         
         String s = getIntent().getStringExtra("file");
         if(s != null){

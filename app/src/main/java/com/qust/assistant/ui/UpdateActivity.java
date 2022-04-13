@@ -55,7 +55,7 @@ public class UpdateActivity extends BaseAnimActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_update);
 		
-		initStatusBar(true);
+		initStatusBar();
 		
 		app = (App)getApplication();
 		
@@ -208,7 +208,7 @@ public class UpdateActivity extends BaseAnimActivity{
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		Uri data;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			data = FileProvider.getUriForFile(this, "com.qust.assistant", file);
+			data = FileProvider.getUriForFile(this, getPackageName(), file);
 			// 给目标应用一个临时授权
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		} else {

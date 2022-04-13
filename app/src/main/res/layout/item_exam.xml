@@ -10,7 +10,7 @@
         android:layout_margin="@dimen/widget_margin"
         android:foreground="?attr/selectableItemBackground"
         android:longClickable="true"
-        app:cardBackgroundColor="#ffffff"
+        app:cardBackgroundColor="@color/colorLight"
         app:cardCornerRadius="8dp"
         app:cardElevation="6dp">
 

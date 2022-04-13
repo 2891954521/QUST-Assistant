@@ -51,7 +51,7 @@ public class LessonTable extends AppWidgetProvider{
 		int currentWeek = LessonData.getInstance().getCurrentWeek();
 		
 		if(remoteView == null){
-			remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_day_lesson);
+			remoteView = new RemoteViews(context.getPackageName(), R.layout.widget_day_lesson);
 			times = 0;
 		}
 		
@@ -63,19 +63,19 @@ public class LessonTable extends AppWidgetProvider{
 			paint.setAntiAlias(true);
 			paint.setStyle(Paint.Style.FILL);
 			
-			String[] time = { "上午课程", null, null, null, "下午课程", null, null, null, "晚上课程", null};
+			String[] time = {"上午课程", null, null, null, "下午课程", null, null, null, "晚上课程", null};
 			
 			remoteView.removeAllViews(R.id.widget_day_lesson);
 			
 			lessonView = new RemoteViews[lessonGroups.length];
 			
-			for(int i=0;i<lessonGroups.length;i++){
+			for(int i = 0; i < lessonGroups.length; i++){
 				if(time[i] != null){
 					RemoteViews t = new RemoteViews(context.getPackageName(), R.layout.view_text);
 					t.setTextViewText(R.id.view_text, time[i]);
 					remoteView.addView(R.id.widget_day_lesson, t);
 				}
-				createLesson(context, remoteView, lessonGroups[i] == null ? null : lessonGroups[i].getCurrentLesson(currentWeek), paint, i,i%4!=0);
+				createLesson(context, remoteView, lessonGroups[i] == null ? null : lessonGroups[i].getCurrentLesson(currentWeek), paint, i, i % 4 != 0);
 			}
 		}
 		
@@ -90,7 +90,7 @@ public class LessonTable extends AppWidgetProvider{
 		
 		Lesson lesson;
 		
-		for(int i=0;i<lessonGroups.length;i++){
+		for(int i = 0; i < lessonGroups.length; i++){
 			if(pass == 0){
 				if(lessonGroups[i] != null && (lesson = lessonGroups[i].getCurrentLesson(currentWeek)) != null){
 					count = i;
@@ -101,22 +101,25 @@ public class LessonTable extends AppWidgetProvider{
 			
 			h -= LessonData.Lesson_Time[i][0];
 			m -= LessonData.Lesson_Time[i][1];
-			if(m < 0){ h -= 1; m += 60; }
+			if(m < 0){
+				h -= 1;
+				m += 60;
+			}
 			
 			if(pass > 0){
 				if(hasUpdateTime) continue;
 				if(h > 0){
 					if(pass == 1){
-						lessonView[count].setTextViewText(R.id.widget_lesson_status,"已结束");
+						lessonView[count].setTextViewText(R.id.widget_lesson_status, "已结束");
 					}
 				}else if(h == 0){
 					if(m > 50){
 						if(pass == 1){
-							lessonView[count].setTextViewText(R.id.widget_lesson_status,"已结束");
+							lessonView[count].setTextViewText(R.id.widget_lesson_status, "已结束");
 						}
 					}else{
 						lessonView[count].setTextColor(R.id.widget_lesson_status, ColorUtil.TEXT_COLORS[0]);
-						lessonView[count].setTextViewText(R.id.widget_lesson_status,(50 - m) + "min后下课");
+						lessonView[count].setTextViewText(R.id.widget_lesson_status, (50 - m) + "min后下课");
 						hasUpdateTime = true;
 					}
 				}else{
@@ -127,49 +130,51 @@ public class LessonTable extends AppWidgetProvider{
 			}
 		}
 		
-		for(int appWidgetId : appWidgetIds) appWidgetManager.updateAppWidget(appWidgetId, remoteView);
+		for(int appWidgetId : appWidgetIds){
+			appWidgetManager.updateAppWidget(appWidgetId, remoteView);
+		}
 		
 	}
 	
 	private void createLesson(Context context, RemoteViews remoteViews, Lesson lesson, Paint paint, int count, boolean canHide){
 		if(lesson == null && canHide) return;
-		lessonView[count] = new RemoteViews(context.getPackageName(),R.layout.widget_lesson);
+		lessonView[count] = new RemoteViews(context.getPackageName(), R.layout.widget_lesson);
 		RemoteViews view = lessonView[count];
 		int len = 0;
 		if(lesson == null){
-			view.setTextViewText(R.id.widget_lesson_name,"空闲");
-			view.setTextColor(R.id.widget_lesson_name,Color.GRAY);
+			view.setTextViewText(R.id.widget_lesson_name, "空闲");
+			view.setTextColor(R.id.widget_lesson_name, Color.GRAY);
 		}else{
 			len = lesson.len - 1;
 			paint.setColor(ColorUtil.TEXT_COLORS[lesson.color]);
 			view.setImageViewBitmap(R.id.widget_lesson_color, getColorBitmap(paint));
 			view.setTextViewText(R.id.widget_lesson_name, lesson.name);
-			view.setTextColor(R.id.widget_lesson_name, Color.BLACK);
+			view.setTextColor(R.id.widget_lesson_name, context.getResources().getColor(R.color.colorPrimaryText));
 			if("".equals(lesson.place) || "".equals(lesson.teacher))
-				view.setTextViewText(R.id.widget_lesson_info,lesson.place + lesson.teacher);
-			else view.setTextViewText(R.id.widget_lesson_info,lesson.place + "|" + lesson.teacher);
+				view.setTextViewText(R.id.widget_lesson_info, lesson.place + lesson.teacher);
+			else view.setTextViewText(R.id.widget_lesson_info, lesson.place + "|" + lesson.teacher);
 		}
 		view.setTextViewText(R.id.widget_lesson_time, LessonData.Lesson_Time_Text[0][count] + "\n" + LessonData.Lesson_Time_Text[1][count + len]);
 		remoteViews.addView(R.id.widget_day_lesson, view);
 	}
 	
 	private Bitmap getColorBitmap(Paint paint){
-		Bitmap bitmap = Bitmap.createBitmap(32,128,Bitmap.Config.ARGB_8888);
+		Bitmap bitmap = Bitmap.createBitmap(32, 128, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
-		canvas.drawRoundRect(new RectF(0,0,bitmap.getWidth(),bitmap.getHeight()),16,16,paint);
+		canvas.drawRoundRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), 16, 16, paint);
 		return bitmap;
 	}
 	
 	// 接收窗口小部件点击时发送的广播
 	@Override
-	public void onReceive(Context context,Intent intent){
-		super.onReceive(context,intent);
+	public void onReceive(Context context, Intent intent){
+		super.onReceive(context, intent);
 	}
 	
 	// 每删除一次窗口小部件就调用一次
 	@Override
-	public void onDeleted(Context context,int[] appWidgetIds){
-		super.onDeleted(context,appWidgetIds);
+	public void onDeleted(Context context, int[] appWidgetIds){
+		super.onDeleted(context, appWidgetIds);
 		//context.stopService(new Intent(context, WidgetService.class));
 		//Log.i("AppWidget", "删除成功！");
 	}
@@ -178,7 +183,7 @@ public class LessonTable extends AppWidgetProvider{
 	@Override
 	public void onEnabled(Context context){
 		super.onEnabled(context);
-		remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_day_lesson);
+		remoteView = new RemoteViews(context.getPackageName(), R.layout.widget_day_lesson);
 		// Intent mTimerIntent = new Intent(context, WidgetService.class);
 		// context.startService(mTimerIntent);
 	}
@@ -193,8 +198,8 @@ public class LessonTable extends AppWidgetProvider{
 	
 	// 当小部件从备份恢复时调用该方法
 	@Override
-	public void onRestored(Context context,int[] oldWidgetIds,int[] newWidgetIds){
-		super.onRestored(context,oldWidgetIds,newWidgetIds);
-		remoteView = new RemoteViews(context.getPackageName(),R.layout.widget_day_lesson);
+	public void onRestored(Context context, int[] oldWidgetIds, int[] newWidgetIds){
+		super.onRestored(context, oldWidgetIds, newWidgetIds);
+		remoteView = new RemoteViews(context.getPackageName(), R.layout.widget_day_lesson);
 	}
 }

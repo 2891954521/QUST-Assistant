@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.qust.assistant.lesson.LessonData;
-import com.qust.assistant.util.ColorUtil;
 
 import java.util.Arrays;
 
@@ -113,11 +112,11 @@ public class LessonTime extends View{
 		int weeks = LessonData.getInstance().getTotalWeek();
 		for(int i=0;i<weeks;i++){
 			if(booleans[i]){
-				paint.setColor(ColorUtil.BACKGROUND_COLORS[0]);
-				paintT.setColor(ColorUtil.TEXT_COLORS[0]);
+				paint.setColor(Color.argb(192, 230,244,255));
+				paintT.setColor(Color.rgb(31,157,208));
 			}else{
-				paint.setColor(Color.rgb(245,245,245));
-				paintT.setColor(Color.rgb(204,204,204));
+				paint.setColor(Color.argb(192, 245,245,245));
+				paintT.setColor(Color.rgb(144,144,144));
 			}
 			int x = i % ROW_COUNT * width;
 			int y = i / ROW_COUNT * height;

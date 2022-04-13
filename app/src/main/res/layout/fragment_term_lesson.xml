@@ -64,8 +64,7 @@
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
                     android:src="@drawable/ic_clear"
-                    android:padding="16dp"
-                    app:tint="@android:color/black" />
+                    android:padding="16dp" />
 
                 <TextView
                     style="@style/TextTitle"
@@ -79,8 +78,7 @@
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
                     android:src="@drawable/ic_done"
-                    android:padding="16dp"
-                    app:tint="@android:color/black" />
+                    android:padding="16dp" />
 
             </LinearLayout>
 
@@ -183,8 +181,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:padding="@dimen/base_margin"
-                            android:src="@drawable/ic_remove"
-                            app:tint="@android:color/black"/>
+                            android:src="@drawable/ic_remove" />
 
                         <TextView
                             style="@style/TextNormal"
@@ -199,9 +196,7 @@
                             android:layout_height="32dp"
                             android:padding="@dimen/base_margin"
                             android:layout_marginEnd="@dimen/widget_margin"
-                            android:src="@drawable/ic_add"
-                            app:tint="@android:color/black"/>
-
+                            android:src="@drawable/ic_add" />
 
                     </LinearLayout>
 

@@ -14,6 +14,8 @@ import com.qust.assistant.util.SettingUtil;
 
 import androidx.annotation.NonNull;
 
+import static com.billy.android.swipe.SwipeConsumer.DIRECTION_LEFT;
+
 public class App extends Application{
 	
 	public static final String APP_UPDATE_LESSON_TABLE = "update.lesson.table";
@@ -56,10 +58,10 @@ public class App extends Application{
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			// use bezier back before LOLLIPOP
-			SmartSwipeBack.activityBezierBack(this, activitySwipeBackFilter);
+			SmartSwipeBack.activityBezierBack(this, activitySwipeBackFilter, 0);
 		} else {
 			// add relative moving slide back
-			SmartSwipeBack.activitySlidingBack(this, activitySwipeBackFilter);
+			SmartSwipeBack.activitySlidingBack(this, activitySwipeBackFilter, 0, 0x80000000, 0, 0, 0.5f, DIRECTION_LEFT);
 		}
 	}
 	

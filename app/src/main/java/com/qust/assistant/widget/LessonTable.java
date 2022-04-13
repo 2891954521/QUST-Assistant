@@ -43,10 +43,10 @@ public class LessonTable extends ViewPager{
 	
 	private static final int LESSON_PADDING = 3;
 	
+	
 	/*
 	 * 滑动相关
 	 */
-	
 	private int touchSlop;
 	// 触摸时按下的点
 	private float downX;
@@ -333,18 +333,19 @@ public class LessonTable extends ViewPager{
 			
 			drawTime(canvas);
 			
-			for(int i = 0;i<lessonGroups.length;i++){
-				for(int j = 0;j<lessonGroups[0].length;j++){
+			for(int i = 0; i < lessonGroups.length; i++){
+				for(int j = 0; j < lessonGroups[0].length; j++){
 					
 					if(lessonGroups[i][j] == null) continue;
 					
 					Lesson lesson = lessonGroups[i][j].getCurrentLesson(showWeek);
 					
 					if(lesson == null){
+						// 本周该时间无课但是其他周有课
 						lesson = lessonGroups[i][j].findLesson(showWeek);
 						if(lesson == null) continue;
-						paint.setColor(Color.rgb(245,245,245));
-						paintT.setColor(Color.rgb(204,204,204));
+						paint.setColor(Color.argb(192, 245,245,245));
+						paintT.setColor(Color.rgb(144,144,144));
 					}else{
 						paint.setColor(ColorUtil.BACKGROUND_COLORS[lesson.color]);
 						paintT.setColor(ColorUtil.TEXT_COLORS[lesson.color]);

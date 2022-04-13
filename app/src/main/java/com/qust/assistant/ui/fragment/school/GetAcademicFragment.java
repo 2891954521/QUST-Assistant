@@ -1,6 +1,5 @@
 package com.qust.assistant.ui.fragment.school;
 
-import android.graphics.Color;
 import android.os.Message;
 import android.text.Html;
 import android.text.TextUtils;
@@ -118,7 +117,11 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 			);
 			if(!TextUtils.isEmpty(response)){
 				Matcher matcher = Pattern.compile("id=\"alertBox\"\\s?>(.*?)</div>", Pattern.DOTALL).matcher(response);
-				matcher.find();
+				
+				if(!matcher.find()){
+					throw new IllegalStateException();
+				}
+				
 				text = Html.fromHtml(matcher.group(1)).toString().replaceAll("\t","").split(" {2,}")[1];
 				
 				matcher = Pattern.compile(" xfyqjd_id='(.*?)'").matcher(response);
@@ -173,9 +176,9 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 					adapter.notifyDataSetChanged();
 				});
 			}
-		}catch(IOException | JSONException e){
+		}catch(IOException | JSONException | IllegalStateException e){
 			LogUtil.Log(e);
-			sendMessage(App.DISMISS_TOAST, "提交失败！");
+			sendMessage(App.DISMISS_TOAST, "查询失败！");
 		}
 	}
 	
@@ -328,7 +331,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 			Lesson lesson = lessonsSort[index];
 			
 			CardView cardView = convertView.findViewById(R.id.item_academic_card);
-			cardView.setCardBackgroundColor(isChoose[index] ? ColorUtil.BACKGROUND_COLORS[0] : Color.WHITE);
+			cardView.setCardBackgroundColor(isChoose[index] ? ColorUtil.BACKGROUND_COLORS[0] : activity.getResources().getColor(R.color.colorLight));
 			cardView.setOnClickListener(v -> {
 				if(!isCalculateMode) return;
 				isChoose[index] = !isChoose[index];
@@ -337,7 +340,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 			});
 			
 			TextView status = convertView.findViewById(R.id.item_academic_status);
-			status.setTextColor(lesson.status == 2 ? Color.RED : Color.BLACK);
+			status.setTextColor(activity.getResources().getColor(lesson.status == 2 ? R.color.colorError : R.color.colorPrimaryText));
 			status.setText(TYPE[lesson.status]);
 			
 			((TextView)convertView.findViewById(R.id.item_academic_name)).setText(lesson.name);
