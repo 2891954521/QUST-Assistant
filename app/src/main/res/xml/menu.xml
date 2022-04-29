@@ -45,6 +45,12 @@
         android:text="com.qust.assistant.ui.fragment.school.GetExamFragment" />
 
     <item
+        android:name="健康打卡"
+        android:isDefault="true"
+        android:icon="@drawable/ic_check_in"
+        android:text="com.qust.assistant.ui.fragment.school.HealthCheckInFragment" />
+
+    <item
         android:name="饮水码"
         android:isDefault="false"
         android:icon="@mipmap/duocai"

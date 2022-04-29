@@ -15,7 +15,6 @@ import com.billy.android.swipe.listener.SimpleSwipeListener;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.layout.BaseLayout;
-import com.qust.assistant.widget.slide.SlidingLayout;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -91,13 +90,6 @@ public abstract class BaseFragment implements BaseLayout{
 	 * 来自 onActivityResult
 	 */
 	public void onResult(int requestCode, int resultCode, Intent data){ }
-	
-	protected void setSlidingParam(SlidingLayout.onAnimListener anim, View disallowView){
-//		if(rootView != null){
-//			if(anim != null) rootView.setOnAnimListener(anim);
-//			rootView.setDisallowView(disallowView);
-//		}
-	}
 	
 	/**
 	 * 给 ToolBar 添加按键

@@ -4,13 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.textfield.TextInputLayout;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
@@ -39,9 +40,9 @@ public class DrinkFragment extends BaseFragment{
 	
 	private ImageView image;
 	
-	private EditText phone;
+	private TextInputLayout phone;
 	
-	private EditText password;
+	private TextInputLayout password;
 	
 	private Handler handler;
 	
@@ -69,12 +70,28 @@ public class DrinkFragment extends BaseFragment{
 		phone = findViewById(R.id.fragment_drink_phone);
 		password = findViewById(R.id.fragment_drink_password);
 		
-		phone.setText(sp.getString("account", ""));
-		password.setText(sp.getString("password", ""));
+		phone.getEditText().setText(sp.getString("account", ""));
+		password.getEditText().setText(sp.getString("password", ""));
 		
 		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "请稍候...").build();
 		
 		findViewById(R.id.fragment_drink_get_code).setOnClickListener(v -> {
+			String a = phone.getEditText().getText().toString();
+			if(TextUtils.isEmpty(a)){
+				phone.setError("请输入手机号码");
+				return;
+			}else{
+				phone.setError(null);
+			}
+			
+			String b = password.getEditText().getText().toString();
+			if(TextUtils.isEmpty(b)){
+				password.setError("请输入密码");
+				return;
+			}else{
+				password.setError(null);
+			}
+			
 			if(isRunning){
 				toast("正在获取数据");
 				return;
@@ -85,6 +102,7 @@ public class DrinkFragment extends BaseFragment{
 				public void run(){
 					isRunning = true;
 					try{
+						// 检查token是否过期
 						if(token != null){
 							JSONObject js = new JSONObject(WebUtil.doPost("https://dcxy-customer-app.dcrym.com/app/customer/login",
 									null,
@@ -96,8 +114,6 @@ public class DrinkFragment extends BaseFragment{
 						}
 						
 						if(token == null){
-							String a = phone.getText().toString();
-							String b = password.getText().toString();
 							JSONObject js = new JSONObject(WebUtil.doPost("https://dcxy-customer-app.dcrym.com/app/customer/login",
 									null,
 									"{\"loginAccount\":\"" + a + "\",\"password\":\"" + b + "\"}",

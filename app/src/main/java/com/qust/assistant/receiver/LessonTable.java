@@ -99,8 +99,8 @@ public class LessonTable extends AppWidgetProvider{
 				}
 			}
 			
-			h -= LessonData.Lesson_Time[i][0];
-			m -= LessonData.Lesson_Time[i][1];
+			h -= LessonData.LessonTime[i] / 60;
+			m -= LessonData.LessonTime[i] % 60;
 			if(m < 0){
 				h -= 1;
 				m += 60;
@@ -154,7 +154,7 @@ public class LessonTable extends AppWidgetProvider{
 				view.setTextViewText(R.id.widget_lesson_info, lesson.place + lesson.teacher);
 			else view.setTextViewText(R.id.widget_lesson_info, lesson.place + "|" + lesson.teacher);
 		}
-		view.setTextViewText(R.id.widget_lesson_time, LessonData.Lesson_Time_Text[0][count] + "\n" + LessonData.Lesson_Time_Text[1][count + len]);
+		view.setTextViewText(R.id.widget_lesson_time, LessonData.LessonTimeText[0][count] + "\n" + LessonData.LessonTimeText[1][count + len]);
 		remoteViews.addView(R.id.widget_day_lesson, view);
 	}
 	

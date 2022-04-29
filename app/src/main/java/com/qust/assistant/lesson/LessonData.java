@@ -44,32 +44,44 @@ public class LessonData{
 		},
 	};
 	
-	// 时间差
-	public static final int[][][] LESSON_TIME = {
-		{
-			// 冬季
-			{0,0},{1,0}, {1,10},{1,0}, {2,20},{1,0}, {1,10},{1,0}, {1,20},{1,0}
-		},{
-			// 夏季
-			{0,0},{1,0}, {1,10},{1,0}, {2,50},{1,0}, {1,10},{1,0}, {1,20}, {1,0}
-		}
+	// 时间差 (单位：分钟)
+	public static final int[][] LESSON_TIME = {
+		// 冬季
+		{ 0, 60, 70, 60, 140, 60, 70, 60, 80, 60 },
+		// 夏季
+		{ 0, 60, 70, 60, 170, 60, 70, 60, 80, 60 }
 	};
 	
-	public static int[][] Lesson_Time;
+	public static int[] LessonTime;
 	
-	public static String[][] Lesson_Time_Text;
-
+	/**
+	 * 上下课时间文本
+	 */
+	public static String[][] LessonTimeText;
+	
+	/**
+	 * 所有课程
+	 */
 	private LessonGroup[][] lessonGroups;
 	
-	// 开学时间
+	/**
+	 * 开学时间
+ 	 */
 	private String startDay;
 	
-	// 当前周 (从1开始)
+	/**
+	 * 当前周 (从1开始)
+	 */
 	private int currentWeek;
-	// 总周数
+	
+	/**
+	 * 总周数
+ 	 */
 	private int totalWeek;
 	
-	// 当前星期几 ( 0-6, 周一 —— 周日)
+	/**
+	 * 当前星期几 ( 0-6, 周一 —— 周日)
+ 	 */
 	private int week;
 	
 	// 序列化后的课表
@@ -79,9 +91,9 @@ public class LessonData{
 	
 	private LessonData(final Context context){
 		
-		sp = context.getSharedPreferences("timetable",Context.MODE_PRIVATE);
+		sp = context.getSharedPreferences("timetable", Context.MODE_PRIVATE);
 		
-		startDay = sp.getString("startDay","2021-03-08");
+		startDay = sp.getString("startDay","2022-02-28");
 		totalWeek = sp.getInt("totalWeek",21);
 		
 		updateDate();
@@ -92,8 +104,6 @@ public class LessonData{
 		
 		initLesson(context);
 	}
-	
-
 	
 	public static void init(Context context){
 		synchronized(LessonData.class){
@@ -106,8 +116,8 @@ public class LessonData{
 	// 初始化课程时间
 	public void initLessonTime(Context context){
 		int time = PreferenceManager.getDefaultSharedPreferences(context).getInt("lessonTime", 0);
-		Lesson_Time = LESSON_TIME[time];
-		Lesson_Time_Text = LESSON_TIME_TEXT[time];
+		LessonTime = LESSON_TIME[time];
+		LessonTimeText = LESSON_TIME_TEXT[time];
 	}
 	
 	// 初始化课表
@@ -115,18 +125,18 @@ public class LessonData{
 		dataFile = new File(context.getExternalFilesDir("LessonTable"),"data");
 		if(dataFile.exists()){
 			// 从序列化后的数据中读取课表
-			try{
-				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataFile));
-				lessonGroups = (LessonGroup[][])ois.readObject();
-				ois.close();
+			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataFile))){
+				lessonGroups = (LessonGroup[][]) ois.readObject();
 				return;
 			}catch(Exception e){
+				Toast.makeText(context, "载入序列化课表出错！", Toast.LENGTH_SHORT).show();
 				LogUtil.Log(e);
 			}
 		}
 		
 		try{
 			// 从文件中读取课表
+			lessonGroups = new LessonGroup[7][10];
 			loadFromJson(new JSONObject(FileUtil.readFile(new File(context.getExternalFilesDir("LessonTable"), "data.json"))), lessonGroups);
 		}catch(JSONException e){
 			Toast.makeText(context, "载入课表出错！", Toast.LENGTH_SHORT).show();
@@ -137,7 +147,7 @@ public class LessonData{
 	}
 	
 	// 从json中解析课表
-	public boolean loadFromJson(JSONObject json,LessonGroup[][] lessonGroups){
+	public boolean loadFromJson(JSONObject json, LessonGroup[][] lessonGroups){
 		try{
 			if(!json.has("kbList")) return false;
 			
@@ -146,7 +156,7 @@ public class LessonData{
 			ArrayList<String> colors = new ArrayList<>();
 			int index = 0;
 			
-			for(int i=0;i<array.length();i++){
+			for(int i = 0; i < array.length(); i++){
 				
 				JSONObject js = array.getJSONObject(i);
 				
@@ -156,11 +166,11 @@ public class LessonData{
 				
 				int count = Integer.parseInt(sp[0]);
 				
-				Lesson lesson = LessonGroup.getLesson(js);
+				Lesson lesson = new Lesson(js);
 				
 				lesson.len = Integer.parseInt(sp[1]) - count + 1;
 				
-				for(int j=0;j<colors.size();j++){
+				for(int j = 0; j < colors.size(); j++){
 					if(colors.get(j).equals(lesson.name)){
 						lesson.color = j % (ColorUtil.BACKGROUND_COLORS.length - 1) + 1;
 						break;
@@ -173,10 +183,10 @@ public class LessonData{
 					colors.add(lesson.name);
 				}
 				
-				if(lessonGroups[week-1][count-1] == null){
-					lessonGroups[week-1][count-1] = new LessonGroup(week, count);
+				if(lessonGroups[week - 1][count - 1] == null){
+					lessonGroups[week - 1][count - 1] = new LessonGroup(week, count);
 				}
-				lessonGroups[week-1][count-1].addLesson(lesson);
+				lessonGroups[week - 1][count - 1].addLesson(lesson);
 			}
 			return true;
 		}catch(JSONException e){
@@ -214,14 +224,16 @@ public class LessonData{
 		}
 	}
 	
-	// 更新日期
+	/**
+	 * 更新日期
+ 	 */
 	public void updateDate(){
-		Date date = new Date();
+		Date date;
 		
 		try{
 			date = DateUtil.YMD.parse(startDay);
 		}catch(ParseException e){
-			LogUtil.Log(e);
+			date = new Date();
 		}
 		
 		Calendar c = Calendar.getInstance();

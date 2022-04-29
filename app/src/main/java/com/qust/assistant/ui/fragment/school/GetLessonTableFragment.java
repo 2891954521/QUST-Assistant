@@ -1,8 +1,11 @@
 package com.qust.assistant.ui.fragment.school;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.LessonData;
@@ -27,7 +30,22 @@ import java.util.regex.Pattern;
 
 public class GetLessonTableFragment extends BaseSchoolFragment{
 	
-	private static final Pattern TIME_MATCHER = Pattern.compile("([0-9]{4}-[0-9]{4})学年([0-9])学期\\((\\d{4}-\\d{2}-\\d{2})至(\\d{4}-\\d{2}-\\d{2})");
+	/**
+	 * 匹配学年信息
+	 */
+	private static final Pattern TIME_MATCHER = Pattern.compile("([0-9]{4}-[0-9]{4})学年([0-9])学期\\((\\d{4}-\\d{2}-\\d{2})至(\\d{4}-\\d{2}-\\d{2})\\)");
+	
+	private static final Pattern WEEK_TABLE_MATCHER = Pattern.compile("<tr class=\"tab-th-2\">(.*?)</tr>", Pattern.DOTALL);
+	
+	private static final Pattern WEEK_MATCHER = Pattern.compile("<th style=\"text-align: center\">(\\d+)</th>");
+	
+	private static final Pattern DAY_MATCHER = Pattern.compile("<tbody>\\s+<tr>(.*?)</tr>", Pattern.DOTALL);
+	
+	private static final Pattern DATE_MATCHER = Pattern.compile("<td id='(\\d{4}-\\d{2}-\\d{2})");
+
+	private TextView termTextView;
+	
+	private TextView startTextView;
 	
 	private LessonTable lessonTable;
 	
@@ -36,6 +54,8 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	private boolean needSave;
 	
 	private String startTime;
+	
+	private String termText;
 	
 	private int totalWeek;
 	
@@ -49,6 +69,10 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		
 		initYearAndTermPicker();
 		
+		termTextView = findViewById(R.id.fragment_get_lesson_table_term);
+		
+		startTextView = findViewById(R.id.fragment_get_lesson_table_start);
+		
 		lessonGroups = new LessonGroup[7][10];
 		
 		lessonTable = findViewById(R.id.fragment_get_lesson_table_preview);
@@ -61,8 +85,6 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 			lessonTable.setCurrentItem(currentWeek);
 		});
 		
-		setSlidingParam(null, lessonTable);
-		
 		addMenuItem(inflater, R.drawable.ic_done, v -> saveData());
 		
 	}
@@ -72,43 +94,80 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		
 		sendMessage(App.UPDATE_DIALOG, "正在查询课表");
 		
+		String[] y = getYearAndTerm();
+		
 		try{
-			String[] y = getYearAndTerm();
-			String response = WebUtil.doGet(
-					LoginUtil.HOST + "/jwglxt/xtgl/index_cxAreaFive.html?localeKey=zh_CN&gnmkdm=index",
+			// 从教务获取本学年信息
+			String response = WebUtil.doGet(LoginUtil.HOST + "/jwglxt/xtgl/index_cxAreaFive.html?localeKey=zh_CN&gnmkdm=index",
 				"JSESSIONID=" + session
 			);
-			if(!"".equals(response)){
+			if(!TextUtils.isEmpty(response)){
+				// 学年信息
 				Matcher matcher = TIME_MATCHER.matcher(response);
 				if(matcher.find()){
+					termText = matcher.group();
 					startTime = matcher.group(3);
-					String endTime = matcher.group(4);
 					try{
-						totalWeek = DateUtil.calcWeekOffset(DateUtil.YMD.parse(startTime), DateUtil.YMD.parse(endTime));
+						totalWeek = DateUtil.calcWeekOffset(DateUtil.YMD.parse(startTime), DateUtil.YMD.parse(matcher.group(4)));
 					}catch(ParseException ignored){
 						startTime = null;
 						totalWeek = -1;
 					}
 				}
-			}
 				
-			response = WebUtil.doPost(
-					LoginUtil.HOST + "/jwglxt/kbcx/xskbcx_cxXsKb.html",
-				"JSESSIONID=" + session ,
-				"xnm=" + y[0] +"&xqm=" + y[1] + "&kzlx=ck"
-			);
-			if(!"".equals(response)){
-				lessonGroups = new LessonGroup[7][10];
-				if(LessonData.getInstance().loadFromJson(new JSONObject(response),lessonGroups)){
-					FileUtil.writeFile(new File(activity.getExternalFilesDir("LessonTable"),"data.json"), response);
-					activity.runOnUiThread(() -> {
-						needSave = true;
-						lessonTable.initAdapter(lessonGroups);
-						dialog.dismiss();
-						toast("获取课表成功！");
-					});
+				// 根据校历查找开学日期
+				matcher = WEEK_TABLE_MATCHER.matcher(response);
+				if(matcher.find()){
+					int count = -1;
+					Matcher w = WEEK_MATCHER.matcher(matcher.group());
+					while(w.find()){
+						count++;
+						if("1".equals(w.group(1))){
+							break;
+						}
+					}
+					if(count != -1){
+						Matcher m = DAY_MATCHER.matcher(response);
+						if(m.find()){
+							int c = 0;
+							Matcher d = DATE_MATCHER.matcher(m.group(1));
+							while(d.find()){
+								if(c++ == count){
+									startTime = d.group(1);
+								}
+							}
+						}
+					}
 				}
 			}
+			// 从教务查询课表
+			response = WebUtil.doPost(LoginUtil.HOST + "/jwglxt/kbcx/xskbcx_cxXsKb.html",
+				"JSESSIONID=" + session,
+				"xnm=" + y[0] +"&xqm=" + y[1] + "&kzlx=ck"
+			);
+			
+			if(TextUtils.isEmpty(response)){
+				sendMessage(App.DISMISS_TOAST, "获取课表失败！");
+				return;
+			}
+			
+			lessonGroups = new LessonGroup[7][10];
+			if(LessonData.getInstance().loadFromJson(new JSONObject(response), lessonGroups)){
+				FileUtil.writeFile(new File(activity.getExternalFilesDir("LessonTable"),"data.json"), response);
+				activity.runOnUiThread(() -> {
+					needSave = true;
+					termTextView.setText(termText);
+					if(startTime != null){
+						startTextView.setText("开学日期: " + startTime);
+					}
+					lessonTable.initAdapter(lessonGroups);
+					dialog.dismiss();
+					toast("获取课表成功！");
+				});
+			}else{
+				sendMessage(App.DISMISS_TOAST, "获取课表失败！");
+			}
+			
 		}catch(IOException | JSONException e){
 			LogUtil.Log(e);
 			sendMessage(App.DISMISS_TOAST, "获取课表失败！");
@@ -128,14 +187,21 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 			LessonData.getInstance().setTotalWeek(totalWeek);
 		}
 		if(startTime != null && !startTime.equals(LessonData.getInstance().getStartDay())){
-			DialogUtil.getBaseDialog(activity).title("提示").content("开学日期不一致, 是否更新？\n当前: " + LessonData.getInstance().getStartDay() + "\n最新: " + startTime).onPositive((dialog, which) -> {
-				LessonData.getInstance().setStartDay(startTime);
-				updateLesson();
-				dialog.dismiss();
-			}).onNegative((dialog, which) -> {
-				updateLesson();
-				dialog.dismiss();
-			}).show();
+			new MaterialDialog.Builder(activity)
+					.title("提示")
+					.content("查询到的新课表开学日期与当前不一致, 是否更新开学日期？\n当前开学日期: " + LessonData.getInstance().getStartDay() + "\n查询开学日期: " + startTime)
+					.positiveText("全部更新")
+					.onPositive((dialog, which) -> {
+						LessonData.getInstance().setStartDay(startTime);
+						updateLesson();
+						dialog.dismiss();
+					}).negativeText("取消更新")
+					.onNegative((dialog, which) -> {
+						dialog.dismiss();
+					}).neutralText("仅更新课表").onNeutral((dialog, which) -> {
+						updateLesson();
+						dialog.dismiss();
+					}).show();
 		}else{
 			updateLesson();
 		}
@@ -155,11 +221,11 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	public boolean onBackPressed(){
 		if(needSave){
 			DialogUtil.getBaseDialog(activity).title("提示").content("课表信息未保存，是否保存？").onPositive((dialog, which) -> {
+				dialog.dismiss();
 				saveData();
-				dialog.dismiss();
 			}).onNegative((dialog, which) -> {
-				finish();
 				dialog.dismiss();
+				finish();
 			}).show();
 			return false;
 		}else return super.onBackPressed();

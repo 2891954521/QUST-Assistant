@@ -7,14 +7,16 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DateUtil{
-
-    public static final SimpleDateFormat YMD_HM = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.CHINA);
     
-    public static final SimpleDateFormat YMD = new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA);
+    public static final SimpleDateFormat YMD_HMS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
     
-    public static final SimpleDateFormat MD = new SimpleDateFormat("MM-dd",Locale.CHINA);
+    public static final SimpleDateFormat YMD_HM = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
     
-    public static final SimpleDateFormat HM = new SimpleDateFormat("HH:mm",Locale.CHINA);
+    public static final SimpleDateFormat YMD = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+    
+    public static final SimpleDateFormat MD = new SimpleDateFormat("MM-dd", Locale.CHINA);
+    
+    public static final SimpleDateFormat HM = new SimpleDateFormat("HH:mm", Locale.CHINA);
     
     //    public static String getDateString(Calendar c){
 //

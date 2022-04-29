@@ -200,9 +200,6 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	}
 	
 	protected final void sendMessage(int code, String msg){
-		Message message = new Message();
-		message.what = code;
-		message.obj = msg;
-		handler.sendMessage(message);
+		handler.sendMessage(handler.obtainMessage(code, msg));
 	}
 }

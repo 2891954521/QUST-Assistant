@@ -3,6 +3,10 @@
 
     <PreferenceCategory android:title="课表">
 
+        <SwitchPreference
+            android:key="key_show_other_week_lesson"
+            android:title="显示非本周课程" />
+
         <Preference
             android:key="key_set_start_day"
             android:title="设置开学时间" />

@@ -6,9 +6,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         android:orientation="horizontal"
-        android:padding="@dimen/widget_margin"
         android:gravity="center">
 
         <TextView
@@ -33,6 +32,25 @@
             android:text="查询"/>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/fragment_get_lesson_table_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/widget_margin"
+        android:paddingStart="@dimen/activity_margin"
+        android:paddingEnd="0dp"
+        android:textSize="@dimen/text_small"
+        android:textColor="@color/colorPrimaryText" />
+
+    <TextView
+        android:id="@+id/fragment_get_lesson_table_term"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/activity_margin"
+        android:paddingEnd="0dp"
+        android:textSize="@dimen/text_micro"
+        android:textColor="@color/colorSecondaryText" />
 
     <com.qust.assistant.widget.LessonTable
         android:id="@+id/fragment_get_lesson_table_preview"

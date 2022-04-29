@@ -45,7 +45,9 @@ public class LogUtil{
 		Log(e);
 	}
 	
-	// 输出到debug文件
+	/**
+	 * 强制输出到 debug 文件
+ 	 */
 	public static void debugLog(String string){
 		FileUtil.appendFile(new File(DebugLogFile, "debug.log"), string + "\n");
 	}

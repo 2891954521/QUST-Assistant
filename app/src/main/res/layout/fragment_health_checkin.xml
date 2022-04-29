@@ -7,7 +7,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/fragment_login_name"
+        android:id="@+id/input_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/widget_margin"
@@ -23,7 +23,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/fragment_login_password"
+        android:id="@+id/input_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/widget_margin"
@@ -38,12 +38,17 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@id/fragment_school_query"
+        android:id="@+id/fragment_health_checkin_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/widget_margin"
         android:layout_marginRight="@dimen/widget_margin"
         android:padding="@dimen/widget_margin"
-        android:text="登录" />
+        android:text="打卡" />
+
+    <TextView
+        android:id="@+id/fragment_health_checkin_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

@@ -30,10 +30,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
         android:layout_marginBottom="@dimen/float_button_margin"
         android:src="@drawable/ic_current"
-        android:tint="@android:color/white"
         app:backgroundTint="@color/colorPrimary"
         app:elevation="4dp"
         app:pressedTranslationZ="8dp" />

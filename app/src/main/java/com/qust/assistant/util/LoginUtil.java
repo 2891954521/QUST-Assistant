@@ -33,11 +33,11 @@ public class LoginUtil{
 			"https://jwglxt6.qust.edu.cn",
 	};
 	
+	public static final Pattern JESSIONID_PATTERN = Pattern.compile("JSESSIONID=(.*?);");
+	
 	public static String HOST = SEVER_HOSTS[0];
 	
 	public static LoginUtil loginUtil;
-	
-	private static final Pattern JESSIONID_PATTERN = Pattern.compile("JSESSIONID=(.*?);");
 	
 	public String JSESSIONID;
 	
