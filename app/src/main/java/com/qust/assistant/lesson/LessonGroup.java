@@ -89,21 +89,29 @@ public class LessonGroup implements Serializable, Cloneable{
 	 * 查找最接近 {@code week} 周会上的课程
 	 *
 	 * @param week 第 n 周
+	 * @param findAll 查找全部时间
 	 */
 	@Nullable
-	public Lesson findLesson(int week){
+	public Lesson findLesson(int week, boolean findAll){
 		if(lessons.length == 0) return null;
-		for(int i = week - 1; i >= 0; i--){
+		
+		// 向后查找课程
+		int len = lessons[0].week.length;
+		for(int i = week + 1; i < len; i++){
 			for(Lesson lesson : lessons){
-				if(lesson.week[i]){
+				if(i < lesson.week.length && lesson.week[i]){
 					return lesson;
 				}
 			}
 		}
-		for(int i = 0; i < lessons[0].week.length; i++){
-			for(Lesson lesson : lessons){
-				if(lesson.week[i]){
-					return lesson;
+		
+		// 向前查找课程
+		if(findAll){
+			for(int i = week - 1; i >= 0; i--){
+				for(Lesson lesson : lessons){
+					if(lesson.week[i]){
+						return lesson;
+					}
 				}
 			}
 		}

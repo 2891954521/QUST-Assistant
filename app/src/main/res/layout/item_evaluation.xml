@@ -7,7 +7,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/widget_margin"
         android:foreground="?attr/selectableItemBackground"
         android:longClickable="true"
         app:cardBackgroundColor="@color/colorLight"
@@ -18,37 +18,47 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/base_margin">
+            android:padding="@dimen/widget_margin">
+
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/widget_margin">
 
                 <TextView
                     style="@style/TextNormal"
                     android:id="@+id/item_evaluation_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+
+                <TextView
+                    style="@style/TextSmall"
+                    android:id="@+id/item_evaluation_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:gravity="center"/>
 
                 <TextView
                     style="@style/TextSmall"
                     android:id="@+id/item_evaluation_teacher"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:gravity="center"/>
 
             </LinearLayout>
 
-            <RelativeLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="end">
 
                 <TextView
                     style="@style/TextNormal"
@@ -56,21 +66,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorAccent"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerInParent="true"
-                    android:layout_marginEnd="@dimen/activity_margin"
-                    android:text="已评价"/>
+                    android:layout_marginEnd="@dimen/activity_margin" />
 
                 <Button
-                    style="@style/TextSmall"
                     android:id="@+id/item_evaluation_submit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/activity_margin"
-                    android:text="自动评价"/>
+                    android:text="一键好评"/>
 
-            </RelativeLayout>
+                <Button
+                    android:id="@+id/item_evaluation_wtf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/activity_margin"
+                    android:text="一键差评"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </LinearLayout>
 

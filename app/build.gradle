@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.qust.assistant"
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 30
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

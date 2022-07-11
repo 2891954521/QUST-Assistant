@@ -28,6 +28,7 @@
                 <TextView
                     style="@style/TextSmall"
                     android:id="@+id/item_academic_status"
+                    android:layout_gravity="start|center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/widget_margin" />
@@ -36,7 +37,8 @@
                     style="@style/TextNormal"
                     android:id="@+id/item_academic_name"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"/>
 
             </FrameLayout>
 

@@ -237,11 +237,13 @@ public class LessonData{
 		}
 		
 		Calendar c = Calendar.getInstance();
+		c.setFirstDayOfWeek(Calendar.MONDAY);
 		c.setTime(date);
 		
 		int startWeek = c.get(Calendar.WEEK_OF_YEAR);
 		
 		c = Calendar.getInstance(TimeZone.getTimeZone("GMT+8:00"));
+		c.setFirstDayOfWeek(Calendar.MONDAY);
 		
 		currentWeek = Math.max(1, c.get(Calendar.WEEK_OF_YEAR) - startWeek + 1);
 		

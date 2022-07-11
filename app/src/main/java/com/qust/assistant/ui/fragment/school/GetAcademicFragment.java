@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 
 public class GetAcademicFragment extends BaseSchoolFragment{
@@ -86,6 +87,19 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 		isChoose = new boolean[lessonsSort.length];
 		
 		ExpandableListView listView = findViewById(R.id.activity_get_academic_list);
+		listView.setOnGroupClickListener((parent, v, groupPosition, id) -> {
+			if(isCalculateMode){
+				int len = groupPosition + 1 == child.length ? lessonsSort.length : child[groupPosition + 1];
+				for(int i = child[groupPosition]; i < len; i++){
+					isChoose[i] = !isChoose[i];
+				}
+				calculateGpa();
+				adapter.notifyDataSetInvalidated();
+				return true;
+			}else{
+				return false;
+			}
+		});
 		listView.setAdapter(adapter);
 
 		textView = findViewById(R.id.activity_get_academic_text);
@@ -143,27 +157,8 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 					
 					JSONArray array = new JSONArray(response);
 					
-					for(int j = 0;j<array.length();j++){
-						JSONObject js = array.getJSONObject(j);
-						Lesson lesson = new Lesson();
-						lesson.name = js.getString("KCMC");
-						lesson.type = js.getString("KCXZMC");
-						lesson.category = js.getString("KCLBMC");
-						lesson.content = js.getString("XSXXXX");
-						
-						lesson.year = js.getString(js.has("XNMC") ? "XNMC" : "JYXDXNMC");
-						
-						lesson.term = Integer.parseInt(js.getString(js.has("XQMMC") ? "XQMMC" : "JYXDXQMC"));
-						
-						lesson.status = Integer.parseInt(js.getString("XDZT"));
-						
-						lesson.credit = js.getString("XF");
-						
-						if(js.has("MAXCJ")) lesson.score = js.getString("MAXCJ");
-						
-						if(js.has("JD")) lesson.gpa = (float)js.getDouble("JD");
-						
-						lessons.add(lesson);
+					for(int j = 0; j < array.length(); j++){
+						lessons.add(new Lesson(array.getJSONObject(j)));
 					}
 				}
 				activity.runOnUiThread(() -> {
@@ -367,6 +362,9 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	
 	
 	private static class Lesson implements Serializable{
+		
+		private static final long serialVersionUID = -7368871421798572097L;
+		
 		/**
 		 * 修读状态
  		 */
@@ -407,6 +405,29 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 		 * 绩点
 		 */
 		public float gpa;
+		
+		public Lesson(@NonNull JSONObject js){
+			try{
+				name = js.getString("KCMC").trim();
+
+				type = js.getString("KCXZMC");
+				category = js.getString("KCLBMC");
+				content = js.getString("XSXXXX");
+				
+				year = js.getString(js.has("XNMC") ? "XNMC" : "JYXDXNMC");
+				
+				term = Integer.parseInt(js.getString(js.has("XQMMC") ? "XQMMC" : "JYXDXQMC"));
+				
+				status = Integer.parseInt(js.getString("XDZT"));
+				
+				credit = js.getString("XF");
+				
+				if(js.has("MAXCJ")) score = js.getString("MAXCJ");
+				
+				if(js.has("JD")) gpa = (float)js.getDouble("JD");
+				
+			}catch(JSONException ignore){ }
+		}
 	}
 	
 	/*

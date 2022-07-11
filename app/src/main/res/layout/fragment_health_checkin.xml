@@ -37,6 +37,21 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/input_cookie"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/widget_margin"
+        android:hint="Cookie登录">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/fragment_health_checkin_login"
         android:layout_width="match_parent"
@@ -46,9 +61,48 @@
         android:padding="@dimen/widget_margin"
         android:text="打卡" />
 
-    <TextView
-        android:id="@+id/fragment_health_checkin_text"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/widget_margin"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="是否已接种新冠疫苗"/>
+
+        <TextView
+            style="@style/TextNormal"
+            android:id="@+id/health_check_nsfyjzxgym"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText"
+            android:gravity="end" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/widget_margin"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="最后一次核酸检测时间"/>
+
+        <TextView
+            style="@style/TextNormal"
+            android:id="@+id/health_check_nzhychsjcsj"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryText"
+            android:gravity="end" />
+
+    </LinearLayout>
 
 </LinearLayout>

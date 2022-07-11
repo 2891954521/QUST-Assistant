@@ -27,7 +27,7 @@ public class App extends Application{
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 9;
+	public static final int DEV_VERSION = 10;
 	
 	/**
 	 * Handler 公用的 what 值

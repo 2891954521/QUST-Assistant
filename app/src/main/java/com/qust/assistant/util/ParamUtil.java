@@ -36,6 +36,9 @@ public class ParamUtil{
 		return (int) (pxValue / scale + 0.5f);
 	}
 	
+	/**
+	 * 生成条形码
+	 */
 	@Nullable
 	public static Bitmap createBarCode(String code){
 		if(code == null) return null;

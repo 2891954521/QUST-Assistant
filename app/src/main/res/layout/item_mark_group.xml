@@ -14,11 +14,25 @@
         android:id="@+id/item_mark_name"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="4" />
+
+    <TextView
+        style="@style/TextNormal"
+        android:id="@+id/item_mark_credit"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content" />
 
     <TextView
         style="@style/TextNormal"
         android:id="@+id/item_mark_value"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        style="@style/TextNormal"
+        android:id="@+id/item_mark_gpa"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content" />

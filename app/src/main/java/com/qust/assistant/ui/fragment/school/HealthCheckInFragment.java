@@ -5,6 +5,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.widget.DatePicker;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
@@ -13,6 +15,7 @@ import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.DateUtil;
+import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.WebUtil;
 
@@ -24,9 +27,11 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,6 +78,12 @@ public class HealthCheckInFragment extends BaseFragment{
 	
 	private TextInputLayout passwordText;
 	
+	private TextInputLayout cookieText;
+	
+	private TextView nsfyjzxgym, nzhychsjcsj;
+	
+	private String cookie;
+	
 	public HealthCheckInFragment(MainActivity activity){
 		super(activity);
 	}
@@ -83,64 +94,105 @@ public class HealthCheckInFragment extends BaseFragment{
 		
 		dialog = new MaterialDialog.Builder(activity).progress(true, 0).content("请稍候").build();
 		
+		cookie = SettingUtil.setting.getString("healthCheckInCookie", null);
+		
 		nameText = findViewById(R.id.input_name);
 		passwordText = findViewById(R.id.input_password);
 		
-		nameText.getEditText().setText(SettingUtil.setting.getString("healthCheckInUser",""));
-		passwordText.getEditText().setText(SettingUtil.setting.getString("healthCheckInPassword",""));
+		cookieText = findViewById(R.id.input_cookie);
+		cookieText.getEditText().setText(cookie);
+		
+		nsfyjzxgym = findViewById(R.id.health_check_nsfyjzxgym);
+		nzhychsjcsj = findViewById(R.id.health_check_nzhychsjcsj);
+		
+		nameText.getEditText().setText(SettingUtil.setting.getString("healthCheckInUser", ""));
+		passwordText.getEditText().setText(SettingUtil.setting.getString("healthCheckInPassword", ""));
+		
+		nsfyjzxgym.setText(SettingUtil.setting.getString("healthCheckInNsfyjzxgym", "已接种第3针（加强针）"));
+		nzhychsjcsj.setText(DateUtil.YMD.format(new Date()));
+		
+		nsfyjzxgym.setOnClickListener(v -> DialogUtil.getListDialog(activity, "是否已接种新冠疫苗", new String[]{
+				"未接种", "已接种第一针", "已接种第2针（未满6个月）", "已接种第2针（已满6个月）", "已接种第3针（加强针）", "已接种第3针（安徽智飞）"
+		}, (dialog, itemView, position, text) -> {
+			nsfyjzxgym.setText(text.toString());
+			dialog.dismiss();
+		}).show());
+		
+		nzhychsjcsj.setOnClickListener(v -> {
+			final Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT+8:00"));
+			
+			final DatePicker picker = new DatePicker(activity);
+			picker.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), null);
+			
+			DialogUtil.getBaseDialog(activity)
+					.customView(picker,false)
+					.onPositive((dialog, which) -> {
+						c.set(picker.getYear(), picker.getMonth(), picker.getDayOfMonth());
+						nzhychsjcsj.setText(DateUtil.YMD.format(c.getTime()));
+						dialog.dismiss();
+					}).show();
+		});
 		
 		findViewById(R.id.fragment_health_checkin_login).setOnClickListener(v -> {
-			String user = nameText.getEditText().getText().toString();
-			if(TextUtils.isEmpty(user)){
-				nameText.setError("请输入学号");
-				return;
-			}else{
-				nameText.setError(null);
-			}
+			final String user = nameText.getEditText().getText().toString();
+			final String password = passwordText.getEditText().getText().toString();
 			
-			String password = passwordText.getEditText().getText().toString();
-			if(TextUtils.isEmpty(password)){
-				passwordText.setError("请输入密码");
-				return;
-			}else{
-				passwordText.setError(null);
+			cookie = cookieText.getEditText().getText().toString();
+			if(TextUtils.isEmpty(cookie)){
+				cookie = null;
+				if(TextUtils.isEmpty(user)){
+					nameText.setError("请输入学号");
+					return;
+				}else{
+					nameText.setError(null);
+				}
+				if(TextUtils.isEmpty(password)){
+					passwordText.setError("请输入密码");
+					return;
+				}else{
+					passwordText.setError(null);
+				}
 			}
-			
 			new Thread(){
 				@Override
 				public void run(){
-					String[] tmp = getExecution();
-					
-					if(tmp == null){
-						sendMessage(App.DISMISS_TOAST, "获取Execution失败！");
-						return;
+					if(cookie == null){
+						String[] tmp = getExecution();
+						
+						if(tmp == null){
+							sendMessage(App.DISMISS_TOAST, "获取Execution失败！");
+							return;
+						}
+						
+						cookie = tmp[0];
+						String execution = tmp[1];
+						
+						tmp = getPublicKey(cookie);
+						
+						if(tmp == null){
+							sendMessage(App.DISMISS_TOAST, "获取RSA公钥失败！");
+							return;
+						}
+						
+						cookie += tmp[0];
+						
+						String publicKey = tmp[1];
+						
+						String rsaPwd = getRsaPassword(password, publicKey);
+						
+						cookie = login(cookie, execution, user, rsaPwd);
+					}else{
+						SettingUtil.setting.edit().putString("healthCheckInCookie", cookie).apply();
 					}
-					
-					String cookie = tmp[0];
-					String execution = tmp[1];
-					
-					tmp = getPublicKey(cookie);
-					
-					if(tmp == null){
-						sendMessage(App.DISMISS_TOAST, "获取RSA公钥失败！");
-						return;
-					}
-					
-					cookie += tmp[0];
-					
-					String publicKey = tmp[1];
-					
-					String rsaPwd = getRsaPassword(password, publicKey);
-					
-					cookie = login(cookie, execution, user, rsaPwd);
 					
 					if(cookie == null){
 						sendMessage(App.DISMISS_TOAST, "登录失败！");
 						return;
 					}
 					
-					SettingUtil.setting.edit().putString("healthCheckInUser", user).putString("healthCheckInPassword", password).apply();
-					
+					if(!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
+						SettingUtil.setting.edit().putString("healthCheckInUser", user).putString("healthCheckInPassword", password).apply();
+					}
 					
 					String form = getForm(cookie, user);
 					
@@ -359,6 +411,9 @@ public class HealthCheckInFragment extends BaseFragment{
 					.append("&m:xsjkdk:ysbl=").append(history.getString("F_YSBL"))
 					.append("&m:xsjkdk:yxgl=").append(history.getString("F_YXGL"))
 					.append("&m:xsjkdk:jkmys=").append(history.getString("F_JKMYS"))
+					.append("&m:xsjkdk:nlqsfybb=").append("未离青")
+					.append("&m:xsjkdk:nsfyjzxgym=").append(nsfyjzxgym.getText().toString())
+					.append("&m:xsjkdk:nzhychsjcsj=").append(nzhychsjcsj.getText().toString())
 					.append("&m:xsjkdk:brcn=").append(history.getString("F_BRCN"))
 					
 					.append("&alias=").append(alias)
@@ -387,6 +442,9 @@ public class HealthCheckInFragment extends BaseFragment{
 					.append("\",\"ysbl\":\"").append(history.getString("F_YSBL"))
 					.append("\",\"yxgl\":\"").append(history.getString("F_YXGL"))
 					.append("\",\"jkmys\":\"").append(history.getString("F_JKMYS"))
+					.append("\",\"nlqsfybb\":\"").append("未离青")
+					.append("\",\"nsfyjzxgym\":\"").append(nsfyjzxgym.getText().toString())
+					.append("\",\"nzhychsjcsj\":\"").append(nzhychsjcsj.getText().toString())
 					.append("\",\"brcn\":\"").append(history.getString("F_BRCN"))
 					.append("\"}},\"sub\":[],\"opinion\":[]}")
 					.toString();
@@ -427,196 +485,6 @@ public class HealthCheckInFragment extends BaseFragment{
 	
 	@Override
 	protected String getName(){
-		return "健康打卡（实验性）";
+		return "健康打卡（已适配）";
 	}
 }
-
-/*
-		# 登陆
-		def login(session: requests.Session, execution, username, rsaPassword) -> bool:
-		response = session.post(
-		url = 'http://ydxg.qust.edu.cn/cas/login?service=https%3A%2F%2Fbpm.qust.edu.cn%2Fbpmx%2Fj_spring_cas_security_check',
-		verify = False,
-		headers = header,
-		data = {
-		'username': username,
-		'password': rsaPassword,
-		'mobileCode': '',
-		'authcode': '',
-		'execution': execution,
-		'_eventId': 'submit'
-		}
-		)
-		return response.status_code == 200
-		
-		
-		def getHistoryData(session: requests.Session, username) -> dict:
-		return session.post(
-		url = 'https://bpm.qust.edu.cn/bpmx/platform/bpm/bpmFormQuery/doQuery.ht',
-		verify = False,
-		headers = header,
-		data = {
-		'page': 1,
-		'pagesize': 1,
-		'alias': 'cxxsjkdkzhytjl',
-		'querydata': '{F_XH:"' + username + '"}'
-		}
-		).json()['list'][0]
-		
-		
-		def getInformation(session: requests.Session, username) -> dict:
-		return session.post(
-		url = 'https://bpm.qust.edu.cn/bpmx/platform/bpm/bpmFormQuery/doQuery.ht',
-		verify = False,
-		headers = header,
-		data = {
-		'page': 1,
-		'pagesize': 1,
-		'alias': 'cxxsxx',
-		'querydata': '{XH:"' + username + '"}',
-		}
-		).json()['list'][0]
-		
-		
-		def getForm(session: requests.Session, username) -> dict:
-		
-		datahistory = {
-		'page': 1,
-		'pagesize': 1,
-		'alias': 'cxxsjtsfyjdk',
-		'querydata': json.dumps({
-		"F_XH": username,
-		"F_TJSJ": time.strftime("%Y-%m-%d", time.localtime())
-		})
-		}
-		
-		response = session.post(
-		url = 'https://bpm.qust.edu.cn/bpmx/platform/bpm/bpmFormQuery/doQuery.ht',
-		verify = False,
-		allow_redirects=False,
-		headers = header,
-		data = datahistory
-		)
-		
-		js = response.json()
-		
-		if len(js['list']) > 0:
-		return None
-		
-		info = getInformation(session, username)
-		
-		history = getHistoryData(session, username)
-		
-		html = BeautifulSoup(session.get(
-		url = 'https://bpm.qust.edu.cn/bpmx/platform/form/bpmDataTemplate/editData_xsjkdk.ht',
-		verify = False,
-		headers = header
-		).text,"html.parser")
-		
-		# 提交时间
-		tjsj = html.find(attrs = {'name': 'm:xsjkdk:tjsj'})["value"]
-		
-		# 结束时间
-		jssj = html.find(attrs = {'name': 'm:xsjkdk:jssj'})["value"]
-		
-		form = {
-		'm:xsjkdk:xm': info['XM'], # 姓名
-		'm:xsjkdk:xh': info['XH'], # 学号
-		'm:xsjkdk:xy': info['XYMC'], # 学院
-		'm:xsjkdk:bj': info['BJMC'], # 班级
-		'm:xsjkdk:zy': info['ZYMC'], # 专业
-		'm:xsjkdk:nj': info['NJ'], # 年级
-		'm:xsjkdk:sjh': info['SJHM'], # 手机号
-		'm:xsjkdk:tjsj': tjsj,
-		'm:xsjkdk:jssj': jssj,
-		
-		'm:xsjkdk:dqszdz': history['F_DQSZDZ'], # 地区省级地区
-		'm:xsjkdk:jrtw': history['F_JRTW'], # 今日体温
-		'm:xsjkdk:jrstzk': history['F_JRSTZK'], # 今日身体状况
-		'm:xsjkdk:stzkqt': history['F_STZKQT'], # 身体状况其他
-		'm:xsjkdk:gfxqyjcs': history['F_GFXQYJCS'], # 高风险区域接触史
-		'm:xsjkdk:ysbrjcs': history['F_YSBRJCS'], # 疑似病人接触史
-		'm:xsjkdk:ysbl': history['F_YSBL'], # 疑似病例
-		'm:xsjkdk:yxgl': history['F_YXGL'], # 医学隔离
-		'm:xsjkdk:jkmys': history['F_JKMYS'], # 健康码是
-		'm:xsjkdk:brcn': history['F_BRCN'], # 本人承诺
-		
-		'alias': html.find(attrs = {'name': 'alias'})["value"],
-		'tableId': html.find(attrs = {'name': 'tableId'})["value"],
-		'pkField': html.find(attrs = {'name': 'pkField'})["value"],
-		'tableName': html.find(attrs = {'name': 'tableName'})["value"],
-		
-		'formData': json.dumps({
-		'main':{
-		'fields':{
-		'xm': info['XM'],
-		'xh': info['XH'],
-		'xy': info['XYMC'],
-		'bj': info['BJMC'],
-		'zy': info['ZYMC'],
-		'nj': info['NJ'],
-		'sjh': info['SJHM'],
-		'xydm': info['XYDM'],
-		'zydm': info['ZYDM'],
-		'bjdm': info['BJDM'],
-		'tjsj': tjsj,
-		'jssj': jssj,
-		'dqszdz': history['F_DQSZDZ'],
-		'stzkqt': history['F_STZKQT'],
-		'jrtw': history['F_JRTW'],
-		'jrstzk': history['F_JRSTZK'],
-		'gfxqyjcs': history['F_GFXQYJCS'],
-		'ysbrjcs': history['F_YSBRJCS'],
-		'ysbl': history['F_YSBL'],
-		'yxgl': history['F_YXGL'],
-		'jkmys': history['F_JKMYS'],
-		'brcn': history['F_BRCN'],
-		}
-		},
-		'sub':[],
-		'opinion':[]
-		},
-		ensure_ascii = False,
-		separators = (',', ':')
-		)
-		}
-		return form
-		
-		
-		def submitForm(session: requests.Session, form) -> str:
-		
-		js = session.post(
-		url = 'https://bpm.qust.edu.cn/bpmx/platform/form/bpmFormHandler/save.ht',
-		verify = False,
-		headers = header,
-		data = form
-		).json()
-		
-		return None if js['result'] == 1 else js['message']
-		
-		
-		def main(username: str, password: str) -> tuple:
-		
-		session = requests.session()
-		
-		try:
-		login(session, getExecution(session), username, getRsaPassword(password, getPublicKey(session)))
-		
-		form = getForm(session, username)
-		
-		if form == None:
-		return (4, '已提交')
-		
-		msg = submitForm(session, form)
-		
-		if msg == None:
-		return (3, '提交成功')
-		else:
-		return (5, msg)
-		
-		except Exception as e:
-		return (-1, '自动提交出错:' + traceback.format_exc())
-		
-		if __name__ == '__main__':
-		print(main(input('学号: '), input('密码: '))[1])
-*/

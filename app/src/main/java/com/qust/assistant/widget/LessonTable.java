@@ -74,7 +74,10 @@ public class LessonTable extends ViewPager{
 	// 点击的课程
 	private Lesson lesson;
 	
-	private boolean showOtherWeekLesson;
+	// 显示全部课程
+	private boolean showAllLesson;
+	// 隐藏已结课程
+	private boolean hideFinishLesson;
 	
 	// 菜单功能
 	private int longPressTime;
@@ -118,7 +121,8 @@ public class LessonTable extends ViewPager{
 		
 		dateHeight = 40 + textHeight * 2;
 		
-		showOtherWeekLesson = SettingUtil.setting.getBoolean("key_show_other_week_lesson", true);
+		showAllLesson = SettingUtil.setting.getBoolean("key_show_all_lesson", false);
+		hideFinishLesson = SettingUtil.setting.getBoolean("key_hide_finish_lesson", false);
 		
 		longPressTime = ViewConfiguration.getLongPressTimeout();
 		
@@ -272,12 +276,20 @@ public class LessonTable extends ViewPager{
 					
 					count = -1;
 					
-					lesson = null;
 					for(int i = 0; i < lessonGroups[week].length; ){
 						int len = 1;
 						if(lessonGroups[week][i] != null){
-							lesson = lessonGroups[week][i].findLesson(showWeek);
-							if(lesson != null) len = lesson.len;
+							lesson = lessonGroups[week][i].getCurrentLesson(showWeek);
+							if(lesson == null){
+								if(!showAllLesson){
+									continue;
+								}
+								// 本周该时间无课但是其他周有课
+								lesson = lessonGroups[week][i].findLesson(showWeek, !hideFinishLesson);
+								if(lesson != null) len = lesson.len;
+							}else{
+								len = lesson.len;
+							}
 						}else{
 							lesson = null;
 						}
@@ -334,12 +346,12 @@ public class LessonTable extends ViewPager{
 					
 					if(lesson == null){
 						
-						if(!showOtherWeekLesson){
+						if(!showAllLesson){
 							continue;
 						}
 						
 						// 本周该时间无课但是其他周有课
-						lesson = lessonGroups[i][j].findLesson(showWeek);
+						lesson = lessonGroups[i][j].findLesson(showWeek, !hideFinishLesson);
 						if(lesson == null) continue;
 						
 						paint.setColor(Color.argb(192, 245, 245, 245));

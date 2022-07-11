@@ -6,14 +6,6 @@
 
     <TextView
         style="@style/TextNormal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/activity_margin"
-        android:textColor="@color/colorError"
-        android:text="由于教务已关闭此功能, 该功能暂时失效"/>
-
-    <TextView
-        style="@style/TextNormal"
         android:id="@+id/activity_get_academic_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

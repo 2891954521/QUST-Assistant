@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class GetMarkFragment extends BaseSchoolFragment{
 	
@@ -74,7 +75,8 @@ public class GetMarkFragment extends BaseSchoolFragment{
 					String name = j.getString("kcmc");
 					if(!markMap.containsKey(name)){
 						String cj = j.getString("cj");
-						Mark mark = new Mark(name, j.getString("xf"), ParamUtil.isFloat(cj) ? Float.parseFloat(cj) : 0f);
+						String ksxz = j.getString("ksxz");
+						Mark mark = new Mark(name, ksxz, j.getString("xf"), ParamUtil.isFloat(cj) ? Float.parseFloat(cj) : 0f);
 						markMap.put(name, mark);
 					}
 				}
@@ -146,7 +148,8 @@ public class GetMarkFragment extends BaseSchoolFragment{
 		
 		@Override
 		public int getChildrenCount(int groupPosition){
-			return marks[groupPosition].item.size() + 1;
+			int len = marks[groupPosition].item.size();
+			return len == 0 ? 0 : len + 1;
 		}
 		
 		@Override
@@ -169,10 +172,24 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			if(convertView == null){
 				convertView = LayoutInflater.from(activity).inflate(R.layout.item_mark_group, null);
 			}
-			((TextView)convertView.findViewById(R.id.item_mark_name)).setText(marks[groupPosition].name);
-			TextView textView = convertView.findViewById(R.id.item_mark_value);
-			textView.setTextColor(activity.getResources().getColor(marks[groupPosition].mark < 60 ? R.color.colorError : R.color.colorPrimaryText));
-			textView.setText("成绩: " + marks[groupPosition].mark);
+			Mark mark = marks[groupPosition];
+			
+			TextView nameText = convertView.findViewById(R.id.item_mark_name);
+			nameText.setText(mark.name);
+			nameText.setTextColor(activity.getResources().getColor(
+					"正常考试".equals(mark.type) ? (mark.mark < 60 ? R.color.colorError : R.color.colorPrimaryText) : R.color.colorAccent
+			));
+			
+			TextView markText = convertView.findViewById(R.id.item_mark_value);
+			markText.setText(String.valueOf(mark.mark));
+			markText.setTextColor(activity.getResources().getColor(
+					mark.mark < 60 ? R.color.colorError : R.color.colorPrimaryText
+			));
+			
+			((TextView)convertView.findViewById(R.id.item_mark_credit)).setText(mark.credit);
+			
+			((TextView)convertView.findViewById(R.id.item_mark_gpa)).setText(mark.gpa);
+			
 			return convertView;
 		}
 		
@@ -184,10 +201,8 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			Mark mark = marks[groupPosition];
 			
 			if(childPosition == 0){
-				((TextView)convertView.findViewById(R.id.item_mark_item)).setText("学分：" + mark.credit);
-				((TextView)convertView.findViewById(R.id.item_mark_value)).setText(
-						mark.mark >= 60 ? String.format("绩点：%.2f",(mark.mark - 50)/10f) : "绩点：0"
-				);
+				((TextView)convertView.findViewById(R.id.item_mark_item)).setText("项目");
+				((TextView)convertView.findViewById(R.id.item_mark_value)).setText("成绩");
 			}else{
 				((TextView)convertView.findViewById(R.id.item_mark_item)).setText(mark.item.get(childPosition - 1));
 				((TextView)convertView.findViewById(R.id.item_mark_value)).setText(mark.itemMark.get(childPosition - 1));
@@ -203,21 +218,35 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	
 	
 	private static class Mark implements Serializable{
+		
+		private static final long serialVersionUID = 1304038646483514757L;
+		
 		// 科目
 		public String name;
+		// 考试类型
+		public String type;
 		// 学分
 		public String credit;
 		// 成绩
 		public float mark;
+		// 绩点
+		public String gpa;
 		
 		public ArrayList<String> item;
 		
 		public ArrayList<String> itemMark;
-
+		
 		public Mark(String name, String credit, float mark){
+			this(name, "正常考试", credit, mark);
+		}
+		
+		public Mark(String name, String type, String credit, float mark){
 			this.name = name.trim();
+			this.type = type;
 			this.credit = credit;
 			this.mark = mark;
+			this.gpa = String.format(Locale.CHINA, "%.2f",
+					mark < 60 ? 0f : ("正常考试".equals(type) ? (mark / 10 - 5) : 1f));
 			item = new ArrayList<>(3);
 			itemMark = new ArrayList<>(3);
 		}

@@ -29,9 +29,9 @@ public class LessonTime extends View{
 	
 	private int textHeight;
 	
-	private int width,height;
+	private int width, height;
 	
-	private float downX,downY;
+	private float downX, downY;
 	
 	private boolean[] hasMove;
 	
@@ -40,15 +40,16 @@ public class LessonTime extends View{
 	private Paint paint, paintT;
 	
 	public LessonTime(Context context){
-		this(context,null);
+		this(context, null);
 	}
 	
-	public LessonTime(Context context,@Nullable AttributeSet attrs){
-		this(context,attrs,0);
+	public LessonTime(Context context, @Nullable AttributeSet attrs){
+		this(context, attrs, 0);
 	}
 	
-	public LessonTime(Context context,@Nullable AttributeSet attrs,int defStyleAttr){
-		super(context,attrs,defStyleAttr);
+	public LessonTime(Context context, @Nullable AttributeSet attrs, int defStyleAttr){
+		super(context, attrs, defStyleAttr);
+		
 		booleans = new boolean[LessonData.getInstance().getTotalWeek()];
 		hasMove = new boolean[booleans.length];
 		
@@ -65,10 +66,11 @@ public class LessonTime extends View{
 	}
 	
 	@Override
-	protected void onMeasure(int widthMeasureSpec,int heightMeasureSpec){
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
 		width = getMeasuredWidth() / ROW_COUNT;
 		height = width * 2 / 3;
-		setMeasuredDimension(widthMeasureSpec,height * booleans.length / ROW_COUNT);
+		int col = booleans.length / ROW_COUNT + Math.min(booleans.length % ROW_COUNT , 1);
+		setMeasuredDimension(widthMeasureSpec, height * col);
 	}
 	
 	@Override
@@ -95,7 +97,7 @@ public class LessonTime extends View{
 					Arrays.fill(hasMove, true);
 					break;
 				case MotionEvent.ACTION_UP:
-					if(downX==event.getX()&&downY==event.getY()){
+					if(downX == event.getX() && downY == event.getY()){
 						booleans[down] = !booleans[down];
 						invalidate();
 					}
@@ -108,24 +110,24 @@ public class LessonTime extends View{
 	@Override
 	protected void onDraw(Canvas canvas){
 		super.onDraw(canvas);
-		float t =  paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent;
+		float t = paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent;
 		int weeks = LessonData.getInstance().getTotalWeek();
-		for(int i=0;i<weeks;i++){
+		for(int i = 0; i < weeks; i++){
 			if(booleans[i]){
-				paint.setColor(Color.argb(192, 230,244,255));
-				paintT.setColor(Color.rgb(31,157,208));
+				paint.setColor(Color.argb(192, 230, 244, 255));
+				paintT.setColor(Color.rgb(31, 157, 208));
 			}else{
-				paint.setColor(Color.argb(192, 245,245,245));
-				paintT.setColor(Color.rgb(144,144,144));
+				paint.setColor(Color.argb(192, 245, 245, 245));
+				paintT.setColor(Color.rgb(144, 144, 144));
 			}
 			int x = i % ROW_COUNT * width;
 			int y = i / ROW_COUNT * height;
-			if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
-				canvas.drawRoundRect(x, y,x + width - TIME_PADDING,y + height - TIME_PADDING,16,16,paint);
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+				canvas.drawRoundRect(x, y, x + width - TIME_PADDING, y + height - TIME_PADDING, 16, 16, paint);
 			}else{
-				canvas.drawRoundRect(new RectF(x, y,x + width - TIME_PADDING,y + height - TIME_PADDING),16,16,paint);
+				canvas.drawRoundRect(new RectF(x, y, x + width - TIME_PADDING, y + height - TIME_PADDING), 16, 16, paint);
 			}
-			canvas.drawText(String.valueOf(i + 1),x + (width - paintT.measureText(String.valueOf(i + 1))) / 2,y + (height - textHeight)/2 + t,paintT);
+			canvas.drawText(String.valueOf(i + 1), x + (width - paintT.measureText(String.valueOf(i + 1))) / 2, y + (height - textHeight) / 2 + t, paintT);
 		}
 	}
 	
@@ -147,12 +149,12 @@ public class LessonTime extends View{
 	}
 	
 	public void setSingle(){
-		for(int i=0;i<booleans.length;i++) booleans[i] = i % 2 == 0;
+		for(int i = 0; i < booleans.length; i++) booleans[i] = i % 2 == 0;
 		invalidate();
 	}
 	
 	public void setDouble(){
-		for(int i=0;i<booleans.length;i++) booleans[i] = i % 2 == 1;
+		for(int i = 0; i < booleans.length; i++) booleans[i] = i % 2 == 1;
 		invalidate();
 	}
 	
