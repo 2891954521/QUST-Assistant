@@ -1,24 +1,19 @@
 package com.qust.assistant;
 
 import android.app.Application;
-import android.os.Build;
 import android.os.Looper;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.billy.android.swipe.SmartSwipeBack;
-import com.qust.assistant.lesson.LessonData;
+import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.sql.DataBase;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
 
-import androidx.annotation.NonNull;
-
-import static com.billy.android.swipe.SwipeConsumer.DIRECTION_LEFT;
-
 public class App extends Application{
-	
-	public static final String APP_UPDATE_LESSON_TABLE = "update.lesson.table";
 	
 	public static final String APP_USER_LOGIN = "user_login";
 	
@@ -27,7 +22,7 @@ public class App extends Application{
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 10;
+	public static final int DEV_VERSION = 11;
 	
 	/**
 	 * Handler 公用的 what 值
@@ -41,6 +36,8 @@ public class App extends Application{
 	
 	private Thread.UncaughtExceptionHandler handler;
 	
+	public LessonTableViewModel lessonTableViewModel;
+	
 	@Override
 	public void onCreate(){
 		super.onCreate();
@@ -51,18 +48,18 @@ public class App extends Application{
 		
 		LogUtil.init(this);
 		
-		LessonData.init(this);
+		lessonTableViewModel = new LessonTableViewModel(this);
 		
 		handler = Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 		
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			// use bezier back before LOLLIPOP
-			SmartSwipeBack.activityBezierBack(this, activitySwipeBackFilter, 0);
-		} else {
-			// add relative moving slide back
-			SmartSwipeBack.activitySlidingBack(this, activitySwipeBackFilter, 0, 0x80000000, 0, 0, 0.5f, DIRECTION_LEFT);
-		}
+//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+//			// use bezier back before LOLLIPOP
+//			SmartSwipeBack.activityBezierBack(this, activitySwipeBackFilter, 0);
+//		} else {
+//			// add relative moving slide back
+//			SmartSwipeBack.activitySlidingBack(this, activitySwipeBackFilter, 0, 0x80000000, 0, 0, 0.5f, DIRECTION_LEFT);
+//		}
 	}
 	
 	public void toast(final String message){
@@ -80,7 +77,7 @@ public class App extends Application{
 	private class ExceptionHandler implements Thread.UncaughtExceptionHandler{
 		@Override
 		public void uncaughtException(@NonNull Thread thread, @NonNull final Throwable throwable){
-			toast("应用发生错误，错误类型：" + throwable.getClass().toString());
+			toast("应用发生错误，错误类型：" + throwable.getClass());
 			LogUtil.Log("-------应用发生异常-------", throwable);
 			LogUtil.debugLog("-------应用异常退出-------");
 			if(handler != null) handler.uncaughtException(thread, throwable);

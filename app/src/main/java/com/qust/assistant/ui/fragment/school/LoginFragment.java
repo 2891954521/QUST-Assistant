@@ -1,8 +1,6 @@
 package com.qust.assistant.ui.fragment.school;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 
@@ -10,6 +8,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
+import com.qust.assistant.util.SettingUtil;
 
 public class LoginFragment extends BaseSchoolFragment{
 	
@@ -25,13 +24,11 @@ public class LoginFragment extends BaseSchoolFragment{
 	protected void initLayout(LayoutInflater inflater){
 		super.initLayout(inflater);
 		
-		SharedPreferences data = activity.getSharedPreferences("education", Context.MODE_PRIVATE);
-		
 		nameText = findViewById(R.id.fragment_login_name);
 		passwordText = findViewById(R.id.fragment_login_password);
 		
-		nameText.getEditText().setText(data.getString("user",""));
-		passwordText.getEditText().setText(data.getString("password",""));
+		nameText.getEditText().setText(SettingUtil.getString(SettingUtil.SCHOOL_NAME, ""));
+		passwordText.getEditText().setText(SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, ""));
 		
 		findViewById(R.id.fragment_school_query).setOnClickListener(v -> {
 			String user = nameText.getEditText().getText().toString();
@@ -55,7 +52,7 @@ public class LoginFragment extends BaseSchoolFragment{
 				public void run(){
 					String errorMsg = loginUtil.login(handler, user, password);
 					if(errorMsg == null){
-						data.edit().putString("user", user).putString("password", password).apply();
+						SettingUtil.edit().putString(SettingUtil.SCHOOL_NAME, user).putString(SettingUtil.SCHOOL_PASSWORD, password).apply();
 						activity.runOnUiThread(() -> {
 							dialog.dismiss();
 							activity.sendBroadcast(new Intent(App.APP_USER_LOGIN));

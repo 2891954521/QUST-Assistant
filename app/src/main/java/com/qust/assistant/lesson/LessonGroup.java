@@ -5,15 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.qust.assistant.R;
+import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.widget.BackgroundLesson;
 
 import java.io.Serializable;
 import java.util.Arrays;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * 课程组
@@ -64,12 +65,6 @@ public class LessonGroup implements Serializable, Cloneable{
 		lessons = l;
 	}
 	
-	public static LessonGroup getLesson(LessonGroup lessonGroup, int week){
-		if(lessonGroup == null) return EMPTY_LESSON_GROUP;
-		Lesson baseLesson = lessonGroup.getCurrentLesson(week);
-		return baseLesson == null ? EMPTY_LESSON_GROUP : lessonGroup;
-	}
-	
 	/**
 	 * 获取 {@code week} 周会上的课程
 	 *
@@ -118,10 +113,20 @@ public class LessonGroup implements Serializable, Cloneable{
 		return null;
 	}
 	
+	
+	public static LessonGroup getLesson(LessonGroup lessonGroup, int week){
+		if(lessonGroup == null) return EMPTY_LESSON_GROUP;
+		Lesson baseLesson = lessonGroup.getCurrentLesson(week);
+		return baseLesson == null ? EMPTY_LESSON_GROUP : lessonGroup;
+	}
+	
+	/**
+	 * 获取用于展示的View
+	 */
 	public static View getView(Context context, Lesson lesson, int count, int len){
 		View v = LayoutInflater.from(context).inflate(R.layout.item_lesson, null);
 		// 设置课程时间文本
-		((TextView)v.findViewById(R.id.item_lesson_time)).setText(LessonData.LessonTimeText[0][count] + "\n" + LessonData.LessonTimeText[1][count + len - 1]);
+		((TextView)v.findViewById(R.id.item_lesson_time)).setText(LessonTableViewModel.getLessonTimeText()[0][count] + "\n" + LessonTableViewModel.getLessonTimeText()[1][count + len - 1]);
 		TextView n = v.findViewById(R.id.item_lesson_name);
 		if(lesson == null){
 			n.setText("空闲");

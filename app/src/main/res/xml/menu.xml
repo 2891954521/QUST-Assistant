@@ -60,6 +60,6 @@
         android:name="设置"
         android:isDefault="true"
         android:icon="@drawable/ic_setting"
-        android:text="com.qust.assistant.ui.SettingActivity" />
+        android:text="com.qust.assistant.ui.app.SettingActivity" />
 
 </menu>

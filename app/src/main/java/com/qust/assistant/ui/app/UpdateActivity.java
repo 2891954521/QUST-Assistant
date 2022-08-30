@@ -1,4 +1,4 @@
-package com.qust.assistant.ui;
+package com.qust.assistant.ui.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,10 +9,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
+
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.util.FileUtil;
+import com.qust.assistant.ui.BaseAnimActivity;
+import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.UpdateUtil;
 
@@ -26,10 +30,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
-
 public class UpdateActivity extends BaseAnimActivity{
 	
 	private MaterialDialog checkDialog;
@@ -40,24 +40,14 @@ public class UpdateActivity extends BaseAnimActivity{
 	
 	private String message;
 	
-	private String md5;
-	
 	private String url;
 	
-	private App app;
-	
 	private int version;
-	
-	private boolean hasCheck;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_update);
-		
-		initStatusBar();
-		
-		app = (App)getApplication();
 		
 		file = new File(getExternalCacheDir(),"release.apk");
 		
@@ -65,26 +55,14 @@ public class UpdateActivity extends BaseAnimActivity{
 			if(url == null){
 				checkUpdate();
 			}else{
-//				if(file.exists()){
-//					checkPackage();
-//				}else{
-					downloadApk();
-//				}
+				downloadApk();
 			}
 		});
 		
-		checkDialog = new MaterialDialog.Builder(this)
-				.title("正在检查更新")
-				.progress(true,0)
-				.build();
-		
+		checkDialog = DialogUtil.getIndeterminateProgressDialog(this,"正在检查更新").build();
 		checkDialog.setCanceledOnTouchOutside(false);
 		
-		downloadDialog = new MaterialDialog.Builder(this)
-				.title("正在下载")
-				.progress(true,0)
-				.build();
-		
+		downloadDialog = DialogUtil.getIndeterminateProgressDialog(this, "正在下载").build();
 		downloadDialog.setCanceledOnTouchOutside(false);
 		
 		findViewById(R.id.toolbar).postDelayed(this::checkUpdate,200);
@@ -105,31 +83,29 @@ public class UpdateActivity extends BaseAnimActivity{
 		new Thread(){
 			@Override
 			public void run(){
-				JSONObject js = UpdateUtil.getUpdateInfo(isDev);
+				JSONObject data = UpdateUtil.checkVersion(UpdateActivity.this, isDev);
+				if(data == null){
+					runOnUiThread(() -> {
+						toast("当前无新版本！");
+						checkDialog.cancel();
+					});
+					return;
+				}
 				try{
-					if(js.has("code")){
-						if(js.getInt("code")==200){
-							JSONObject json = js.getJSONObject("data");
-							version = json.getInt("version");
-							if(UpdateUtil.checkVersion(UpdateActivity.this, version, isDev)){
-								message = json.getString("message");
-								md5 = json.getString("md5");
-								url = json.getString("apkUrl");
-								runOnUiThread(() -> ((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：" + url + "\n" + message));
-							}else{
-								app.toast("当前无新版本！");
-							}
-						}else{
-							app.toast(js.getString("msg"));
-						}
-					}else{
-						app.toast("获取更新信息失败！");
-					}
+					version = data.getInt("version");
+					message = data.getString("message");
+					url = data.getString("apkUrl");
+					runOnUiThread(() -> {
+						((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：" + url + "\n" + message);
+						checkDialog.cancel();
+					});
 				}catch(JSONException e){
 					LogUtil.Log(e);
-					app.toast("获取更新信息失败！");
+					runOnUiThread(() -> {
+						toast("获取更新信息失败！");
+						checkDialog.cancel();
+					});
 				}
-				if(checkDialog.isShowing())runOnUiThread(() -> checkDialog.cancel());
 			}
 		}.start();
 	}
@@ -165,12 +141,12 @@ public class UpdateActivity extends BaseAnimActivity{
 						});
 						return;
 					}else if(con.getResponseCode() == 404){
-						app.toast("新版本文件不存在！");
-					}else app.toast("连接服务器失败！");
+						toast("新版本文件不存在！");
+					}else toast("连接服务器失败！");
 					
 				}catch(IOException e){
 					LogUtil.Log(e);
-					app.toast("下载失败！");
+					toast("下载失败！");
 				}
 				if(downloadDialog.isShowing())runOnUiThread(() -> downloadDialog.cancel());
 			}
@@ -182,22 +158,21 @@ public class UpdateActivity extends BaseAnimActivity{
 		PackageInfo packageInfo = pm.getPackageArchiveInfo(file.toString(), PackageManager.GET_ACTIVITIES);
 		if(packageInfo != null){
 			try{
-				if(pm.getPackageInfo(getPackageName(), 0).packageName.equals(packageInfo.packageName) ||
-						version == packageInfo.versionCode || FileUtil.getMD5(file).equals(md5)){
+				if(pm.getPackageInfo(getPackageName(), 0).packageName.equals(packageInfo.packageName) || version == packageInfo.versionCode){
 					installApk();
-					return;
+				}else{
+					askForReDownload();
 				}
 			}catch(PackageManager.NameNotFoundException e){
 				LogUtil.Log(e);
 			}
 		}
-		askForReDownload();
 	}
 	
 	private void askForReDownload(){
 		new MaterialDialog.Builder(this)
 				.title("校验失败")
-				.content("安装包MD5校验失败，是否仍要安装？")
+				.content("安装包异常，是否仍要安装？")
 				.positiveText("安装").onPositive((d, which)-> installApk())
 				.negativeText("取消").onNegative((d, which)-> d.dismiss())
 				.neutralText("重新下载").onNeutral((d, which) -> downloadApk())

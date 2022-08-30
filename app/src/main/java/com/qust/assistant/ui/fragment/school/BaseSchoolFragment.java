@@ -17,7 +17,10 @@ import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
-import com.qust.assistant.util.LoginUtil;
+import com.qust.assistant.util.DialogUtil;
+import com.qust.assistant.util.QustUtil.LessonUtil;
+import com.qust.assistant.util.QustUtil.LoginUtil;
+import com.qust.assistant.util.SettingUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,9 +29,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Calendar;
 
 public abstract class BaseSchoolFragment extends BaseFragment{
+	
+	public static final String[] TERM_NAME = {
+			"大一 上","大一 下",
+			"大二 上","大二 下",
+			"大三 上","大三 下",
+			"大四 上","大四 下",
+	};
 	
 	protected String name, password;
 	
@@ -45,6 +54,8 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	 * 年份选择器
 	 */
 	private NumberPicker yearPicker;
+	
+	protected int entranceTime;
 	
 	protected Handler handler = new Handler(Looper.getMainLooper()){
 		@Override
@@ -72,10 +83,9 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	
 	public BaseSchoolFragment(MainActivity activity){
 		super(activity);
-		SharedPreferences sharedPreferences = activity.getSharedPreferences("education", 0);
-		
-		name = sharedPreferences.getString("user", null);
-		password = sharedPreferences.getString("password", null);
+		name = SettingUtil.getString(SettingUtil.SCHOOL_NAME, null);
+		password = SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, null);
+		entranceTime = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 2010);
 	}
 	
 	@Override
@@ -84,7 +94,7 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 		
 		loginUtil = LoginUtil.getInstance();
 		
-		dialog = new MaterialDialog.Builder(activity).progress(true, 0).content("查询中...").build();
+		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "查询中").build();
 		
 		View view = findViewById(R.id.fragment_school_query);
 		
@@ -101,6 +111,7 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	protected void doLogin(){
 		if(name == null || password == null){
 			toast("请先登录！");
+			// TODO: 登录完后不会更新状态
 			activity.addView(LoginFragment.class);
 			return;
 		}
@@ -123,22 +134,11 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	 */
 	protected void initYearAndTermPicker(){
 		yearPicker = findViewById(R.id.fragment_school_year);
-		String[] term = new String[50];
-		for(int i = 0; i < term.length; i++){
-			term[i] = (i / 2 + 2010) + "-" + (i / 2 + 2011) + (i % 2 == 0 ? "第 1 学期" : "第 2 学期");
-		}
-		yearPicker.setDisplayedValues(term);
+		yearPicker.setWrapSelectorWheel(false);
+		yearPicker.setDisplayedValues(TERM_NAME);
 		yearPicker.setMinValue(0);
-		yearPicker.setMaxValue(term.length - 1);
-		Calendar calendar = Calendar.getInstance();
-		int y = calendar.get(Calendar.YEAR);
-		if(y < 2010){
-			yearPicker.setValue(0);
-		}else{
-			int index = (y - 2010) * 2;
-			if(calendar.get(Calendar.MONTH) < Calendar.AUGUST) index--;
-			yearPicker.setValue(index < term.length ? index : term.length - 1);
-		}
+		yearPicker.setMaxValue(TERM_NAME.length - 1);
+		yearPicker.setValue(LessonUtil.getCurrentYear(entranceTime));
 	}
 	
 	@Override
@@ -192,9 +192,12 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 		stream.close();
 	}
 	
+	/**
+	 * 获取选择的学期参数
+	 */
 	protected String[] getYearAndTerm(){
 		return new String[]{
-				Integer.toString(yearPicker.getValue() / 2 + 2010),
+				Integer.toString(yearPicker.getValue() / 2 + entranceTime),
 				yearPicker.getValue() % 2 == 0 ? "3" : "12"
 		};
 	}

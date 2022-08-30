@@ -14,8 +14,8 @@ import android.widget.RemoteViews;
 
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonData;
 import com.qust.assistant.lesson.LessonGroup;
+import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
 
 import java.util.Calendar;
@@ -44,11 +44,11 @@ public class LessonTable extends AppWidgetProvider{
 	
 	private void updateWidget(Context context, AppWidgetManager appWidgetManager, int... appWidgetIds){
 		
-		LessonData.init(context);
+		LessonTableViewModel lessonTableViewModel = LessonTableViewModel.getInstance(context);
 		
-		LessonGroup[] lessonGroups = LessonData.getInstance().getLessonGroups()[LessonData.getInstance().getWeek()];
+		LessonGroup[] lessonGroups = LessonTableViewModel.getLessonGroups()[LessonTableViewModel.getDayOfWeek()];
 		
-		int currentWeek = LessonData.getInstance().getCurrentWeek();
+		int currentWeek = LessonTableViewModel.getCurrentWeek();
 		
 		if(remoteView == null){
 			remoteView = new RemoteViews(context.getPackageName(), R.layout.widget_day_lesson);
@@ -56,7 +56,7 @@ public class LessonTable extends AppWidgetProvider{
 		}
 		
 		if(times-- == 0){
-			LessonData.getInstance().updateDate();
+			lessonTableViewModel.updateDate();
 			times = 200;
 			
 			Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
@@ -99,8 +99,9 @@ public class LessonTable extends AppWidgetProvider{
 				}
 			}
 			
-			h -= LessonData.LessonTime[i] / 60;
-			m -= LessonData.LessonTime[i] % 60;
+			int delta = LessonTableViewModel.getLessonTime()[i];
+			h -= delta / 60;
+			m -= delta % 60;
 			if(m < 0){
 				h -= 1;
 				m += 60;
@@ -154,7 +155,7 @@ public class LessonTable extends AppWidgetProvider{
 				view.setTextViewText(R.id.widget_lesson_info, lesson.place + lesson.teacher);
 			else view.setTextViewText(R.id.widget_lesson_info, lesson.place + "|" + lesson.teacher);
 		}
-		view.setTextViewText(R.id.widget_lesson_time, LessonData.LessonTimeText[0][count] + "\n" + LessonData.LessonTimeText[1][count + len]);
+		view.setTextViewText(R.id.widget_lesson_time, LessonTableViewModel.getLessonTimeText()[0][count] + "\n" + LessonTableViewModel.getLessonTimeText()[1][count + len]);
 		remoteViews.addView(R.id.widget_day_lesson, view);
 	}
 	

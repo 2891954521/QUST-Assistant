@@ -12,11 +12,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.qust.assistant.lesson.LessonData;
+import androidx.annotation.Nullable;
+
+import com.qust.assistant.model.LessonTableViewModel;
 
 import java.util.Arrays;
-
-import androidx.annotation.Nullable;
 
 /**
  * 设置课程上课周数的组件
@@ -50,7 +50,7 @@ public class LessonTime extends View{
 	public LessonTime(Context context, @Nullable AttributeSet attrs, int defStyleAttr){
 		super(context, attrs, defStyleAttr);
 		
-		booleans = new boolean[LessonData.getInstance().getTotalWeek()];
+		booleans = new boolean[LessonTableViewModel.getTotalWeek()];
 		hasMove = new boolean[booleans.length];
 		
 		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
@@ -111,7 +111,7 @@ public class LessonTime extends View{
 	protected void onDraw(Canvas canvas){
 		super.onDraw(canvas);
 		float t = paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent;
-		int weeks = LessonData.getInstance().getTotalWeek();
+		int weeks = LessonTableViewModel.getTotalWeek();
 		for(int i = 0; i < weeks; i++){
 			if(booleans[i]){
 				paint.setColor(Color.argb(192, 230, 244, 255));

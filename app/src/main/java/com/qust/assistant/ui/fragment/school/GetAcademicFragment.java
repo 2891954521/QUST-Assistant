@@ -1,6 +1,5 @@
 package com.qust.assistant.ui.fragment.school;
 
-import android.os.Message;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,13 +9,16 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.FileUtil;
 import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.LoginUtil;
+import com.qust.assistant.util.QustUtil.LoginUtil;
 import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONArray;
@@ -32,9 +34,6 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-
 public class GetAcademicFragment extends BaseSchoolFragment{
 	
 	private static final String[] TYPE = {
@@ -47,19 +46,24 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 			"学业预警不审核课程"
 	};
 	
-	// 每组课程的开始
+	/**
+	 * 每组课程的开始
+ 	 */
 	private int[] child;
 	
-	// 课程是否选中
+	/**
+	 * 课程是否选中
+ 	 */
 	private boolean[] isChoose;
 	
-	// 每组课程的名称
-	private String[] group;
-	
-	// 按时间排序后的课程
+	/**
+	 * 按时间排序后的课程
+ 	 */
 	private Lesson[] lessonsSort;
 	
-	// 全部课程
+	/**
+	 * 全部课程
+ 	 */
 	private ArrayList<Lesson> lessons;
 	
 	private boolean isCalculateMode;
@@ -119,9 +123,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	
 	@Override
 	protected void doQuery(String session){
-		Message message = new Message();
-		message.obj = "正在查询";
-		handler.sendMessage(message);
+		sendMessage(App.UPDATE_DIALOG, "正在查询");
 		
 		lessons = new ArrayList<>();
 		try{
@@ -142,9 +144,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 				HashSet<String> params = new HashSet<>();
 				while(matcher.find()) params.add(matcher.group(1));
 				
-				message = new Message();
-				message.obj = "正在查询课程";
-				handler.sendMessage(message);
+				sendMessage(App.UPDATE_DIALOG, "正在查询课程");
 				
 				for(String param : params){
 
@@ -180,8 +180,6 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	// 载入序列化后的数据
 	private void loadData(){
 		try{
-			group = (String[])loadData("Academic", "group");
-			
 			child = (int[])loadData("Academic", "child");
 			
 			lessonsSort = (Lesson[])loadData("Academic", "lessonsSort");
@@ -189,7 +187,6 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 			text = FileUtil.readFile(new File(activity.getExternalFilesDir("Academic"),"text"));
 			
 		}catch(Exception e){
-			group = new String[0];
 			child = new int[0];
 			lessonsSort = new Lesson[0];
 			text = "";
@@ -199,8 +196,6 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	// 储存序列化数据
 	private void saveData(){
 		try{
-			saveData("Academic", "group", group);
-			
 			saveData("Academic", "child", child);
 			
 			saveData("Academic", "lessonsSort", lessonsSort);
@@ -216,35 +211,28 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	 * 按照学期排序
 	 */
 	private void sortByYear(){
-		ArrayList<String> g = new ArrayList<>();
-		for(Lesson lesson : lessons){
-			if(!g.contains(lesson.year + " 第 " + lesson.term + " 学期"))
-				g.add(lesson.year + " 第 " + lesson.term + " 学期");
-		}
-		group = g.toArray(new String[0]);
-		Arrays.sort(group, (s1, s2) -> {
-			int n1 = Integer.parseInt(s1.substring(0, 4));
-			int n2 = Integer.parseInt(s2.substring(0, 4));
-			return Integer.compare(n1, n2);
-		});
-		child = new int[group.length];
+		child = new int[TERM_NAME.length];
 		lessonsSort = lessons.toArray(new Lesson[0]);
 		Arrays.sort(lessonsSort, (l1, l2) -> {
-			int n1 = Integer.parseInt(l1.year.substring(0, 4));
-			int n2 = Integer.parseInt(l2.year.substring(0, 4));
-			int r = Integer.compare(n1, n2);
-			if(r == 0) return Integer.compare(l1.term, l2.term);
-			return r;
+			int r = Integer.compare(l1.year, l2.year);
+			if(r == 0){
+				return Integer.compare(l1.term, l2.term);
+			}else{
+				return r;
+			}
 		});
-		String year = null;
+		int year = -1;
 		int term = -1;
-		int position = 0;
-		for(int i = 0; i < lessonsSort.length; i++){
-			Lesson lesson = lessonsSort[i];
-			if(!lesson.year.equals(year) || lesson.term != term){
-				year = lesson.year;
-				term = lesson.term;
-				child[position++] = i;
+		int i = 0;
+		for(int position = 0; position < TERM_NAME.length; position++){
+			for(; i < lessonsSort.length; i++){
+				Lesson lesson = lessonsSort[i];
+				if(lesson.year != year || lesson.term != term){
+					year = lesson.year;
+					term = lesson.term;
+					child[position] = i;
+					break;
+				}
 			}
 		}
 	}
@@ -281,11 +269,13 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	private class AcademicAdapter extends BaseExpandableListAdapter{
 		
 		@Override
-		public int getGroupCount(){ return group.length; }
+		public int getGroupCount(){ return TERM_NAME.length; }
 		
 		@Override
 		public int getChildrenCount(int groupPosition){
-			if(groupPosition == child.length - 1){
+			if(child.length == 0){
+				return 0;
+			}else if(groupPosition == child.length - 1){
 				return lessonsSort.length - child[groupPosition];
 			}else{
 				return child[groupPosition + 1] - child[groupPosition];
@@ -312,7 +302,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 			if(convertView == null){
 				convertView = LayoutInflater.from(activity).inflate(R.layout.item_academic_group, null);
 			}
-			((TextView)convertView.findViewById(R.id.item_academic_name)).setText(group[groupPosition]);
+			((TextView)convertView.findViewById(R.id.item_academic_name)).setText(TERM_NAME[groupPosition]);
 			return convertView;
 		}
 		
@@ -388,7 +378,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 		/**
 		 * 学年
 		 */
-		public String year;
+		public int year;
 		/**
 		 * 学期
 		 */
@@ -414,7 +404,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 				category = js.getString("KCLBMC");
 				content = js.getString("XSXXXX");
 				
-				year = js.getString(js.has("XNMC") ? "XNMC" : "JYXDXNMC");
+				year = Integer.parseInt(js.getString(js.has("XNM") ? "XNM" : "JYXDXNM"));
 				
 				term = Integer.parseInt(js.getString(js.has("XQMMC") ? "XQMMC" : "JYXDXQMC"));
 				

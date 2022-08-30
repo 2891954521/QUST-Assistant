@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="课表">
+    <PreferenceCategory
+        android:title="课表">
 
         <SwitchPreference
             android:key="key_show_all_lesson"
@@ -19,28 +20,29 @@
             android:summaryOff="不隐藏已结课程"  />
 
         <Preference
-            android:key="key_set_start_day"
+            android:key="key_start_day"
             android:title="设置开学时间" />
 
        <Preference
-            android:key="key_set_total_week"
+            android:key="key_total_week"
             android:title="设置总周数"/>
 
         <Preference
-            android:key="key_set_lesson_time"
+            android:key="key_time_table"
             android:title="设置时间表"/>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="杂项">
-
+    <PreferenceCategory
+        android:title="杂项">
+    
+        <Preference
+            android:key="key_entrance_time"
+            android:title="设置入学年份"/>
+        
         <SwitchPreference
             android:key="key_quick_display_drink_code"
             android:title="主页下拉显示饮水码" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="更新">
 
         <SwitchPreference
             android:key="key_auto_update"
@@ -56,13 +58,23 @@
             android:summaryOff="不接收开发版更新"
             android:title="接收开发版推送"/>
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="其他">
+
         <Preference
             android:key="key_update"
-            android:title="检查更新"/>
+            android:title="更新"/>
+
+        <Preference
+            android:key="key_about"
+            android:title="关于"/>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="调试">
+    <PreferenceCategory
+        android:title="调试">
 
         <SwitchPreference
             android:key="key_debug"

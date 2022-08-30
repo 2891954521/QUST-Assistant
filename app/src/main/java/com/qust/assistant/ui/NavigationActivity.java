@@ -6,10 +6,10 @@ import android.text.TextUtils;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import com.qust.assistant.R;
-import com.qust.assistant.util.MingDeUtil;
-
 import androidx.annotation.Nullable;
+
+import com.qust.assistant.R;
+import com.qust.assistant.util.QustUtil.MingDeUtil;
 
 public class NavigationActivity extends BaseAnimActivity{
 	

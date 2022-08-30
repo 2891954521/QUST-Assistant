@@ -18,8 +18,8 @@ public class DialogUtil{
 	}
 	
 	// 基础ListDialog 仅取消
-	public static MaterialDialog.Builder getListDialog(Context context,String title,String[] items,MaterialDialog.ListCallback callback){
-		return new MaterialDialog.Builder(context).title(title).items(items).itemsCallback(callback).positiveText(R.string.text_cancel).onPositive((dialog,which) -> dialog.dismiss());
+	public static MaterialDialog.Builder getListDialog(Context context, String title, String[] items, MaterialDialog.ListCallback callback){
+		return new MaterialDialog.Builder(context).title(title).items(items).itemsCallback(callback).positiveText(R.string.text_cancel).onPositive((dialog, which) -> dialog.dismiss());
 	}
 	
 }

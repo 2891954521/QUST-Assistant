@@ -1,8 +1,13 @@
-package com.qust.assistant.util;
+package com.qust.assistant.util.QustUtil;
 
 import android.os.Handler;
-import android.os.Message;
 import android.util.Base64;
+
+import androidx.annotation.Nullable;
+
+import com.qust.assistant.App;
+import com.qust.assistant.util.LogUtil;
+import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,8 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
-
-import androidx.annotation.Nullable;
 
 public class LoginUtil{
 	
@@ -56,14 +59,16 @@ public class LoginUtil{
 		return loginUtil;
 	}
 	
+	/**
+	 * 教务登录
+	 * @return 错误消息
+	 */
 	@Nullable
 	public String login(Handler handler, String name, String password){
 		try{
 			if(JSESSIONID != null){
 				
-				Message message = new Message();
-				message.obj = "正在检查登陆状态";
-				handler.sendMessage(message);
+				handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在检查登陆状态"));
 				
 				HttpURLConnection connection = WebUtil.get(
 						LoginUtil.HOST + "/jwglxt/xtgl/index_initMenu.html",
@@ -73,18 +78,14 @@ public class LoginUtil{
 				}
 			}
 			
-			Message message = new Message();
-			message.obj = "正在获取JSESSIONID";
-			handler.sendMessage(message);
+			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取JSESSIONID"));
 			
 			String[] param = getLoginParam();
 			if(param[0] == null || param[1] == null){
 				return "登陆失败！服务器异常！";
 			}
 			
-			message = new Message();
-			message.obj = "正在获取RSA公钥";
-			handler.sendMessage(message);
+			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取RSA公钥"));
 			
 			String key = getPublicKey(param[0]);
 			if(key == null){
@@ -96,9 +97,7 @@ public class LoginUtil{
 				return "登陆失败！RSA加密出错！";
 			}
 			
-			message = new Message();
-			message.obj = "正在尝试登陆";
-			handler.sendMessage(message);
+			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在尝试登陆"));
 			
 			HttpURLConnection connection = WebUtil.post(
 					LoginUtil.HOST + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
@@ -106,21 +105,24 @@ public class LoginUtil{
 					"csrftoken=" + param[1] + "&language=zh_CN&yhm=" + name + "&mm=" + URLEncoder.encode(rsaPassword,"utf-8")
 			);
 			
-			if(connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP || connection.getResponseCode() == HttpURLConnection.HTTP_OK){
-				String s = connection.getHeaderField("Set-Cookie");
-				Matcher matcher = JESSIONID_PATTERN.matcher(s);
-				if(matcher.find()){
-					JSESSIONID = matcher.group(1);
+			switch(connection.getResponseCode()){
+				case HttpURLConnection.HTTP_OK:
+					return "用户名或密码错误";
+					
+				case HttpURLConnection.HTTP_MOVED_PERM:
+				case HttpURLConnection.HTTP_MOVED_TEMP:
+				case 307:
+					Matcher matcher = JESSIONID_PATTERN.matcher(connection.getHeaderField("Set-Cookie"));
+					JSESSIONID = matcher.find() ? matcher.group(1) : param[0];
 					return null;
-				}else if((LoginUtil.HOST + "/jwglxt/xtgl/index_initMenu.html").equals(connection.getHeaderField("Location"))){
-					JSESSIONID = param[0];
-					return null;
-				}
+					
+				default:
+					return "登陆失败";
 			}
 		}catch(IOException e){
 			LogUtil.Log(e);
+			return "登陆失败!";
 		}
-		return "登陆失败!";
 	}
 	
 	private String[] getLoginParam(){
@@ -164,7 +166,7 @@ public class LoginUtil{
 					LoginUtil.HOST + "/jwglxt/xtgl/login_getPublicKey.html",
 					"JSESSIONID=" + JSESSIONID
 			);
-			if(str == null) return null;
+			if(str.length() == 0) return null;
 			return new JSONObject(str).getString("modulus");
 		}catch(IOException | JSONException e){
 			LogUtil.Log(e);

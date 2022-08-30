@@ -11,8 +11,8 @@ import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.LoginUtil;
 import com.qust.assistant.util.ParamUtil;
+import com.qust.assistant.util.QustUtil.LoginUtil;
 import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONArray;
@@ -59,6 +59,8 @@ public class GetMarkFragment extends BaseSchoolFragment{
 		
 		HashMap<String, Mark> markMap = new HashMap<>(10);
 		
+		String message = "查询成功";
+		
 		try{
 			String[] y = getYearAndTerm();
 			
@@ -103,31 +105,37 @@ public class GetMarkFragment extends BaseSchoolFragment{
 					String s = j.getString("xmblmc");
 					
 					if("总评".equals(s)){
-						if(mark.mark == 0){
+						if(mark.mark == 0 && j.has("xmcj")){
 							String cj = j.getString("xmcj");
 							mark.mark = ParamUtil.isFloat(cj) ? Float.parseFloat(cj) : 0f;
 						}
 					}else{
 						mark.item.add(s);
-						mark.itemMark.add(j.getString("xmcj"));
+						if(j.has("xmcj")){
+							mark.itemMark.add(j.getString("xmcj"));
+						}else{
+							mark.itemMark.add("");
+						}
 					}
 				}
 			}
-			
-			marks = markMap.values().toArray(new Mark[0]);
-			
-			saveData("Mark","mark", marks);
-			
-			activity.runOnUiThread(() -> {
-				dialog.dismiss();
-				toast("查询成功！");
-				adapter.notifyDataSetChanged();
-			});
-
 		}catch(IOException | JSONException e){
 			LogUtil.Log(e);
-			sendMessage(App.DISMISS_TOAST, "查询失败！");
+			message = "查询失败！";
 		}
+		
+		marks = markMap.values().toArray(new Mark[0]);
+		
+		try{
+			saveData("Mark","mark", marks);
+		}catch(IOException ignore){ }
+		
+		String finalMessage = message;
+		activity.runOnUiThread(() -> {
+			dialog.dismiss();
+			toast(finalMessage);
+			adapter.notifyDataSetChanged();
+		});
 	}
 	
 	@Override

@@ -3,19 +3,16 @@ package com.qust.assistant.ui;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.Toast;
-
-import com.qust.assistant.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import com.gyf.immersionbar.ImmersionBar;
+import com.qust.assistant.R;
 
 public class BaseActivity extends AppCompatActivity{
 
@@ -24,36 +21,23 @@ public class BaseActivity extends AppCompatActivity{
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		initStatusBar();
 		registerReceiver();
 	}
 	
-	protected void initStatusBar() {
-		
-		View decorView = getWindow().getDecorView();
-		
-		boolean isInMultiWindowMode = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isInMultiWindowMode();
-		
-		if(isInMultiWindowMode){
-			// 多窗口模式下不修改状态栏
-		}else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-		}else{
-			int systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-			
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-				int mode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-				if(mode == Configuration.UI_MODE_NIGHT_YES) {
-					systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-				} else if(mode == Configuration.UI_MODE_NIGHT_NO) {
-					systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-				}
-			}
-
-			decorView.setSystemUiVisibility(systemUiVisibility);
-			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-			getWindow().setStatusBarColor(Color.TRANSPARENT);
+	protected void initStatusBar(){
+		ImmersionBar immersionBar = ImmersionBar.with(this).transparentBar();
+		int mode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+		if(mode == Configuration.UI_MODE_NIGHT_YES){
+			// 夜间模式
+			immersionBar.statusBarDarkFont(false);
+			immersionBar.navigationBarDarkIcon(false);
+		} else if(mode == Configuration.UI_MODE_NIGHT_NO){
+			// 日间模式
+			immersionBar.statusBarDarkFont(true);
+			immersionBar.navigationBarDarkIcon(true);
 		}
+		immersionBar.init();
 	}
 	
 	// 初始化ToolBar并设置标题

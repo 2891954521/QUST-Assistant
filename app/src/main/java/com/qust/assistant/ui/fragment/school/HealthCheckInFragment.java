@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.qust.assistant.App;
@@ -34,9 +37,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class HealthCheckInFragment extends BaseFragment{
 	
@@ -94,7 +94,7 @@ public class HealthCheckInFragment extends BaseFragment{
 		
 		dialog = new MaterialDialog.Builder(activity).progress(true, 0).content("请稍候").build();
 		
-		cookie = SettingUtil.setting.getString("healthCheckInCookie", null);
+		cookie = SettingUtil.getString(SettingUtil.HEALTH_CHECK_COOKIE, null);
 		
 		nameText = findViewById(R.id.input_name);
 		passwordText = findViewById(R.id.input_password);
@@ -105,10 +105,10 @@ public class HealthCheckInFragment extends BaseFragment{
 		nsfyjzxgym = findViewById(R.id.health_check_nsfyjzxgym);
 		nzhychsjcsj = findViewById(R.id.health_check_nzhychsjcsj);
 		
-		nameText.getEditText().setText(SettingUtil.setting.getString("healthCheckInUser", ""));
-		passwordText.getEditText().setText(SettingUtil.setting.getString("healthCheckInPassword", ""));
+		nameText.getEditText().setText(SettingUtil.getString(SettingUtil.HEALTH_CHECK_USER, ""));
+		passwordText.getEditText().setText(SettingUtil.getString(SettingUtil.HEALTH_CHECK_PASSWORD, ""));
 		
-		nsfyjzxgym.setText(SettingUtil.setting.getString("healthCheckInNsfyjzxgym", "已接种第3针（加强针）"));
+		nsfyjzxgym.setText(SettingUtil.getString(SettingUtil.HEALTH_CHECK_NSFYJZXGYM, "已接种第3针（加强针）"));
 		nzhychsjcsj.setText(DateUtil.YMD.format(new Date()));
 		
 		nsfyjzxgym.setOnClickListener(v -> DialogUtil.getListDialog(activity, "是否已接种新冠疫苗", new String[]{
@@ -181,8 +181,6 @@ public class HealthCheckInFragment extends BaseFragment{
 						String rsaPwd = getRsaPassword(password, publicKey);
 						
 						cookie = login(cookie, execution, user, rsaPwd);
-					}else{
-						SettingUtil.setting.edit().putString("healthCheckInCookie", cookie).apply();
 					}
 					
 					if(cookie == null){
@@ -190,8 +188,10 @@ public class HealthCheckInFragment extends BaseFragment{
 						return;
 					}
 					
+					SettingUtil.edit().putString(SettingUtil.HEALTH_CHECK_COOKIE, cookie).apply();
+					
 					if(!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
-						SettingUtil.setting.edit().putString("healthCheckInUser", user).putString("healthCheckInPassword", password).apply();
+						SettingUtil.edit().putString(SettingUtil.HEALTH_CHECK_USER, user).putString(SettingUtil.HEALTH_CHECK_PASSWORD, password).apply();
 					}
 					
 					String form = getForm(cookie, user);

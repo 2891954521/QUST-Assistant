@@ -3,16 +3,22 @@ package com.qust.assistant.ui.fragment;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
+import androidx.lifecycle.Observer;
+
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonData;
 import com.qust.assistant.lesson.LessonGroup;
 import com.qust.assistant.lesson.LessonView;
+import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.ui.MainActivity;
 
 import java.util.Calendar;
 
 public class DailyLessonFragment extends BaseFragment{
+	
+	private LessonTableViewModel lessonTableViewModel;
+	
+	private Observer<Boolean> observer = needUpdateLesson -> updateLesson();
 	
 	public DailyLessonFragment(MainActivity activity){
 		super(activity);
@@ -21,19 +27,25 @@ public class DailyLessonFragment extends BaseFragment{
 	@Override
 	protected void initLayout(LayoutInflater inflater){
 		super.initLayout(inflater);
-		updateLesson(inflater);
+		lessonTableViewModel = LessonTableViewModel.getInstance(activity);
+		lessonTableViewModel.getUpdateLiveData().observe(activity, observer);
 	}
 	
-	public void updateLesson(LayoutInflater inflater){
+	/**
+	 * 更新课程UI
+	 */
+	public void updateLesson(){
+		LayoutInflater inflater = LayoutInflater.from(activity);
+		
 		layout.removeAllViews();
 		
-		LessonGroup[] lessonGroups = LessonData.getInstance().getLessonGroups()[LessonData.getInstance().getWeek()];
+		LessonGroup[] lessonGroups = LessonTableViewModel.getLessonGroups()[LessonTableViewModel.getDayOfWeek()];
 		
 		Calendar c = Calendar.getInstance();
 		
 		int minute = (c.get(Calendar.HOUR_OF_DAY) - 8) * 60 + c.get(Calendar.MINUTE);
 		
-		int currentWeek = LessonData.getInstance().getCurrentWeek();
+		int currentWeek = LessonTableViewModel.getCurrentWeek();
 		
 		String[] time = {"上午课程", null, null, null, "下午课程", null, null, null, "晚上课程", null};
 		
@@ -50,7 +62,7 @@ public class DailyLessonFragment extends BaseFragment{
 		
 		for(int i = 0; i < time.length; i++){
 			
-			minute -= LessonData.LessonTime[i];
+			minute -= LessonTableViewModel.getLessonTime()[i];
 			
 			if(pass == 0){
 				// 当前位置未被跳过
@@ -106,5 +118,11 @@ public class DailyLessonFragment extends BaseFragment{
 	@Override
 	protected String getName(){
 		return "当日课表";
+	}
+	
+	@Override
+	protected void finalize(){
+		System.out.println("在对象变成垃圾被gc收回前执行的操作。");
+		lessonTableViewModel.getUpdateLiveData().removeObserver(observer);
 	}
 }

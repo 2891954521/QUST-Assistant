@@ -12,17 +12,17 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.viewpager.widget.ViewPager;
+
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonData;
 import com.qust.assistant.lesson.LessonGroup;
+import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.DialogRoundTop;
 import com.qust.assistant.widget.LessonTable;
 import com.qust.assistant.widget.LessonTime;
-
-import androidx.viewpager.widget.ViewPager;
 
 public class TermLessonFragment extends BaseFragment{
 	// 周数显示
@@ -68,7 +68,7 @@ public class TermLessonFragment extends BaseFragment{
 		weekText = findViewById(R.id.layout_timetable_week);
 		
 		lessonTable = findViewById(R.id.fragment_timetable_pager);
-		lessonTable.initAdapter(null);
+		lessonTable.initAdapter();
 		
 		lessonTable.setLessonClickListener((week, count, lesson) -> {
 			if(!isInitLessonInfo){
@@ -90,11 +90,11 @@ public class TermLessonFragment extends BaseFragment{
 			public void onPageScrollStateChanged(int state){ }
 		});
 		
-		lessonTable.setCurrentItem(LessonData.getInstance().getCurrentWeek() - 1);
+		lessonTable.setCurrentItem(LessonTableViewModel.getCurrentWeek() - 1);
 		
 		weekText.setText("第 " + (lessonTable.getCurrentItem() + 1) + " 周");
 		
-		findViewById(R.id.fragment_term_lesson_current).setOnClickListener(v -> lessonTable.setCurrentItem(LessonData.getInstance().getCurrentWeek() - 1));
+		findViewById(R.id.fragment_term_lesson_current).setOnClickListener(v -> lessonTable.setCurrentItem(LessonTableViewModel.getCurrentWeek() - 1));
 		
 	}
 	
@@ -131,7 +131,7 @@ public class TermLessonFragment extends BaseFragment{
 			}
 			
 			int len = Integer.parseInt(lessonLen.getText().toString());
-			if(LessonData.getInstance().isConflict(week, count, editLesson, len, lessonTime.getBooleans())){
+			if(LessonTableViewModel.isConflict(LessonTableViewModel.getLessonGroups(), week, count, editLesson, len, lessonTime.getBooleans())){
 				toast("课程时间冲突！");
 				return;
 			}
@@ -167,7 +167,7 @@ public class TermLessonFragment extends BaseFragment{
 		
 		lessonInfo.findViewById(R.id.layout_lesson_len_add).setOnClickListener(v -> {
 			int n = Integer.parseInt(lessonLen.getText().toString()) + 1;
-			if(n <= LessonData.getInstance().getLessonGroups()[0].length){
+			if(n <= LessonTableViewModel.getLessonGroups()[0].length){
 				lessonLen.setText(String.valueOf(n));
 			}
 		});
@@ -217,16 +217,16 @@ public class TermLessonFragment extends BaseFragment{
 		week = _week - 1;
 		count = _count - 1;
 		
-		LessonGroup l = LessonData.getInstance().getLessonGroups()[week][count];
+		LessonGroup l = LessonTableViewModel.getLessonGroups()[week][count];
 		
 		if(l == null){
 			l = new LessonGroup(_week, _count);
-			LessonData.getInstance().getLessonGroups()[week][count] = l;
+			LessonTableViewModel.getLessonGroups()[week][count] = l;
 		}
 		
 		if(lesson == null){
 			editLesson = new Lesson();
-			editLesson.week = new boolean[LessonData.getInstance().getTotalWeek()];
+			editLesson.week = new boolean[LessonTableViewModel.getTotalWeek()];
 			l.addLesson(editLesson);
 		}else{
 			editLesson = lesson;
@@ -246,12 +246,15 @@ public class TermLessonFragment extends BaseFragment{
 		lessonInfo.startAnimation(animIn);
 	}
 	
-	// 更新总课表
+	/**
+	 * TODO: 完善更新操作
+	 * 更新并保存总课表
+ 	 */
 	public void updateLesson(){
-		LessonData.getInstance().saveLessonData();
+		LessonTableViewModel.saveLessonData(activity, LessonTableViewModel.getLessonGroups());
 		int currentWeek = lessonTable.getCurrentItem();
 		weekText.setText("第 " + (currentWeek + 1) + " 周");
-		lessonTable.initAdapter(null);
+		lessonTable.initAdapter();
 		lessonTable.setCurrentItem(currentWeek);
 	}
 	

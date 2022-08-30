@@ -1,4 +1,11 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.application'
+
+static def getCurrentTime(){
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
+    return sdf.format(new Date())
+}
 
 android {
     compileSdkVersion 30
@@ -8,7 +15,7 @@ android {
         applicationId "com.qust.assistant"
         minSdkVersion 19
         targetSdkVersion 30
-
+        buildConfigField("String", "PACKAGE_TIME", "\"" + getCurrentTime() + "\"")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -27,20 +34,25 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-
     implementation 'com.google.android.material:material:1.4.0'
 
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.navigation:navigation-ui:2.3.5'
+    implementation 'androidx.navigation:navigation-fragment:2.3.5'
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
 
-    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
-
-    implementation 'androidx.navigation:navigation-fragment:2.3.5'
-    implementation 'androidx.navigation:navigation-ui:2.3.5'
-    implementation 'androidx.preference:preference:1.1.1'
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
-
+    // 生成条形码
     implementation 'com.google.zxing:core:3.3.1'
+
+    // 动画库
+    implementation "com.airbnb.android:lottie:5.2.0"
+
+    // 状态栏适配
+    implementation 'com.geyifeng.immersionbar:immersionbar:3.2.2'
 
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'

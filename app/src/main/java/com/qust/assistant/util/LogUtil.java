@@ -17,7 +17,7 @@ public class LogUtil{
 	
 	public static void init(Context context){
 		
-		DEBUG = SettingUtil.setting.getBoolean("key_debug", false);
+		DEBUG = (boolean)SettingUtil.get("key_debug", false);
 		
 		File f = context.getExternalFilesDir("debug");
 		if(f == null){

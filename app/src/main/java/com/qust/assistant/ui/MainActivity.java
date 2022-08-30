@@ -1,38 +1,36 @@
 package com.qust.assistant.ui;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.customview.widget.ViewDragHelper;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.billy.android.swipe.SmartSwipe;
-import com.billy.android.swipe.SwipeConsumer;
 import com.billy.android.swipe.consumer.SpaceConsumer;
-import com.qust.assistant.App;
 import com.qust.assistant.R;
+import com.qust.assistant.ui.app.GuideActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.ui.fragment.HomeFragment;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.UpdateUtil;
-import com.qust.assistant.widget.swipe.MainDrawer;
 
+import java.lang.reflect.Field;
 import java.util.Stack;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 public class MainActivity extends BaseActivity{
 	
@@ -40,7 +38,7 @@ public class MainActivity extends BaseActivity{
 	
 	private Stack<BaseFragment> fragments;
 	
-	private MainDrawer drawer;
+	private DrawerLayout drawer;
 	
 	private FrameLayout layout;
 	
@@ -54,9 +52,14 @@ public class MainActivity extends BaseActivity{
 	protected void onCreate(Bundle paramBundle){
 		super.onCreate(paramBundle);
 		
-		setContentView(R.layout.activity_main);
+		// 第一次使用跳转到引导页
+		if(SettingUtil.getBoolean(SettingUtil.IS_FIRST_USE, true)){
+			startActivity(new Intent(this, GuideActivity.class));
+			finish();
+			return;
+		}
 		
-		initStatusBar();
+		setContentView(R.layout.activity_main);
 		
 		fragments = new Stack<>();
 		
@@ -70,26 +73,45 @@ public class MainActivity extends BaseActivity{
 		
 		if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
 				|| ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
-			ActivityCompat.requestPermissions(this,new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
+			ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
 		}
 		
+		// 检查更新
 		UpdateUtil.checkUpdate(this);
 	}
 	
+	/**
+	 * 初始化侧滑菜单
+	 */
 	private void initDrawer(){
 		
-		drawer = SmartSwipe.wrap(this).addConsumer(new MainDrawer());
+		drawer = findViewById(R.id.drawerLayout);
 		
-		DisplayMetrics displayMetrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-		
-		View drawerView = LayoutInflater.from(this).inflate(R.layout.nav_main, drawer.getWrapper(), false);
-		
-		drawerView.setLayoutParams(new ViewGroup.LayoutParams(displayMetrics.widthPixels / 4 * 3, ViewGroup.LayoutParams.MATCH_PARENT));
-		
-		drawer.setHorizontalDrawerView(drawerView).setScrimColor(0x2F000000).disableRight();
-		
-		SmartSwipe.wrap(drawerView.findViewById(R.id.nav_main_menu)).addConsumer(new SpaceConsumer()).enableVertical();
+		try{
+			Field leftDraggerField = drawer.getClass().getDeclaredField("mLeftDragger");
+			leftDraggerField.setAccessible(true);
+			ViewDragHelper leftDragger = (ViewDragHelper)leftDraggerField.get(drawer);
+
+			// 找到 edgeSizeField 并设置 Accessible 为true
+			Field edgeSizeField = leftDragger.getClass().getDeclaredField("mEdgeSize");
+			edgeSizeField.setAccessible(true);
+			int edgeSize = edgeSizeField.getInt(leftDragger);
+
+			// 设置新的边缘大小
+			Point displaySize = new Point();
+			getWindowManager().getDefaultDisplay().getSize(displaySize);
+			edgeSizeField.setInt(leftDragger, Math.max(edgeSize, displaySize.x));
+		}catch(NoSuchFieldException | IllegalArgumentException | IllegalAccessException e){
+			e.printStackTrace();
+		}
+
+//		DisplayMetrics displayMetrics = new DisplayMetrics();
+//		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//
+//		findViewById(R.id.nav_main).setLayoutParams(new DrawerLayout.LayoutParams(displayMetrics.widthPixels / 4 * 3, DrawerLayout.LayoutParams.MATCH_PARENT));
+
+		// 侧滑菜单里垂直滑动弹性效果
+		SmartSwipe.wrap(findViewById(R.id.nav_main_menu)).addConsumer(new SpaceConsumer()).enableVertical();
 	}
 	
 	private void initAnim(){
@@ -99,8 +121,7 @@ public class MainActivity extends BaseActivity{
 			@Override
 			public void onAnimationEnd(Animation param1Animation){
 				isFading = false;
-				drawer.enableRight();
-				drawer.disableLeft();
+				drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
 			}
 			
 			@Override
@@ -113,7 +134,7 @@ public class MainActivity extends BaseActivity{
 		animOut = AnimationUtils.loadAnimation(this, R.anim.anim_rigth_out);
 		animOut.setAnimationListener(new Animation.AnimationListener(){
 			@Override
-			public void onAnimationEnd(Animation param1Animation){
+			public void onAnimationEnd(Animation paramAnimation){
 				layout.removeView(fragments.pop().getView());
 				
 				fragments.peek().getView().setFocusable(true);
@@ -122,8 +143,7 @@ public class MainActivity extends BaseActivity{
 				if(fragments.size() > 1){
 					fragments.get(fragments.size() - 2).getView().setVisibility(View.VISIBLE);
 				}else{
-					drawer.enableLeft();
-					drawer.disableRight();
+					drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
 				}
 				
 				isFading = false;
@@ -136,14 +156,14 @@ public class MainActivity extends BaseActivity{
 			public void onAnimationStart(Animation param1Animation){}
 		});
 		
-		animFadeOut = AnimationUtils.loadAnimation((Context)this, R.anim.anim_fade_out);
+		animFadeOut = AnimationUtils.loadAnimation(this, R.anim.anim_fade_out);
 	}
 	
 	private void initHome(){
 		BaseFragment home;
 		
 		try{
-			Class<?> object = Class.forName(SettingUtil.setting.getString("defaultHome", HomeFragment.class.getName()));
+			Class<?> object = Class.forName(SettingUtil.getString(SettingUtil.HOME_PAGE, HomeFragment.class.getName()));
 			if(BaseFragment.class.isAssignableFrom(object)){
 				home = ((BaseFragment)object.getConstructor(MainActivity.class).newInstance(this)).init(true);
 			}else{
@@ -167,7 +187,7 @@ public class MainActivity extends BaseActivity{
 			a.getView().setFocusable(false);
 			a.getView().setClickable(false);
 			
-			drawer.close();
+			drawer.closeDrawer(GravityCompat.START);
 
 			BaseFragment b = ((BaseFragment)newFragment.getConstructor(MainActivity.class).newInstance(this)).init(false);
 			
@@ -192,8 +212,8 @@ public class MainActivity extends BaseActivity{
 	public void onBackPressed(){
 		if(isFading){
 			// Do nothing
-		}else if(drawer.isOpened()){
-			drawer.close(true);
+		}else if(drawer.isDrawerOpen(GravityCompat.START)){
+			drawer.closeDrawer(GravityCompat.START);
 		}else if(fragments.peek().onBackPressed()){
 			if(fragments.size() == 1){
 				super.onBackPressed();
@@ -203,20 +223,13 @@ public class MainActivity extends BaseActivity{
 		}
 	}
 	
-	@Override
-	protected void registerReceiver(){
-		registerReceiver(new BroadcastReceiver(){
-			@Override
-			public void onReceive(Context context, Intent intent){
-				if(intent.getAction() == null) return;
-				for(BaseFragment fragment : fragments) fragment.onReceive(intent.getAction());
-			}
-		}, App.APP_UPDATE_LESSON_TABLE);
+	public void openMenu(){
+		drawer.openDrawer(GravityCompat.START);
 	}
 	
-	public void openMenu(){ drawer.open(true, SwipeConsumer.DIRECTION_LEFT); }
-	
-	public void closeMenu(){ drawer.close(true); }
+	public void closeMenu(){
+		drawer.closeDrawer(GravityCompat.START);
+	}
 	
 	@Override
 	public void onResume(){

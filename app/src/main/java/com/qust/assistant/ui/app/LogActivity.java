@@ -1,4 +1,4 @@
-package com.qust.assistant.ui;
+package com.qust.assistant.ui.app;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,18 +10,17 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import com.billy.android.swipe.SmartSwipe;
-import com.billy.android.swipe.consumer.SpaceConsumer;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.qust.assistant.R;
+import com.qust.assistant.ui.BaseAnimActivity;
 import com.qust.assistant.util.FileUtil;
 import com.qust.assistant.util.LogUtil;
 
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class LogActivity extends BaseAnimActivity{
     
@@ -31,8 +30,6 @@ public class LogActivity extends BaseAnimActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
-    
-        initStatusBar();
         
         String s = getIntent().getStringExtra("file");
         if(s != null){
@@ -48,8 +45,6 @@ public class LogActivity extends BaseAnimActivity{
             text.setMovementMethod(LinkMovementMethod.getInstance());
             
             initToolBar(f.getName());
-            
-            SmartSwipe.wrap(text).addConsumer(new SpaceConsumer()).enableVertical();
         }
         
     }

@@ -1,4 +1,4 @@
-package com.qust.assistant.util;
+package com.qust.assistant.util.QustUtil;
 
 public class MingDeUtil{
 	

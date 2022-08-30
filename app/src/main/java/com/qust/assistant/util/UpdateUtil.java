@@ -3,13 +3,14 @@ package com.qust.assistant.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 
+import androidx.annotation.Nullable;
+
 import com.qust.assistant.App;
-import com.qust.assistant.ui.UpdateActivity;
+import com.qust.assistant.ui.app.UpdateActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,86 +19,97 @@ import java.io.IOException;
 
 public class UpdateUtil{
 	
+	public static final String NAVIGATION_PAGE_URL = "http://139.224.16.208/guide.json";
+	
 	public static void checkUpdate(final Activity activity){
 		
-		SharedPreferences setting = SettingUtil.setting;
+		if(!(boolean)SettingUtil.get(SettingUtil.KEY_AUTO_UPDATE, true)) return;
 		
-		if(!setting.getBoolean("key_auto_update", true)) return;
-		
-		boolean isDev = setting.getBoolean("key_update_dev", false);
+		boolean isDev = (boolean)SettingUtil.get(SettingUtil.KEY_UPDATE_DEV, false);
 		
 		long frequency = isDev ? 1000 * 60 * 60 * 24 * 1 : 1000 * 60 * 60 * 24 * 3;
 		
 		long current = System.currentTimeMillis();
 		
-		if(current - setting.getLong("last_update_time", 0L) < frequency) return;
+		if(current - (long)SettingUtil.get(SettingUtil.LAST_UPDATE_TIME, 0L) < frequency) return;
 		
-		setting.edit().putLong("last_update_time", current).apply();
+		SettingUtil.edit().putLong("last_update_time", current).apply();
 		
 		new AsyncTask<Void, Void, JSONObject>(){
 			
 			@Override
 			protected JSONObject doInBackground(Void... voids){
-				try{
-					JSONObject json = UpdateUtil.getUpdateInfo(isDev);
-					JSONObject data = json.getJSONObject("data");
-					if(json.getInt("code") == 200){
-						if(UpdateUtil.checkVersion(activity, data.getInt("version"), isDev)) return data;
-					}
-				}catch(JSONException ignored){ }
-				return null;
+				return checkVersion(activity, isDev);
 			}
 			
 			@Override
-			protected void onPostExecute(JSONObject json){
-				if(json == null) return;
+			protected void onPostExecute(JSONObject data){
+				if(data == null) return;
 				try{
 					DialogUtil.getBaseDialog(activity).title("更新")
-							.content("检查到新版本，是否更新？\n" + json.getString("message"))
-							.onPositive((dialog, which) -> activity.startActivity(new Intent(activity, UpdateActivity.class))).show();
+							.content("检查到新版本，是否更新？\n" + data.getString("message"))
+							.onPositive((dialog, which) -> activity.startActivity(new Intent(activity, UpdateActivity.class)))
+							.show();
 				}catch(JSONException ignored){ }
 			}
 		}.execute();
 	}
 	
-	public static JSONObject getUpdateInfo(boolean isDev){
+	/**
+	 * 检查更新
+	 * @param isDev 是否检查开发版更新
+	 */
+	@Nullable
+	public static JSONObject checkVersion(Context context, boolean isDev){
 		try{
-			String response = WebUtil.doGet("http://139.224.16.208/guide.json", null);
-			String url = "http://139.224.16.208/cloud/apk/getUpdateInfo.php";
-			
-			if(response != null){
-				JSONObject js = new JSONObject(response);
-				if(isDev){
-					if(js.has("getDevInfo")) url = js.getString("getDevInfo");
-				}else{
-					if(js.has("getUpdateInfo")) url = js.getString("getUpdateInfo");
-				}
+			String response = WebUtil.doGet(NAVIGATION_PAGE_URL, null);
+			JSONObject json;
+			if(response.length() > 0){
+				json = new JSONObject(response);
+			}else{
+				return null;
 			}
 			
-			response = WebUtil.doGet(url, null);
-			if(response != null){
-				return new JSONObject(response);
+			if(isDev){
+				JSONObject data = checkVersion(App.DEV_VERSION, json.getString("getDevInfo"));
+				if(data != null) return data;
 			}
+			
+			int versionCode;
+			
+			try{
+				PackageInfo pkg = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+				versionCode = pkg.versionCode;
+			}catch(PackageManager.NameNotFoundException ignored){
+				return null;
+			}
+			
+			return checkVersion(versionCode, json.getString("getUpdateInfo"));
+			
 		}catch(IOException | JSONException e){
 			LogUtil.Log(e);
+			return null;
 		}
-		return new JSONObject();
 	}
 	
-	public static boolean checkVersion(Context context, int newVersion, boolean isDev){
-		
-		if(isDev){
-			return App.DEV_VERSION < newVersion;
+	/**
+	 * 检查版本更新
+	 * @return 版本信息，没有新版本时返还null
+	 */
+	@Nullable
+	public static JSONObject checkVersion(int version, String url) throws JSONException, IOException{
+		String response = WebUtil.doGet(url, null);
+		if(response.length() == 0){
+			return null;
 		}
 		
-		int versionCode = -1;
-		
-		try{
-			PackageInfo pkg = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-			versionCode = pkg.versionCode;
-		}catch(PackageManager.NameNotFoundException ignored){
+		JSONObject json = new JSONObject(response);
+		if(json.has("code") && json.getInt("code") == 200){
+			JSONObject data = json.getJSONObject("data");
+			return data.getInt("version") > version ? data : null;
+		}else{
+			return null;
 		}
-		
-		return versionCode != -1 && newVersion > versionCode;
 	}
+	
 }

@@ -33,7 +33,8 @@
         android:layout_marginEnd="@dimen/activity_margin"
         android:layout_marginBottom="@dimen/float_button_margin"
         android:src="@drawable/ic_current"
-        app:backgroundTint="@color/colorPrimary"
+        app:tint="@color/colorLight"
+        app:backgroundTint="@color/colorPrimaryDark"
         app:elevation="4dp"
         app:pressedTranslationZ="8dp" />
 

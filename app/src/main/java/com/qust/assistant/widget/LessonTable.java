@@ -19,10 +19,15 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonData;
 import com.qust.assistant.lesson.LessonGroup;
+import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.ParamUtil;
@@ -31,11 +36,6 @@ import com.qust.assistant.util.SettingUtil;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 public class LessonTable extends ViewPager{
 	
@@ -121,14 +121,14 @@ public class LessonTable extends ViewPager{
 		
 		dateHeight = 40 + textHeight * 2;
 		
-		showAllLesson = SettingUtil.setting.getBoolean("key_show_all_lesson", false);
-		hideFinishLesson = SettingUtil.setting.getBoolean("key_hide_finish_lesson", false);
+		showAllLesson = SettingUtil.getBoolean(SettingUtil.KEY_SHOW_ALL_LESSON, false);
+		hideFinishLesson = SettingUtil.getBoolean(SettingUtil.KEY_HIDE_FINISH_LESSON, false);
 		
 		longPressTime = ViewConfiguration.getLongPressTimeout();
 		
 		touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		
-		totalWeek = LessonData.getInstance().getTotalWeek();
+		totalWeek = LessonTableViewModel.getTotalWeek();
 		
 		start = Calendar.getInstance();
 		
@@ -155,11 +155,24 @@ public class LessonTable extends ViewPager{
 		return false;
 	}
 	
-	public void initAdapter(LessonGroup[][] lessonGroup){
-		totalWeek = LessonData.getInstance().getTotalWeek();
-		lessonGroups = lessonGroup == null ? LessonData.getInstance().getLessonGroups() : lessonGroup;
+	public void initAdapter(){
+		initAdapter(LessonTableViewModel.getLessonGroups(), LessonTableViewModel.getTotalWeek(), LessonTableViewModel.getStartDay());
+	}
+	
+	public void initAdapter(@NonNull LessonGroup[][] lessonGroup){
+		initAdapter(lessonGroup, LessonTableViewModel.getTotalWeek(), LessonTableViewModel.getStartDay());
+	}
+	
+	public void initAdapter(LessonGroup[][] lessonGroup, int _totalWeek, String startDay){
+		totalWeek = _totalWeek;
+		lessonGroups = lessonGroup == null ? LessonTableViewModel.getLessonGroups() : lessonGroup;
+		try{
+			Date date = DateUtil.YMD.parse(startDay);
+			if(date != null) start.setTime(date);
+		}catch(ParseException ignored){ }
 		setAdapter(new LessonTableAdapter());
 	}
+	
 	
 	public void clearMenu(){
 		if(isMenuShowing){
@@ -172,10 +185,7 @@ public class LessonTable extends ViewPager{
 	private class LessonTableAdapter extends PagerAdapter{
 		
 		public LessonTableAdapter(){
-			try{
-				Date date = DateUtil.YMD.parse(LessonData.getInstance().getStartDay());
-				if(date != null) start.setTime(date);
-			}catch(ParseException ignored){ }
+
 		}
 		
 		@NonNull
@@ -430,11 +440,12 @@ public class LessonTable extends ViewPager{
 		
 		private void drawTime(Canvas canvas){
 			paintT.setColor(Color.GRAY);
-			int x = (int)((timeWidth - paintT.measureText(LessonData.LessonTimeText[0][0])) / 2);
+			String[][] timeText = LessonTableViewModel.getLessonTimeText();
+			int x = (int)((timeWidth - paintT.measureText(timeText[0][0])) / 2);
 			int y = dateHeight + baseLine + (height - textHeight * 2) / 2;
 			for(int i = 0; i < lessonGroups[0].length; i++){
-				canvas.drawText(LessonData.LessonTimeText[0][i], x, y, paintT);
-				canvas.drawText(LessonData.LessonTimeText[1][i], x, y + textHeight, paintT);
+				canvas.drawText(timeText[0][i], x, y, paintT);
+				canvas.drawText(timeText[1][i], x, y + textHeight, paintT);
 				y += height;
 			}
 		}
@@ -510,7 +521,7 @@ public class LessonTable extends ViewPager{
 			
 			paste.setOnClickListener(v -> {
 				if(copyLesson == null) return;
-				if(LessonData.getInstance().isConflict(week, count, copyLesson, copyLesson.len, copyLesson.week)){
+				if(LessonTableViewModel.isConflict(lessonGroups, week, count, copyLesson, copyLesson.len, copyLesson.week)){
 					Toast.makeText(getContext(), "课程时间冲突！", Toast.LENGTH_SHORT).show();
 				}else{
 					if(lessonGroups[week][count] == null){

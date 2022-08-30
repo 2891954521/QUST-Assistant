@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="版本">
+
+        <Preference
+            android:key="app_version"
+            android:title="应用版本"
+            android:layout="@layout/item_preference"/>
+
+        <Preference
+            android:key="app_build_time"
+            android:title="构建时间"
+            android:layout="@layout/item_preference"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="隐私与协议">
+
+        <Preference
+            android:key="user"
+            android:title="用户协议与隐私政策"
+            android:layout="@layout/item_preference"/>
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="开放源代码许可">
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

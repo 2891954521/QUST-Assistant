@@ -7,6 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
+import androidx.appcompat.widget.Toolbar;
+
 import com.billy.android.swipe.SmartSwipe;
 import com.billy.android.swipe.SmartSwipeWrapper;
 import com.billy.android.swipe.SwipeConsumer;
@@ -16,46 +21,46 @@ import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.layout.BaseLayout;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
-import androidx.appcompat.widget.Toolbar;
-
 public abstract class BaseFragment implements BaseLayout{
 	
 	protected MainActivity activity;
 	
-	protected ViewGroup rootView;
+	private ViewGroup rootView;
 	
 	protected ViewGroup layout;
 	
 	protected Toolbar toolbar;
 	
-	protected TranslucentSlidingConsumer consumer;
-	
 	public BaseFragment(MainActivity activity){
 		this.activity = activity;
 	}
 	
+	/**
+	 * 初始化基本界面
+	 * @param isRoot 是否为根界面，决定是否可以滑动返回
+	 * @return
+	 */
 	public BaseFragment init(boolean isRoot){
 		
 		LayoutInflater layoutInflater = LayoutInflater.from(activity);
 		
-		consumer = SmartSwipe.wrap(layoutInflater.inflate(R.layout.fragment_base, null))
-				.addConsumer(new TranslucentSlidingConsumer());
-		
 		if(!isRoot){
+			TranslucentSlidingConsumer consumer = SmartSwipe.wrap(layoutInflater.inflate(R.layout.fragment_base, null))
+					.addConsumer(new TranslucentSlidingConsumer());
+			
 			consumer.enableLeft();
+			
+			consumer.addListener(new SimpleSwipeListener(){
+				@Override
+				public void onSwipeOpened(SmartSwipeWrapper wrapper, SwipeConsumer consumer, int direction) {
+					activity.onBackPressed();
+				}
+			});
+			
+			rootView = consumer.getWrapper();
+		}else{
+			rootView = (ViewGroup)layoutInflater.inflate(R.layout.fragment_base, null);
 		}
-		
-		consumer.addListener(new SimpleSwipeListener(){
-			@Override
-			public void onSwipeOpened(SmartSwipeWrapper wrapper, SwipeConsumer consumer, int direction) {
-				activity.onBackPressed();
-			}
-		});
-		
-		rootView = consumer.getWrapper();
 		
 		toolbar = rootView.findViewById(R.id.toolbar);
 		

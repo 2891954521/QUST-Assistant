@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/colorBackground"
+	android:fitsSystemWindows="true">
+	
+	<LinearLayout
+		android:id="@+id/linearLayout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+	
+		<androidx.appcompat.widget.Toolbar
+			android:id="@id/toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?actionBarSize"
+			android:background="@color/colorLight"
+			app:titleTextColor="@color/colorPrimaryText"
+			app:title="欢迎使用">
+			
+			<TextView
+				android:id="@+id/skip"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center|end"
+				android:padding="@dimen/activity_margin"
+				android:text="跳过"
+				android:textSize="@dimen/text_small" />
+		
+		</androidx.appcompat.widget.Toolbar>
+		
+		<TextView
+			android:id="@+id/activity_log_message"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="@dimen/activity_margin"
+			android:textSize="@dimen/text_small"
+			android:textColor="@color/colorSecondaryText"
+			android:text="\t欢迎使用青科助手，我们需要一些信息以便使用软件完整功能"/>
+		
+		<com.google.android.material.textfield.TextInputLayout
+			style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+			android:id="@+id/input_name"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="@dimen/activity_margin"
+			android:layout_marginEnd="@dimen/activity_margin"
+			android:layout_marginBottom="@dimen/widget_margin"
+			android:hint="学号">
+			
+			<com.google.android.material.textfield.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="number"
+				android:textSize="@dimen/text_medium" />
+		
+		</com.google.android.material.textfield.TextInputLayout>
+		
+		<com.google.android.material.textfield.TextInputLayout
+			style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+			android:id="@+id/input_password"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="@dimen/activity_margin"
+			android:layout_marginEnd="@dimen/activity_margin"
+			android:layout_marginBottom="@dimen/widget_margin"
+			android:hint="教务系统密码">
+			
+			<com.google.android.material.textfield.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="textPassword"
+				android:textSize="16sp" />
+		
+		</com.google.android.material.textfield.TextInputLayout>
+
+<!--		<LinearLayout-->
+<!--			android:layout_width="match_parent"-->
+<!--			android:layout_height="100dp"-->
+<!--			android:orientation="horizontal"-->
+<!--			android:layout_marginStart="@dimen/activity_margin"-->
+<!--			android:layout_marginEnd="@dimen/activity_margin"-->
+<!--			android:gravity="start|center">-->
+<!--			-->
+<!--			<TextView-->
+<!--				style="@style/TextNormal"-->
+<!--				android:layout_width="wrap_content"-->
+<!--				android:layout_height="wrap_content"-->
+<!--				android:padding="@dimen/widget_margin"-->
+<!--				android:text="入学年份"/>-->
+<!--			-->
+<!--			<NumberPicker-->
+<!--				android:id="@+id/numberPicker"-->
+<!--				android:layout_width="wrap_content"-->
+<!--				android:layout_height="match_parent"-->
+<!--				android:descendantFocusability="blocksDescendants" />-->
+<!--			-->
+<!--			<TextView-->
+<!--				style="@style/TextNormal"-->
+<!--				android:layout_width="wrap_content"-->
+<!--				android:layout_height="wrap_content"-->
+<!--				android:padding="@dimen/widget_margin"-->
+<!--				android:text="年"/>-->
+<!--		-->
+<!--		</LinearLayout>-->
+
+		<Button
+			android:id="@+id/done"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="@dimen/activity_margin"
+			android:padding="@dimen/widget_margin"
+			android:text="确定" />
+		
+		</LinearLayout>
+		
+	<com.airbnb.lottie.LottieAnimationView
+		android:id="@+id/lottieView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@color/colorBackground"
+		android:layout_gravity="center"
+		android:visibility="visible"
+		app:lottie_autoPlay="true"
+		app:lottie_loop="false"
+		app:lottie_rawRes="@raw/welcome"
+		tools:visibility="gone"/>
+		
+</FrameLayout>
+	
+

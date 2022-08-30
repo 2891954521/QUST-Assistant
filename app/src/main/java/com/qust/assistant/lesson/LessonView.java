@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.qust.assistant.R;
+import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.widget.BackgroundLesson;
 
@@ -21,7 +22,7 @@ public class LessonView{
 		view = LayoutInflater.from(context).inflate(R.layout.item_lesson, null);
 		
 		// 设置课程时间文本
-		((TextView)view.findViewById(R.id.item_lesson_time)).setText(LessonData.LessonTimeText[0][count] + "\n" + LessonData.LessonTimeText[1][count + lesson.len - 1]);
+		((TextView)view.findViewById(R.id.item_lesson_time)).setText(LessonTableViewModel.getLessonTimeText()[0][count] + "\n" + LessonTableViewModel.getLessonTimeText()[1][count + lesson.len - 1]);
 		
 		TextView n = view.findViewById(R.id.item_lesson_name);
 		

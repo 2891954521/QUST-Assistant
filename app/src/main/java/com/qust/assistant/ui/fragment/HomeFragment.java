@@ -5,15 +5,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.qust.assistant.App;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.third.DrinkFragment;
 import com.qust.assistant.util.SettingUtil;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 public class HomeFragment extends BaseFragment{
 	
@@ -50,13 +49,13 @@ public class HomeFragment extends BaseFragment{
 			}
 		});
 		
-		if(SettingUtil.setting.getBoolean("key_quick_display_drink_code", false)){
-			layouts = new BaseFragment[]{ new DrinkFragment(activity), dailyLesson, termLesson, };
+		if((boolean)SettingUtil.get(SettingUtil.KEY_SHOW_DRINK_CODE, false)){
+			layouts = new BaseFragment[]{ new DrinkFragment(activity), dailyLesson, termLesson };
 			viewPager.setAdapter(new PagerAdapter());
 			viewPager.setCurrentItem(1, false);
 			current = 1;
 		}else{
-			layouts = new BaseFragment[]{ dailyLesson, termLesson, };
+			layouts = new BaseFragment[]{ dailyLesson, termLesson };
 			viewPager.setAdapter(new PagerAdapter());
 			current = 0;
 		}
@@ -71,23 +70,10 @@ public class HomeFragment extends BaseFragment{
 	@Override
 	public void onResume(){
 		if(dailyLesson.isCreated()){
-			dailyLesson.updateLesson(LayoutInflater.from(activity));
+			dailyLesson.updateLesson();
 		}
 		layouts[viewPager.getCurrentItem()].onResume();
 	}
-	
-	@Override
-	public void onReceive(String action){
-		if(App.APP_UPDATE_LESSON_TABLE.equals(action)){
-			if(dailyLesson.isCreated()){
-				dailyLesson.updateLesson(LayoutInflater.from(activity));
-			}
-			if(termLesson.isCreated()){
-				termLesson.updateLesson();
-			}
-		}
-	}
-	
 	
 	@Override
 	public boolean onBackPressed(){
