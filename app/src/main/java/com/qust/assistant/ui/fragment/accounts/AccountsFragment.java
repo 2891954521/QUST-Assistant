@@ -25,7 +25,6 @@ public class AccountsFragment extends BaseFragment{
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		super.initLayout(inflater);
 		
 		AccountsData.init(activity);
 		

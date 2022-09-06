@@ -1,4 +1,4 @@
-package com.qust.assistant.widget;
+package com.qust.assistant.widget.lesson;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -173,7 +173,6 @@ public class LessonTable extends ViewPager{
 		setAdapter(new LessonTableAdapter());
 	}
 	
-	
 	public void clearMenu(){
 		if(isMenuShowing){
 			menu.dismiss();
@@ -285,26 +284,27 @@ public class LessonTable extends ViewPager{
 					week = (int)((downX - timeWidth) / width);
 					
 					count = -1;
-					
-					for(int i = 0; i < lessonGroups[week].length; ){
-						int len = 1;
-						if(lessonGroups[week][i] != null){
-							lesson = lessonGroups[week][i].getCurrentLesson(showWeek);
-							if(lesson == null){
-								if(!showAllLesson){
-									continue;
-								}
+
+					int i = 0, len;
+					// 遍历这一天的所有课程
+					while(i < lessonGroups[week].length){
+						LessonGroup group = lessonGroups[week][i];
+						
+						if(group != null){
+							lesson = group.getCurrentLesson(showWeek);
+							
+							if(lesson == null && showAllLesson){
 								// 本周该时间无课但是其他周有课
-								lesson = lessonGroups[week][i].findLesson(showWeek, !hideFinishLesson);
-								if(lesson != null) len = lesson.len;
-							}else{
-								len = lesson.len;
+								lesson = group.findLesson(showWeek, !hideFinishLesson);
 							}
 						}else{
 							lesson = null;
 						}
-						y -= height * len;
-						if(y < 0){
+						
+						len = lesson == null ? 1 : lesson.len;
+						
+						if((y -= height * len) < 0){
+							// 确定是这一天的第几节课
 							count = i;
 							break;
 						}

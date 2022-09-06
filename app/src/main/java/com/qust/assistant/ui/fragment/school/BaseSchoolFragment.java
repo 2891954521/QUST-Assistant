@@ -1,6 +1,5 @@
 package com.qust.assistant.ui.fragment.school;
 
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -15,11 +14,11 @@ import com.billy.android.swipe.SmartSwipe;
 import com.billy.android.swipe.consumer.SpaceConsumer;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
+import com.qust.assistant.model.LoginViewModel;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.QustUtil.LessonUtil;
-import com.qust.assistant.util.QustUtil.LoginUtil;
 import com.qust.assistant.util.SettingUtil;
 
 import java.io.File;
@@ -33,10 +32,10 @@ import java.io.ObjectOutputStream;
 public abstract class BaseSchoolFragment extends BaseFragment{
 	
 	public static final String[] TERM_NAME = {
-			"大一 上","大一 下",
-			"大二 上","大二 下",
-			"大三 上","大三 下",
-			"大四 上","大四 下",
+			"大一 上学期","大一 下学期",
+			"大二 上学期","大二 下学期",
+			"大三 上学期","大三 下学期",
+			"大四 上学期","大四 下学期",
 	};
 	
 	protected String name, password;
@@ -44,7 +43,7 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	/**
 	 * 处理登陆的类
 	 */
-	protected LoginUtil loginUtil;
+	protected LoginViewModel loginViewModel;
 	
 	protected BaseAdapter adapter;
 	
@@ -82,7 +81,11 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	};
 	
 	public BaseSchoolFragment(MainActivity activity){
-		super(activity);
+		this(activity, false, true);
+	}
+	
+	public BaseSchoolFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
 		name = SettingUtil.getString(SettingUtil.SCHOOL_NAME, null);
 		password = SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, null);
 		entranceTime = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 2010);
@@ -90,9 +93,12 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		super.initLayout(inflater);
-		
-		loginUtil = LoginUtil.getInstance();
+		loginViewModel = LoginViewModel.getInstance(activity);
+		loginViewModel.getCookieLiveData().observe(this, cookie -> {
+			name = SettingUtil.getString(SettingUtil.SCHOOL_NAME, null);
+			password = SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, null);
+			entranceTime = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 2010);
+		});
 		
 		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "查询中").build();
 		
@@ -111,16 +117,15 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	protected void doLogin(){
 		if(name == null || password == null){
 			toast("请先登录！");
-			// TODO: 登录完后不会更新状态
 			activity.addView(LoginFragment.class);
 			return;
 		}
 		new Thread(){
 			@Override
 			public void run(){
-				String errorMsg = loginUtil.login(handler, name, password);
+				String errorMsg = loginViewModel.login(handler, name, password);
 				if(errorMsg == null){
-					doQuery(loginUtil.JSESSIONID);
+					doQuery(loginViewModel.getCookie());
 				}else{
 					sendMessage(App.DISMISS_TOAST, errorMsg);
 				}
@@ -139,15 +144,6 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 		yearPicker.setMinValue(0);
 		yearPicker.setMaxValue(TERM_NAME.length - 1);
 		yearPicker.setValue(LessonUtil.getCurrentYear(entranceTime));
-	}
-	
-	@Override
-	public void onReceive(String msg){
-		if(msg.equals(App.APP_USER_LOGIN)){
-			SharedPreferences sharedPreferences = activity.getSharedPreferences("education", 0);
-			name = sharedPreferences.getString("user", null);
-			password = sharedPreferences.getString("password", null);
-		}
 	}
 	
 	/**

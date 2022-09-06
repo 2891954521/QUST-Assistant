@@ -10,6 +10,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
+import androidx.annotation.NonNull;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.qust.assistant.R;
@@ -23,8 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-
-import androidx.annotation.NonNull;
 
 public class DrinkFragment extends BaseFragment{
 	
@@ -56,10 +56,12 @@ public class DrinkFragment extends BaseFragment{
 		super(activity);
 	}
 	
+	public DrinkFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		super.initLayout(inflater);
-		
 		sp = activity.getSharedPreferences("drink", Context.MODE_PRIVATE);
 		
 		code = sp.getString("code", null);

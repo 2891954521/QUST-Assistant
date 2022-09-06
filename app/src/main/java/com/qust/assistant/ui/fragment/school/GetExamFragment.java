@@ -11,7 +11,6 @@ import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.QustUtil.LoginUtil;
 import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONArray;
@@ -28,6 +27,10 @@ public class GetExamFragment extends BaseSchoolFragment{
 	
 	public GetExamFragment(MainActivity activity){
 		super(activity);
+	}
+	
+	public GetExamFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
 	}
 	
 	@Override
@@ -66,7 +69,7 @@ public class GetExamFragment extends BaseSchoolFragment{
 			String[] y = getYearAndTerm();
 			
 			String response = WebUtil.doPost(
-					LoginUtil.HOST + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query",
+					loginViewModel.HOST + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query",
 					"JSESSIONID=" + session,
 					String.format("xnm=%s&xqm=%s&queryModel.showCount=50",y[0],y[1])
 			);

@@ -1,9 +1,14 @@
-package com.qust.assistant.util.QustUtil;
+package com.qust.assistant.model;
 
+import android.app.Application;
+import android.content.Context;
 import android.os.Handler;
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
 
 import com.qust.assistant.App;
 import com.qust.assistant.util.LogUtil;
@@ -24,7 +29,7 @@ import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 
-public class LoginUtil{
+public class LoginViewModel extends AndroidViewModel{
 	
 	public static final String[] SEVER_HOSTS = {
 			"https://jwglxt.qust.edu.cn",
@@ -38,25 +43,26 @@ public class LoginUtil{
 	
 	public static final Pattern JESSIONID_PATTERN = Pattern.compile("JSESSIONID=(.*?);");
 	
-	public static String HOST = SEVER_HOSTS[0];
+	public String HOST;
 	
-	public static LoginUtil loginUtil;
+	private MutableLiveData<String> cookie;
 	
-	public String JSESSIONID;
-	
-	private LoginUtil(int sever){
-		HOST = SEVER_HOSTS[sever];
+	public LoginViewModel(@NonNull Application application){
+		super(application);
+		cookie = new MutableLiveData<>();
+		HOST = SEVER_HOSTS[0];
 	}
 	
-	public static void init(int sever){
-		synchronized(LoginUtil.class){
-			loginUtil = new LoginUtil(sever);
-		}
+	public static LoginViewModel getInstance(@NonNull Context context){
+		return ((App)context.getApplicationContext()).loginViewModel;
 	}
 	
-	public static LoginUtil getInstance(){
-		if(loginUtil == null)init(0);
-		return loginUtil;
+	public MutableLiveData<String> getCookieLiveData(){
+		return cookie;
+	}
+	
+	public String getCookie(){
+		return cookie.getValue();
 	}
 	
 	/**
@@ -66,19 +72,19 @@ public class LoginUtil{
 	@Nullable
 	public String login(Handler handler, String name, String password){
 		try{
-			if(JSESSIONID != null){
+			if(cookie.getValue() != null){
 				
 				handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在检查登陆状态"));
 				
 				HttpURLConnection connection = WebUtil.get(
-						LoginUtil.HOST + "/jwglxt/xtgl/index_initMenu.html",
-						"JSESSIONID=" + JSESSIONID);
+						HOST + "/jwglxt/xtgl/index_initMenu.html",
+						"JSESSIONID=" + cookie.getValue());
 				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
 					return null;
 				}
 			}
 			
-			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取JSESSIONID"));
+			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取Cookie"));
 			
 			String[] param = getLoginParam();
 			if(param[0] == null || param[1] == null){
@@ -92,7 +98,7 @@ public class LoginUtil{
 				return "登陆失败！服务器异常！";
 			}
 			
-			String rsaPassword = encrypt(password,key);
+			String rsaPassword = encrypt(password, key);
 			if(rsaPassword == null){
 				return "登陆失败！RSA加密出错！";
 			}
@@ -100,37 +106,40 @@ public class LoginUtil{
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在尝试登陆"));
 			
 			HttpURLConnection connection = WebUtil.post(
-					LoginUtil.HOST + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
+					HOST + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
 					"JSESSIONID=" + param[0],
-					"csrftoken=" + param[1] + "&language=zh_CN&yhm=" + name + "&mm=" + URLEncoder.encode(rsaPassword,"utf-8")
+					"csrftoken=" + param[1] + "&language=zh_CN&yhm=" + name + "&mm=" + URLEncoder.encode(rsaPassword, "utf-8")
 			);
 			
 			switch(connection.getResponseCode()){
 				case HttpURLConnection.HTTP_OK:
 					return "用户名或密码错误";
-					
+				
 				case HttpURLConnection.HTTP_MOVED_PERM:
 				case HttpURLConnection.HTTP_MOVED_TEMP:
 				case 307:
 					Matcher matcher = JESSIONID_PATTERN.matcher(connection.getHeaderField("Set-Cookie"));
-					JSESSIONID = matcher.find() ? matcher.group(1) : param[0];
+					cookie.postValue(matcher.find() ? matcher.group(1) : param[0]);
 					return null;
-					
+				
 				default:
 					return "登陆失败";
 			}
 		}catch(IOException e){
-			LogUtil.Log(e);
 			return "登陆失败!";
 		}
 	}
 	
+	/**
+	 * 获取登录参数
+	 */
+	@NonNull
 	private String[] getLoginParam(){
 		String[] result = new String[2];
 		String html = null;
 		try{
-			HttpURLConnection connection = WebUtil.get(LoginUtil.HOST + "/jwglxt/xtgl/login_slogin.html","");
-			if(connection.getResponseCode()==HttpURLConnection.HTTP_OK){
+			HttpURLConnection connection = WebUtil.get(HOST + "/jwglxt/xtgl/login_slogin.html", null);
+			if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
 				String s = connection.getHeaderField("Set-Cookie");
 				if(s != null){
 					Matcher matcher = JESSIONID_PATTERN.matcher(s);
@@ -142,7 +151,6 @@ public class LoginUtil{
 			}
 		}catch(IOException e){
 			LogUtil.Log(e);
-			html = null;
 		}
 		if(html != null){
 			Matcher matcher = Pattern.compile("<input (.*?)>").matcher(html);
@@ -158,18 +166,19 @@ public class LoginUtil{
 		return result;
 	}
 	
-	
+	/**
+	 * 获取RSA公钥
+	 */
 	@Nullable
-	private static String getPublicKey(String JSESSIONID){
+	private String getPublicKey(String cookie){
 		try{
 			String str = WebUtil.doGet(
-					LoginUtil.HOST + "/jwglxt/xtgl/login_getPublicKey.html",
-					"JSESSIONID=" + JSESSIONID
+					HOST + "/jwglxt/xtgl/login_getPublicKey.html",
+					"JSESSIONID=" + cookie
 			);
 			if(str.length() == 0) return null;
 			return new JSONObject(str).getString("modulus");
-		}catch(IOException | JSONException e){
-			LogUtil.Log(e);
+		}catch(IOException | JSONException ignored){
 		}
 		return null;
 	}
@@ -178,24 +187,23 @@ public class LoginUtil{
 	 * RSA公钥加密
 	 */
 	@Nullable
-	private static String encrypt(String str,String publicKey){
+	private String encrypt(String str, String publicKey){
 		try{
 			// base64编码的公钥
-			byte[] decoded = Base64.decode(publicKey,Base64.DEFAULT);
+			byte[] decoded = Base64.decode(publicKey, Base64.DEFAULT);
 			StringBuilder sb = new StringBuilder();
 			for(byte b : decoded){
 				String hex = Integer.toHexString(b & 0xFF);
-				if(hex.length()<2) sb.append(0);
+				if(hex.length() < 2) sb.append(0);
 				sb.append(hex);
 			}
-			BigInteger a = new BigInteger(sb.toString(),16);
+			BigInteger a = new BigInteger(sb.toString(), 16);
 			BigInteger b = new BigInteger("65537");
-			RSAPublicKey pubKey = (RSAPublicKey)KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(a,b));
+			RSAPublicKey pubKey = (RSAPublicKey)KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(a, b));
 			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-			cipher.init(Cipher.ENCRYPT_MODE,pubKey);
-			return Base64.encodeToString(cipher.doFinal(str.getBytes()),Base64.DEFAULT);
+			cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+			return Base64.encodeToString(cipher.doFinal(str.getBytes()), Base64.DEFAULT);
 		}catch(Exception e){
-			LogUtil.Log(e);
 			return null;
 		}
 	}

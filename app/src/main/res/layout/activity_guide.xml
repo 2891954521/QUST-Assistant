@@ -39,7 +39,15 @@
 			android:padding="@dimen/activity_margin"
 			android:textSize="@dimen/text_small"
 			android:textColor="@color/colorSecondaryText"
-			android:text="\t欢迎使用青科助手，我们需要一些信息以便使用软件完整功能"/>
+			android:text="\t欢迎使用青科助手，我们需要以下权限和信息以便使用软件完整功能"/>
+		
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="@dimen/activity_margin"
+			android:textSize="@dimen/text_small"
+			android:textColor="@color/colorSecondaryText"
+			android:text="权限:\n\t访问系统文件储存"/>
 		
 		<com.google.android.material.textfield.TextInputLayout
 			style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -76,37 +84,7 @@
 				android:textSize="16sp" />
 		
 		</com.google.android.material.textfield.TextInputLayout>
-
-<!--		<LinearLayout-->
-<!--			android:layout_width="match_parent"-->
-<!--			android:layout_height="100dp"-->
-<!--			android:orientation="horizontal"-->
-<!--			android:layout_marginStart="@dimen/activity_margin"-->
-<!--			android:layout_marginEnd="@dimen/activity_margin"-->
-<!--			android:gravity="start|center">-->
-<!--			-->
-<!--			<TextView-->
-<!--				style="@style/TextNormal"-->
-<!--				android:layout_width="wrap_content"-->
-<!--				android:layout_height="wrap_content"-->
-<!--				android:padding="@dimen/widget_margin"-->
-<!--				android:text="入学年份"/>-->
-<!--			-->
-<!--			<NumberPicker-->
-<!--				android:id="@+id/numberPicker"-->
-<!--				android:layout_width="wrap_content"-->
-<!--				android:layout_height="match_parent"-->
-<!--				android:descendantFocusability="blocksDescendants" />-->
-<!--			-->
-<!--			<TextView-->
-<!--				style="@style/TextNormal"-->
-<!--				android:layout_width="wrap_content"-->
-<!--				android:layout_height="wrap_content"-->
-<!--				android:padding="@dimen/widget_margin"-->
-<!--				android:text="年"/>-->
-<!--		-->
-<!--		</LinearLayout>-->
-
+		
 		<Button
 			android:id="@+id/done"
 			android:layout_width="match_parent"
@@ -115,7 +93,7 @@
 			android:padding="@dimen/widget_margin"
 			android:text="确定" />
 		
-		</LinearLayout>
+	</LinearLayout>
 		
 	<com.airbnb.lottie.LottieAnimationView
 		android:id="@+id/lottieView"

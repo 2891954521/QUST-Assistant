@@ -1,16 +1,21 @@
 package com.qust.assistant.ui.fragment;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import com.billy.android.swipe.SmartSwipe;
 import com.billy.android.swipe.SmartSwipeWrapper;
@@ -19,51 +24,82 @@ import com.billy.android.swipe.consumer.TranslucentSlidingConsumer;
 import com.billy.android.swipe.listener.SimpleSwipeListener;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
-import com.qust.assistant.ui.layout.BaseLayout;
 
-public abstract class BaseFragment implements BaseLayout{
+public abstract class BaseFragment extends Fragment{
 	
 	protected MainActivity activity;
-	
-	private ViewGroup rootView;
 	
 	protected ViewGroup layout;
 	
 	protected Toolbar toolbar;
 	
+	protected boolean isRoot;
+	
+	protected boolean hasToolBar;
+	
 	public BaseFragment(MainActivity activity){
-		this.activity = activity;
+		this(activity, false, true);
 	}
 	
 	/**
-	 * 初始化基本界面
-	 * @param isRoot 是否为根界面，决定是否可以滑动返回
-	 * @return
+	 * @param isRoot 是否为根Fragment，决定是否能够滑动返回
+	 * @param hasToolBar 是否有标题栏，决定在显示Fragment时需不需要添加BaseLayout
 	 */
-	public BaseFragment init(boolean isRoot){
-		
-		LayoutInflater layoutInflater = LayoutInflater.from(activity);
-		
+	public BaseFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		this.activity = activity;
+		this.isRoot = isRoot;
+		this.hasToolBar = hasToolBar;
+	}
+	
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
 		if(!isRoot){
-			TranslucentSlidingConsumer consumer = SmartSwipe.wrap(layoutInflater.inflate(R.layout.fragment_base, null))
+			TranslucentSlidingConsumer consumer = SmartSwipe.wrap(inflater.inflate(hasToolBar ? R.layout.fragment_base : getLayoutId(), null))
 					.addConsumer(new TranslucentSlidingConsumer());
-			
 			consumer.enableLeft();
-			
 			consumer.addListener(new SimpleSwipeListener(){
 				@Override
-				public void onSwipeOpened(SmartSwipeWrapper wrapper, SwipeConsumer consumer, int direction) {
+				public void onSwipeOpened(SmartSwipeWrapper wrapper, SwipeConsumer consumer, int direction){
 					activity.onBackPressed();
 				}
 			});
+			layout = consumer.getWrapper();
 			
-			rootView = consumer.getWrapper();
+			if(hasToolBar){
+				initToolBar();
+				((ViewGroup)layout.findViewById(R.id.fragment_base_content)).addView(inflater.inflate(getLayoutId(), null));
+			}
 		}else{
-			rootView = (ViewGroup)layoutInflater.inflate(R.layout.fragment_base, null);
+			if(hasToolBar){
+				layout = (ViewGroup)inflater.inflate(R.layout.fragment_base, null);
+				initToolBar();
+				((ViewGroup)layout.findViewById(R.id.fragment_base_content)).addView(inflater.inflate(getLayoutId(), null));
+			}else{
+				layout = (ViewGroup)inflater.inflate(getLayoutId(), null);
+			}
 		}
-		
-		toolbar = rootView.findViewById(R.id.toolbar);
-		
+		initLayout(inflater);
+		return layout;
+	}
+	
+	@Nullable
+	@Override
+	public Animation onCreateAnimation(int transit, boolean enter, int nextAnim){
+		if(nextAnim == R.anim.anim_right_in){
+			return activity.animIn;
+		}else if(nextAnim == R.anim.anim_rigth_out){
+			return activity.animOut;
+		}else{
+			return super.onCreateAnimation(transit, enter, nextAnim);
+		}
+	}
+	
+	/**
+	 * 初始化ToolBar
+	 */
+	protected final void initToolBar(){
+		toolbar = layout.findViewById(R.id.toolbar);
 		if(toolbar != null){
 			toolbar.setTitle(getName());
 			if(isRoot){
@@ -73,52 +109,12 @@ public abstract class BaseFragment implements BaseLayout{
 				toolbar.setNavigationOnClickListener(v -> finish());
 			}
 		}
-		
-		if(layout == null) initLayout(layoutInflater);
-		
-		((ViewGroup)rootView.findViewById(R.id.fragment_base_content)).addView(layout);
-		
-		return this;
 	}
 	
-	public void onPause(){ };
-	
-	public void onResume(){ }
-	
 	/**
-	 * 接收广播
-	 * @param msg
+	 * 初始化 Fragment View
 	 */
-	public void onReceive(String msg){ }
-	
-	/**
-	 * 来自 onActivityResult
-	 */
-	public void onResult(int requestCode, int resultCode, Intent data){ }
-	
-	/**
-	 * 给 ToolBar 添加按键
-	 * @param layoutInflater -
-	 * @param icon 图标
-	 * @param listener 点击事件
-	 * @return imageView
-	 */
-	protected ImageView addMenuItem(LayoutInflater layoutInflater, @DrawableRes int icon, View.OnClickListener listener){
-		ImageView imageView = (ImageView)layoutInflater.inflate(R.layout.view_image, toolbar, false);
-		imageView.setImageResource(icon);
-		imageView.setOnClickListener(listener);
-		
-		if(toolbar != null){
-			((Toolbar.LayoutParams)imageView.getLayoutParams()).gravity = Gravity.CENTER | Gravity.END;
-			toolbar.addView(imageView);
-		}
-		
-		return imageView;
-	}
-	
-	protected void initLayout(LayoutInflater inflater){
-		layout = (ViewGroup)inflater.inflate(getLayoutId(), null);
-	}
+	protected abstract void initLayout(LayoutInflater inflater);
 	
 	/**
 	 * 获取 Fragment 布局
@@ -134,28 +130,47 @@ public abstract class BaseFragment implements BaseLayout{
 	protected abstract String getName();
 	
 	/**
+	 * 来自 onActivityResult
+	 */
+	public void onResult(int requestCode, int resultCode, Intent data){ }
+	
+	/**
 	 * 返回键按下的处理
 	 * @return 是否返回
 	 */
 	public boolean onBackPressed(){ return true; }
 	
-	public final View getView(){ return rootView; }
+	/**
+	 * 关闭这个Fragment
+	 */
+	public void finish(){ activity.removeTopView(); }
 	
-	@Override
-	public final View getLayout(){
-		if(layout == null) initLayout(LayoutInflater.from(activity));
+	/**
+	 * 给 ToolBar 添加按键
+	 * @param layoutInflater -
+	 * @param icon 图标
+	 * @param listener 点击事件
+	 * @return imageView
+	 */
+	protected final ImageView addMenuItem(LayoutInflater layoutInflater, @DrawableRes int icon, View.OnClickListener listener){
+		ImageView imageView = (ImageView)layoutInflater.inflate(R.layout.view_image, toolbar, false);
+		imageView.setImageResource(icon);
+		imageView.setOnClickListener(listener);
 		
-		return layout;
+		if(toolbar != null){
+			((Toolbar.LayoutParams)imageView.getLayoutParams()).gravity = Gravity.CENTER | Gravity.END;
+			toolbar.addView(imageView);
+		}
+		
+		return imageView;
 	}
 	
-	public boolean isCreated(){
+	public final boolean isCreated(){
 		return layout != null;
 	}
 	
-	public void finish(){ activity.removeTopView(); }
+	protected final <T extends View> T findViewById(@IdRes int id){ return layout.findViewById(id); }
 	
-	protected <T extends View> T findViewById(@IdRes int id){ return layout.findViewById(id); }
-	
-	protected void toast(String msg){ activity.toast(msg); }
+	protected final void toast(String msg){ activity.toast(msg); }
 	
 }

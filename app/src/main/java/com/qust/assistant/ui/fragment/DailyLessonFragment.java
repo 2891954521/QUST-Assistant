@@ -1,9 +1,8 @@
 package com.qust.assistant.ui.fragment;
 
 import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.lifecycle.Observer;
 
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.Lesson;
@@ -16,28 +15,34 @@ import java.util.Calendar;
 
 public class DailyLessonFragment extends BaseFragment{
 	
-	private LessonTableViewModel lessonTableViewModel;
-	
-	private Observer<Boolean> observer = needUpdateLesson -> updateLesson();
+	private LinearLayout content;
 	
 	public DailyLessonFragment(MainActivity activity){
 		super(activity);
 	}
 	
+	public DailyLessonFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		super.initLayout(inflater);
-		lessonTableViewModel = LessonTableViewModel.getInstance(activity);
-		lessonTableViewModel.getUpdateLiveData().observe(activity, observer);
+		content = findViewById(R.id.dailyLesson);
+		LessonTableViewModel lessonTableViewModel = LessonTableViewModel.getInstance(activity);
+		lessonTableViewModel.getUpdateLiveData().observe(this, update -> updateLesson());
 	}
 	
 	/**
 	 * 更新课程UI
 	 */
-	public void updateLesson(){
+	public synchronized void updateLesson(){
+		if(!isCreated()) return;
+		
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		
-		layout.removeAllViews();
+		if(content.getChildCount() != 0){
+			content.removeAllViewsInLayout();
+		}
 		
 		LessonGroup[] lessonGroups = LessonTableViewModel.getLessonGroups()[LessonTableViewModel.getDayOfWeek()];
 		
@@ -69,16 +74,16 @@ public class DailyLessonFragment extends BaseFragment{
 				if(time[i] != null){
 					// 放置表示当前时间的标题（上午，下午，晚上）
 					needEmpty = true;
-					TextView t = (TextView)inflater.inflate(R.layout.view_text, layout, false);
+					TextView t = (TextView)inflater.inflate(R.layout.view_text, content, false);
 					t.setText(time[i]);
-					layout.addView(t);
+					content.addView(t);
 				}
 				// 是否有课
 				if(lessonGroups[i] == null || (lesson = lessonGroups[i].getCurrentLesson(currentWeek)) == null){
 					// 没有课的时候放置一个空闲占位
 					if(needEmpty){
 						needEmpty = false;
-						layout.addView(LessonGroup.getView(activity, null, i, 1));
+						content.addView(LessonGroup.getView(activity, null, i, 1));
 					}
 				}else{
 					cur = new LessonView(activity, lesson, i);
@@ -93,17 +98,17 @@ public class DailyLessonFragment extends BaseFragment{
 					// pass为 0 表示课程已经结束，否则为只结束了n节课
 					if(pass == 0){
 						cur.setTime(minute);
-						layout.addView(cur.getView());
+						content.addView(cur.getView());
 					}
 				}else if(minute >= 0){
 					// 正在上课
 					cur.setTime(minute);
-					layout.addView(cur.getView());
+					content.addView(cur.getView());
 					cur = null;
 				}else{
 					// 课程未开始
 					cur.setTime(minute);
-					layout.addView(cur.getView());
+					content.addView(cur.getView());
 					cur = null;
 				}
 			}
@@ -118,11 +123,5 @@ public class DailyLessonFragment extends BaseFragment{
 	@Override
 	protected String getName(){
 		return "当日课表";
-	}
-	
-	@Override
-	protected void finalize(){
-		System.out.println("在对象变成垃圾被gc收回前执行的操作。");
-		lessonTableViewModel.getUpdateLiveData().removeObserver(observer);
 	}
 }

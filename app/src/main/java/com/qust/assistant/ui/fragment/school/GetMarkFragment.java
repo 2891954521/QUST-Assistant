@@ -12,7 +12,6 @@ import com.qust.assistant.R;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.ParamUtil;
-import com.qust.assistant.util.QustUtil.LoginUtil;
 import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONArray;
@@ -33,6 +32,10 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	
 	public GetMarkFragment(MainActivity activity){
 		super(activity);
+	}
+	
+	public GetMarkFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
 	}
 	
 	@Override
@@ -65,7 +68,7 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			String[] y = getYearAndTerm();
 			
 			String response = WebUtil.doPost(
-					LoginUtil.HOST + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query",
+					loginViewModel.HOST + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query",
 					"JSESSIONID=" + session,
 					String.format("xnm=%s&xqm=%s&queryModel.showCount=50", y[0], y[1])
 			);
@@ -85,7 +88,7 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			}
 			
 			response = WebUtil.doPost(
-					LoginUtil.HOST + "/jwglxt/cjcx/cjcx_cxXsKccjList.html",
+					loginViewModel.HOST + "/jwglxt/cjcx/cjcx_cxXsKccjList.html",
 					"JSESSIONID=" + session,
 					String.format("xnm=%s&xqm=%s&queryModel.showCount=50", y[0], y[1])
 			);

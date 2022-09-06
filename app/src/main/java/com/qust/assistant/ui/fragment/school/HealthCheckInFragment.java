@@ -88,10 +88,12 @@ public class HealthCheckInFragment extends BaseFragment{
 		super(activity);
 	}
 	
+	public HealthCheckInFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		super.initLayout(inflater);
-		
 		dialog = new MaterialDialog.Builder(activity).progress(true, 0).content("请稍候").build();
 		
 		cookie = SettingUtil.getString(SettingUtil.HEALTH_CHECK_COOKIE, null);

@@ -1,4 +1,4 @@
-package com.qust.assistant.widget;
+package com.qust.assistant.widget.lesson;
 
 import android.content.Context;
 import android.graphics.Canvas;

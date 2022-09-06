@@ -1,12 +1,12 @@
 package com.qust.assistant.ui.fragment.school;
 
 import android.view.LayoutInflater;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.LessonGroup;
@@ -14,17 +14,17 @@ import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.QustUtil.LessonUtil;
-import com.qust.assistant.widget.LessonTable;
+import com.qust.assistant.widget.lesson.LessonTable;
 
 public class GetLessonTableFragment extends BaseSchoolFragment{
-
-	private ImageView saveButton;
 
 	private TextView weekTextView;
 	
 	private TextView termTextView;
 	
 	private LessonTable lessonTable;
+	
+	private FloatingActionButton saveButton;
 	
 	private boolean needSave;
 	
@@ -42,18 +42,23 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		super(activity);
 	}
 	
+	public GetLessonTableFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
 		super.initLayout(inflater);
+		
+		startTime = LessonTableViewModel.getStartDay();
 		
 		lessonGroups = new LessonGroup[7][10];
 		
 		lessonTableViewModel = LessonTableViewModel.getInstance(activity);
 		
-		startTime = LessonTableViewModel.getStartDay();
-		
 		weekTextView = findViewById(R.id.fragment_get_lesson_table_week);
 		termTextView = findViewById(R.id.fragment_get_lesson_table_term);
+		saveButton = findViewById(R.id.button_save);
 		
 		lessonTable = findViewById(R.id.fragment_get_lesson_table_preview);
 		lessonTable.initAdapter(lessonGroups);
@@ -65,7 +70,7 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 			lessonTable.setCurrentItem(currentWeek);
 		});
 		
-		lessonTable.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+		lessonTable.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
 			@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels){ }
 			@Override
@@ -76,8 +81,8 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 			public void onPageScrollStateChanged(int state){ }
 		});
 
-		saveButton = addMenuItem(inflater, R.drawable.ic_save, null);
-		weekTextView.setText("第1周");
+		weekTextView.setText("第 1 周");
+		saveButton.setOnClickListener(v -> saveData());
 		
 		initYearAndTermPicker();
 		
@@ -91,7 +96,7 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		
 		String[] y = getYearAndTerm();
 		
-		LessonUtil.QueryLessonResult result = LessonUtil.queryLessonTable(session, y[0], y[1]);
+		LessonUtil.QueryLessonResult result = LessonUtil.queryLessonTable(loginViewModel, session, y[0], y[1]);
 		
 		if(result.message != null){
 			sendMessage(App.DISMISS_TOAST, result.message);
@@ -116,8 +121,11 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	 */
 	private void setNeedSave(boolean _needSave){
 		needSave = _needSave;
-		saveButton.setAlpha(needSave ? 1f : 0.5f);
-		saveButton.setOnClickListener(needSave ? v -> saveData() : null);
+		if(needSave){
+			saveButton.show();
+		}else{
+			saveButton.hide();
+		}
 	}
 	
 	private void saveData(){

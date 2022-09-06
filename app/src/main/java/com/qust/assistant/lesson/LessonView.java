@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
-import com.qust.assistant.widget.BackgroundLesson;
+import com.qust.assistant.widget.lesson.BackgroundLesson;
 
 public class LessonView{
 	

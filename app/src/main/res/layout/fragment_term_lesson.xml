@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,29 +9,27 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingBottom="@dimen/activity_margin">
-
+    
         <TextView
             android:id="@+id/layout_timetable_week"
             style="@style/TextTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryText" />
-
-        <com.qust.assistant.widget.LessonTable
+    
+        <com.qust.assistant.widget.lesson.LessonTable
             android:id="@+id/fragment_timetable_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
     </LinearLayout>
-
+    
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fragment_term_lesson_current"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/activity_margin"
-        android:layout_marginBottom="@dimen/float_button_margin"
+        android:layout_margin="@dimen/activity_margin"
+        android:layout_gravity="bottom|end"
         android:src="@drawable/ic_current"
         app:tint="@color/colorLight"
         app:backgroundTint="@color/colorPrimaryDark"
@@ -243,7 +241,7 @@
 
                     </LinearLayout>
 
-                    <com.qust.assistant.widget.LessonTime
+                    <com.qust.assistant.widget.lesson.LessonTime
                         android:id="@+id/layout_lesson_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -279,4 +277,4 @@
 
     </RelativeLayout>
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

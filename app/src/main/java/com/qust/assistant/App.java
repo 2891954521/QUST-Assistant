@@ -1,28 +1,30 @@
 package com.qust.assistant;
 
 import android.app.Application;
+import android.os.Build;
 import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.billy.android.swipe.SmartSwipeBack;
+import com.billy.android.swipe.SwipeConsumer;
 import com.qust.assistant.model.LessonTableViewModel;
+import com.qust.assistant.model.LoginViewModel;
 import com.qust.assistant.sql.DataBase;
 import com.qust.assistant.ui.MainActivity;
+import com.qust.assistant.ui.app.GuideActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
 
 public class App extends Application{
-	
-	public static final String APP_USER_LOGIN = "user_login";
 	
 	public static final int APP_REQUEST_CODE = 10;
 	
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 11;
+	public static final int DEV_VERSION = 12;
 	
 	/**
 	 * Handler 公用的 what 值
@@ -34,9 +36,12 @@ public class App extends Application{
 	// 更新 Dialog
 	public static final int UPDATE_DIALOG = 0;
 	
-	private Thread.UncaughtExceptionHandler handler;
+	
+	public LoginViewModel loginViewModel;
 	
 	public LessonTableViewModel lessonTableViewModel;
+	
+	private Thread.UncaughtExceptionHandler handler;
 	
 	@Override
 	public void onCreate(){
@@ -48,18 +53,17 @@ public class App extends Application{
 		
 		LogUtil.init(this);
 		
+		loginViewModel = new LoginViewModel(this);
 		lessonTableViewModel = new LessonTableViewModel(this);
 		
 		handler = Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 		
-//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-//			// use bezier back before LOLLIPOP
-//			SmartSwipeBack.activityBezierBack(this, activitySwipeBackFilter, 0);
-//		} else {
-//			// add relative moving slide back
-//			SmartSwipeBack.activitySlidingBack(this, activitySwipeBackFilter, 0, 0x80000000, 0, 0, 0.5f, DIRECTION_LEFT);
-//		}
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+			SmartSwipeBack.activityBezierBack(this, activitySwipeBackFilter, 0);
+		} else {
+			SmartSwipeBack.activitySlidingBack(this, activitySwipeBackFilter, 0, 0x80000000, 0, 0, 0.5f, SwipeConsumer.DIRECTION_LEFT);
+		}
 	}
 	
 	public void toast(final String message){
@@ -84,5 +88,5 @@ public class App extends Application{
 		}
 	}
 	
-	private final SmartSwipeBack.ActivitySwipeBackFilter activitySwipeBackFilter = activity -> !(activity instanceof MainActivity);
+	private final SmartSwipeBack.ActivitySwipeBackFilter activitySwipeBackFilter = activity -> !(activity instanceof MainActivity || activity instanceof GuideActivity);
 }

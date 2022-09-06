@@ -1,12 +1,10 @@
 package com.qust.assistant.ui.fragment;
 
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.qust.assistant.R;
@@ -30,13 +28,14 @@ public class HomeFragment extends BaseFragment{
 		super(activity);
 	}
 	
+	public HomeFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		super.initLayout(inflater);
-		
-		termLesson = new TermLessonFragment(activity);
-		
-		dailyLesson = new DailyLessonFragment(activity);
+		termLesson = new TermLessonFragment(activity, true, false);
+		dailyLesson = new DailyLessonFragment(activity, true, false);
 		
 		viewPager = findViewById(R.id.viewpager2);
 		viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback(){
@@ -50,29 +49,23 @@ public class HomeFragment extends BaseFragment{
 		});
 		
 		if((boolean)SettingUtil.get(SettingUtil.KEY_SHOW_DRINK_CODE, false)){
-			layouts = new BaseFragment[]{ new DrinkFragment(activity), dailyLesson, termLesson };
-			viewPager.setAdapter(new PagerAdapter());
+			layouts = new BaseFragment[]{ new DrinkFragment(activity, true, false), dailyLesson, termLesson };
+			viewPager.setAdapter(new PagerAdapter(this));
 			viewPager.setCurrentItem(1, false);
 			current = 1;
 		}else{
 			layouts = new BaseFragment[]{ dailyLesson, termLesson };
-			viewPager.setAdapter(new PagerAdapter());
+			viewPager.setAdapter(new PagerAdapter(this));
 			current = 0;
 		}
-		
-	}
-	
-	@Override
-	public void onPause(){
-		layouts[viewPager.getCurrentItem()].onPause();
 	}
 	
 	@Override
 	public void onResume(){
-		if(dailyLesson.isCreated()){
+		super.onResume();
+		if(isCreated() && dailyLesson.isCreated()){
 			dailyLesson.updateLesson();
 		}
-		layouts[viewPager.getCurrentItem()].onResume();
 	}
 	
 	@Override
@@ -90,17 +83,10 @@ public class HomeFragment extends BaseFragment{
 		return null;
 	}
 	
-	public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.LayoutHolder>{
+	public class PagerAdapter extends FragmentStateAdapter{
 		
-		@NonNull
-		@Override
-		public PagerAdapter.LayoutHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
-			return new PagerAdapter.LayoutHolder();
-		}
-		
-		@Override
-		public void onBindViewHolder(@NonNull PagerAdapter.LayoutHolder holder, int position){
-			holder.setView(layouts[position].getLayout());
+		public PagerAdapter(@NonNull Fragment fragment){
+			super(fragment);
 		}
 		
 		@Override
@@ -108,19 +94,12 @@ public class HomeFragment extends BaseFragment{
 			return layouts.length;
 		}
 		
-		public class LayoutHolder extends RecyclerView.ViewHolder{
-			
-			public LayoutHolder(){
-				super(new RelativeLayout(activity));
-				itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-			}
-			
-			public void setView(View view){
-				view.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-				((RelativeLayout)itemView).removeAllViews();
-				((RelativeLayout)itemView).addView(view);
-			}
+		@NonNull
+		@Override
+		public Fragment createFragment(int position){
+			return layouts[position];
 		}
 	}
+	
 }
 

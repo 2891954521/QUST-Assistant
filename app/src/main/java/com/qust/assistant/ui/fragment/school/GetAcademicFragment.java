@@ -18,7 +18,6 @@ import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.FileUtil;
 import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.QustUtil.LoginUtil;
 import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONArray;
@@ -78,6 +77,10 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 		super(activity);
 	}
 	
+	public GetAcademicFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
 		super.initLayout(inflater);
@@ -93,7 +96,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 		ExpandableListView listView = findViewById(R.id.activity_get_academic_list);
 		listView.setOnGroupClickListener((parent, v, groupPosition, id) -> {
 			if(isCalculateMode){
-				int len = groupPosition + 1 == child.length ? lessonsSort.length : child[groupPosition + 1];
+				int len = groupPosition + 1 >= child.length ? lessonsSort.length : child[groupPosition + 1];
 				for(int i = child[groupPosition]; i < len; i++){
 					isChoose[i] = !isChoose[i];
 				}
@@ -128,7 +131,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 		lessons = new ArrayList<>();
 		try{
 			String response = WebUtil.doGet(
-					LoginUtil.HOST + "/jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default",
+					loginViewModel.HOST + "/jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default",
 					"JSESSIONID=" + session
 			);
 			if(!TextUtils.isEmpty(response)){
@@ -149,7 +152,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 				for(String param : params){
 
 					response = WebUtil.doPost(
-							LoginUtil.HOST + "/jwglxt/xsxy/xsxyqk_cxJxzxjhxfyqKcxx.html",
+							loginViewModel.HOST + "/jwglxt/xsxy/xsxyqk_cxJxzxjhxfyqKcxx.html",
 							"JSESSIONID=" + session,
 							"xfyqjd_id=" + param + "&xh_id=" + name);
 					

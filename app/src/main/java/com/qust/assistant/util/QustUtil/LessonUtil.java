@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.qust.assistant.lesson.LessonGroup;
 import com.qust.assistant.model.LessonTableViewModel;
+import com.qust.assistant.model.LoginViewModel;
 import com.qust.assistant.ui.fragment.school.BaseSchoolFragment;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.LogUtil;
@@ -46,13 +47,13 @@ public class LessonUtil{
 	 * @param term 学期
 	 */
 	@NonNull
-	public static QueryLessonResult queryLessonTable(String session, String year, String term){
+	public static QueryLessonResult queryLessonTable(LoginViewModel loginViewModel, String session, String year, String term){
 		
 		QueryLessonResult result = new QueryLessonResult();
 		
 		try{
 			// 从教务获取本学年信息
-			String response = WebUtil.doGet(LoginUtil.HOST + "/jwglxt/xtgl/index_cxAreaFive.html?localeKey=zh_CN&gnmkdm=index",
+			String response = WebUtil.doGet(loginViewModel.HOST + "/jwglxt/xtgl/index_cxAreaFive.html?localeKey=zh_CN&gnmkdm=index",
 					"JSESSIONID=" + session
 			);
 			if(!TextUtils.isEmpty(response)){
@@ -95,7 +96,7 @@ public class LessonUtil{
 				}
 			}
 			// 从教务查询课表
-			response = WebUtil.doPost(LoginUtil.HOST + "/jwglxt/kbcx/xskbcx_cxXsKb.html",
+			response = WebUtil.doPost(loginViewModel.HOST + "/jwglxt/kbcx/xskbcx_cxXsKb.html",
 					"JSESSIONID=" + session,
 					"xnm=" + year +"&xqm=" + term + "&kzlx=ck"
 			);

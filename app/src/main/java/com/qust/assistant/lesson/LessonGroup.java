@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
-import com.qust.assistant.widget.BackgroundLesson;
+import com.qust.assistant.widget.lesson.BackgroundLesson;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -66,10 +66,8 @@ public class LessonGroup implements Serializable, Cloneable{
 	}
 	
 	/**
-	 * 获取 {@code week} 周会上的课程
-	 *
+	 * 获取第 {@code week} 周会上的课程
 	 * @param week 第 n 周
-	 *
 	 * @return 会上的课程, 没有课则为null
 	 */
 	@Nullable

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qust.assistant.R;
 import com.qust.assistant.lesson.Lesson;
 import com.qust.assistant.lesson.LessonGroup;
@@ -21,8 +22,8 @@ import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.DialogRoundTop;
-import com.qust.assistant.widget.LessonTable;
-import com.qust.assistant.widget.LessonTime;
+import com.qust.assistant.widget.lesson.LessonTable;
+import com.qust.assistant.widget.lesson.LessonTime;
 
 public class TermLessonFragment extends BaseFragment{
 	// 周数显示
@@ -30,8 +31,6 @@ public class TermLessonFragment extends BaseFragment{
 	
 	// 周课表
 	private LessonTable lessonTable;
-	
-	private InputMethodManager inputManager;
 	
 	private boolean isInitLessonInfo, isLessonInfoShowing;
 	
@@ -54,22 +53,32 @@ public class TermLessonFragment extends BaseFragment{
 	
 	private Lesson editLesson;
 	
+	private InputMethodManager inputManager;
+	
+	private FloatingActionButton floatingActionButton;
+	
 	public TermLessonFragment(MainActivity activity){
 		super(activity);
 	}
 	
+	public TermLessonFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
+	}
+	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		super.initLayout(inflater);
-		
 		inputManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 		
 		// 显示第几周的TextView
 		weekText = findViewById(R.id.layout_timetable_week);
 		
+		floatingActionButton = findViewById(R.id.fragment_term_lesson_current);
+		floatingActionButton.setVisibility(View.GONE);
+		floatingActionButton.setOnClickListener(v -> lessonTable.setCurrentItem(LessonTableViewModel.getCurrentWeek() - 1));
+		
 		lessonTable = findViewById(R.id.fragment_timetable_pager);
 		lessonTable.initAdapter();
-		
+		lessonTable.setUpdateListener(this::updateLesson);
 		lessonTable.setLessonClickListener((week, count, lesson) -> {
 			if(!isInitLessonInfo){
 				initLessonInfoDialog();
@@ -77,25 +86,30 @@ public class TermLessonFragment extends BaseFragment{
 			}
 			showLessonInfoDialog(week, count, lesson);
 		});
-		
-		lessonTable.setUpdateListener(this::updateLesson);
-		lessonTable.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+		lessonTable.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
 			@Override
 			public void onPageScrolled(int position,float positionOffset,int positionOffsetPixels){ }
 			@Override
 			public void onPageSelected(int position){
+				if(LessonTableViewModel.getCurrentWeek() == position + 1){
+					if(floatingActionButton.getVisibility() == View.VISIBLE) floatingActionButton.hide();
+				}else{
+					if(floatingActionButton.getVisibility() == View.GONE) floatingActionButton.show();
+				}
 				weekText.setText("第 " + (position + 1) + " 周");
 			}
 			@Override
 			public void onPageScrollStateChanged(int state){ }
 		});
 		
-		lessonTable.setCurrentItem(LessonTableViewModel.getCurrentWeek() - 1);
+		LessonTableViewModel lessonTableViewModel = LessonTableViewModel.getInstance(activity);
+		lessonTableViewModel.getUpdateLiveData().observe(this, update -> lessonTable.initAdapter());
 		
-		weekText.setText("第 " + (lessonTable.getCurrentItem() + 1) + " 周");
-		
-		findViewById(R.id.fragment_term_lesson_current).setOnClickListener(v -> lessonTable.setCurrentItem(LessonTableViewModel.getCurrentWeek() - 1));
-		
+		lessonTable.postDelayed(() -> {
+			int week = LessonTableViewModel.getCurrentWeek();
+			lessonTable.setCurrentItem(week - 1, false);
+			weekText.setText("第 " + week + " 周");
+		}, 100);
 	}
 	
 	/**
@@ -209,7 +223,9 @@ public class TermLessonFragment extends BaseFragment{
 		});
 	}
 	
-	// 显示课程编辑框
+	/**
+	 * 显示课程编辑框
+ 	 */
 	private void showLessonInfoDialog(int _week, int _count, Lesson lesson){
 		
 		isLessonInfoShowing = true;
@@ -247,7 +263,6 @@ public class TermLessonFragment extends BaseFragment{
 	}
 	
 	/**
-	 * TODO: 完善更新操作
 	 * 更新并保存总课表
  	 */
 	public void updateLesson(){

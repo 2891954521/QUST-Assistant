@@ -1,26 +1,20 @@
 package com.qust.assistant.ui;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.customview.widget.ViewDragHelper;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.billy.android.swipe.SmartSwipe;
+import com.billy.android.swipe.SwipeConsumer;
 import com.billy.android.swipe.consumer.SpaceConsumer;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.app.GuideActivity;
@@ -28,25 +22,26 @@ import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.ui.fragment.HomeFragment;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.UpdateUtil;
+import com.qust.assistant.widget.swipe.MainDrawer;
 
-import java.lang.reflect.Field;
 import java.util.Stack;
 
 public class MainActivity extends BaseActivity{
 	
-	private static final int NOT_NOTICE = 2;
-	
 	private Stack<BaseFragment> fragments;
 	
-	private DrawerLayout drawer;
+	private MainDrawer drawer;
 	
+	/**
+	 * 所有Fragment容器
+	 */
 	private FrameLayout layout;
 	
-	private Animation animFadeOut;
-	
-	private Animation animIn, animOut;
-	
 	private boolean isFading;
+	
+	private FragmentManager fragmentManager;
+	
+	public Animation animIn, animOut;
 	
 	@Override
 	protected void onCreate(Bundle paramBundle){
@@ -65,16 +60,13 @@ public class MainActivity extends BaseActivity{
 		
 		layout = findViewById(R.id.main_frame);
 		
+		fragmentManager = getSupportFragmentManager();
+		
 		initDrawer();
 
 		initHome();
 		
 		initAnim();
-		
-		if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-				|| ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
-			ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
-		}
 		
 		// 检查更新
 		UpdateUtil.checkUpdate(this);
@@ -84,49 +76,31 @@ public class MainActivity extends BaseActivity{
 	 * 初始化侧滑菜单
 	 */
 	private void initDrawer(){
+		drawer = SmartSwipe.wrap(this).addConsumer(new MainDrawer());
 		
-		drawer = findViewById(R.id.drawerLayout);
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		
-		try{
-			Field leftDraggerField = drawer.getClass().getDeclaredField("mLeftDragger");
-			leftDraggerField.setAccessible(true);
-			ViewDragHelper leftDragger = (ViewDragHelper)leftDraggerField.get(drawer);
-
-			// 找到 edgeSizeField 并设置 Accessible 为true
-			Field edgeSizeField = leftDragger.getClass().getDeclaredField("mEdgeSize");
-			edgeSizeField.setAccessible(true);
-			int edgeSize = edgeSizeField.getInt(leftDragger);
-
-			// 设置新的边缘大小
-			Point displaySize = new Point();
-			getWindowManager().getDefaultDisplay().getSize(displaySize);
-			edgeSizeField.setInt(leftDragger, Math.max(edgeSize, displaySize.x));
-		}catch(NoSuchFieldException | IllegalArgumentException | IllegalAccessException e){
-			e.printStackTrace();
-		}
-
-//		DisplayMetrics displayMetrics = new DisplayMetrics();
-//		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//
-//		findViewById(R.id.nav_main).setLayoutParams(new DrawerLayout.LayoutParams(displayMetrics.widthPixels / 4 * 3, DrawerLayout.LayoutParams.MATCH_PARENT));
-
-		// 侧滑菜单里垂直滑动弹性效果
-		SmartSwipe.wrap(findViewById(R.id.nav_main_menu)).addConsumer(new SpaceConsumer()).enableVertical();
+		View drawerView = LayoutInflater.from(this).inflate(R.layout.nav_main, drawer.getWrapper(), false);
+		
+		drawerView.setLayoutParams(new ViewGroup.LayoutParams(displayMetrics.widthPixels / 4 * 3, ViewGroup.LayoutParams.MATCH_PARENT));
+		
+		drawer.setHorizontalDrawerView(drawerView).setScrimColor(0x2F000000).disableRight();
+		
+		SmartSwipe.wrap(drawerView.findViewById(R.id.nav_main_menu)).addConsumer(new SpaceConsumer()).enableVertical();
 	}
 	
 	private void initAnim(){
-		
 		animIn = AnimationUtils.loadAnimation(this, R.anim.anim_right_in);
 		animIn.setAnimationListener(new Animation.AnimationListener(){
 			@Override
 			public void onAnimationEnd(Animation param1Animation){
 				isFading = false;
-				drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
+				drawer.enableRight();
+				drawer.disableLeft();
 			}
-			
 			@Override
 			public void onAnimationRepeat(Animation param1Animation){}
-			
 			@Override
 			public void onAnimationStart(Animation param1Animation){}
 		});
@@ -135,28 +109,23 @@ public class MainActivity extends BaseActivity{
 		animOut.setAnimationListener(new Animation.AnimationListener(){
 			@Override
 			public void onAnimationEnd(Animation paramAnimation){
-				layout.removeView(fragments.pop().getView());
-				
+				fragments.pop();
 				fragments.peek().getView().setFocusable(true);
 				fragments.peek().getView().setClickable(true);
 				
 				if(fragments.size() > 1){
 					fragments.get(fragments.size() - 2).getView().setVisibility(View.VISIBLE);
 				}else{
-					drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
+					drawer.enableLeft();
+					drawer.disableRight();
 				}
-				
 				isFading = false;
 			}
-			
 			@Override
 			public void onAnimationRepeat(Animation param1Animation){}
-			
 			@Override
 			public void onAnimationStart(Animation param1Animation){}
 		});
-		
-		animFadeOut = AnimationUtils.loadAnimation(this, R.anim.anim_fade_out);
 	}
 	
 	private void initHome(){
@@ -165,19 +134,22 @@ public class MainActivity extends BaseActivity{
 		try{
 			Class<?> object = Class.forName(SettingUtil.getString(SettingUtil.HOME_PAGE, HomeFragment.class.getName()));
 			if(BaseFragment.class.isAssignableFrom(object)){
-				home = ((BaseFragment)object.getConstructor(MainActivity.class).newInstance(this)).init(true);
+				home = ((BaseFragment)object.getConstructor(MainActivity.class, Boolean.class, Boolean.class).newInstance(this, true, true));
 			}else{
-				home = new HomeFragment(this).init(true);
+				home = new HomeFragment(this, true, true);
 			}
 		}catch(ReflectiveOperationException e){
-			home = new HomeFragment(this).init(true);
+			home = new HomeFragment(this, true, true);
 		}
 		
 		fragments.push(home);
 		
-		layout.addView(home.getView());
+		fragmentManager.beginTransaction().add(R.id.main_frame, home, home.getClass().getName()).commit();
 	}
 	
+	/**
+	 * 添加一个Fragment
+	 */
 	public synchronized void addView(Class<? extends BaseFragment> newFragment){
 		if(isFading) return;
 		try{
@@ -187,24 +159,32 @@ public class MainActivity extends BaseActivity{
 			a.getView().setFocusable(false);
 			a.getView().setClickable(false);
 			
-			drawer.closeDrawer(GravityCompat.START);
-
-			BaseFragment b = ((BaseFragment)newFragment.getConstructor(MainActivity.class).newInstance(this)).init(false);
+			drawer.close();
+			
+			BaseFragment b = ((BaseFragment)newFragment.getConstructor(MainActivity.class).newInstance(this));
 			
 			fragments.push(b);
-			layout.addView(b.getView());
 			
-			a.getView().startAnimation(animFadeOut);
-			b.getView().startAnimation(animIn);
+			FragmentTransaction transaction = fragmentManager.beginTransaction();
+			transaction.setCustomAnimations(R.anim.anim_right_in, 0);
+			transaction.add(R.id.main_frame, b, b.getClass().getName());
+			transaction.addToBackStack("");
+			transaction.commit();
 			
 			isFading = true;
 		}catch(ReflectiveOperationException ignored){ }
 	}
 	
+	/**
+	 * 移除顶部Fragment (相当于返回)
+	 */
 	public synchronized void removeTopView(){
 		if(!isFading && fragments.size() > 1){
 			isFading = true;
-			fragments.peek().getView().startAnimation(animOut);
+			fragmentManager.beginTransaction()
+					.setCustomAnimations(0, R.anim.anim_rigth_out)
+					.remove(fragments.peek())
+					.commit();
 		}
 	}
 	
@@ -212,8 +192,8 @@ public class MainActivity extends BaseActivity{
 	public void onBackPressed(){
 		if(isFading){
 			// Do nothing
-		}else if(drawer.isDrawerOpen(GravityCompat.START)){
-			drawer.closeDrawer(GravityCompat.START);
+		}else if(drawer.isOpened()){
+			drawer.close(true);
 		}else if(fragments.peek().onBackPressed()){
 			if(fragments.size() == 1){
 				super.onBackPressed();
@@ -223,69 +203,14 @@ public class MainActivity extends BaseActivity{
 		}
 	}
 	
-	public void openMenu(){
-		drawer.openDrawer(GravityCompat.START);
-	}
+	public void openMenu(){ drawer.open(true, SwipeConsumer.DIRECTION_LEFT); }
 	
-	public void closeMenu(){
-		drawer.closeDrawer(GravityCompat.START);
-	}
-	
-	@Override
-	public void onResume(){
-		super.onResume();
-		fragments.peek().onResume();
-	}
+	public void closeMenu(){ drawer.close(true); }
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode == NOT_NOTICE){
-			// 由于不知道是否选择了允许所以需要再次判断
-			if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-			}
-		}else{
-			fragments.peek().onResult(requestCode, resultCode, data);
-		}
-	}
-	
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if(requestCode == 1){
-			for(int i = 0; i < permissions.length; i++){
-				if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
-					if(!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])){
-						// 用户选择了禁止不再询问
-						new MaterialDialog.Builder(this).title("权限").content("请给予应用运行所必要的权限！")
-							.positiveText(R.string.text_cancel).onPositive((dialog, which) -> {
-								toast("请给予应用运行所必要的权限！");
-								finish();
-						}).negativeText(R.string.text_ok).onNegative((dialog, which) -> {
-								Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-								// 注意就是"package",不用改成自己的包名
-								Uri uri = Uri.fromParts("package", getPackageName(), null);
-								intent.setData(uri);
-								startActivityForResult(intent, NOT_NOTICE);
-								dialog.dismiss();
-							}).show();
-						break;
-					}else{
-						// 选择禁止
-						new MaterialDialog.Builder(this).title("权限").content("请给予应用运行所必要的权限！")
-							.positiveText(R.string.text_cancel).onPositive((dialog, which) -> {
-								toast("请给予应用运行所必要的权限！");
-								finish();
-							}).negativeText(R.string.text_ok).onNegative((dialog, which) -> {
-								ActivityCompat.requestPermissions(MainActivity.this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
-								dialog.dismiss();
-							}).show();
-						break;
-					}
-				}
-			}
-		}
+		fragments.peek().onResult(requestCode, resultCode, data);
 	}
 	
 	@Override

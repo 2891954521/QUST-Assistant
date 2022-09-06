@@ -1,65 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
+    android:layout_height="match_parent">
+    
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="horizontal"
-        android:gravity="center">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+    
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+    
+            <TextView
+                style="@style/TextNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/widget_margin"
+                android:text="学期"/>
+    
+            <NumberPicker
+                android:id="@+id/fragment_school_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/activity_margin"
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:descendantFocusability="blocksDescendants" />
+    
+            <Button
+                android:id="@+id/fragment_school_query"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="查询"/>
+    
+        </LinearLayout>
+        
         <TextView
-            style="@style/TextNormal"
-            android:layout_width="wrap_content"
+            android:id="@+id/fragment_get_lesson_table_week"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/widget_margin"
-            android:text="学期"/>
-
-        <NumberPicker
-            android:id="@+id/fragment_school_year"
-            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/activity_margin"
+            android:paddingEnd="@dimen/activity_margin"
+            android:paddingTop="@dimen/base_margin"
+            android:paddingBottom="@dimen/base_margin"
+            android:gravity="center"
+            android:textSize="@dimen/text_medium"
+            android:textColor="@color/colorPrimaryText"  />
+        
+        <TextView
+            android:id="@+id/fragment_get_lesson_table_term"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_margin"
-            android:layout_marginEnd="@dimen/activity_margin"
-            android:descendantFocusability="blocksDescendants" />
-
-        <Button
-            android:id="@+id/fragment_school_query"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="查询"/>
-
+            android:paddingStart="@dimen/activity_margin"
+            android:paddingEnd="@dimen/activity_margin"
+            android:paddingTop="@dimen/widget_margin"
+            android:paddingBottom="@dimen/base_margin"
+            android:gravity="center"
+            android:textSize="@dimen/text_micro"
+            android:textColor="@color/colorSecondaryText" />
+        
+        <com.qust.assistant.widget.lesson.LessonTable
+            android:id="@+id/fragment_get_lesson_table_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    
     </LinearLayout>
     
-    <TextView
-        android:id="@+id/fragment_get_lesson_table_week"
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button_save"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/activity_margin"
-        android:paddingEnd="@dimen/activity_margin"
-        android:paddingTop="@dimen/base_margin"
-        android:paddingBottom="@dimen/base_margin"
-        android:gravity="center"
-        android:textSize="@dimen/text_medium"
-        android:textColor="@color/colorPrimaryText"  />
+        android:layout_margin="@dimen/activity_margin"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_save"
+        app:tint="@color/colorLight"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:elevation="4dp"
+        app:pressedTranslationZ="8dp" />
     
-    <TextView
-        android:id="@+id/fragment_get_lesson_table_term"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/activity_margin"
-        android:paddingEnd="@dimen/activity_margin"
-        android:paddingTop="@dimen/widget_margin"
-        android:paddingBottom="@dimen/base_margin"
-        android:gravity="center"
-        android:textSize="@dimen/text_micro"
-        android:textColor="@color/colorSecondaryText" />
-    
-    <com.qust.assistant.widget.LessonTable
-        android:id="@+id/fragment_get_lesson_table_preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

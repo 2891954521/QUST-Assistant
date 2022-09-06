@@ -21,8 +21,6 @@ public class PictureFragment extends BaseFragment{
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		super.initLayout(inflater);
-		
 		PictureData.init(activity);
 		
 		bigImage = findViewById(R.id.activity_picture_image);

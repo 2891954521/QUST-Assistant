@@ -15,10 +15,10 @@ import androidx.annotation.Nullable;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
+import com.qust.assistant.model.LoginViewModel;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.QustUtil.LoginUtil;
 import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONArray;
@@ -84,8 +84,14 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 	
 	private String session;
 	
+	private LoginViewModel loginViewModel;
+	
 	public AutoEvaluationFragment(MainActivity activity){
 		super(activity);
+	}
+	
+	public AutoEvaluationFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
+		super(activity, isRoot, hasToolBar);
 	}
 	
 	@Override
@@ -114,7 +120,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 		
 		try{
 			String response = WebUtil.doPost(
-					LoginUtil.HOST + "/jwglxt/xspjgl/xspj_cxXspjIndex.html?doType=query&gnmkdm=0",
+					loginViewModel.HOST + "/jwglxt/xspjgl/xspj_cxXspjIndex.html?doType=query&gnmkdm=0",
 					"JSESSIONID=" + JSESSIONID,
 					"queryModel.showCount=30"
 			);
@@ -122,7 +128,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 
 				JSONArray array = new JSONObject(response).getJSONArray("items");
 				
-				for(int i=0;i<array.length();i++){
+				for(int i = 0;i < array.length();i++){
 					JSONObject js = array.getJSONObject(i);
 					EvaluationLesson lesson = new EvaluationLesson();
 					lesson.name = js.getString("kcmc").trim();
@@ -155,7 +161,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 				EvaluationLesson lesson = lessons.get(position);
 				try{
 					String response = WebUtil.doPost(
-							LoginUtil.HOST + "/jwglxt/xspjgl/xspj_cxXspjDisplay.html?gnmkdm=0",
+							loginViewModel.HOST + "/jwglxt/xspjgl/xspj_cxXspjDisplay.html?gnmkdm=0",
 							"JSESSIONID=" + session,
 							"jxb_id=" + lesson.jxb_id +
 									"&kch_id=" + lesson.kch_id +
@@ -179,7 +185,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 						postData.append("&tjzt=").append(lesson.tjzt);
 						
 						response = WebUtil.doPost(
-								LoginUtil.HOST + "/jwglxt/xspjgl/xspj_bcXspj.html?gnmkdm=0",
+								loginViewModel.HOST + "/jwglxt/xspjgl/xspj_bcXspj.html?gnmkdm=0",
 								"JSESSIONID=" + session,
 								postData.toString()
 						);
