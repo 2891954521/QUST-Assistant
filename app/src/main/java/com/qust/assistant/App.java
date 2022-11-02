@@ -11,15 +11,13 @@ import com.billy.android.swipe.SmartSwipeBack;
 import com.billy.android.swipe.SwipeConsumer;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.LoginViewModel;
-import com.qust.assistant.sql.DataBase;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.app.GuideActivity;
+import com.qust.assistant.ui.fragment.third.DrinkViewModel;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
 
 public class App extends Application{
-	
-	public static final int APP_REQUEST_CODE = 10;
 	
 	/**
 	 * 开发版版本号
@@ -39,6 +37,8 @@ public class App extends Application{
 	
 	public LoginViewModel loginViewModel;
 	
+	public DrinkViewModel drinkViewModel;
+	
 	public LessonTableViewModel lessonTableViewModel;
 	
 	private Thread.UncaughtExceptionHandler handler;
@@ -49,11 +49,10 @@ public class App extends Application{
 		
 		SettingUtil.init(this);
 		
-		DataBase.init(this);
-		
 		LogUtil.init(this);
 		
 		loginViewModel = new LoginViewModel(this);
+		drinkViewModel = new DrinkViewModel(this);
 		lessonTableViewModel = new LessonTableViewModel(this);
 		
 		handler = Thread.getDefaultUncaughtExceptionHandler();

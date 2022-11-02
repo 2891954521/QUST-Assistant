@@ -49,7 +49,8 @@ public class HomeFragment extends BaseFragment{
 		});
 		
 		if((boolean)SettingUtil.get(SettingUtil.KEY_SHOW_DRINK_CODE, false)){
-			layouts = new BaseFragment[]{ new DrinkFragment(activity, true, false), dailyLesson, termLesson };
+			DrinkFragment drinkFragment = new DrinkFragment(activity, true, false);
+			layouts = new BaseFragment[]{ drinkFragment, dailyLesson, termLesson };
 			viewPager.setAdapter(new PagerAdapter(this));
 			viewPager.setCurrentItem(1, false);
 			current = 1;

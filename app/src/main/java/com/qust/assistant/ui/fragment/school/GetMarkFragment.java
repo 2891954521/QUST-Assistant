@@ -56,7 +56,7 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected void doQuery(String session){
+	protected void doQuery(){
 		
 		sendMessage(App.UPDATE_DIALOG, "正在查询成绩");
 		
@@ -68,8 +68,8 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			String[] y = getYearAndTerm();
 			
 			String response = WebUtil.doPost(
-					loginViewModel.HOST + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query",
-					"JSESSIONID=" + session,
+					loginViewModel.host + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query",
+					"JSESSIONID=" + loginViewModel.getCookie(),
 					String.format("xnm=%s&xqm=%s&queryModel.showCount=50", y[0], y[1])
 			);
 			
@@ -88,8 +88,8 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			}
 			
 			response = WebUtil.doPost(
-					loginViewModel.HOST + "/jwglxt/cjcx/cjcx_cxXsKccjList.html",
-					"JSESSIONID=" + session,
+					loginViewModel.host + "/jwglxt/cjcx/cjcx_cxXsKccjList.html",
+					"JSESSIONID=" + loginViewModel.getCookie(),
 					String.format("xnm=%s&xqm=%s&queryModel.showCount=50", y[0], y[1])
 			);
 			

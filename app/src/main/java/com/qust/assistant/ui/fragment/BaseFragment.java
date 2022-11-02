@@ -42,7 +42,7 @@ public abstract class BaseFragment extends Fragment{
 	}
 	
 	/**
-	 * @param isRoot 是否为根Fragment，决定是否能够滑动返回
+	 * @param isRoot 是否为根Fragment，为true时不能够滑动返回
 	 * @param hasToolBar 是否有标题栏，决定在显示Fragment时需不需要添加BaseLayout
 	 */
 	public BaseFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){

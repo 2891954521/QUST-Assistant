@@ -1,4 +1,6 @@
-package com.qust.assistant.lesson;
+package com.qust.assistant.model.lesson;
+
+import androidx.annotation.NonNull;
 
 import com.qust.assistant.util.LogUtil;
 
@@ -7,8 +9,6 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Arrays;
-
-import androidx.annotation.NonNull;
 
 public class Lesson implements Serializable, Cloneable{
 	

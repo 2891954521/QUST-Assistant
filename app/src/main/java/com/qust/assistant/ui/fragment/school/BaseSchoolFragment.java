@@ -38,8 +38,6 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 			"大四 上学期","大四 下学期",
 	};
 	
-	protected String name, password;
-	
 	/**
 	 * 处理登陆的类
 	 */
@@ -86,25 +84,30 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	
 	public BaseSchoolFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
 		super(activity, isRoot, hasToolBar);
-		name = SettingUtil.getString(SettingUtil.SCHOOL_NAME, null);
-		password = SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, null);
 		entranceTime = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 2010);
 	}
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		loginViewModel = LoginViewModel.getInstance(activity);
-		loginViewModel.getCookieLiveData().observe(this, cookie -> {
-			name = SettingUtil.getString(SettingUtil.SCHOOL_NAME, null);
-			password = SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, null);
-			entranceTime = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 2010);
-		});
-		
 		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "查询中").build();
 		
 		View view = findViewById(R.id.fragment_school_query);
-		
 		if(view != null) view.setOnClickListener(v -> doLogin());
+		
+		initViewModel();
+	}
+	
+	protected void initViewModel(){
+		loginViewModel = LoginViewModel.getInstance(activity);
+		loginViewModel.getLoginResult().observe(this, result -> {
+			if(result.from == handler){
+				if(result.cookie != null){
+					new Thread(this::doQuery).start();
+				}else{
+					handler.sendMessage(handler.obtainMessage(App.DISMISS_TOAST, result.message));
+				}
+			}
+		});
 	}
 	
 	protected void initList(BaseAdapter adapter){
@@ -112,26 +115,6 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 		ListView listView = findViewById(R.id.fragment_school_list);
 		listView.setAdapter(adapter);
 		SmartSwipe.wrap(listView).addConsumer(new SpaceConsumer()).enableVertical();
-	}
-	
-	protected void doLogin(){
-		if(name == null || password == null){
-			toast("请先登录！");
-			activity.addView(LoginFragment.class);
-			return;
-		}
-		new Thread(){
-			@Override
-			public void run(){
-				String errorMsg = loginViewModel.login(handler, name, password);
-				if(errorMsg == null){
-					doQuery(loginViewModel.getCookie());
-				}else{
-					sendMessage(App.DISMISS_TOAST, errorMsg);
-				}
-			}
-		}.start();
-		dialog.show();
 	}
 	
 	/**
@@ -146,11 +129,15 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 		yearPicker.setValue(LessonUtil.getCurrentYear(entranceTime));
 	}
 	
+	protected void doLogin(){
+		new Thread(() -> loginViewModel.login(activity, handler)).start();
+		dialog.show();
+	}
+	
 	/**
 	 * 执行查询的函数
-	 * @param JSESSIONID cookie
 	 */
-	protected abstract void doQuery(String JSESSIONID);
+	protected abstract void doQuery();
 	
 	@Override
 	protected abstract int getLayoutId();

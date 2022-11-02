@@ -5,10 +5,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.qust.assistant.R;
-import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonGroup;
-import com.qust.assistant.lesson.LessonView;
 import com.qust.assistant.model.LessonTableViewModel;
+import com.qust.assistant.model.lesson.Lesson;
+import com.qust.assistant.model.lesson.LessonGroup;
+import com.qust.assistant.model.lesson.LessonView;
 import com.qust.assistant.ui.MainActivity;
 
 import java.util.Calendar;

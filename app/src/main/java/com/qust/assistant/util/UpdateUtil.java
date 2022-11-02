@@ -5,54 +5,61 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 
 import androidx.annotation.Nullable;
 
 import com.qust.assistant.App;
+import com.qust.assistant.BuildConfig;
 import com.qust.assistant.ui.app.UpdateActivity;
+import com.qust.assistant.vo.UpdateInfo;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 
 public class UpdateUtil{
 	
 	public static final String NAVIGATION_PAGE_URL = "http://139.224.16.208/guide.json";
 	
+	public static final String GITHUB_UPDATE_URL = "https://api.github.com/repos/2891954521/QUST-Assistant/releases";
+	
+	/**
+	 * 异步检查更新
+	 */
 	public static void checkUpdate(final Activity activity){
 		
-		if(!(boolean)SettingUtil.get(SettingUtil.KEY_AUTO_UPDATE, true)) return;
+		if(!SettingUtil.getBoolean(SettingUtil.KEY_AUTO_UPDATE, true)){
+			return;
+		}
 		
-		boolean isDev = (boolean)SettingUtil.get(SettingUtil.KEY_UPDATE_DEV, false);
-		
-		long frequency = isDev ? 1000 * 60 * 60 * 24 * 1 : 1000 * 60 * 60 * 24 * 3;
+		boolean isDev = SettingUtil.getBoolean(SettingUtil.KEY_UPDATE_DEV, false);
 		
 		long current = System.currentTimeMillis();
+		long frequency = isDev ? 1000 * 60 * 60 * 24 * 1 : 1000 * 60 * 60 * 24 * 3;
 		
-		if(current - (long)SettingUtil.get(SettingUtil.LAST_UPDATE_TIME, 0L) < frequency) return;
+		if(current - (long)SettingUtil.get(SettingUtil.LAST_UPDATE_TIME, 0L) < frequency){
+			return;
+		}
 		
 		SettingUtil.edit().putLong("last_update_time", current).apply();
 		
-		new AsyncTask<Void, Void, JSONObject>(){
-			
+		new Thread(){
 			@Override
-			protected JSONObject doInBackground(Void... voids){
-				return checkVersion(activity, isDev);
+			public void run(){
+				UpdateInfo info = checkVersion(activity, isDev);
+				if(info != null){
+					activity.runOnUiThread(() -> {
+						DialogUtil.getBaseDialog(activity).title("更新").content("检查到新版本，是否更新？\n" + info.message)
+								.onPositive((dialog, which) -> activity.startActivity(new Intent(activity, UpdateActivity.class)))
+								.show();
+					});
+				}
 			}
-			
-			@Override
-			protected void onPostExecute(JSONObject data){
-				if(data == null) return;
-				try{
-					DialogUtil.getBaseDialog(activity).title("更新")
-							.content("检查到新版本，是否更新？\n" + data.getString("message"))
-							.onPositive((dialog, which) -> activity.startActivity(new Intent(activity, UpdateActivity.class)))
-							.show();
-				}catch(JSONException ignored){ }
-			}
-		}.execute();
+		}.start();
 	}
 	
 	/**
@@ -60,7 +67,15 @@ public class UpdateUtil{
 	 * @param isDev 是否检查开发版更新
 	 */
 	@Nullable
-	public static JSONObject checkVersion(Context context, boolean isDev){
+	public static UpdateInfo checkVersion(Context context, boolean isDev){
+		// 先从 Github 上检查更新
+		try{
+			UpdateInfo info = checkVersionFromGitHub();
+			if(info != null) return info;
+		}catch(IOException | JSONException e){
+			LogUtil.Log(e);
+		}
+		
 		try{
 			String response = WebUtil.doGet(NAVIGATION_PAGE_URL, null);
 			JSONObject json;
@@ -70,20 +85,26 @@ public class UpdateUtil{
 				return null;
 			}
 			
+			// 检查开发版更新
 			if(isDev){
-				JSONObject data = checkVersion(App.DEV_VERSION, json.getString("getDevInfo"));
-				if(data != null) return data;
+				try{
+					UpdateInfo info = checkVersion(App.DEV_VERSION, json.getString("getDevInfo"));
+					if(info != null){
+						info.isDev = true;
+						return info;
+					}
+				}catch(IOException | JSONException e){
+					LogUtil.Log(e);
+				}
 			}
 			
 			int versionCode;
-			
 			try{
 				PackageInfo pkg = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 				versionCode = pkg.versionCode;
 			}catch(PackageManager.NameNotFoundException ignored){
 				return null;
 			}
-			
 			return checkVersion(versionCode, json.getString("getUpdateInfo"));
 			
 		}catch(IOException | JSONException e){
@@ -92,12 +113,57 @@ public class UpdateUtil{
 		}
 	}
 	
+	
+	/**
+	 * 从Github检查版本更新
+	 * @return 版本信息，没有新版本时返还 null
+	 */
+	@Nullable
+	public static UpdateInfo checkVersionFromGitHub() throws JSONException, IOException{
+		String response = WebUtil.doGet(GITHUB_UPDATE_URL, null);
+		if(response.length() == 0){
+			return null;
+		}
+		
+		JSONArray array = new JSONArray(response);
+		if(array.length() == 0){
+			return null;
+		}
+		
+		JSONObject json = array.getJSONObject(0);
+		Date buildDate;
+		Date publishDate;
+		try{
+			buildDate = DateUtil.YMD.parse(BuildConfig.PACKAGE_TIME);
+			publishDate = DateUtil.YMD.parse(json.getString("published_at"));
+			if(publishDate == null) return null;
+		}catch(ParseException e){
+			e.printStackTrace();
+			return null;
+		}
+		if(publishDate.after(buildDate)){
+			JSONArray assets = json.getJSONArray("assets");
+			if(assets.length() == 0){
+				return null;
+			}
+			
+			UpdateInfo info = new UpdateInfo();
+			info.versionName = json.getString("name");
+			info.message = json.getString("body");
+			info.apkUrl = assets.getJSONObject(0).getString("browser_download_url");
+			return info;
+		}
+		
+		return null;
+	}
+
+	
 	/**
 	 * 检查版本更新
 	 * @return 版本信息，没有新版本时返还null
 	 */
 	@Nullable
-	public static JSONObject checkVersion(int version, String url) throws JSONException, IOException{
+	private static UpdateInfo checkVersion(int versionCode, String url) throws JSONException, IOException{
 		String response = WebUtil.doGet(url, null);
 		if(response.length() == 0){
 			return null;
@@ -106,10 +172,17 @@ public class UpdateUtil{
 		JSONObject json = new JSONObject(response);
 		if(json.has("code") && json.getInt("code") == 200){
 			JSONObject data = json.getJSONObject("data");
-			return data.getInt("version") > version ? data : null;
-		}else{
-			return null;
+			if(data.getInt("versionCode") > versionCode){
+				UpdateInfo info = new UpdateInfo();
+				info.versionCode = data.getInt("versionCode");
+				info.versionName = data.getString("versionName");
+				info.message = data.getString("message");
+				info.apkUrl = data.getString("apkUrl");
+				return info;
+			}
 		}
+		
+		return null;
 	}
 	
 }

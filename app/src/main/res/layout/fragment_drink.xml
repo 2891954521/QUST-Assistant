@@ -1,82 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/fragment_drink_code"
+    android:layout_height="match_parent">
+    
+    <View
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:paddingStart="@dimen/activity_margin"
-        android:paddingEnd="@dimen/activity_margin"
-        android:scaleType="fitXY" />
-
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground" />
+    
+    <ImageView
+        android:id="@+id/code"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        android:layout_gravity="center_horizontal" />
+    
     <LinearLayout
+        android:id="@+id/bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin">
-
-        <ImageView
+        android:paddingTop="100dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical">
+        
+        <FrameLayout
+            android:id="@+id/fill_screen"
+            android:background="@drawable/bg_down"
+            android:foreground="?attr/selectableItemBackground"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:padding="8dp"
-            android:src="@drawable/ic_brightness"
-            app:tint="#C8C8C8" />
-
-        <SeekBar
-            style="@style/SeekBarWhite"
-            android:id="@+id/fragment_drink_brightness"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
+            android:elevation="8dp">
+            
+            <ImageView
+                android:id="@+id/fill_screen_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:alpha="0.7"
+                android:rotation="-90"
+                android:src="@drawable/ic_back" />
+        
+        </FrameLayout>
+        
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            android:max="255"
-            android:maxHeight="48dp"
-            android:minHeight="32dp"
-            android:padding="@dimen/activity_margin"
-            android:thumb="@null" />
+            android:orientation="horizontal">
+            
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_brightness"
+                app:tint="#C8C8C8" />
+            
+            <SeekBar
+                style="@style/SeekBarWhite"
+                android:id="@+id/main_brightness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="32dp"
+                android:minHeight="28dp"
+                android:max="255"
+                android:thumb="@null"
+                android:duplicateParentState="true" />
+        
+        </LinearLayout>
+        
+        <Button
+            android:id="@+id/refresh_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:text="刷新条码" />
+    
+        <TextView
+            style="@style/TextSmall"
+            android:id="@+id/drink_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@color/colorSecondaryText"
+            android:text="切换账号" />
 
     </LinearLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/fragment_drink_phone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/widget_margin"
-        android:hint="手机号码">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="phone"
-            android:textSize="16sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/fragment_drink_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/widget_margin"
-        android:hint="密码">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:textSize="16sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/fragment_drink_get_code"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="获取饮水码"/>
-
-</LinearLayout>
+</RelativeLayout>

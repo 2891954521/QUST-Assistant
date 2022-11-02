@@ -125,14 +125,14 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected void doQuery(String session){
+	protected void doQuery(){
 		sendMessage(App.UPDATE_DIALOG, "正在查询");
 		
 		lessons = new ArrayList<>();
 		try{
 			String response = WebUtil.doGet(
-					loginViewModel.HOST + "/jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default",
-					"JSESSIONID=" + session
+					loginViewModel.host + "/jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default",
+					"JSESSIONID=" + loginViewModel.getCookie()
 			);
 			if(!TextUtils.isEmpty(response)){
 				Matcher matcher = Pattern.compile("id=\"alertBox\"\\s?>(.*?)</div>", Pattern.DOTALL).matcher(response);
@@ -152,9 +152,9 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 				for(String param : params){
 
 					response = WebUtil.doPost(
-							loginViewModel.HOST + "/jwglxt/xsxy/xsxyqk_cxJxzxjhxfyqKcxx.html",
-							"JSESSIONID=" + session,
-							"xfyqjd_id=" + param + "&xh_id=" + name);
+							loginViewModel.host + "/jwglxt/xsxy/xsxyqk_cxJxzxjhxfyqKcxx.html",
+							"JSESSIONID=" + loginViewModel.getCookie(),
+							"xfyqjd_id=" + param + "&xh_id=" + loginViewModel.name);
 					
 					if(TextUtils.isEmpty(response)) continue;
 					

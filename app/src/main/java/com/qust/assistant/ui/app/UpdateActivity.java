@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -19,9 +20,7 @@ import com.qust.assistant.ui.BaseAnimActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.UpdateUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.qust.assistant.vo.UpdateInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,13 +35,9 @@ public class UpdateActivity extends BaseAnimActivity{
 	
 	private MaterialDialog downloadDialog;
 	
+	private UpdateInfo info;
+	
 	private File file;
-	
-	private String message;
-	
-	private String url;
-	
-	private int version;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
@@ -51,21 +46,11 @@ public class UpdateActivity extends BaseAnimActivity{
 		
 		file = new File(getExternalCacheDir(),"release.apk");
 		
-		findViewById(R.id.activity_update_button).setOnClickListener(v -> {
-			if(url == null){
-				checkUpdate();
-			}else{
-				downloadApk();
-			}
-		});
-		
 		checkDialog = DialogUtil.getIndeterminateProgressDialog(this,"正在检查更新").build();
 		checkDialog.setCanceledOnTouchOutside(false);
 		
 		downloadDialog = DialogUtil.getIndeterminateProgressDialog(this, "正在下载").build();
 		downloadDialog.setCanceledOnTouchOutside(false);
-		
-		findViewById(R.id.toolbar).postDelayed(this::checkUpdate,200);
 		
 		try{
 			PackageInfo pkg = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -74,8 +59,20 @@ public class UpdateActivity extends BaseAnimActivity{
 		
 		initToolBar(null);
 		
+		View view = findViewById(R.id.activity_update_button);
+		view.setOnClickListener(v -> {
+			if(info == null){
+				checkUpdate();
+			}else{
+				downloadApk();
+			}
+		});
+		view.postDelayed(this::checkUpdate,200);
 	}
 	
+	/**
+	 * 检查更新
+	 */
 	private void checkUpdate(){
 		SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean isDev = setting.getBoolean("key_update_dev",false);
@@ -83,29 +80,15 @@ public class UpdateActivity extends BaseAnimActivity{
 		new Thread(){
 			@Override
 			public void run(){
-				JSONObject data = UpdateUtil.checkVersion(UpdateActivity.this, isDev);
-				if(data == null){
-					runOnUiThread(() -> {
+				info = UpdateUtil.checkVersion(UpdateActivity.this, isDev);
+				runOnUiThread(() -> {
+					if(info == null){
 						toast("当前无新版本！");
-						checkDialog.cancel();
-					});
-					return;
-				}
-				try{
-					version = data.getInt("version");
-					message = data.getString("message");
-					url = data.getString("apkUrl");
-					runOnUiThread(() -> {
-						((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：" + url + "\n" + message);
-						checkDialog.cancel();
-					});
-				}catch(JSONException e){
-					LogUtil.Log(e);
-					runOnUiThread(() -> {
-						toast("获取更新信息失败！");
-						checkDialog.cancel();
-					});
-				}
+					}else{
+						((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：" + info.apkUrl + "\n" + info.message);
+					}
+					checkDialog.cancel();
+				});
 			}
 		}.start();
 	}
@@ -116,7 +99,7 @@ public class UpdateActivity extends BaseAnimActivity{
 			@Override
 			public void run(){
 				try{
-					HttpURLConnection con = (HttpURLConnection)new URL(url).openConnection();
+					HttpURLConnection con = (HttpURLConnection)new URL(info.apkUrl).openConnection();
 					con.setReadTimeout(5000);
 					con.setConnectTimeout(5000);
 					con.setRequestMethod("GET");
@@ -153,19 +136,25 @@ public class UpdateActivity extends BaseAnimActivity{
 		}.start();
 	}
 	
+	/**
+	 * 检查下载的apk信息
+	 */
 	private void checkPackage(){
 		PackageManager pm = getPackageManager();
 		PackageInfo packageInfo = pm.getPackageArchiveInfo(file.toString(), PackageManager.GET_ACTIVITIES);
-		if(packageInfo != null){
-			try{
-				if(pm.getPackageInfo(getPackageName(), 0).packageName.equals(packageInfo.packageName) || version == packageInfo.versionCode){
-					installApk();
-				}else{
-					askForReDownload();
-				}
-			}catch(PackageManager.NameNotFoundException e){
-				LogUtil.Log(e);
+		if(packageInfo == null){
+			toast("获取更新包信息失败！");
+			return;
+		}
+		try{
+			// 校验一下包名
+			if(pm.getPackageInfo(getPackageName(), 0).packageName.equals(packageInfo.packageName)){
+				installApk();
+			}else{
+				askForReDownload();
 			}
+		}catch(PackageManager.NameNotFoundException e){
+			LogUtil.Log(e);
 		}
 	}
 	

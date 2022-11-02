@@ -42,7 +42,8 @@
         
         <SwitchPreference
             android:key="key_quick_display_drink_code"
-            android:title="主页下拉显示饮水码" />
+            android:title="主页下拉显示饮水码"
+            android:summary="重启应用生效"/>
 
         <SwitchPreference
             android:key="key_auto_update"

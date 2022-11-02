@@ -1,4 +1,4 @@
-package com.qust.assistant.lesson;
+package com.qust.assistant.model.lesson;
 
 import android.content.Context;
 import android.view.LayoutInflater;

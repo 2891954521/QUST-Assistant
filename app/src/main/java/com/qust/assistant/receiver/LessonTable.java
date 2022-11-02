@@ -13,9 +13,9 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.qust.assistant.R;
-import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonGroup;
 import com.qust.assistant.model.LessonTableViewModel;
+import com.qust.assistant.model.lesson.Lesson;
+import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.util.ColorUtil;
 
 import java.util.Calendar;

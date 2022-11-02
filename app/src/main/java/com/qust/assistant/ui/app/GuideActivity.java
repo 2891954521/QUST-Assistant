@@ -60,6 +60,8 @@ public class GuideActivity extends BaseActivity{
 	
 	private int entranceTime;
 	
+	private LoginViewModel loginViewModel;
+	
 	protected Handler handler = new Handler(Looper.getMainLooper()){
 		@Override
 		public void handleMessage(Message msg){
@@ -122,7 +124,7 @@ public class GuideActivity extends BaseActivity{
 					|| ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
 				ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
 			}else{
-				loginAndGetLessonTable();
+				login();
 			}
 		});
 
@@ -149,12 +151,23 @@ public class GuideActivity extends BaseActivity{
 				linearLayout.startAnimation(AnimationUtils.loadAnimation(GuideActivity.this, R.anim.anim_flow_in));
 			}
 		});
+		
+		loginViewModel = LoginViewModel.getInstance(this);
+		loginViewModel.getLoginResult().observe(this, result -> {
+			if(result.from == handler){
+				if(result.cookie != null){
+					new Thread(this::getLessonTable).start();
+				}else{
+					handler.sendMessage(handler.obtainMessage(App.DISMISS_TOAST, result.message));
+				}
+			}
+		});
 	}
 	
 	/**
 	 * 教务登录并获取课表
 	 */
-	private void loginAndGetLessonTable(){
+	private void login(){
 		String user = nameText.getEditText().getText().toString();
 		if(TextUtils.isEmpty(user)){
 			nameText.setError("请输入学号");
@@ -171,43 +184,31 @@ public class GuideActivity extends BaseActivity{
 			passwordText.setError(null);
 		}
 		
-		new Thread(){
-			@Override
-			public void run(){
-				LoginViewModel loginViewModel = LoginViewModel.getInstance(GuideActivity.this);
-				String errorMsg = loginViewModel.login(handler, user, password);
-				if(errorMsg != null){
-					handler.sendMessage(handler.obtainMessage(App.DISMISS_TOAST, errorMsg));
-					return;
-				}
-				
-				SettingUtil.edit()
-						.putString(SettingUtil.SCHOOL_NAME, user)
-						.putString(SettingUtil.SCHOOL_PASSWORD, password)
-						.putInt(SettingUtil.KEY_ENTRANCE_TIME, entranceTime)
-						.apply();
-				
-				handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在查询课表"));
-				
-				int index = LessonUtil.getCurrentYear(entranceTime);
-				
-				LessonUtil.QueryLessonResult result = LessonUtil.queryLessonTable(loginViewModel, loginViewModel.getCookie(),
-						String.valueOf(index / 2 + entranceTime),
-						entranceTime % 2 == 0 ? "3" : "12");
-				
-				LessonTableViewModel lessonTableViewModel = LessonTableViewModel.getInstance(GuideActivity.this);
-				lessonTableViewModel.saveLessonData(result.startTime, result.totalWeek, result.lessonGroups);
-				
-				runOnUiThread(() -> {
-					SettingUtil.edit().putBoolean(SettingUtil.IS_FIRST_USE, false).apply();
-					dialog.dismiss();
-					toast("初始化完成");
-					startActivity(new Intent(GuideActivity.this, MainActivity.class));
-					finish();
-				});
-			}
-		}.start();
+		new Thread(() -> loginViewModel.login(handler, user, password)).start();
+		
 		dialog.show();
+	}
+	
+	private void getLessonTable(){
+		
+		SettingUtil.edit().putInt(SettingUtil.KEY_ENTRANCE_TIME, entranceTime).apply();
+		
+		handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在查询课表"));
+		
+		int index = LessonUtil.getCurrentYear(entranceTime);
+		
+		LessonUtil.QueryLessonResult result = LessonUtil.queryLessonTable(loginViewModel, String.valueOf(index / 2 + entranceTime), entranceTime % 2 == 0 ? "3" : "12");
+		
+		LessonTableViewModel lessonTableViewModel = LessonTableViewModel.getInstance(GuideActivity.this);
+		lessonTableViewModel.saveLessonData(result.startTime, result.totalWeek, result.lessonGroups);
+		
+		runOnUiThread(() -> {
+			SettingUtil.edit().putBoolean(SettingUtil.IS_FIRST_USE, false).apply();
+			dialog.dismiss();
+			toast("初始化完成");
+			startActivity(new Intent(GuideActivity.this, MainActivity.class));
+			finish();
+		});
 	}
 	
 	@Override
@@ -218,7 +219,7 @@ public class GuideActivity extends BaseActivity{
 			if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
 				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
 			}else{
-				loginAndGetLessonTable();
+				login();
 			}
 		}
 	}

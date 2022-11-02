@@ -9,8 +9,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.lesson.LessonGroup;
 import com.qust.assistant.model.LessonTableViewModel;
+import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.QustUtil.LessonUtil;
@@ -90,13 +90,13 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected void doQuery(String session){
+	protected void doQuery(){
 		
 		sendMessage(App.UPDATE_DIALOG, "正在查询课表");
 		
 		String[] y = getYearAndTerm();
 		
-		LessonUtil.QueryLessonResult result = LessonUtil.queryLessonTable(loginViewModel, session, y[0], y[1]);
+		LessonUtil.QueryLessonResult result = LessonUtil.queryLessonTable(loginViewModel, y[0], y[1]);
 		
 		if(result.message != null){
 			sendMessage(App.DISMISS_TOAST, result.message);

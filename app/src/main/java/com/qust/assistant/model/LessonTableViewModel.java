@@ -9,8 +9,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.qust.assistant.App;
-import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonGroup;
+import com.qust.assistant.model.lesson.Lesson;
+import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.FileUtil;

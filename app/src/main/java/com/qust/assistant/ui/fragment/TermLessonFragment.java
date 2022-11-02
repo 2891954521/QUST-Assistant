@@ -16,9 +16,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qust.assistant.R;
-import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonGroup;
 import com.qust.assistant.model.LessonTableViewModel;
+import com.qust.assistant.model.lesson.Lesson;
+import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.DialogRoundTop;

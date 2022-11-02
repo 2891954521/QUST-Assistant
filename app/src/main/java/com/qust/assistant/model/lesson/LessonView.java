@@ -1,4 +1,4 @@
-package com.qust.assistant.lesson;
+package com.qust.assistant.model.lesson;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.widget.lesson.BackgroundLesson;
 
+/**
+ * 构建课程View的类
+ */
 public class LessonView{
 	
 	private View view;

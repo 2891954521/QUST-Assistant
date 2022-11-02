@@ -8,10 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.billy.android.swipe.SmartSwipe;
 import com.billy.android.swipe.SwipeConsumer;
@@ -31,11 +29,6 @@ public class MainActivity extends BaseActivity{
 	private Stack<BaseFragment> fragments;
 	
 	private MainDrawer drawer;
-	
-	/**
-	 * 所有Fragment容器
-	 */
-	private FrameLayout layout;
 	
 	private boolean isFading;
 	
@@ -57,8 +50,6 @@ public class MainActivity extends BaseActivity{
 		setContentView(R.layout.activity_main);
 		
 		fragments = new Stack<>();
-		
-		layout = findViewById(R.id.main_frame);
 		
 		fragmentManager = getSupportFragmentManager();
 		
@@ -128,6 +119,9 @@ public class MainActivity extends BaseActivity{
 		});
 	}
 	
+	/**
+	 * 初始化主页
+	 */
 	private void initHome(){
 		BaseFragment home;
 		
@@ -161,15 +155,15 @@ public class MainActivity extends BaseActivity{
 			
 			drawer.close();
 			
-			BaseFragment b = ((BaseFragment)newFragment.getConstructor(MainActivity.class).newInstance(this));
+			BaseFragment b = newFragment.getConstructor(MainActivity.class).newInstance(this);
 			
 			fragments.push(b);
 			
-			FragmentTransaction transaction = fragmentManager.beginTransaction();
-			transaction.setCustomAnimations(R.anim.anim_right_in, 0);
-			transaction.add(R.id.main_frame, b, b.getClass().getName());
-			transaction.addToBackStack("");
-			transaction.commit();
+			fragmentManager.beginTransaction()
+					.setCustomAnimations(R.anim.anim_right_in, 0)
+					.add(R.id.main_frame, b, b.getClass().getName())
+					.addToBackStack("")
+					.commit();
 			
 			isFading = true;
 		}catch(ReflectiveOperationException ignored){ }

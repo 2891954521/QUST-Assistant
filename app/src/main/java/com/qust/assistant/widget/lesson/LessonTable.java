@@ -25,9 +25,9 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.qust.assistant.R;
-import com.qust.assistant.lesson.Lesson;
-import com.qust.assistant.lesson.LessonGroup;
 import com.qust.assistant.model.LessonTableViewModel;
+import com.qust.assistant.model.lesson.Lesson;
+import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.ParamUtil;

@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.model.LoginViewModel;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
@@ -84,8 +83,6 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 	
 	private String session;
 	
-	private LoginViewModel loginViewModel;
-	
 	public AutoEvaluationFragment(MainActivity activity){
 		super(activity);
 	}
@@ -110,18 +107,18 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected void doQuery(String JSESSIONID){
+	protected void doQuery(){
 		
 		sendMessage(App.UPDATE_DIALOG, "正在查询教评");
 		
-		session = JSESSIONID;
+		session = loginViewModel.getCookie();
 		
 		lessons = new ArrayList<>();
 		
 		try{
 			String response = WebUtil.doPost(
-					loginViewModel.HOST + "/jwglxt/xspjgl/xspj_cxXspjIndex.html?doType=query&gnmkdm=0",
-					"JSESSIONID=" + JSESSIONID,
+					loginViewModel.host + "/jwglxt/xspjgl/xspj_cxXspjIndex.html?doType=query&gnmkdm=0",
+					"JSESSIONID=" + session,
 					"queryModel.showCount=30"
 			);
 			if(!TextUtils.isEmpty(response)){
@@ -161,7 +158,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 				EvaluationLesson lesson = lessons.get(position);
 				try{
 					String response = WebUtil.doPost(
-							loginViewModel.HOST + "/jwglxt/xspjgl/xspj_cxXspjDisplay.html?gnmkdm=0",
+							loginViewModel.host + "/jwglxt/xspjgl/xspj_cxXspjDisplay.html?gnmkdm=0",
 							"JSESSIONID=" + session,
 							"jxb_id=" + lesson.jxb_id +
 									"&kch_id=" + lesson.kch_id +
@@ -185,7 +182,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 						postData.append("&tjzt=").append(lesson.tjzt);
 						
 						response = WebUtil.doPost(
-								loginViewModel.HOST + "/jwglxt/xspjgl/xspj_bcXspj.html?gnmkdm=0",
+								loginViewModel.host + "/jwglxt/xspjgl/xspj_bcXspj.html?gnmkdm=0",
 								"JSESSIONID=" + session,
 								postData.toString()
 						);
@@ -332,6 +329,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 			if("1".equals(lesson.tjzt)){
 				convertView.findViewById(R.id.item_evaluation_submit).setVisibility(View.GONE);
 				convertView.findViewById(R.id.item_evaluation_wtf).setVisibility(View.GONE);
+				((TextView)convertView.findViewById(R.id.item_evaluation_handled)).setText("已提交");
 			}else{
 				Button button = convertView.findViewById(R.id.item_evaluation_submit);
 				button.setVisibility(View.VISIBLE);

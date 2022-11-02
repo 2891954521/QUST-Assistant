@@ -11,8 +11,12 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.qust.assistant.App;
+import com.qust.assistant.ui.MainActivity;
+import com.qust.assistant.ui.fragment.school.LoginFragment;
 import com.qust.assistant.util.LogUtil;
+import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.WebUtil;
+import com.qust.assistant.vo.QustLoginResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,102 +47,128 @@ public class LoginViewModel extends AndroidViewModel{
 	
 	public static final Pattern JESSIONID_PATTERN = Pattern.compile("JSESSIONID=(.*?);");
 	
-	public String HOST;
+	public String host;
 	
-	private MutableLiveData<String> cookie;
+	public String name;
+	
+	private String password;
+	
+	private MutableLiveData<QustLoginResult> loginResult;
 	
 	public LoginViewModel(@NonNull Application application){
 		super(application);
-		cookie = new MutableLiveData<>();
-		HOST = SEVER_HOSTS[0];
+		loginResult = new MutableLiveData<>(new QustLoginResult(null, null, null));
+		
+		host = SEVER_HOSTS[0];
+		
+		name = SettingUtil.getString(SettingUtil.SCHOOL_NAME, null);
+		password = SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, null);
 	}
 	
 	public static LoginViewModel getInstance(@NonNull Context context){
 		return ((App)context.getApplicationContext()).loginViewModel;
 	}
 	
-	public MutableLiveData<String> getCookieLiveData(){
-		return cookie;
+	public String getCookie(){
+		return loginResult.getValue().cookie;
 	}
 	
-	public String getCookie(){
-		return cookie.getValue();
+	public MutableLiveData<QustLoginResult> getLoginResult(){
+		return loginResult;
+	}
+	
+	/**
+	 * 教务登录, 使用储存的用户名和密码
+	 */
+	public void login(MainActivity activity, Handler handler){
+		if(loginResult.getValue().cookie != null){
+			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在检查登陆状态"));
+			try{
+				HttpURLConnection connection = WebUtil.get(host + "/jwglxt/xtgl/index_initMenu.html", "JSESSIONID=" + loginResult.getValue().cookie);
+				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
+					postValue(handler, "登录成功", loginResult.getValue().cookie);
+				}
+			}catch(IOException e){
+				postValue(handler, "登录失败" + e.getMessage(), null);
+			}
+		}else if(name == null || password == null){
+			activity.addView(LoginFragment.class);
+		}else{
+			login(handler, name, password);
+		}
 	}
 	
 	/**
 	 * 教务登录
-	 * @return 错误消息
 	 */
-	@Nullable
-	public String login(Handler handler, String name, String password){
+	public void login(Handler handler, String name, String password){
 		try{
-			if(cookie.getValue() != null){
-				
-				handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在检查登陆状态"));
-				
-				HttpURLConnection connection = WebUtil.get(
-						HOST + "/jwglxt/xtgl/index_initMenu.html",
-						"JSESSIONID=" + cookie.getValue());
-				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
-					return null;
-				}
-			}
-			
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取Cookie"));
 			
 			String[] param = getLoginParam();
 			if(param[0] == null || param[1] == null){
-				return "登陆失败！服务器异常！";
+				postValue(handler, "登陆失败，服务器异常", null);
 			}
 			
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取RSA公钥"));
 			
 			String key = getPublicKey(param[0]);
 			if(key == null){
-				return "登陆失败！服务器异常！";
+				postValue(handler, "登陆失败，服务器异常", null);
 			}
 			
 			String rsaPassword = encrypt(password, key);
 			if(rsaPassword == null){
-				return "登陆失败！RSA加密出错！";
+				postValue(handler, "登陆失败，RSA加密出错", null);
 			}
 			
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在尝试登陆"));
 			
 			HttpURLConnection connection = WebUtil.post(
-					HOST + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
+					host + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
 					"JSESSIONID=" + param[0],
 					"csrftoken=" + param[1] + "&language=zh_CN&yhm=" + name + "&mm=" + URLEncoder.encode(rsaPassword, "utf-8")
 			);
 			
 			switch(connection.getResponseCode()){
 				case HttpURLConnection.HTTP_OK:
-					return "用户名或密码错误";
+					postValue(handler, "登陆失败，用户名或密码错误", null);
+					break;
 				
 				case HttpURLConnection.HTTP_MOVED_PERM:
 				case HttpURLConnection.HTTP_MOVED_TEMP:
 				case 307:
+					SettingUtil.edit()
+							.putString(SettingUtil.SCHOOL_NAME, name)
+							.putString(SettingUtil.SCHOOL_PASSWORD, password).apply();
+					
 					Matcher matcher = JESSIONID_PATTERN.matcher(connection.getHeaderField("Set-Cookie"));
-					cookie.postValue(matcher.find() ? matcher.group(1) : param[0]);
-					return null;
-				
+					postValue(handler, "登陆成功", matcher.find() ? matcher.group(1) : param[0]);
+					break;
+		
 				default:
-					return "登陆失败";
+					postValue(handler, "登陆失败，未知的响应码", null);
 			}
 		}catch(IOException e){
-			return "登陆失败!";
+			postValue(handler, "登陆失败" + e.getMessage(), null);
 		}
+	}
+	
+	
+	private void postValue(Handler handler, String message, String cookie){
+		loginResult.postValue(new QustLoginResult(handler, message, cookie));
 	}
 	
 	/**
 	 * 获取登录参数
+	 * @return param[0] = Cookie, param[1] = csrfToken
 	 */
 	@NonNull
 	private String[] getLoginParam(){
 		String[] result = new String[2];
 		String html = null;
 		try{
-			HttpURLConnection connection = WebUtil.get(HOST + "/jwglxt/xtgl/login_slogin.html", null);
+			HttpURLConnection connection = WebUtil.get(host + "/jwglxt/xtgl/login_slogin.html", null);
 			if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
 				String s = connection.getHeaderField("Set-Cookie");
 				if(s != null){
@@ -173,7 +203,7 @@ public class LoginViewModel extends AndroidViewModel{
 	private String getPublicKey(String cookie){
 		try{
 			String str = WebUtil.doGet(
-					HOST + "/jwglxt/xtgl/login_getPublicKey.html",
+					host + "/jwglxt/xtgl/login_getPublicKey.html",
 					"JSESSIONID=" + cookie
 			);
 			if(str.length() == 0) return null;

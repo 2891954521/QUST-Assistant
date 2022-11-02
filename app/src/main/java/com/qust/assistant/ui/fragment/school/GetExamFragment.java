@@ -60,7 +60,7 @@ public class GetExamFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected void doQuery(String session){
+	protected void doQuery(){
 		Message message = new Message();
 		message.obj = "正在查询考试";
 		handler.sendMessage(message);
@@ -69,8 +69,8 @@ public class GetExamFragment extends BaseSchoolFragment{
 			String[] y = getYearAndTerm();
 			
 			String response = WebUtil.doPost(
-					loginViewModel.HOST + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query",
-					"JSESSIONID=" + session,
+					loginViewModel.host + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query",
+					"JSESSIONID=" + loginViewModel.getCookie(),
 					String.format("xnm=%s&xqm=%s&queryModel.showCount=50",y[0],y[1])
 			);
 			if(!"".equals(response)){
