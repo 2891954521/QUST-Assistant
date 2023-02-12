@@ -31,6 +31,13 @@
                 android:layout_marginEnd="@dimen/activity_margin"
                 android:descendantFocusability="blocksDescendants" />
     
+            <NumberPicker
+                android:id="@+id/fragment_school_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:descendantFocusability="blocksDescendants" />
+            
             <Button
                 android:id="@+id/fragment_school_query"
                 android:layout_width="wrap_content"

@@ -10,12 +10,40 @@
         android:orientation="vertical"
         android:paddingBottom="@dimen/activity_margin">
     
-        <TextView
-            android:id="@+id/layout_timetable_week"
-            style="@style/TextTitle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText" />
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:orientation="horizontal">
+            
+            <ImageView
+                android:id="@+id/fragment_term_lesson_left"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="@dimen/widget_margin"
+                android:src="@drawable/ic_arrow"
+                android:rotation="180"
+                app:tint="@color/icons" />
+    
+            <com.qust.assistant.widget.swipe.SwipeTextView
+                style="@style/TextTitle"
+                android:id="@+id/layout_timetable_week"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/colorPrimaryText" />
+    
+            <ImageView
+                android:id="@+id/fragment_term_lesson_right"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="@dimen/widget_margin"
+                android:src="@drawable/ic_arrow"
+                app:tint="@color/icons" />
+            
+        </LinearLayout>
+
     
         <com.qust.assistant.widget.lesson.LessonTable
             android:id="@+id/fragment_timetable_pager"
@@ -241,7 +269,7 @@
 
                     </LinearLayout>
 
-                    <com.qust.assistant.widget.lesson.LessonTime
+                    <com.qust.assistant.widget.LessonTime
                         android:id="@+id/layout_lesson_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

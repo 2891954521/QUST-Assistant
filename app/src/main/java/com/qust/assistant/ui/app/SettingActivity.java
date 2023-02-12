@@ -125,7 +125,8 @@ public class SettingActivity extends BaseAnimActivity{
 			});
 			
 			Preference entranceTime = getSetting(SettingUtil.KEY_ENTRANCE_TIME);
-			entranceTime.setSummary(String.valueOf(SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 0)));
+			int entrance = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 0);
+			entranceTime.setSummary(entrance == 0 ? "未设置" : String.valueOf(entrance));
 			entranceTime.setOnPreferenceClickListener(p -> {
 				ViewGroup layout = (ViewGroup)LayoutInflater.from(activity).inflate(R.layout.layout_number_picker, null,false);
 				

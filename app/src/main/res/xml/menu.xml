@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     
     <item
-        android:name="课表"
+        android:name="当日课表"
         android:isDefault="true"
         android:icon="@drawable/ic_dashboard"
         android:text="com.qust.assistant.ui.fragment.DailyLessonFragment" />
     
     <item
-        android:name="课表"
+        android:name="学期课表"
         android:isDefault="true"
         android:icon="@drawable/ic_dashboard"
         android:text="com.qust.assistant.ui.fragment.TermLessonFragment" />
@@ -50,11 +50,11 @@
         android:icon="@drawable/ic_school"
         android:text="com.qust.assistant.ui.fragment.school.GetExamFragment" />
 
-    <item
-        android:name="健康打卡"
-        android:isDefault="true"
-        android:icon="@drawable/ic_check_in"
-        android:text="com.qust.assistant.ui.fragment.school.HealthCheckInFragment" />
+<!--    <item-->
+<!--        android:name="健康打卡"-->
+<!--        android:isDefault="true"-->
+<!--        android:icon="@drawable/ic_check_in"-->
+<!--        android:text="com.qust.assistant.ui.fragment.school.HealthCheckInFragment" />-->
 
     <item
         android:name="饮水码"

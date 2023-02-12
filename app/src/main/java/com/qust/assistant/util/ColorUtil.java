@@ -40,4 +40,9 @@ public class ColorUtil{
 		
 	};
 	
+	public static final int BACKGROUND_COLOR_SECOND = Color.argb(192, 245, 245, 245);
+	
+	public static final int TEXT_COLOR_SECOND = Color.rgb(144, 144, 144);
+	
+	
 }

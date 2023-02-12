@@ -5,6 +5,9 @@ import android.os.Handler;
 
 public class QustLoginResult{
 	
+	/**
+	 * 发起登录请求的Handler
+	 */
 	public Handler from;
 	
 	public String message;

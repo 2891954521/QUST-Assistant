@@ -20,7 +20,6 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.ParamUtil;
 import com.qust.assistant.util.WebUtil;
@@ -52,12 +51,12 @@ public class DrinkFragment extends BaseFragment{
 	
 	private WindowManager.LayoutParams layoutParams;
 	
-	public DrinkFragment(MainActivity activity){
-		super(activity);
+	public DrinkFragment(){
+		super();
 	}
 	
-	public DrinkFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, false);
+	public DrinkFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, false);
 	}
 	
 	@Override

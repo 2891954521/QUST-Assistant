@@ -1,4 +1,4 @@
-package com.qust.assistant.widget.lesson;
+package com.qust.assistant.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,20 +10,23 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-public class BackgroundLesson extends View{
+/**
+ * 当日课程颜色标签
+ */
+public class LessonBackground extends View{
 	
 	private RectF rec;
 	private Paint paint;
 	
-	public BackgroundLesson(Context context){
+	public LessonBackground(Context context){
 		this(context,null);
 	}
 	
-	public BackgroundLesson(Context context,@Nullable AttributeSet attrs){
+	public LessonBackground(Context context, @Nullable AttributeSet attrs){
 		this(context,attrs,0);
 	}
 	
-	public BackgroundLesson(Context context,@Nullable AttributeSet attrs,int defStyleAttr){
+	public LessonBackground(Context context, @Nullable AttributeSet attrs, int defStyleAttr){
 		super(context,attrs,defStyleAttr);
 		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 		paint.setAntiAlias(true);

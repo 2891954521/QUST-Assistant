@@ -3,495 +3,305 @@ package com.qust.assistant.widget.lesson;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
-import com.qust.assistant.util.ColorUtil;
-import com.qust.assistant.util.DateUtil;
-import com.qust.assistant.util.ParamUtil;
 import com.qust.assistant.util.SettingUtil;
-
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
 
 public class LessonTable extends ViewPager{
 	
-	private static final String[] WEEK_STRING = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
+	/**
+	 * 最小滑动距离
+ 	 */
+	private int touchSlop;
 	
 	/**
-	 * 课程间距
+	 * 触发长按的最小时间
 	 */
-	private static final int LESSON_PADDING = 3;
+	private int longPressTime;
 	
-	// 最小滑动距离
-	private int touchSlop;
-	// 触摸时按下的点
-	private float downX;
-	// 是否拦截点击事件
-	private boolean needIntercept;
+	/**
+	 * 是否已初始化
+	 */
+	private boolean hasInit;
 	
-	// 总周数
-	private int totalWeek;
-	// 开学日期
-	private Calendar start;
+	/**
+	 * POP菜单出现的坐标
+	 */
+	private float popX, popY;
+	
+	/**
+	 * 触摸时按下的点
+	 */
+	private float downX, downY;
+	
+	/**
+	 * 上一次点击的课程位置
+	 */
+	private int lastWeek, lastCount;
+	
+	/**
+	 * 点击的课程位置
+	 */
+	private int currentWeek, currentCount;
+	
+	/**
+	 * 选中的课程
+	 */
+	private Lesson selectedLesson;
+	
+	
+	private Runnable runnable;
+	
+	/**
+	 * 是否清除长按回调
+	 */
+	private boolean clearMenu;
+	
+	/**
+	 * POP菜单是否在显示
+	 */
+	private boolean isMenuShowing;
+	
+	
+	/**
+	 * 隐藏已结课程
+	 */
+	private boolean hideFinishLesson;
+	
+	private LessonMenu lessonMenu;
 	
 	private LessonGroup[][] lessonGroups;
 	
-	// 点击的课程位置
-	private int week, count;
+	private LessonRender lessonRender;
 	
-	private int baseLine;
 	
-	private int textHeight;
+	private LessonClickListener lessonClickListener;
 	
-	private int timeWidth, dateHeight;
+	private LessonUpdateListener lessonUpdateListener;
 	
-	private Paint paint, paintT;
-	
-	// 点击的课程
-	private Lesson lesson;
-	
-	// 显示全部课程
-	private boolean showAllLesson;
-	// 隐藏已结课程
-	private boolean hideFinishLesson;
-	
-	// 菜单功能
-	private int longPressTime;
-	
-	private boolean clearMenu;
-	
-	private boolean isMenuShowing;
-	
-	private Lesson copyLesson;
-	
-	private LessonMenu menu;
-	
-	private LessonClickListener click;
-	
-	private LessonUpdateListener update;
 	
 	public LessonTable(Context context){ this(context, null); }
 	
 	public LessonTable(Context context, AttributeSet attrs){
 		super(context, attrs);
 		
-		menu = new LessonMenu(context);
-		
-		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
-		paint.setStyle(Paint.Style.FILL);
-		paint.setAntiAlias(true);
-		paint.setStrokeWidth(3);
-		
-		paintT = new Paint();
-		paintT.setDither(true);
-		paintT.setAntiAlias(true);
-		paintT.setSubpixelText(true);
-		
-		paintT.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-		
-		baseLine = (int)(paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent);
-		
-		textHeight = (int)(paintT.getTextSize() + 3);
-		
-		timeWidth = ParamUtil.dp2px(context, 48);
-		
-		dateHeight = 40 + textHeight * 2;
-		
-		showAllLesson = SettingUtil.getBoolean(SettingUtil.KEY_SHOW_ALL_LESSON, false);
-		hideFinishLesson = SettingUtil.getBoolean(SettingUtil.KEY_HIDE_FINISH_LESSON, false);
-		
+		touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		longPressTime = ViewConfiguration.getLongPressTimeout();
 		
-		touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+		lessonMenu = new LessonMenu(context);
+		lessonRender = new LessonRender(context);
 		
-		totalWeek = LessonTableViewModel.getTotalWeek();
+		lastCount = lastWeek = -1;
 		
-		start = Calendar.getInstance();
+		lessonClickListener = (week, count, lesson) -> { };
+		lessonUpdateListener = () -> { };
 		
+		hideFinishLesson = SettingUtil.getBoolean(SettingUtil.KEY_HIDE_FINISH_LESSON, false);
+		
+		runnable = () -> {
+			if(clearMenu) return;
+			isMenuShowing = true;
+			lastWeek = currentWeek;
+			lastCount = currentCount;
+			lessonMenu.show((int)popX, (int)popY);
+			getAdapter().notifyDataSetChanged();
+		};
 	}
 	
-	@Override
-	public boolean onInterceptTouchEvent(MotionEvent event){
-		switch(event.getAction()){
-			case MotionEvent.ACTION_DOWN:
-				downX = event.getX();
-				needIntercept = false;
-				onTouchEvent(event);
-				return false;
-			case MotionEvent.ACTION_MOVE:
-				if(needIntercept) return true;
-				if(Math.abs(downX - event.getX()) > touchSlop){
-					needIntercept = true;
-				}
-				break;
-			case MotionEvent.ACTION_UP:
-				onTouchEvent(event);
-				break;
-		}
-		return false;
-	}
-	
+	/**
+	 * 使用默认的课表数据
+	 */
 	public void initAdapter(){
 		initAdapter(LessonTableViewModel.getLessonGroups(), LessonTableViewModel.getTotalWeek(), LessonTableViewModel.getStartDay());
 	}
 	
-	public void initAdapter(@NonNull LessonGroup[][] lessonGroup){
+	/**
+	 * 使用默认学期数据，指定课表数据
+	 * @param lessonGroup 课表数据
+	 */
+	public void initAdapter(@Nullable LessonGroup[][] lessonGroup){
 		initAdapter(lessonGroup, LessonTableViewModel.getTotalWeek(), LessonTableViewModel.getStartDay());
 	}
 	
-	public void initAdapter(LessonGroup[][] lessonGroup, int _totalWeek, String startDay){
-		totalWeek = _totalWeek;
-		lessonGroups = lessonGroup == null ? LessonTableViewModel.getLessonGroups() : lessonGroup;
-		try{
-			Date date = DateUtil.YMD.parse(startDay);
-			if(date != null) start.setTime(date);
-		}catch(ParseException ignored){ }
-		setAdapter(new LessonTableAdapter());
+	/**
+	 * 指定课表数据和学期数据
+	 * @param _lessonGroups 课表数据
+	 * @param totalWeeks 总周数
+	 * @param startDate 开学日期
+	 */
+	public void initAdapter(@Nullable LessonGroup[][] _lessonGroups, int totalWeeks, String startDate){
+		lessonGroups = _lessonGroups == null ? LessonTableViewModel.getLessonGroups() : _lessonGroups;
+		lessonRender.setTermData(startDate, totalWeeks);
+		setAdapter(new LessonTableAdapter(this, totalWeeks));
+		if(hasInit) lessonRender.setLessonData(lessonGroups);
 	}
 	
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh){
+		super.onSizeChanged(w, h, oldw, oldh);
+		hasInit = true;
+		if(lessonGroups == null){
+			lessonGroups = LessonTableViewModel.getLessonGroups();
+			setAdapter(new LessonTableAdapter(this, LessonTableViewModel.getTotalWeek()));
+		}
+		lessonRender.setMeasureData(getMeasuredWidth(), getMeasuredHeight());
+		lessonRender.setLessonData(lessonGroups);
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent ev){
+		switch(ev.getAction()){
+			
+			case MotionEvent.ACTION_MOVE:
+				if(Math.abs(downX - ev.getX()) > touchSlop || Math.abs(downY - ev.getY()) > touchSlop){
+					clearMenu();
+				}
+				break;
+				
+			case MotionEvent.ACTION_UP:
+				if(!isMenuShowing){
+					clearMenu = true;
+				}
+				break;
+		}
+		return super.onTouchEvent(ev);
+	}
+	
+	/**
+	 * 处理LessonView的点击事件
+	 * @return 是否重绘View
+	 */
+	protected boolean onLessonTouch(@NonNull MotionEvent event, int week){
+		switch(event.getAction()){
+			case MotionEvent.ACTION_DOWN:
+				
+				if(isMenuShowing) lessonMenu.dismiss();
+				
+				isMenuShowing = false;
+				clearMenu = false;
+				
+				// pop菜单坐标
+				popX = event.getRawX();
+				popY = event.getRawY();
+				
+				downX = event.getX();
+				downY = event.getY();
+				
+				int[] pos = lessonRender.getClickLesson(week, (int) downX, (int) downY);
+				currentWeek = pos[0];
+				currentCount = pos[1];
+				
+				if(currentWeek != -1 && currentCount != -1){
+					if(pos[2] == 1){
+						selectedLesson = lessonGroups[currentWeek][currentCount].getCurrentLesson(week + 1);
+						if(selectedLesson == null){
+							selectedLesson = lessonGroups[currentWeek][currentCount].findLesson(week + 1, !hideFinishLesson);
+						}
+					}else{
+						selectedLesson = null;
+					}
+
+					postDelayed(runnable, longPressTime);
+				}
+				return false;
+			
+			case MotionEvent.ACTION_MOVE:
+				if(Math.abs(downX - event.getX()) > touchSlop || Math.abs(downY - event.getY()) > touchSlop){
+					clearMenu();
+				}
+				return false;
+			
+			case MotionEvent.ACTION_UP:
+				if(isMenuShowing){
+					return false;
+				}else{
+					clearMenu = true;
+				}
+				
+				if(Math.abs(downX - event.getX()) < touchSlop && Math.abs(downY - event.getY()) < touchSlop){
+					if(currentWeek != -1 && currentCount != -1){
+						if(lastWeek == currentWeek && lastCount == currentCount){
+							// 触发课程点击事件
+							lessonClickListener.onClickLesson(currentWeek + 1, currentCount + 1, selectedLesson);
+						}else{
+							// 更新课程选中高亮框
+							lastWeek = currentWeek;
+							lastCount = currentCount;
+						}
+						// 通知LessonView重绘
+						return true;
+					}
+				}
+				return false;
+			default:
+				return false;
+		}
+	}
+	
+	/**
+	 * 绘制LessonView
+	 * @param week LessonView的周数，从0开始
+	 */
+	protected void drawView(Canvas canvas, int week){
+		lessonRender.drawView(canvas, week);
+		if(lastWeek != -1 && lastCount != -1){
+			lessonRender.drawHighlightBox(canvas, lastWeek, lastCount, selectedLesson == null ? 1 : selectedLesson.len);
+		}
+	}
+	
+	/**
+	 * 清除POP菜单
+	 */
 	public void clearMenu(){
 		if(isMenuShowing){
-			menu.dismiss();
+			lessonMenu.dismiss();
 		}else{
 			clearMenu = true;
 		}
 	}
 	
-	private class LessonTableAdapter extends PagerAdapter{
-		
-		public LessonTableAdapter(){
-
-		}
-		
-		@NonNull
-		@Override
-		public Object instantiateItem(@NonNull ViewGroup container, int position){
-			ViewGroup layout = (ViewGroup)LayoutInflater.from(getContext()).inflate(R.layout.layout_timetable_week, container, false);
-			
-			LessonView lessonView = new LessonView(getContext());
-			lessonView.setWeek(position + 1);
-			lessonView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-			((LinearLayout)layout.findViewById(R.id.layout_timetable_week_contain)).addView(lessonView);
-			container.addView(layout);
-			return layout;
-		}
-		
-		@Override
-		public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object){ container.removeView((View)object); }
-		
-		@Override
-		public int getCount(){ return totalWeek; }
-		
-		@Override
-		public boolean isViewFromObject(@NonNull View view, @NonNull Object object){ return view == object; }
-		
-		@Override
-		public int getItemPosition(@NonNull Object object){
-			return POSITION_NONE;
-		}
+	
+	public void setLessonClickListener(LessonClickListener listener){
+		lessonClickListener = listener;
 	}
 	
-	public class LessonView extends View{
-		
-		// 当前周
-		private int showWeek;
-		
-		private int popX, popY;
-		
-		// 最小的一节课的大小
-		private int width, height;
-		
-		// 上一次点击的课程
-		private int lastWeek, lastCount;
-		// 按下的坐标
-		private float downX, downY;
-		
-		private Runnable runnable;
-		
-		private Calendar current;
-		
-		public LessonView(Context context){ this(context, null); }
-		
-		public LessonView(Context context, @Nullable AttributeSet attrs){ this(context, attrs, 0); }
-		
-		private LessonView(Context context, @Nullable AttributeSet attrs, int defStyleAttr){
-			super(context, attrs, defStyleAttr);
-			
-			current = Calendar.getInstance();
-			
-			lastWeek = lastCount = -1;
-			
-			runnable = () -> {
-				if(clearMenu){
-					clearMenu = false;
-					return;
-				}
-				isMenuShowing = true;
-				lastWeek = week;
-				lastCount = count;
-				invalidate();
-				menu.show(popX, popY, showWeek);
-			};
-		}
-		
-		@Override
-		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
-			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-			width = (getMeasuredWidth() - timeWidth) / lessonGroups.length;
-			height = (getMeasuredHeight() - dateHeight) / lessonGroups[0].length;
-		}
-		
-		@Override
-		public boolean onTouchEvent(MotionEvent event){
-			switch(event.getAction()){
-				case MotionEvent.ACTION_DOWN:
-					isMenuShowing = false;
-					
-					// pop菜单坐标
-					popX = (int)event.getRawX();
-					popY = (int)event.getRawY();
-					
-					downX = event.getX();
-					downY = event.getY();
-					
-					int y = (int)(downY - dateHeight);
-					
-					// 计算点击的位置在第几周
-					week = (int)((downX - timeWidth) / width);
-					
-					count = -1;
-
-					int i = 0, len;
-					// 遍历这一天的所有课程
-					while(i < lessonGroups[week].length){
-						LessonGroup group = lessonGroups[week][i];
-						
-						if(group != null){
-							lesson = group.getCurrentLesson(showWeek);
-							
-							if(lesson == null && showAllLesson){
-								// 本周该时间无课但是其他周有课
-								lesson = group.findLesson(showWeek, !hideFinishLesson);
-							}
-						}else{
-							lesson = null;
-						}
-						
-						len = lesson == null ? 1 : lesson.len;
-						
-						if((y -= height * len) < 0){
-							// 确定是这一天的第几节课
-							count = i;
-							break;
-						}
-						i += len;
-					}
-					
-					if(count != -1){
-						postDelayed(runnable, longPressTime);
-					}
-					break;
-				
-				case MotionEvent.ACTION_MOVE:
-					if(Math.abs(downX - event.getX()) > touchSlop || Math.abs(downY - event.getY()) > touchSlop)
-						clearMenu();
-					break;
-				
-				case MotionEvent.ACTION_UP:
-					if(!isMenuShowing && downX == event.getX() && downY == event.getY()){
-						if(count != -1){
-							if(lastWeek == week && lastCount == count){
-								click.clickLesson(week + 1, count + 1, lesson);
-							}else{
-								lastWeek = week;
-								lastCount = count;
-								invalidate();
-							}
-						}
-						clearMenu();
-					}
-					break;
-			}
-			return true;
-		}
-		
-		@Override
-		protected void onDraw(Canvas canvas){
-			super.onDraw(canvas);
-			
-			drawDate(canvas);
-			
-			drawTime(canvas);
-			
-			for(int i = 0; i < lessonGroups.length; i++){
-				for(int j = 0; j < lessonGroups[0].length; j++){
-					
-					if(lessonGroups[i][j] == null) continue;
-					
-					Lesson lesson = lessonGroups[i][j].getCurrentLesson(showWeek);
-					
-					if(lesson == null){
-						
-						if(!showAllLesson){
-							continue;
-						}
-						
-						// 本周该时间无课但是其他周有课
-						lesson = lessonGroups[i][j].findLesson(showWeek, !hideFinishLesson);
-						if(lesson == null) continue;
-						
-						paint.setColor(Color.argb(192, 245, 245, 245));
-						paintT.setColor(Color.rgb(144, 144, 144));
-					}else{
-						paint.setColor(ColorUtil.BACKGROUND_COLORS[lesson.color]);
-						paintT.setColor(ColorUtil.TEXT_COLORS[lesson.color]);
-					}
-					
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-						canvas.drawRoundRect(i * width + timeWidth, j * height + dateHeight, i * width + width + timeWidth - LESSON_PADDING, j * height + height * lesson.len + dateHeight - LESSON_PADDING, 16, 16, paint);
-					}else{
-						canvas.drawRoundRect(new RectF(i * width + timeWidth, j * height + dateHeight, i * width + width + timeWidth - LESSON_PADDING, j * height + height * lesson.len + dateHeight - LESSON_PADDING), 16, 16, paint);
-					}
-					
-					// 储存每行文字
-					String[] str = new String[3 * lesson.len + 1];
-					int line = splitString(lesson.name, str, width - (LESSON_PADDING << 2), 0, lesson.len + 1);
-					line += splitString(lesson.place, str, width - (LESSON_PADDING << 2), lesson.len + 1, lesson.len);
-					line += splitString(lesson.teacher, str, width - (LESSON_PADDING << 2), lesson.len * 2 + 1, lesson.len);
-					
-					int x = i * width + timeWidth + (LESSON_PADDING << 2);
-					int y = j * height + dateHeight + baseLine + (height * lesson.len - textHeight * line) / 2;
-					
-					for(String s : str){
-						if(s == null) continue;
-						canvas.drawText(s, x, y, paintT);
-						y += textHeight;
-					}
-				}
-			}
-			
-			if(lastWeek != -1 && lastCount != -1){
-				int len = lesson == null ? 1 : lesson.len;
-				paint.setStyle(Paint.Style.STROKE);
-				paint.setColor(Color.rgb(0, 176, 255));
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-					canvas.drawRoundRect(lastWeek * width + timeWidth, lastCount * height + dateHeight, lastWeek * width + width + timeWidth - LESSON_PADDING, lastCount * height + height * len + dateHeight - LESSON_PADDING, 16, 16, paint);
-				}else{
-					canvas.drawRoundRect(new RectF(lastWeek * width + timeWidth, lastCount * height + dateHeight, lastWeek * width + width + timeWidth - LESSON_PADDING, lastCount * height + height * len + dateHeight - LESSON_PADDING), 16, 16, paint);
-				}
-				paint.setStyle(Paint.Style.FILL);
-			}
-		}
-		
-		private void drawDate(Canvas canvas){
-			
-			Calendar c = (Calendar)start.clone();
-			
-			c.add(Calendar.WEEK_OF_YEAR, showWeek - 1);
-			int dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
-			c.add(Calendar.DATE, -dayOfWeek);
-			
-			int weekStart = (int)((width - paintT.measureText(WEEK_STRING[0])) / 2);
-			
-			int y = 20 + baseLine;
-			
-			for(int i = 0; i < WEEK_STRING.length; i++){
-				
-				if(current.get(Calendar.DATE) == c.get(Calendar.DATE) && current.get(Calendar.MONTH) == c.get(Calendar.MONTH)){
-					paintT.setColor(ColorUtil.TEXT_COLORS[0]);
-				}else{
-					paintT.setColor(Color.GRAY);
-				}
-				
-				String day = DateUtil.MD.format(c.getTime());
-				
-				int dayStart = (int)((width - paintT.measureText(day)) / 2);
-				
-				canvas.drawText(WEEK_STRING[i], timeWidth + weekStart + i * width, y, paintT);
-				canvas.drawText(day, timeWidth + dayStart + i * width, y + textHeight, paintT);
-				
-				c.add(Calendar.DATE, 1);
-			}
-		}
-		
-		private void drawTime(Canvas canvas){
-			paintT.setColor(Color.GRAY);
-			String[][] timeText = LessonTableViewModel.getLessonTimeText();
-			int x = (int)((timeWidth - paintT.measureText(timeText[0][0])) / 2);
-			int y = dateHeight + baseLine + (height - textHeight * 2) / 2;
-			for(int i = 0; i < lessonGroups[0].length; i++){
-				canvas.drawText(timeText[0][i], x, y, paintT);
-				canvas.drawText(timeText[1][i], x, y + textHeight, paintT);
-				y += height;
-			}
-		}
-		
-		public void clearMenu(){
-			if(isMenuShowing){
-				menu.dismiss();
-			}else{
-				removeCallbacks(runnable);
-			}
-		}
-		
-		// 字符串分行
-		private int splitString(String str, String[] split, int width, int start, int line){
-			int len = 0;
-			int begin = 0;
-			for(int u = 0; u < str.length(); u++){
-				if(paintT.measureText(str, begin, u + 1) > width){
-					split[start + len++] = str.substring(begin, u);
-					begin = u;
-					if(len == line) break;
-				}
-			}
-			if(len < line){
-				if(begin == 0) split[start] = str;
-				else split[start + len] = str.substring(begin);
-				len++;
-			}
-			return len;
-		}
-		
-		public void setWeek(int week){ showWeek = week; }
-		
+	public void setUpdateListener(LessonUpdateListener listener){
+		lessonUpdateListener = listener;
 	}
 	
+	public interface LessonClickListener{
+		void onClickLesson(int week, int count, Lesson lesson);
+	}
+	
+	public interface LessonUpdateListener{
+		void updateLesson();
+	}
+
+
 	private class LessonMenu extends PopupWindow{
 		
-		private View copy;
+		private int popWidth, popHeight;
 		
-		private View paste;
+		private View copy, paste, delete, addLesson;
 		
-		private View delete;
-		
-		private View addLesson;
-		
-		private int width, height;
+		private Lesson copyLesson;
 		
 		public LessonMenu(Context context){
 			super(context);
@@ -506,8 +316,8 @@ public class LessonTable extends ViewPager{
 			View contentView = LayoutInflater.from(context).inflate(R.layout.menu_lesson, null);
 			contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 			
-			width = contentView.getMeasuredWidth() / 4;
-			height = contentView.getMeasuredHeight();
+			popWidth = contentView.getMeasuredWidth() / 4;
+			popHeight = contentView.getMeasuredHeight();
 			
 			copy = contentView.findViewById(R.id.menu_lesson_copy);
 			paste = contentView.findViewById(R.id.menu_lesson_paste);
@@ -515,72 +325,60 @@ public class LessonTable extends ViewPager{
 			addLesson = contentView.findViewById(R.id.menu_lesson_new);
 			
 			copy.setOnClickListener(v -> {
-				copyLesson = lesson;
+				copyLesson = selectedLesson.clone();
 				dismiss();
 			});
 			
 			paste.setOnClickListener(v -> {
 				if(copyLesson == null) return;
-				if(LessonTableViewModel.isConflict(lessonGroups, week, count, copyLesson, copyLesson.len, copyLesson.week)){
+				if(LessonTableViewModel.isConflict(lessonGroups, currentWeek, currentCount, copyLesson, copyLesson.len, copyLesson.week)){
 					Toast.makeText(getContext(), "课程时间冲突！", Toast.LENGTH_SHORT).show();
 				}else{
-					if(lessonGroups[week][count] == null){
-						lessonGroups[week][count] = new LessonGroup(week + 1, count + 1);
+					if(lessonGroups[currentWeek][currentCount] == null){
+						lessonGroups[currentWeek][currentCount] = new LessonGroup(currentWeek + 1, currentCount + 1);
 					}
-					lessonGroups[week][count].addLesson(copyLesson.clone());
+					lessonGroups[currentWeek][currentCount].addLesson(copyLesson.clone());
 				}
-				update.updateLesson();
+				lessonUpdateListener.updateLesson();
 				dismiss();
 			});
 			
 			delete.setOnClickListener(v -> {
-				lessonGroups[week][count].removeLesson(lesson);
-				update.updateLesson();
+				lessonGroups[currentWeek][currentCount].removeLesson(selectedLesson);
+				lessonUpdateListener.updateLesson();
 				dismiss();
 			});
 			
 			addLesson.setOnClickListener(v -> {
-				if(lessonGroups[week][count] == null)
-					lessonGroups[week][count] = new LessonGroup(week + 1, count + 1);
-				lesson = new Lesson();
-				lessonGroups[week][count].addLesson(lesson);
-				click.clickLesson(week + 1, count + 1, lesson);
+				if(lessonGroups[currentWeek][currentCount] == null){
+					lessonGroups[currentWeek][currentCount] = new LessonGroup(currentWeek + 1, currentCount + 1);
+				}
+				selectedLesson = new Lesson();
+				lessonGroups[currentWeek][currentCount].addLesson(selectedLesson);
+				lessonClickListener.onClickLesson(currentWeek + 1, currentCount + 1, selectedLesson);
 			});
 			
 			setContentView(contentView);
 		}
 		
-		public void show(int x, int y, int week){
+		/**
+		 * 在指定位置展示长按菜单
+		 */
+		public void show(int x, int y){
 			
-			paste.setVisibility(copyLesson == null ? GONE : VISIBLE);
+			paste.setVisibility(copyLesson == null ? View.GONE : View.VISIBLE);
 			
-			if(lesson == null){
-				copy.setVisibility(GONE);
-				delete.setVisibility(GONE);
-				addLesson.setVisibility(VISIBLE);
+			if(selectedLesson == null){
+				copy.setVisibility(View.GONE);
+				delete.setVisibility(View.GONE);
+				addLesson.setVisibility(View.VISIBLE);
 			}else{
-				copy.setVisibility(VISIBLE);
-				delete.setVisibility(VISIBLE);
-				addLesson.setVisibility(lesson.week[week - 1] ? GONE : VISIBLE);
+				copy.setVisibility(View.VISIBLE);
+				delete.setVisibility(View.VISIBLE);
+				addLesson.setVisibility(selectedLesson.week[getCurrentItem()] ? View.GONE : View.VISIBLE);
 			}
-			showAtLocation(LessonTable.this, Gravity.START | Gravity.TOP, x - width, y - height);
+			showAtLocation(LessonTable.this, Gravity.START | Gravity.TOP, x - popWidth, y - popHeight);
 		}
-	}
-	
-	public void setLessonClickListener(LessonClickListener listener){
-		click = listener;
-	}
-	
-	public void setUpdateListener(LessonUpdateListener listener){
-		update = listener;
-	}
-	
-	public interface LessonClickListener{
-		void clickLesson(int week, int count, Lesson lesson);
-	}
-	
-	public interface LessonUpdateListener{
-		void updateLesson();
 	}
 	
 }

@@ -1,6 +1,7 @@
 package com.qust.assistant.ui.fragment.school;
 
 import android.view.LayoutInflater;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
@@ -11,9 +12,9 @@ import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.lesson.LessonGroup;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.QustUtil.LessonUtil;
+import com.qust.assistant.vo.QueryLessonResult;
 import com.qust.assistant.widget.lesson.LessonTable;
 
 public class GetLessonTableFragment extends BaseSchoolFragment{
@@ -21,6 +22,11 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	private TextView weekTextView;
 	
 	private TextView termTextView;
+	
+	/**
+	 * 查询方案
+	 */
+	private NumberPicker typePicker;
 	
 	private LessonTable lessonTable;
 	
@@ -38,12 +44,12 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	
 	private LessonTableViewModel lessonTableViewModel;
 	
-	public GetLessonTableFragment(MainActivity activity){
-		super(activity);
+	public GetLessonTableFragment(){
+		super();
 	}
 	
-	public GetLessonTableFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public GetLessonTableFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override
@@ -63,7 +69,6 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		lessonTable = findViewById(R.id.fragment_get_lesson_table_preview);
 		lessonTable.initAdapter(lessonGroups);
 		lessonTable.setCurrentItem(LessonTableViewModel.getCurrentWeek() - 1);
-		lessonTable.setLessonClickListener((week, count, lesson) -> { });
 		lessonTable.setUpdateListener(() -> {
 			int currentWeek = lessonTable.getCurrentItem();
 			lessonTable.setAdapter(lessonTable.getAdapter());
@@ -84,6 +89,12 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		weekTextView.setText("第 1 周");
 		saveButton.setOnClickListener(v -> saveData());
 		
+		typePicker = findViewById(R.id.fragment_school_type);
+		typePicker.setWrapSelectorWheel(false);
+		typePicker.setDisplayedValues(new String[]{ "个人课表", "班级课表" });
+		typePicker.setMinValue(0);
+		typePicker.setMaxValue(1);
+
 		initYearAndTermPicker();
 		
 		setNeedSave(false);
@@ -96,7 +107,12 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		
 		String[] y = getYearAndTerm();
 		
-		LessonUtil.QueryLessonResult result = LessonUtil.queryLessonTable(loginViewModel, y[0], y[1]);
+		QueryLessonResult result;
+		if(typePicker.getValue() == 0){
+			result = LessonUtil.queryLessonTable(loginViewModel, y[0], y[1]);
+		}else{
+			result = LessonUtil.queryClassLessonTable(loginViewModel, entranceTime, y[0], y[1]);
+		}
 		
 		if(result.message != null){
 			sendMessage(App.DISMISS_TOAST, result.message);
@@ -152,7 +168,7 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	
 	@Override
 	protected String getName(){
-		return "查课表";
+		return "课表查询";
 	}
 	
 	@Override

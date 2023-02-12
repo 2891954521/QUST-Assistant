@@ -9,7 +9,6 @@ import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.model.lesson.LessonView;
-import com.qust.assistant.ui.MainActivity;
 
 import java.util.Calendar;
 
@@ -17,12 +16,12 @@ public class DailyLessonFragment extends BaseFragment{
 	
 	private LinearLayout content;
 	
-	public DailyLessonFragment(MainActivity activity){
-		super(activity);
+	public DailyLessonFragment(){
+		super();
 	}
 	
-	public DailyLessonFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public DailyLessonFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override

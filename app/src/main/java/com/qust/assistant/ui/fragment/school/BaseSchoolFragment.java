@@ -15,7 +15,6 @@ import com.billy.android.swipe.consumer.SpaceConsumer;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LoginViewModel;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.QustUtil.LessonUtil;
@@ -78,13 +77,13 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 		}
 	};
 	
-	public BaseSchoolFragment(MainActivity activity){
-		this(activity, false, true);
+	public BaseSchoolFragment(){
+		this(false, true);
 	}
 	
-	public BaseSchoolFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
-		entranceTime = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 2010);
+	public BaseSchoolFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
+		entranceTime = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 0);
 	}
 	
 	@Override
@@ -179,6 +178,7 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	 * 获取选择的学期参数
 	 */
 	protected String[] getYearAndTerm(){
+		if(entranceTime == 0) sendMessage(App.TOAST, "未设置入学年份，可能导致查询结果异常");
 		return new String[]{
 				Integer.toString(yearPicker.getValue() / 2 + entranceTime),
 				yearPicker.getValue() % 2 == 0 ? "3" : "12"

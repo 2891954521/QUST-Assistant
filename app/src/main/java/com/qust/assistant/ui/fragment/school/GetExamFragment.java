@@ -1,6 +1,5 @@
 package com.qust.assistant.ui.fragment.school;
 
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.WebUtil;
 
@@ -25,12 +23,12 @@ public class GetExamFragment extends BaseSchoolFragment{
 	
 	private Exam[] exams;
 	
-	public GetExamFragment(MainActivity activity){
-		super(activity);
+	public GetExamFragment(){
+		super();
 	}
 	
-	public GetExamFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public GetExamFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override
@@ -61,9 +59,7 @@ public class GetExamFragment extends BaseSchoolFragment{
 	
 	@Override
 	protected void doQuery(){
-		Message message = new Message();
-		message.obj = "正在查询考试";
-		handler.sendMessage(message);
+		sendMessage(App.UPDATE_DIALOG, "正在查询考试");
 		
 		try{
 			String[] y = getYearAndTerm();
@@ -121,6 +117,9 @@ public class GetExamFragment extends BaseSchoolFragment{
 	}
 	
 	private static class Exam implements Serializable{
+		
+		private static final long serialVersionUID = 7170084777532665258L;
+		
 		/**
 		 * 科目名称
 		 */

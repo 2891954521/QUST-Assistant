@@ -1,5 +1,6 @@
 package com.qust.assistant.ui.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -37,18 +38,23 @@ public abstract class BaseFragment extends Fragment{
 	
 	protected boolean hasToolBar;
 	
-	public BaseFragment(MainActivity activity){
-		this(activity, false, true);
+	public BaseFragment(){
+		this(false, true);
 	}
 	
 	/**
 	 * @param isRoot 是否为根Fragment，为true时不能够滑动返回
 	 * @param hasToolBar 是否有标题栏，决定在显示Fragment时需不需要添加BaseLayout
 	 */
-	public BaseFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		this.activity = activity;
+	public BaseFragment(boolean isRoot, boolean hasToolBar){
 		this.isRoot = isRoot;
 		this.hasToolBar = hasToolBar;
+	}
+	
+	@Override
+	public void onAttach(@NonNull Context context){
+		super.onAttach(context);
+		activity = (MainActivity) getActivity();
 	}
 	
 	@Nullable

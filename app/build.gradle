@@ -59,6 +59,9 @@ dependencies {
 
     implementation 'com.billy.android:smart-swipe:1.1.0'
 
+    // 用户引导页
+    implementation 'com.github.huburt-Hu:NewbieGuide:v2.4.0'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

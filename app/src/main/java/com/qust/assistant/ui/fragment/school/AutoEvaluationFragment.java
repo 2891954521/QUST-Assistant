@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.WebUtil;
@@ -83,12 +82,12 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 	
 	private String session;
 	
-	public AutoEvaluationFragment(MainActivity activity){
-		super(activity);
+	public AutoEvaluationFragment(){
+		super();
 	}
 	
-	public AutoEvaluationFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public AutoEvaluationFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override

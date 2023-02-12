@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
-import com.qust.assistant.widget.lesson.BackgroundLesson;
+import com.qust.assistant.widget.LessonBackground;
 
 /**
  * 构建课程View的类
@@ -35,7 +35,7 @@ public class LessonView{
 		}else{
 			n.setText(lesson.name);
 			n.setTextColor(context.getResources().getColor(R.color.colorPrimaryText));
-			((BackgroundLesson)view.findViewById(R.id.item_lesson_color)).setColor(ColorUtil.TEXT_COLORS[lesson.color]);
+			((LessonBackground)view.findViewById(R.id.item_lesson_color)).setColor(ColorUtil.TEXT_COLORS[lesson.color]);
 			if("".equals(lesson.place) || "".equals(lesson.teacher)){
 				((TextView)view.findViewById(R.id.item_lesson_info)).setText(lesson.place + lesson.teacher);
 			}else{

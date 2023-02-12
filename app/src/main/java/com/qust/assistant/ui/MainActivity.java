@@ -128,12 +128,12 @@ public class MainActivity extends BaseActivity{
 		try{
 			Class<?> object = Class.forName(SettingUtil.getString(SettingUtil.HOME_PAGE, HomeFragment.class.getName()));
 			if(BaseFragment.class.isAssignableFrom(object)){
-				home = ((BaseFragment)object.getConstructor(MainActivity.class, Boolean.class, Boolean.class).newInstance(this, true, true));
+				home = ((BaseFragment)object.getConstructor(Boolean.class, Boolean.class).newInstance(true, true));
 			}else{
-				home = new HomeFragment(this, true, true);
+				home = new HomeFragment(true, true);
 			}
 		}catch(ReflectiveOperationException e){
-			home = new HomeFragment(this, true, true);
+			home = new HomeFragment(true, true);
 		}
 		
 		fragments.push(home);
@@ -155,7 +155,7 @@ public class MainActivity extends BaseActivity{
 			
 			drawer.close();
 			
-			BaseFragment b = newFragment.getConstructor(MainActivity.class).newInstance(this);
+			BaseFragment b = newFragment.newInstance();
 			
 			fragments.push(b);
 			

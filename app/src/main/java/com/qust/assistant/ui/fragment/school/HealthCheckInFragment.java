@@ -15,7 +15,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.DialogUtil;
@@ -84,12 +83,12 @@ public class HealthCheckInFragment extends BaseFragment{
 	
 	private String cookie;
 	
-	public HealthCheckInFragment(MainActivity activity){
-		super(activity);
+	public HealthCheckInFragment(){
+		super();
 	}
 	
-	public HealthCheckInFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public HealthCheckInFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override

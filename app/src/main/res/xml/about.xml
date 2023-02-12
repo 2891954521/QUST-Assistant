@@ -15,7 +15,20 @@
             android:layout="@layout/item_preference"/>
 
     </PreferenceCategory>
-
+    
+    <PreferenceCategory
+        android:title="源代码">
+        
+        <Preference
+            android:title="GitHub"
+            android:layout="@layout/item_preference">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/2891954521/QUST-Assistant"/>
+        </Preference>
+    
+    </PreferenceCategory>
+    
     <PreferenceCategory
         android:title="隐私与协议">
 
@@ -29,7 +42,61 @@
 
     <PreferenceCategory
         android:title="开放源代码许可">
-
+    
+        <Preference
+            android:title="AndroidX"
+            android:summary="https://github.com/androidx/androidx"
+            android:layout="@layout/item_preference2">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/androidx/androidx"/>
+        </Preference>
+    
+        <Preference
+            android:title="AndroidProject"
+            android:summary="https://github.com/getActivity/AndroidProject"
+            android:layout="@layout/item_preference2">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/getActivity/AndroidProject"/>
+        </Preference>
+        
+        <Preference
+            android:title="ImmersionBar"
+            android:summary="https://github.com/gyf-dev/ImmersionBar"
+            android:layout="@layout/item_preference2">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/gyf-dev/ImmersionBar"/>
+        </Preference>
+    
+        <Preference
+            android:title="Lottie-android"
+            android:summary="https://github.com/airbnb/lottie-android"
+            android:layout="@layout/item_preference2">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/airbnb/lottie-android"/>
+        </Preference>
+        
+        <Preference
+            android:title="Material-dialogs"
+            android:summary="https://github.com/afollestad/material-dialogs"
+            android:layout="@layout/item_preference2">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/afollestad/material-dialogs"/>
+        </Preference>
+    
+        <Preference
+            android:title="SmartSwipe"
+            android:summary="https://github.com/luckybilly/SmartSwipe"
+            android:layout="@layout/item_preference2">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/luckybilly/SmartSwipe"/>
+        </Preference>
+        
     </PreferenceCategory>
 
 </PreferenceScreen>

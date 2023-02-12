@@ -22,18 +22,30 @@ public class App extends Application{
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 12;
+	public static final int DEV_VERSION = 14;
 	
-	/**
+	/*
 	 * Handler 公用的 what 值
 	 */
-	// 关闭 Dialog 并 Toast
-	public static final int DISMISS_TOAST = 1;
-	//
-	public static final int NOTIFY_TOAST = 2;
-	// 更新 Dialog
+	/**
+	 * 更新 Dialog
+	 */
 	public static final int UPDATE_DIALOG = 0;
 	
+	/**
+	 * 关闭 Dialog 并 Toast
+	 */
+	public static final int DISMISS_TOAST = 1;
+	
+	/**
+	 * 更新 AdapterView
+	 */
+	public static final int NOTIFY_TOAST = 2;
+	
+	/**
+	 * 仅 Toast
+	 */
+	public static final int TOAST = 3;
 	
 	public LoginViewModel loginViewModel;
 	

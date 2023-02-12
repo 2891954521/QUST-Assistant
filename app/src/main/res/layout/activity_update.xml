@@ -21,26 +21,62 @@
         android:id="@+id/activity_update_current_version"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/widget_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
         android:padding="@dimen/widget_margin"
         app:drawableStartCompat="@mipmap/ic_launcher" />
 
-    <Button
-        android:id="@+id/activity_update_button"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/widget_margin"
-        android:text="自动更新"/>
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:gravity="center"
+        android:orientation="horizontal">
+    
+        <TextView
+            style="@style/TextNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="@dimen/widget_margin"
+            android:text="更新渠道" />
+    
+        <NumberPicker
+            android:id="@+id/activity_update_channel"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:descendantFocusability="blocksDescendants" />
+    
+        <Button
+            android:id="@+id/activity_update_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="检查更新" />
+        
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <TextView
         android:id="@+id/activity_update_info"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/widget_margin"
+        android:layout_margin="@dimen/activity_margin"
         android:layout_weight="1"
         android:autoLink="web"
         android:padding="@dimen/widget_margin"/>
-
+    
+    <Button
+        android:id="@+id/activity_update_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/activity_margin"
+        android:visibility="gone"
+        android:text="更新"/>
+    
 </LinearLayout>
 

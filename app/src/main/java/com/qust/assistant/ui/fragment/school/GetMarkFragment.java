@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.ParamUtil;
 import com.qust.assistant.util.WebUtil;
@@ -30,12 +29,12 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	
 	private MarkAdapter adapter;
 	
-	public GetMarkFragment(MainActivity activity){
-		super(activity);
+	public GetMarkFragment(){
+		super();
 	}
 	
-	public GetMarkFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public GetMarkFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override

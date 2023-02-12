@@ -1,24 +1,25 @@
 package com.qust.assistant.ui.app;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.BaseAnimActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
+import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.UpdateUtil;
 import com.qust.assistant.vo.UpdateInfo;
 
@@ -31,20 +32,32 @@ import java.net.URL;
 
 public class UpdateActivity extends BaseAnimActivity{
 	
-	private MaterialDialog checkDialog;
+	private File file;
 	
-	private MaterialDialog downloadDialog;
+	private boolean isDev;
 	
 	private UpdateInfo info;
 	
-	private File file;
+	private Button updateButton;
+	
+	private NumberPicker channelPicker;
+	
+	private MaterialDialog checkDialog;
+	
+	private MaterialDialog downloadDialog;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_update);
 		
+		initToolBar(null);
+		
 		file = new File(getExternalCacheDir(),"release.apk");
+		isDev = SettingUtil.getBoolean(SettingUtil.KEY_UPDATE_DEV, false);
+		
+		updateButton = findViewById(R.id.activity_update_update);
+		channelPicker = findViewById(R.id.activity_update_channel);
 		
 		checkDialog = DialogUtil.getIndeterminateProgressDialog(this,"正在检查更新").build();
 		checkDialog.setCanceledOnTouchOutside(false);
@@ -52,40 +65,40 @@ public class UpdateActivity extends BaseAnimActivity{
 		downloadDialog = DialogUtil.getIndeterminateProgressDialog(this, "正在下载").build();
 		downloadDialog.setCanceledOnTouchOutside(false);
 		
+		channelPicker.setWrapSelectorWheel(false);
+		channelPicker.setDisplayedValues(new String[] { "稳定版", "开发版" });
+		channelPicker.setMinValue(0);
+		channelPicker.setMaxValue(1);
+		channelPicker.setValue(isDev ? 1 : 0);
+		
 		try{
 			PackageInfo pkg = getPackageManager().getPackageInfo(getPackageName(), 0);
 			((TextView)findViewById(R.id.activity_update_current_version)).setText("当前版本：" + pkg.versionName);
 		}catch(PackageManager.NameNotFoundException ignore){ }
 		
-		initToolBar(null);
+		findViewById(R.id.activity_update_check).setOnClickListener(v -> checkUpdate());
 		
-		View view = findViewById(R.id.activity_update_button);
-		view.setOnClickListener(v -> {
-			if(info == null){
-				checkUpdate();
-			}else{
-				downloadApk();
-			}
-		});
-		view.postDelayed(this::checkUpdate,200);
+		updateButton.setOnClickListener(v -> downloadApk());
+		
+		updateButton.postDelayed(this::checkUpdate,200);
 	}
 	
 	/**
 	 * 检查更新
 	 */
 	private void checkUpdate(){
-		SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean isDev = setting.getBoolean("key_update_dev",false);
 		checkDialog.show();
 		new Thread(){
 			@Override
 			public void run(){
-				info = UpdateUtil.checkVersion(UpdateActivity.this, isDev);
+				info = UpdateUtil.checkVersion(UpdateActivity.this, channelPicker.getValue() == 1);
 				runOnUiThread(() -> {
 					if(info == null){
-						toast("当前无新版本！");
+						toast("当前无新版本");
+						updateButton.setVisibility(View.GONE);
 					}else{
 						((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：" + info.apkUrl + "\n" + info.message);
+						updateButton.setVisibility(View.VISIBLE);
 					}
 					checkDialog.cancel();
 				});
@@ -103,35 +116,37 @@ public class UpdateActivity extends BaseAnimActivity{
 					con.setReadTimeout(5000);
 					con.setConnectTimeout(5000);
 					con.setRequestMethod("GET");
-					if (con.getResponseCode() == 200) {
+					if(con.getResponseCode() == 200){
 						InputStream is = con.getInputStream();
 						FileOutputStream fileOutputStream = null;
-						if (is != null) {
+						if(is != null){
 							fileOutputStream = new FileOutputStream(file);
 							byte[] buf = new byte[1024];
 							int ch;
-							while ((ch = is.read(buf)) != -1) {
+							while((ch = is.read(buf)) != -1){
 								fileOutputStream.write(buf, 0, ch);
 							}
 						}
-						if (fileOutputStream != null) {
+						if(fileOutputStream != null){
 							fileOutputStream.flush();
 							fileOutputStream.close();
 						}
 						runOnUiThread(() -> {
-							if(downloadDialog.isShowing())downloadDialog.cancel();
+							if(downloadDialog.isShowing()) downloadDialog.cancel();
 							checkPackage();
 						});
 						return;
 					}else if(con.getResponseCode() == 404){
-						toast("新版本文件不存在！");
-					}else toast("连接服务器失败！");
+						runOnUiThread(() -> toast("新版本文件不存在"));
+					}else{
+						runOnUiThread(() -> toast("连接服务器失败"));
+					}
 					
 				}catch(IOException e){
 					LogUtil.Log(e);
-					toast("下载失败！");
+					runOnUiThread(() -> toast("下载失败"));
 				}
-				if(downloadDialog.isShowing())runOnUiThread(() -> downloadDialog.cancel());
+				if(downloadDialog.isShowing()) runOnUiThread(() -> downloadDialog.cancel());
 			}
 		}.start();
 	}
@@ -143,7 +158,7 @@ public class UpdateActivity extends BaseAnimActivity{
 		PackageManager pm = getPackageManager();
 		PackageInfo packageInfo = pm.getPackageArchiveInfo(file.toString(), PackageManager.GET_ACTIVITIES);
 		if(packageInfo == null){
-			toast("获取更新包信息失败！");
+			runOnUiThread(() -> toast("获取更新包信息失败！"));
 			return;
 		}
 		try{

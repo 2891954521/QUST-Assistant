@@ -7,8 +7,9 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.app.hubert.guide.NewbieGuide;
+import com.app.hubert.guide.model.GuidePage;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.third.DrinkFragment;
 import com.qust.assistant.util.SettingUtil;
 
@@ -24,18 +25,18 @@ public class HomeFragment extends BaseFragment{
 	
 	private DailyLessonFragment dailyLesson;
 	
-	public HomeFragment(MainActivity activity){
-		super(activity);
+	public HomeFragment(){
+		super();
 	}
 	
-	public HomeFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public HomeFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
-		termLesson = new TermLessonFragment(activity, true, false);
-		dailyLesson = new DailyLessonFragment(activity, true, false);
+		termLesson = new TermLessonFragment(true, false);
+		dailyLesson = new DailyLessonFragment(true, false);
 		
 		viewPager = findViewById(R.id.viewpager2);
 		viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback(){
@@ -49,7 +50,7 @@ public class HomeFragment extends BaseFragment{
 		});
 		
 		if((boolean)SettingUtil.get(SettingUtil.KEY_SHOW_DRINK_CODE, false)){
-			DrinkFragment drinkFragment = new DrinkFragment(activity, true, false);
+			DrinkFragment drinkFragment = new DrinkFragment(true, false);
 			layouts = new BaseFragment[]{ drinkFragment, dailyLesson, termLesson };
 			viewPager.setAdapter(new PagerAdapter(this));
 			viewPager.setCurrentItem(1, false);
@@ -59,6 +60,11 @@ public class HomeFragment extends BaseFragment{
 			viewPager.setAdapter(new PagerAdapter(this));
 			current = 0;
 		}
+		
+		NewbieGuide.with(activity)
+				.setLabel(getClass().getName())
+				.addGuidePage(GuidePage.newInstance().setLayoutRes(R.layout.layout_welcome_home))
+				.show();
 	}
 	
 	@Override

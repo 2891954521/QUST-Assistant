@@ -14,7 +14,6 @@ import androidx.cardview.widget.CardView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.FileUtil;
 import com.qust.assistant.util.LogUtil;
@@ -73,12 +72,12 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	
 	private AcademicAdapter adapter;
 	
-	public GetAcademicFragment(MainActivity activity){
-		super(activity);
+	public GetAcademicFragment(){
+		super();
 	}
 	
-	public GetAcademicFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public GetAcademicFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override
@@ -131,7 +130,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 		lessons = new ArrayList<>();
 		try{
 			String response = WebUtil.doGet(
-					loginViewModel.host + "/jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default",
+					loginViewModel.host + "/jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=0&layout=default",
 					"JSESSIONID=" + loginViewModel.getCookie()
 			);
 			if(!TextUtils.isEmpty(response)){
@@ -190,7 +189,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 			text = FileUtil.readFile(new File(activity.getExternalFilesDir("Academic"),"text"));
 			
 		}catch(Exception e){
-			child = new int[0];
+			child = new int[TERM_NAME.length];
 			lessonsSort = new Lesson[0];
 			text = "";
 		}

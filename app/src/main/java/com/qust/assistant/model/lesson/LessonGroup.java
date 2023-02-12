@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
-import com.qust.assistant.widget.lesson.BackgroundLesson;
+import com.qust.assistant.widget.LessonBackground;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -66,31 +66,31 @@ public class LessonGroup implements Serializable, Cloneable{
 	}
 	
 	/**
-	 * 获取第 {@code week} 周会上的课程
-	 * @param week 第 n 周
+	 * 获取当前周会上的课程
+	 * @param currentWeek 当前周（从 1 开始）
 	 * @return 会上的课程, 没有课则为null
 	 */
 	@Nullable
-	public Lesson getCurrentLesson(int week){
+	public Lesson getCurrentLesson(int currentWeek){
 		for(Lesson lesson : lessons){
-			if(week <= lesson.week.length && lesson.week[week - 1]) return lesson;
+			if(currentWeek <= lesson.week.length && lesson.week[currentWeek - 1]) return lesson;
 		}
 		return null;
 	}
 	
 	/**
-	 * 查找最接近 {@code week} 周会上的课程
+	 * 查找最接近当前周会上的课程
 	 *
-	 * @param week 第 n 周
+	 * @param currentWeek 当前周（从 1 开始）
 	 * @param findAll 查找全部时间
 	 */
 	@Nullable
-	public Lesson findLesson(int week, boolean findAll){
+	public Lesson findLesson(int currentWeek, boolean findAll){
 		if(lessons.length == 0) return null;
 		
 		// 向后查找课程
 		int len = lessons[0].week.length;
-		for(int i = week + 1; i < len; i++){
+		for(int i = currentWeek; i < len; i++){
 			for(Lesson lesson : lessons){
 				if(i < lesson.week.length && lesson.week[i]){
 					return lesson;
@@ -100,7 +100,7 @@ public class LessonGroup implements Serializable, Cloneable{
 		
 		// 向前查找课程
 		if(findAll){
-			for(int i = week - 1; i >= 0; i--){
+			for(int i = week - 2; i >= 0; i--){
 				for(Lesson lesson : lessons){
 					if(lesson.week[i]){
 						return lesson;
@@ -130,7 +130,7 @@ public class LessonGroup implements Serializable, Cloneable{
 			n.setText("空闲");
 			n.setTextColor(context.getResources().getColor(R.color.colorSecondaryText));
 		}else{
-			((BackgroundLesson)v.findViewById(R.id.item_lesson_color)).setColor(ColorUtil.TEXT_COLORS[lesson.color]);
+			((LessonBackground)v.findViewById(R.id.item_lesson_color)).setColor(ColorUtil.TEXT_COLORS[lesson.color]);
 			n.setText(lesson.name);
 			n.setTextColor(context.getResources().getColor(R.color.colorPrimaryText));
 			if("".equals(lesson.place) || "".equals(lesson.teacher))

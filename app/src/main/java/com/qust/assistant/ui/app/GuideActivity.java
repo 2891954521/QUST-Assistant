@@ -36,6 +36,7 @@ import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.QustUtil.LessonUtil;
 import com.qust.assistant.util.SettingUtil;
+import com.qust.assistant.vo.QueryLessonResult;
 
 import java.util.Calendar;
 
@@ -197,7 +198,7 @@ public class GuideActivity extends BaseActivity{
 		
 		int index = LessonUtil.getCurrentYear(entranceTime);
 		
-		LessonUtil.QueryLessonResult result = LessonUtil.queryLessonTable(loginViewModel, String.valueOf(index / 2 + entranceTime), entranceTime % 2 == 0 ? "3" : "12");
+		QueryLessonResult result = LessonUtil.queryLessonTable(loginViewModel, String.valueOf(index / 2 + entranceTime), entranceTime % 2 == 0 ? "3" : "12");
 		
 		LessonTableViewModel lessonTableViewModel = LessonTableViewModel.getInstance(GuideActivity.this);
 		lessonTableViewModel.saveLessonData(result.startTime, result.totalWeek, result.lessonGroups);

@@ -386,6 +386,11 @@ public class LessonTableViewModel extends AndroidViewModel{
 	
 	/**
 	 * 检查课程是否冲突
+	 * @param week 目标星期，从0开始
+	 * @param count 目标节次，从0开始
+	 * @param lesson 需要检查的课程，检查冲突时会忽略自己
+	 * @param len 课时
+	 * @param booleans 上课的周数
 	 */
 	public static boolean isConflict(LessonGroup[][] lessonGroups, int week, int count, Lesson lesson, int len, boolean[] booleans){
 		for(int i = count; i < count + len && i < lessonGroups[0].length; i++){

@@ -47,10 +47,19 @@ public class LoginViewModel extends AndroidViewModel{
 	
 	public static final Pattern JESSIONID_PATTERN = Pattern.compile("JSESSIONID=(.*?);");
 	
+	/**
+	 * 教务服务器
+	 */
 	public String host;
 	
+	/**
+	 * 学号
+	 */
 	public String name;
 	
+	/**
+	 * 密码
+	 */
 	private String password;
 	
 	private MutableLiveData<QustLoginResult> loginResult;
@@ -92,7 +101,7 @@ public class LoginViewModel extends AndroidViewModel{
 				postValue(handler, "登录失败" + e.getMessage(), null);
 			}
 		}else if(name == null || password == null){
-			activity.addView(LoginFragment.class);
+			activity.runOnUiThread(() -> activity.addView(LoginFragment.class));
 		}else{
 			login(handler, name, password);
 		}

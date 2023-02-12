@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.fragment.BaseFragment;
 import com.qust.assistant.util.WebUtil;
 
@@ -27,12 +26,12 @@ public class DrinkLoginFragment extends BaseFragment{
 	
 	private DrinkViewModel drinkViewModel;
 	
-	public DrinkLoginFragment(MainActivity activity){
-		super(activity);
+	public DrinkLoginFragment(){
+		super();
 	}
 	
-	public DrinkLoginFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public DrinkLoginFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override

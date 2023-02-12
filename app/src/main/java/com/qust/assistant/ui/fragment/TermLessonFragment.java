@@ -2,6 +2,7 @@ package com.qust.assistant.ui.fragment;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,22 +15,32 @@ import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
+import com.app.hubert.guide.NewbieGuide;
+import com.app.hubert.guide.model.GuidePage;
+import com.app.hubert.guide.model.HighLight;
+import com.app.hubert.guide.model.RelativeGuide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
-import com.qust.assistant.ui.MainActivity;
+import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.DialogRoundTop;
+import com.qust.assistant.widget.LessonTime;
 import com.qust.assistant.widget.lesson.LessonTable;
-import com.qust.assistant.widget.lesson.LessonTime;
+import com.qust.assistant.widget.swipe.SwipeTextView;
 
 public class TermLessonFragment extends BaseFragment{
-	// 周数显示
-	private TextView weekText;
 	
-	// 周课表
+	/**
+	 * 周数显示
+ 	 */
+	private SwipeTextView weekText;
+	
+	/**
+	 * 周课表
+ 	 */
 	private LessonTable lessonTable;
 	
 	private boolean isInitLessonInfo, isLessonInfoShowing;
@@ -57,12 +68,12 @@ public class TermLessonFragment extends BaseFragment{
 	
 	private FloatingActionButton floatingActionButton;
 	
-	public TermLessonFragment(MainActivity activity){
-		super(activity);
+	public TermLessonFragment(){
+		super();
 	}
 	
-	public TermLessonFragment(MainActivity activity, boolean isRoot, boolean hasToolBar){
-		super(activity, isRoot, hasToolBar);
+	public TermLessonFragment(boolean isRoot, boolean hasToolBar){
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override
@@ -71,12 +82,35 @@ public class TermLessonFragment extends BaseFragment{
 		
 		// 显示第几周的TextView
 		weekText = findViewById(R.id.layout_timetable_week);
-		
+		lessonTable = findViewById(R.id.fragment_timetable_pager);
 		floatingActionButton = findViewById(R.id.fragment_term_lesson_current);
+		
 		floatingActionButton.setVisibility(View.GONE);
 		floatingActionButton.setOnClickListener(v -> lessonTable.setCurrentItem(LessonTableViewModel.getCurrentWeek() - 1));
 		
-		lessonTable = findViewById(R.id.fragment_timetable_pager);
+		weekText.setOnSwipeListener(left -> {
+			if(left){
+				if(lessonTable.getCurrentItem() < LessonTableViewModel.getTotalWeek()){
+					lessonTable.setCurrentItem(lessonTable.getCurrentItem() + 1);
+				}
+			}else{
+				if(lessonTable.getCurrentItem() > 0){
+					lessonTable.setCurrentItem(lessonTable.getCurrentItem() - 1);
+				}
+			}
+		});
+		
+		findViewById(R.id.fragment_term_lesson_left).setOnClickListener(v -> {
+			if(lessonTable.getCurrentItem() > 0){
+				lessonTable.setCurrentItem(lessonTable.getCurrentItem() + 1);
+			}
+		});
+		findViewById(R.id.fragment_term_lesson_right).setOnClickListener(v -> {
+			if(lessonTable.getCurrentItem() < LessonTableViewModel.getTotalWeek()){
+				lessonTable.setCurrentItem(lessonTable.getCurrentItem() + 1);
+			}
+		});
+		
 		lessonTable.initAdapter();
 		lessonTable.setUpdateListener(this::updateLesson);
 		lessonTable.setLessonClickListener((week, count, lesson) -> {
@@ -106,10 +140,26 @@ public class TermLessonFragment extends BaseFragment{
 		lessonTableViewModel.getUpdateLiveData().observe(this, update -> lessonTable.initAdapter());
 		
 		lessonTable.postDelayed(() -> {
+			int time = SettingUtil.getInt(activity, NewbieGuide.TAG, getClass().getName(), 0);
+			if(time == 0){
+				NewbieGuide.with(activity).setLabel(getClass().getName())
+					.setOnPageChangedListener(page -> {
+						if(page == 0) floatingActionButton.show();
+					})
+					.addGuidePage(GuidePage.newInstance()
+							.addHighLight(weekText, new RelativeGuide(R.layout.layout_welcome_term_lesson, Gravity.BOTTOM, 50))
+					).addGuidePage(GuidePage.newInstance()
+							.addHighLight(floatingActionButton, HighLight.Shape.CIRCLE, 20)
+							.setLayoutRes(R.layout.layout_welcome_term_lesson2)
+					).addGuidePage(GuidePage.newInstance()
+							.setLayoutRes(R.layout.layout_welcome_term_lesson3)
+					).show();
+			}
+
 			int week = LessonTableViewModel.getCurrentWeek();
 			lessonTable.setCurrentItem(week - 1, false);
 			weekText.setText("第 " + week + " 周");
-		}, 100);
+		}, 300);
 	}
 	
 	/**
@@ -276,7 +326,7 @@ public class TermLessonFragment extends BaseFragment{
 	@Override
 	public void onPause(){
 		super.onPause();
-		lessonTable.clearMenu();
+		if(lessonTable != null) lessonTable.clearMenu();
 	}
 	
 	@Override
