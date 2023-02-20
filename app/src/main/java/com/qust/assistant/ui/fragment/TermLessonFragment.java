@@ -102,7 +102,7 @@ public class TermLessonFragment extends BaseFragment{
 		
 		findViewById(R.id.fragment_term_lesson_left).setOnClickListener(v -> {
 			if(lessonTable.getCurrentItem() > 0){
-				lessonTable.setCurrentItem(lessonTable.getCurrentItem() + 1);
+				lessonTable.setCurrentItem(lessonTable.getCurrentItem() - 1);
 			}
 		});
 		findViewById(R.id.fragment_term_lesson_right).setOnClickListener(v -> {

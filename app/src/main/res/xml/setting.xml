@@ -17,8 +17,16 @@
             android:defaultValue="false"
             android:title="隐藏已结课程"
             android:summaryOn="隐藏已结课程"
-            android:summaryOff="不隐藏已结课程"  />
-
+            android:summaryOff="不隐藏已结课程" />
+    
+        <SwitchPreference
+            android:key="key_hide_teacher"
+            android:dependency="key_show_all_lesson"
+            android:defaultValue="false"
+            android:title="隐藏教师"
+            android:summaryOn="隐藏教师"
+            android:summaryOff="不隐藏教师" />
+        
         <Preference
             android:key="key_start_day"
             android:title="设置开学时间" />

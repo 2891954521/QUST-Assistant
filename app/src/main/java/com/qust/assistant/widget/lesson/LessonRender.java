@@ -59,6 +59,10 @@ public class LessonRender{
 	 */
 	private boolean hideFinishLesson;
 	
+	/**
+	 * 隐藏教师
+	 */
+	private boolean hideTeacher;
 	
 	private int baseLine;
 	
@@ -73,6 +77,11 @@ public class LessonRender{
 	 * 最小的一节课的大小
 	 */
 	private int cellWidth, cellHeight;
+	
+	/**
+	 * 不同文本之间的间距
+	 */
+	private int linePadding;
 	
 	private Paint paint, paintT;
 	
@@ -105,9 +114,11 @@ public class LessonRender{
 		textHeight = (int)(paintT.getTextSize() + 3);
 		
 		timeWidth = ParamUtil.dp2px(context, 48);
+		linePadding = ParamUtil.dp2px(context, 4);
 		
 		dateHeight = 40 + textHeight * 2;
 		
+		hideTeacher = SettingUtil.getBoolean(SettingUtil.KEY_HIDE_TEACHER, false);
 		showAllLesson = SettingUtil.getBoolean(SettingUtil.KEY_SHOW_ALL_LESSON, false);
 		hideFinishLesson = SettingUtil.getBoolean(SettingUtil.KEY_HIDE_FINISH_LESSON, false);
 	}
@@ -317,12 +328,16 @@ public class LessonRender{
 					canvas.drawRoundRect(new RectF(x + LESSON_PADDING, y + LESSON_PADDING, x + cellWidth - LESSON_PADDING, y + cellHeight * lesson.len - LESSON_PADDING), 16, 16, paint);
 				}
 				
-				int lineY = y + baseLine + (cellHeight * lesson.len - textHeight * lesson.lines) / 2;
+				int lineY = y + baseLine + (cellHeight * lesson.len - textHeight * lesson.lines - linePadding * (hideTeacher ? 1 : 2)) / 2;
 				
-				for(String s : lesson.data){
-					if(s == null) break;
-					canvas.drawText(s, x + cellWidth / 2, lineY, paintT);
-					lineY += textHeight;
+				int c = lesson.lines + (hideTeacher ? 1 : 2);
+				for(int n = 0; n < c; n++){
+					if(lesson.data[n] == null){
+						lineY += linePadding;
+					}else {
+						canvas.drawText(lesson.data[n], x + cellWidth / 2, lineY, paintT);
+						lineY += textHeight;
+					}
 				}
 			}
 		}
@@ -378,11 +393,11 @@ public class LessonRender{
 			this.color = color;
 			this.len = lesson.len;
 
-			data = new String[len * 3];
+			data = new String[len * 3 + (hideTeacher ? 1 : 2)];
 			
 			lines = splitString(lesson.name, data, cellWidth - (LESSON_PADDING << 2), 0, len * 3 - 2);
-			lines += splitString(lesson.place, data, cellWidth - (LESSON_PADDING << 2), lines, len * 3 - lines - 1);
-			lines += splitString(lesson.teacher, data, cellWidth - (LESSON_PADDING << 2), lines, len * 3 - lines);
+			lines += splitString(lesson.place, data, cellWidth - (LESSON_PADDING << 2), lines + 1, len * 3 - lines - 1);
+			if(!hideTeacher) lines += splitString(lesson.teacher, data, cellWidth - (LESSON_PADDING << 2), lines + 2, len * 3 - lines);
 		}
 	}
 	

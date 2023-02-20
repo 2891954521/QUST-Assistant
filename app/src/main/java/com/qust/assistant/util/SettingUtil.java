@@ -23,7 +23,12 @@ public class SettingUtil {
 	 * 隐藏已结课课程
 	 */
 	public static final String KEY_HIDE_FINISH_LESSON = "key_hide_finish_lesson";
-
+	
+	/**
+	 * 隐藏教师
+	 */
+	public static final String KEY_HIDE_TEACHER = "key_hide_teacher";
+	
 	/**
 	 * 是否快捷显示饮水码
 	 */
