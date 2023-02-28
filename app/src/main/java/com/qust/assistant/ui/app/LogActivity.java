@@ -34,7 +34,7 @@ public class LogActivity extends BaseAnimActivity{
         String s = getIntent().getStringExtra("file");
         if(s != null){
             
-            File f = new File(LogUtil.DebugLogFile, s);
+            File f = new File(LogUtil.LogFile, s);
             
             SpannableStringBuilder str = new SpannableStringBuilder(FileUtil.readFile(f));
             Matcher matcher = pattern.matcher(str);

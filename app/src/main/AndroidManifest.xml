@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qust.assistant"
     android:versionCode="23"
-    android:versionName="2.1">
+    android:versionName="2.2 alpha">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -61,7 +61,7 @@
 
         <!-- 桌面小部件 -->
         <receiver
-            android:name="com.qust.assistant.receiver.LessonTable"
+            android:name="com.qust.assistant.service.LessonTable"
             android:label="课表"
             android:exported="true">
 

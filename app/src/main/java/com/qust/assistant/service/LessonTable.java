@@ -1,4 +1,4 @@
-package com.qust.assistant.receiver;
+package com.qust.assistant.service;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;

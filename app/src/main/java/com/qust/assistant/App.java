@@ -11,6 +11,7 @@ import com.billy.android.swipe.SmartSwipeBack;
 import com.billy.android.swipe.SwipeConsumer;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.LoginViewModel;
+import com.qust.assistant.service.LogService;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.app.GuideActivity;
 import com.qust.assistant.ui.fragment.third.DrinkViewModel;
@@ -22,7 +23,7 @@ public class App extends Application{
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 14;
+	public static final int DEV_VERSION = 15;
 	
 	/*
 	 * Handler 公用的 what 值
@@ -62,6 +63,8 @@ public class App extends Application{
 		SettingUtil.init(this);
 		
 		LogUtil.init(this);
+		
+		new LogService(this).start();
 		
 		loginViewModel = new LoginViewModel(this);
 		drinkViewModel = new DrinkViewModel(this);

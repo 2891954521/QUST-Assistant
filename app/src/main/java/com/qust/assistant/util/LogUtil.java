@@ -11,21 +11,18 @@ import java.util.Date;
 public class LogUtil{
 	
 	// Log路径
-	public static String DebugLogFile;
+	public static String LogFile;
 	
 	public static boolean DEBUG;
 	
 	public static void init(Context context){
 		
-		DEBUG = (boolean)SettingUtil.get("key_debug", false);
+		DEBUG = SettingUtil.getBoolean("key_debug", false);
 		
-		File f = context.getExternalFilesDir("debug");
-		if(f == null){
-            DebugLogFile = new File(context.getExternalFilesDir("log"), "debug.log").toString();
-        }else{
-			if(!f.exists()) f.mkdirs();
-			DebugLogFile = f.toString();
-		}
+		File f = context.getExternalFilesDir("log");
+		if(!f.exists()) f.mkdirs();
+		
+		LogFile = f.toString();
 	}
 	
 	/**
@@ -49,7 +46,7 @@ public class LogUtil{
 	 * 强制输出到 debug 文件
  	 */
 	public static void debugLog(String string){
-		FileUtil.appendFile(new File(DebugLogFile, "debug.log"), string + "\n");
+		FileUtil.appendFile(new File(LogFile, "debug.log"), string + "\n");
 	}
 	
 	// log输出异常
@@ -58,11 +55,13 @@ public class LogUtil{
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		e.printStackTrace(printWriter);
 		String str = stringWriter.toString();
-		File f = new File(DebugLogFile, str.hashCode() + ".log");
+		int hash = str.hashCode();
+		File f = new File(LogFile, hash + ".log");
 		if(f.exists()){
 			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + str.hashCode());
 		}else{
 			FileUtil.writeFile(f.toString(), str);
+			FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "\n");
 			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + str.hashCode() + "\n" + e.getClass().getName() + " : " + e.getMessage());
 		}
 	}

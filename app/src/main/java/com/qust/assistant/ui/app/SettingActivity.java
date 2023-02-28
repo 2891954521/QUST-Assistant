@@ -165,12 +165,12 @@ public class SettingActivity extends BaseAnimActivity{
 			});
 			
 			Preference p = getSetting("key_clear_log");
-			int i = new File(LogUtil.DebugLogFile).list().length;
+			int i = new File(LogUtil.LogFile).list().length;
 			p.setSummary(i == 0 ? "无Log" : "共计：" + i + "条Log");
 			p.setOnPreferenceClickListener(p1 -> {
 				DialogUtil.getBaseDialog(activity).title("提示").content("是否清除Log")
 						.onPositive((dialog,which) -> {
-							for(File f : new File(LogUtil.DebugLogFile).listFiles()) f.delete();
+							for(File f : new File(LogUtil.LogFile).listFiles()) f.delete();
 							p.setSummary("无Log");
 							activity.toast("Log已清除！");
 						}).show();
