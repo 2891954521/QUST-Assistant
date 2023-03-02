@@ -167,7 +167,7 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "课表查询";
 	}
 	

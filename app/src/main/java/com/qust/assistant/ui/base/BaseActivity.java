@@ -1,11 +1,14 @@
-package com.qust.assistant.ui;
+package com.qust.assistant.ui.base;
 
-import android.content.BroadcastReceiver;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,15 +19,17 @@ import com.qust.assistant.R;
 
 public class BaseActivity extends AppCompatActivity{
 
-	private BroadcastReceiver receiver;
+	private Toolbar toolbar;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		initStatusBar();
-		registerReceiver();
 	}
 	
+	/**
+	 * 初始化状态栏
+	 */
 	protected void initStatusBar(){
 		ImmersionBar immersionBar = ImmersionBar.with(this).transparentBar();
 		int mode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
@@ -40,41 +45,43 @@ public class BaseActivity extends AppCompatActivity{
 		immersionBar.init();
 	}
 	
-	// 初始化ToolBar并设置标题
+	/**
+	 * 初始化ToolBar并设置标题
+	 */
 	protected void initToolBar(@Nullable String title){
-		Toolbar toolbar = findViewById(R.id.toolbar);
+		toolbar = findViewById(R.id.toolbar);
 		if(toolbar == null) return;
 		if(title != null) toolbar.setTitle(title);
 		toolbar.setNavigationIcon(R.drawable.ic_back);
 		toolbar.setNavigationOnClickListener(v -> onBackPressed());
 	}
 	
-	// 重写此方法以注册广播监听
-	protected void registerReceiver(){
-	
-	}
-	
-	//
-	protected void registerReceiver(BroadcastReceiver receiver, @NonNull String... actions){
-		this.receiver = receiver;
-		IntentFilter f = new IntentFilter();
-		for(String action : actions) f.addAction(action);
-		registerReceiver(receiver, f);
-	}
-	
-	// 销毁Activity时取消广播监听
-	@Override
-	protected void onDestroy(){
-		super.onDestroy();
-		if(receiver != null) unregisterReceiver(receiver);
+	/**
+	 * 给 ToolBar 添加按键
+	 * @param icon 图标
+	 * @param listener 点击事件
+	 * @return imageView
+	 */
+	@NonNull
+	protected final ImageView addMenuItem(@DrawableRes int icon, View.OnClickListener listener){
+		ImageView imageView = (ImageView)LayoutInflater.from(this).inflate(R.layout.view_image, toolbar, false);
+		imageView.setImageResource(icon);
+		imageView.setOnClickListener(listener);
+		
+		if(toolbar != null){
+			((Toolbar.LayoutParams)imageView.getLayoutParams()).gravity = Gravity.CENTER | Gravity.END;
+			toolbar.addView(imageView);
+		}
+		
+		return imageView;
 	}
 	
 	public void toast(String message){
-		toast(message,Toast.LENGTH_SHORT);
+		toast(message, Toast.LENGTH_SHORT);
 	}
 	
-	public void toast(String message,int time){
-		Toast.makeText(this,message,time).show();
+	public void toast(String message, int time){
+		Toast.makeText(this, message, time).show();
 	}
 	
 }

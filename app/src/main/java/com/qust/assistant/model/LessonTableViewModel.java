@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.qust.assistant.App;
+import com.qust.assistant.R;
 import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.util.ColorUtil;
@@ -108,14 +109,14 @@ public class LessonTableViewModel extends AndroidViewModel{
 		
 		lessonGroups = new LessonGroup[7][10];
 		
-		startDay = SettingUtil.getString(SettingUtil.KEY_START_DAY,"2022-08-29");
-		totalWeek = SettingUtil.getInt(SettingUtil.KEY_TOTAL_WEEK,21);
+		startDay = SettingUtil.getString(application.getString(R.string.KEY_START_DAY),"2022-08-29");
+		totalWeek = SettingUtil.getInt(application.getString(R.string.KEY_TOTAL_WEEK),21);
 		
 		dayOfWeek = 0;
 		currentWeek = 1;
 		
 		// 初始化课程时间表
-		int time = SettingUtil.getInt(SettingUtil.KEY_TIME_TABLE, 0);
+		int time = SettingUtil.getInt(application.getString(R.string.KEY_TIME_TABLE), 0);
 		lessonTime = LESSON_TIME[time];
 		lessonTimeText = LESSON_TIME_TEXT[time];
 		
@@ -196,7 +197,7 @@ public class LessonTableViewModel extends AndroidViewModel{
 	public void setStartDay(@NonNull String _startDay){
 		startDay = _startDay;
 		updateDate();
-		SettingUtil.edit().putString(SettingUtil.KEY_START_DAY, _startDay).apply();
+		SettingUtil.edit().putString(getApplication().getString(R.string.KEY_START_DAY), _startDay).apply();
 		needUpdateLesson.postValue(true);
 	}
 	
@@ -205,7 +206,7 @@ public class LessonTableViewModel extends AndroidViewModel{
 	 */
 	public void setTotalWeek(int _totalWeek){
 		totalWeek = _totalWeek;
-		SettingUtil.edit().putInt(SettingUtil.KEY_TOTAL_WEEK, _totalWeek).apply();
+		SettingUtil.edit().putInt(getApplication().getString(R.string.KEY_TOTAL_WEEK), _totalWeek).apply();
 		needUpdateLesson.postValue(true);
 	}
 	
@@ -237,12 +238,12 @@ public class LessonTableViewModel extends AndroidViewModel{
 		if(_startDay != null){
 			startDay = _startDay;
 			updateDate();
-			SettingUtil.edit().putString(SettingUtil.KEY_START_DAY, _startDay).apply();
+			SettingUtil.edit().putString(getApplication().getString(R.string.KEY_START_DAY), _startDay).apply();
 		}
 		
 		if(_totalWeek > 1){
 			totalWeek = _totalWeek;
-			SettingUtil.edit().putInt(SettingUtil.KEY_TOTAL_WEEK, _totalWeek).apply();
+			SettingUtil.edit().putInt(getApplication().getString(R.string.KEY_TOTAL_WEEK), _totalWeek).apply();
 		}
 		
 		lessonGroups = _lessonGroups;

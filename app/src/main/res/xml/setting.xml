@@ -5,38 +5,37 @@
         android:title="课表">
 
         <SwitchPreference
-            android:key="key_show_all_lesson"
+            android:key="@string/KEY_SHOW_ALL_LESSON"
             android:defaultValue="false"
             android:title="显示全部课程"
             android:summaryOn="显示非本周课程"
             android:summaryOff="不显示非本周课程" />
 
         <SwitchPreference
-            android:key="key_hide_finish_lesson"
-            android:dependency="key_show_all_lesson"
+            android:key="@string/KEY_HIDE_FINISH_LESSON"
+            android:dependency="@string/KEY_SHOW_ALL_LESSON"
             android:defaultValue="false"
             android:title="隐藏已结课程"
             android:summaryOn="隐藏已结课程"
             android:summaryOff="不隐藏已结课程" />
     
         <SwitchPreference
-            android:key="key_hide_teacher"
-            android:dependency="key_show_all_lesson"
+            android:key="@string/KEY_HIDE_TEACHER"
             android:defaultValue="false"
             android:title="隐藏教师"
             android:summaryOn="隐藏教师"
             android:summaryOff="不隐藏教师" />
         
         <Preference
-            android:key="key_start_day"
+            android:key="@string/KEY_START_DAY"
             android:title="设置开学时间" />
 
        <Preference
-            android:key="key_total_week"
+            android:key="@string/KEY_TOTAL_WEEK"
             android:title="设置总周数"/>
 
         <Preference
-            android:key="key_time_table"
+            android:key="@string/KEY_TIME_TABLE"
             android:title="设置时间表"/>
 
     </PreferenceCategory>
@@ -45,23 +44,23 @@
         android:title="杂项">
     
         <Preference
-            android:key="key_entrance_time"
+            android:key="@string/KEY_ENTRANCE_TIME"
             android:title="设置入学年份"/>
+    
+        <Preference
+            android:key="key_customize_home"
+            android:title="自定义首页"
+            android:summary="自定义首页展示的界面"/>
         
         <SwitchPreference
-            android:key="key_quick_display_drink_code"
-            android:title="主页下拉显示饮水码"
-            android:summary="重启应用生效"/>
-
-        <SwitchPreference
-            android:key="key_auto_update"
+            android:key="@string/KEY_AUTO_UPDATE"
             android:defaultValue="true"
             android:summaryOn="3天检查一次更新"
             android:summaryOff="不检查更新"
             android:title="自动检查更新"/>
 
         <SwitchPreference
-            android:key="key_update_dev"
+            android:key="@string/KEY_UPDATE_DEV"
             android:defaultValue="false"
             android:summaryOn="接收开发版更新"
             android:summaryOff="不接收开发版更新"

@@ -52,9 +52,15 @@ public class Lesson implements Serializable, Cloneable{
 		len = 1;
 	}
 	
-	public Lesson(JSONObject json){
+	public Lesson(@NonNull JSONObject json){
 		this();
 		try{
+			
+			name = json.getString("kcmc").trim();
+			
+			if(json.has("cdmc")) place = json.getString("cdmc").trim();
+			
+			if(json.has("xm")) teacher = json.getString("xm").trim();
 			
 			String[] sp = json.getString("zcd").split(",");
 			
@@ -71,13 +77,6 @@ public class Lesson implements Serializable, Cloneable{
 					week[Integer.parseInt(a) - 1] = true;
 				}
 			}
-			
-			place = json.getString("cdmc").trim();
-			
-			name = json.getString("kcmc").trim();
-			
-			teacher = json.getString("xm").trim();
-			
 		}catch(JSONException e){
 			LogUtil.Log(e);
 		}

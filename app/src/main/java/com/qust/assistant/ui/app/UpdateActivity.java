@@ -16,7 +16,7 @@ import androidx.core.content.FileProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.BaseAnimActivity;
+import com.qust.assistant.ui.base.BaseAnimActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
@@ -54,7 +54,7 @@ public class UpdateActivity extends BaseAnimActivity{
 		initToolBar(null);
 		
 		file = new File(getExternalCacheDir(),"release.apk");
-		isDev = SettingUtil.getBoolean(SettingUtil.KEY_UPDATE_DEV, false);
+		isDev = SettingUtil.getBoolean(getString(R.string.KEY_UPDATE_DEV), false);
 		
 		updateButton = findViewById(R.id.activity_update_update);
 		channelPicker = findViewById(R.id.activity_update_channel);

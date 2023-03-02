@@ -24,6 +24,7 @@ import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
+import com.qust.assistant.ui.base.BaseFragment;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.DialogRoundTop;
@@ -346,7 +347,7 @@ public class TermLessonFragment extends BaseFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "学期课表";
 	}
 }

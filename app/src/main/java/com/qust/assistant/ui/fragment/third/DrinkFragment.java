@@ -20,7 +20,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.fragment.BaseFragment;
+import com.qust.assistant.ui.base.BaseFragment;
 import com.qust.assistant.util.ParamUtil;
 import com.qust.assistant.util.WebUtil;
 
@@ -34,6 +34,10 @@ public class DrinkFragment extends BaseFragment{
 	private boolean isRunning;
 	
 	private boolean isShowingBigCode;
+	
+	private int brightness;
+	
+	private float initialBrightness;
 	
 	private ImageView arrow;
 	
@@ -56,7 +60,7 @@ public class DrinkFragment extends BaseFragment{
 	}
 	
 	public DrinkFragment(boolean isRoot, boolean hasToolBar){
-		super(isRoot, false);
+		super(isRoot, hasToolBar);
 	}
 	
 	@Override
@@ -93,29 +97,44 @@ public class DrinkFragment extends BaseFragment{
 		brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-				setBrightness(progress);
+				setBrightness(progress / 255f);
 			}
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar){ }
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar){
-				sp.edit().putInt("drinkBrightness", seekBar.getProgress()).apply();
+				brightness = seekBar.getProgress();
+				sp.edit().putInt("drinkBrightness", brightness).apply();
 			}
 		});
 	}
 	
 	private void initBrightness(){
 		layoutParams = activity.getWindow().getAttributes();
-		
-		int brightness = sp.getInt("drinkBrightness", (int)layoutParams.screenBrightness);
-		
-		setBrightness(brightness);
+		initialBrightness = layoutParams.screenBrightness;
+		brightness = sp.getInt("drinkBrightness", (int)(initialBrightness * 255f));
 		brightnessSeekBar.setProgress(brightness);
 	}
 	
-	private void setBrightness(int paramInt){
-		layoutParams.screenBrightness = paramInt / 255f;
+	/**
+	 * 设置屏幕亮度
+	 * @param brightness 取值为 0-1
+	 */
+	private void setBrightness(float brightness){
+		layoutParams.screenBrightness = brightness;
 		activity.getWindow().setAttributes(layoutParams);
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		if(isCreated()) setBrightness(brightness / 255f);
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		if(isCreated()) setBrightness(initialBrightness);
 	}
 	
 	/**

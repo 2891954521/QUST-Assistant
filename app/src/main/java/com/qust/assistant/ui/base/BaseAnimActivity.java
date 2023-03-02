@@ -1,4 +1,4 @@
-package com.qust.assistant.ui;
+package com.qust.assistant.ui.base;
 
 import android.content.Intent;
 

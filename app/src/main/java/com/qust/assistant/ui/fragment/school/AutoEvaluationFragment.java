@@ -290,7 +290,7 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "自动教评";
 	}
 	

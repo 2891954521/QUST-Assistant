@@ -15,7 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.fragment.BaseFragment;
+import com.qust.assistant.ui.base.BaseFragment;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.SettingUtil;
@@ -95,7 +95,7 @@ public class HealthCheckInFragment extends BaseFragment{
 	protected void initLayout(LayoutInflater inflater){
 		dialog = new MaterialDialog.Builder(activity).progress(true, 0).content("请稍候").build();
 		
-		cookie = SettingUtil.getString(SettingUtil.HEALTH_CHECK_COOKIE, null);
+		cookie = SettingUtil.getString(getString(R.string.HEALTH_CHECK_COOKIE), null);
 		
 		nameText = findViewById(R.id.input_name);
 		passwordText = findViewById(R.id.input_password);
@@ -106,10 +106,10 @@ public class HealthCheckInFragment extends BaseFragment{
 		nsfyjzxgym = findViewById(R.id.health_check_nsfyjzxgym);
 		nzhychsjcsj = findViewById(R.id.health_check_nzhychsjcsj);
 		
-		nameText.getEditText().setText(SettingUtil.getString(SettingUtil.HEALTH_CHECK_USER, ""));
-		passwordText.getEditText().setText(SettingUtil.getString(SettingUtil.HEALTH_CHECK_PASSWORD, ""));
+		nameText.getEditText().setText(SettingUtil.getString(getString(R.string.HEALTH_CHECK_USER), ""));
+		passwordText.getEditText().setText(SettingUtil.getString(getString(R.string.HEALTH_CHECK_PASSWORD), ""));
 		
-		nsfyjzxgym.setText(SettingUtil.getString(SettingUtil.HEALTH_CHECK_NSFYJZXGYM, "已接种第3针（加强针）"));
+		nsfyjzxgym.setText(SettingUtil.getString(getString(R.string.HEALTH_CHECK_NSFYJZXGYM), "已接种第3针（加强针）"));
 		nzhychsjcsj.setText(DateUtil.YMD.format(new Date()));
 		
 		nsfyjzxgym.setOnClickListener(v -> DialogUtil.getListDialog(activity, "是否已接种新冠疫苗", new String[]{
@@ -189,10 +189,10 @@ public class HealthCheckInFragment extends BaseFragment{
 						return;
 					}
 					
-					SettingUtil.edit().putString(SettingUtil.HEALTH_CHECK_COOKIE, cookie).apply();
+					SettingUtil.edit().putString(getString(R.string.HEALTH_CHECK_COOKIE), cookie).apply();
 					
 					if(!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
-						SettingUtil.edit().putString(SettingUtil.HEALTH_CHECK_USER, user).putString(SettingUtil.HEALTH_CHECK_PASSWORD, password).apply();
+						SettingUtil.edit().putString(getString(R.string.HEALTH_CHECK_USER), user).putString(getString(R.string.HEALTH_CHECK_PASSWORD), password).apply();
 					}
 					
 					String form = getForm(cookie, user);
@@ -485,7 +485,7 @@ public class HealthCheckInFragment extends BaseFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "健康打卡（已适配）";
 	}
 }

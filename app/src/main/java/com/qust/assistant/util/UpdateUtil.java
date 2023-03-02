@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.qust.assistant.App;
 import com.qust.assistant.BuildConfig;
+import com.qust.assistant.R;
 import com.qust.assistant.ui.app.UpdateActivity;
 import com.qust.assistant.vo.UpdateInfo;
 
@@ -32,16 +33,16 @@ public class UpdateUtil{
 	 */
 	public static void checkUpdate(final Activity activity){
 		
-		if(!SettingUtil.getBoolean(SettingUtil.KEY_AUTO_UPDATE, true)){
+		if(!SettingUtil.getBoolean(activity.getString(R.string.KEY_AUTO_UPDATE), true)){
 			return;
 		}
 		
-		boolean isDev = SettingUtil.getBoolean(SettingUtil.KEY_UPDATE_DEV, false);
+		boolean isDev = SettingUtil.getBoolean(activity.getString(R.string.KEY_UPDATE_DEV), false);
 		
 		long current = System.currentTimeMillis();
 		long frequency = isDev ? 1000 * 60 * 60 * 24 * 1 : 1000 * 60 * 60 * 24 * 3;
 		
-		if(current - (long)SettingUtil.get(SettingUtil.LAST_UPDATE_TIME, 0L) < frequency){
+		if(current - (long)SettingUtil.get(activity.getString(R.string.last_update_time), 0L) < frequency){
 			return;
 		}
 		

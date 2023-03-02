@@ -15,7 +15,7 @@ import com.billy.android.swipe.consumer.SpaceConsumer;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LoginViewModel;
-import com.qust.assistant.ui.fragment.BaseFragment;
+import com.qust.assistant.ui.base.BaseFragment;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.QustUtil.LessonUtil;
 import com.qust.assistant.util.SettingUtil;
@@ -83,7 +83,7 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	
 	public BaseSchoolFragment(boolean isRoot, boolean hasToolBar){
 		super(isRoot, hasToolBar);
-		entranceTime = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 0);
+		entranceTime = SettingUtil.getInt(getString(R.string.KEY_ENTRANCE_TIME), 0);
 	}
 	
 	@Override
@@ -142,7 +142,7 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	protected abstract int getLayoutId();
 	
 	@Override
-	protected abstract String getName();
+	public abstract String getName();
 	
 	/**
 	 * 从文件读取序列化后的数据

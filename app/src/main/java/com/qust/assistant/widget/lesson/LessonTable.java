@@ -113,7 +113,7 @@ public class LessonTable extends ViewPager{
 		lessonClickListener = (week, count, lesson) -> { };
 		lessonUpdateListener = () -> { };
 		
-		hideFinishLesson = SettingUtil.getBoolean(SettingUtil.KEY_HIDE_FINISH_LESSON, false);
+		hideFinishLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_HIDE_FINISH_LESSON), false);
 		
 		runnable = () -> {
 			if(clearMenu) return;

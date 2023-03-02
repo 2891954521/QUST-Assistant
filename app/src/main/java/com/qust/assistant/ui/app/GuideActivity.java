@@ -1,16 +1,12 @@
 package com.qust.assistant.ui.app;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -19,10 +15,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.airbnb.lottie.LottieAnimationView;
@@ -31,8 +24,8 @@ import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.LoginViewModel;
-import com.qust.assistant.ui.BaseActivity;
 import com.qust.assistant.ui.MainActivity;
+import com.qust.assistant.ui.base.BaseActivity;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.QustUtil.LessonUtil;
 import com.qust.assistant.util.SettingUtil;
@@ -114,19 +107,13 @@ public class GuideActivity extends BaseActivity{
 		});
 		
 		findViewById(R.id.skip).setOnClickListener(v -> {
-			SettingUtil.edit().putBoolean(SettingUtil.IS_FIRST_USE, false).apply();
+			SettingUtil.edit().putBoolean(getString(R.string.isFirstUse), false).apply();
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
 		});
 		
 		findViewById(R.id.done).setOnClickListener(v -> {
-			// 先请求权限
-			if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-					|| ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
-				ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
-			}else{
-				login();
-			}
+			login();
 		});
 
 		lottieView.setSpeed(1.25f);
@@ -192,7 +179,7 @@ public class GuideActivity extends BaseActivity{
 	
 	private void getLessonTable(){
 		
-		SettingUtil.edit().putInt(SettingUtil.KEY_ENTRANCE_TIME, entranceTime).apply();
+		SettingUtil.edit().putInt(getString(R.string.KEY_ENTRANCE_TIME), entranceTime).apply();
 		
 		handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在查询课表"));
 		
@@ -204,61 +191,11 @@ public class GuideActivity extends BaseActivity{
 		lessonTableViewModel.saveLessonData(result.startTime, result.totalWeek, result.lessonGroups);
 		
 		runOnUiThread(() -> {
-			SettingUtil.edit().putBoolean(SettingUtil.IS_FIRST_USE, false).apply();
+			SettingUtil.edit().putBoolean(getString(R.string.isFirstUse), false).apply();
 			dialog.dismiss();
 			toast("初始化完成");
 			startActivity(new Intent(GuideActivity.this, MainActivity.class));
 			finish();
 		});
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data){
-		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode == NOT_NOTICE){
-			// 由于不知道是否选择了允许所以需要再次判断
-			if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-			}else{
-				login();
-			}
-		}
-	}
-	
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if(requestCode == 1){
-			for(int i = 0; i < permissions.length; i++){
-				if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
-					if(!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])){
-						// 用户选择了禁止不再询问
-						new MaterialDialog.Builder(this).title("权限").content("请给予应用运行所必要的权限！")
-								.positiveText(R.string.text_cancel).onPositive((dialog, which) -> {
-									toast("请给予应用运行所必要的权限！");
-									System.exit(0);
-								}).negativeText(R.string.text_ok).onNegative((dialog, which) -> {
-									Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-									// 注意就是"package",不用改成自己的包名
-									Uri uri = Uri.fromParts("package", getPackageName(), null);
-									intent.setData(uri);
-									startActivityForResult(intent, NOT_NOTICE);
-									dialog.dismiss();
-								}).show();
-					}else{
-						// 选择禁止
-						new MaterialDialog.Builder(this).title("权限").content("请给予应用运行所必要的权限！")
-								.positiveText(R.string.text_cancel).onPositive((dialog, which) -> {
-									toast("请给予应用运行所必要的权限！");
-									System.exit(0);
-								}).negativeText(R.string.text_ok).onNegative((dialog, which) -> {
-									ActivityCompat.requestPermissions(GuideActivity.this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
-									dialog.dismiss();
-								}).show();
-					}
-					break;
-				}
-			}
-		}
 	}
 }

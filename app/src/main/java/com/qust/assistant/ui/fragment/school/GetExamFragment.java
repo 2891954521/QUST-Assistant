@@ -48,7 +48,7 @@ public class GetExamFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "考试查询";
 	}
 	

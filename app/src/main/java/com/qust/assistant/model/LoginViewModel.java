@@ -11,7 +11,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.qust.assistant.App;
-import com.qust.assistant.ui.MainActivity;
+import com.qust.assistant.R;
+import com.qust.assistant.ui.base.QFragmentActivity;
 import com.qust.assistant.ui.fragment.school.LoginFragment;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
@@ -70,8 +71,8 @@ public class LoginViewModel extends AndroidViewModel{
 		
 		host = SEVER_HOSTS[0];
 		
-		name = SettingUtil.getString(SettingUtil.SCHOOL_NAME, null);
-		password = SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, null);
+		name = SettingUtil.getString(application.getString(R.string.SCHOOL_NAME), null);
+		password = SettingUtil.getString(application.getString(R.string.SCHOOL_PASSWORD), null);
 	}
 	
 	public static LoginViewModel getInstance(@NonNull Context context){
@@ -89,7 +90,7 @@ public class LoginViewModel extends AndroidViewModel{
 	/**
 	 * 教务登录, 使用储存的用户名和密码
 	 */
-	public void login(MainActivity activity, Handler handler){
+	public void login(QFragmentActivity activity, Handler handler){
 		if(loginResult.getValue().cookie != null){
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在检查登陆状态"));
 			try{
@@ -148,8 +149,8 @@ public class LoginViewModel extends AndroidViewModel{
 				case HttpURLConnection.HTTP_MOVED_TEMP:
 				case 307:
 					SettingUtil.edit()
-							.putString(SettingUtil.SCHOOL_NAME, name)
-							.putString(SettingUtil.SCHOOL_PASSWORD, password).apply();
+							.putString(getApplication().getString(R.string.SCHOOL_NAME), name)
+							.putString(getApplication().getString(R.string.SCHOOL_PASSWORD), password).apply();
 					
 					Matcher matcher = JESSIONID_PATTERN.matcher(connection.getHeaderField("Set-Cookie"));
 					postValue(handler, "登陆成功", matcher.find() ? matcher.group(1) : param[0]);

@@ -39,15 +39,7 @@
 			android:padding="@dimen/activity_margin"
 			android:textSize="@dimen/text_small"
 			android:textColor="@color/colorSecondaryText"
-			android:text="\t欢迎使用青科助手，我们需要以下权限和信息以便使用软件完整功能"/>
-		
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:padding="@dimen/activity_margin"
-			android:textSize="@dimen/text_small"
-			android:textColor="@color/colorSecondaryText"
-			android:text="权限:\n\t访问系统文件储存"/>
+			android:text="\t欢迎使用青科助手，我们需要以下信息以便使用软件完整功能"/>
 		
 		<com.google.android.material.textfield.TextInputLayout
 			style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

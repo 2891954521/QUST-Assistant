@@ -1,4 +1,4 @@
-package com.qust.assistant.ui.fragment;
+package com.qust.assistant.ui.base;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +28,7 @@ import com.qust.assistant.ui.MainActivity;
 
 public abstract class BaseFragment extends Fragment{
 	
-	protected MainActivity activity;
+	protected QFragmentActivity activity;
 	
 	protected ViewGroup layout;
 	
@@ -133,7 +133,7 @@ public abstract class BaseFragment extends Fragment{
 	 * 获取 Fragment 的名字，用于显示在 ToolBar 上
 	 * @return name
 	 */
-	protected abstract String getName();
+	public abstract String getName();
 	
 	/**
 	 * 来自 onActivityResult
@@ -158,6 +158,7 @@ public abstract class BaseFragment extends Fragment{
 	 * @param listener 点击事件
 	 * @return imageView
 	 */
+	@NonNull
 	protected final ImageView addMenuItem(LayoutInflater layoutInflater, @DrawableRes int icon, View.OnClickListener listener){
 		ImageView imageView = (ImageView)layoutInflater.inflate(R.layout.view_image, toolbar, false);
 		imageView.setImageResource(icon);

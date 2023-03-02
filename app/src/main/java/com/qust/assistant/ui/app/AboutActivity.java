@@ -9,7 +9,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.qust.assistant.BuildConfig;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.BaseAnimActivity;
+import com.qust.assistant.ui.base.BaseAnimActivity;
 import com.qust.assistant.util.LogUtil;
 
 public class AboutActivity extends BaseAnimActivity{

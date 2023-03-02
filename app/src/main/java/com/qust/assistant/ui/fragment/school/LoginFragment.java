@@ -33,8 +33,8 @@ public class LoginFragment extends BaseSchoolFragment{
 		nameText = findViewById(R.id.fragment_login_name);
 		passwordText = findViewById(R.id.fragment_login_password);
 		
-		nameText.getEditText().setText(SettingUtil.getString(SettingUtil.SCHOOL_NAME, ""));
-		passwordText.getEditText().setText(SettingUtil.getString(SettingUtil.SCHOOL_PASSWORD, ""));
+		nameText.getEditText().setText(SettingUtil.getString(getString(R.string.SCHOOL_NAME), ""));
+		passwordText.getEditText().setText(SettingUtil.getString(getString(R.string.SCHOOL_PASSWORD), ""));
 	}
 	
 	@Override
@@ -48,10 +48,10 @@ public class LoginFragment extends BaseSchoolFragment{
 					String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
 					int newEntranceTime = Integer.parseInt(year.substring(0, year.length() - 2) + user.substring(0, 2));
 					if(entranceTime == 0){
-						SettingUtil.edit().putInt(SettingUtil.KEY_ENTRANCE_TIME, newEntranceTime).apply();
+						SettingUtil.edit().putInt(getString(R.string.KEY_ENTRANCE_TIME), newEntranceTime).apply();
 					}else if(newEntranceTime != entranceTime){
 						DialogUtil.getBaseDialog(activity).content("是否更新入学年份为" + newEntranceTime + "年").onPositive((dialog, what) -> {
-							SettingUtil.edit().putInt(SettingUtil.KEY_ENTRANCE_TIME, newEntranceTime).apply();
+							SettingUtil.edit().putInt(getString(R.string.KEY_ENTRANCE_TIME), newEntranceTime).apply();
 							dialog.dismiss();
 							toast("登陆成功！");
 							finish();

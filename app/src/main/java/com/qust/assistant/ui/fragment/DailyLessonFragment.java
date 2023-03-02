@@ -9,6 +9,7 @@ import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.model.lesson.LessonView;
+import com.qust.assistant.ui.base.BaseFragment;
 
 import java.util.Calendar;
 
@@ -29,6 +30,12 @@ public class DailyLessonFragment extends BaseFragment{
 		content = findViewById(R.id.dailyLesson);
 		LessonTableViewModel lessonTableViewModel = LessonTableViewModel.getInstance(activity);
 		lessonTableViewModel.getUpdateLiveData().observe(this, update -> updateLesson());
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		if(isCreated()) updateLesson();
 	}
 	
 	/**
@@ -120,7 +127,7 @@ public class DailyLessonFragment extends BaseFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "当日课表";
 	}
 }

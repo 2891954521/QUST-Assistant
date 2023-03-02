@@ -17,7 +17,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
-import com.qust.assistant.ui.BaseAnimActivity;
+import com.qust.assistant.ui.base.BaseAnimActivity;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
@@ -62,7 +62,7 @@ public class SettingActivity extends BaseAnimActivity{
 		public void onCreatePreferences(Bundle savedInstanceState,String rootKey){
 			addPreferencesFromResource(R.xml.setting);
 			
-			Preference startDay = getSetting(SettingUtil.KEY_START_DAY);
+			Preference startDay = getSetting(getString(R.string.KEY_START_DAY));
 			
 			startDay.setSummary(LessonTableViewModel.getStartDay());
 			startDay.setOnPreferenceClickListener(p -> {
@@ -86,7 +86,7 @@ public class SettingActivity extends BaseAnimActivity{
 				return true;
 			});
 			
-			Preference totalWeek = getSetting(SettingUtil.KEY_TOTAL_WEEK);
+			Preference totalWeek = getSetting(getString(R.string.KEY_TOTAL_WEEK));
 			totalWeek.setSummary(String.valueOf(LessonTableViewModel.getTotalWeek()));
 			totalWeek.setOnPreferenceClickListener(p -> {
 				DialogUtil.getBaseDialog(activity).title("学期总周数")
@@ -106,17 +106,17 @@ public class SettingActivity extends BaseAnimActivity{
 				return true;
 			});
 			
-			Preference timeTable = getSetting(SettingUtil.KEY_TIME_TABLE);
-			timeTable.setSummary(SettingUtil.getInt(SettingUtil.KEY_TIME_TABLE, 0) == 0 ? "冬季" : "夏季");
+			Preference timeTable = getSetting(getString(R.string.KEY_TIME_TABLE));
+			timeTable.setSummary(SettingUtil.getInt(getString(R.string.KEY_TIME_TABLE), 0) == 0 ? "冬季" : "夏季");
 			timeTable.setOnPreferenceClickListener(p -> {
-				AtomicInteger time = new AtomicInteger(SettingUtil.getInt(SettingUtil.KEY_TIME_TABLE, 0));
+				AtomicInteger time = new AtomicInteger(SettingUtil.getInt(getString(R.string.KEY_TIME_TABLE), 0));
 				DialogUtil.getBaseDialog(activity).title("课程时间")
 						.items(new String[]{"冬季", "夏季"})
 						.itemsCallbackSingleChoice(time.get(), (dialog, itemView, position, text) -> {
 							time.set(position);
 							p.setSummary(position == 0 ? "冬季" : "夏季");
 							lessonTableViewModel.setTimeTable(position);
-							SettingUtil.edit().putInt(SettingUtil.KEY_TIME_TABLE, time.intValue()).apply();
+							SettingUtil.edit().putInt(getString(R.string.KEY_TIME_TABLE), time.intValue()).apply();
 							activity.toast("设置完成!");
 							dialog.dismiss();
 							return true;
@@ -124,8 +124,8 @@ public class SettingActivity extends BaseAnimActivity{
 				return true;
 			});
 			
-			Preference entranceTime = getSetting(SettingUtil.KEY_ENTRANCE_TIME);
-			int entrance = SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, 0);
+			Preference entranceTime = getSetting(getString(R.string.KEY_ENTRANCE_TIME));
+			int entrance = SettingUtil.getInt(getString(R.string.KEY_ENTRANCE_TIME), 0);
 			entranceTime.setSummary(entrance == 0 ? "未设置" : String.valueOf(entrance));
 			entranceTime.setOnPreferenceClickListener(p -> {
 				ViewGroup layout = (ViewGroup)LayoutInflater.from(activity).inflate(R.layout.layout_number_picker, null,false);
@@ -136,19 +136,24 @@ public class SettingActivity extends BaseAnimActivity{
 				
 				int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 				numberPicker.setMaxValue(currentYear);
-				numberPicker.setValue(SettingUtil.getInt(SettingUtil.KEY_ENTRANCE_TIME, currentYear));
+				numberPicker.setValue(SettingUtil.getInt(getString(R.string.KEY_ENTRANCE_TIME), currentYear));
 				
 				DialogUtil.getBaseDialog(activity).title("入学年份")
 					.customView(layout, false)
 					.onPositive((dialog, what) -> {
 						int val = numberPicker.getValue();
-						SettingUtil.put(SettingUtil.KEY_ENTRANCE_TIME, val);
+						SettingUtil.put(getString(R.string.KEY_ENTRANCE_TIME), val);
 						p.setSummary(String.valueOf(val));
 					})
 					.show();
 				return true;
 			});
-						
+			
+			getSetting("key_customize_home").setOnPreferenceClickListener(p -> {
+				activity.startActivity(new Intent(activity, CustomizeActivity.class));
+				return true;
+			});
+			
 			getSetting("key_update").setOnPreferenceClickListener(p -> {
 				activity.startActivity(new Intent(activity, UpdateActivity.class));
 				return true;

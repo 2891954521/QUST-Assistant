@@ -141,7 +141,7 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "查成绩";
 	}
 	

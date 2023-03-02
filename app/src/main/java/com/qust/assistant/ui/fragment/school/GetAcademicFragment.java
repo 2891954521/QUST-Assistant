@@ -258,7 +258,7 @@ public class GetAcademicFragment extends BaseSchoolFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "学业情况查询";
 	}
 	

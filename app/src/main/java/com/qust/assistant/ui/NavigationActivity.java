@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.qust.assistant.R;
+import com.qust.assistant.ui.base.BaseAnimActivity;
 import com.qust.assistant.util.QustUtil.MingDeUtil;
 
 public class NavigationActivity extends BaseAnimActivity{

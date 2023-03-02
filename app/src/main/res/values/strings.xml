@@ -1,14 +1,61 @@
 <resources>
     <string name="app_name">青科助手</string>
 
-<!--    <string name="title_home">Home</string>-->
-<!--    <string name="title_dashboard">Dashboard</string>-->
-<!--    <string name="title_notifications">Notifications</string>-->
-
-    <string name="str_date">记录日期：%1$s</string>
-    <string name="str_commit">截止日期：%1$s</string>
-
     <string name="text_ok">确定</string>
     <string name="text_cancel">取消</string>
-
+    
+    
+    <!-- SharedPreferences Key -->
+    
+    <!-- 自动检查更新 -->
+    <string name="KEY_AUTO_UPDATE">key_auto_update</string>
+  
+    <!-- 入学时间 -->
+    <string name="KEY_ENTRANCE_TIME">key_entrance_time</string>
+    
+    <!-- 隐藏已结课课程 -->
+    <string name="KEY_HIDE_FINISH_LESSON">key_hide_finish_lesson</string>
+    
+    <!-- 隐藏教师 -->
+    <string name="KEY_HIDE_TEACHER">key_hide_teacher</string>
+    
+    <!-- 显示所有课程 -->
+    <string name="KEY_SHOW_ALL_LESSON">key_show_all_lesson</string>
+    
+    <!-- 开学时间 -->
+    <string name="KEY_START_DAY">key_start_day</string>
+    
+    <!-- 课表时间表 0：冬季， 1：夏季 -->
+    <string name="KEY_TIME_TABLE">key_time_table</string>
+    
+    <!-- 总周数 -->
+    <string name="KEY_TOTAL_WEEK">key_total_week</string>
+    
+    <!-- 更新开发版 -->
+    <string name="KEY_UPDATE_DEV">key_update_dev</string>
+    
+    <!-- 上次检查更新的时间 -->
+    <string name="last_update_time">last_update_time</string>
+    
+    <!-- 是否首次使用 -->
+    <string name="isFirstUse">isFirstUse</string>
+    
+    <!-- 主页展示的界面 -->
+    <string name="homePages">homePages</string>
+    
+    <!-- 主页界面展示的位置 -->
+    <string name="homeOffset">homeOffset</string>
+    
+    <!-- 教务学号 -->
+    <string name="SCHOOL_NAME">user</string>
+    
+    <!-- 教务密码 -->
+    <string name="SCHOOL_PASSWORD">password</string>
+    
+    <!-- 健康打卡相关 -->
+    <string name="HEALTH_CHECK_COOKIE">healthCheckInCookie</string>
+    <string name="HEALTH_CHECK_USER">healthCheckInUser</string>
+    <string name="HEALTH_CHECK_PASSWORD">healthCheckInPassword</string>
+    <string name="HEALTH_CHECK_NSFYJZXGYM">healthCheckInNsfyjzxgym</string>
+    
 </resources>

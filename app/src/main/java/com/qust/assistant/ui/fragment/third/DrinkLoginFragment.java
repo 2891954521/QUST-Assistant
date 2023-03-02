@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.fragment.BaseFragment;
+import com.qust.assistant.ui.base.BaseFragment;
 import com.qust.assistant.util.WebUtil;
 
 import org.json.JSONException;
@@ -122,7 +122,7 @@ public class DrinkLoginFragment extends BaseFragment{
 	}
 	
 	@Override
-	protected String getName(){
+	public String getName(){
 		return "登录";
 	}
 }

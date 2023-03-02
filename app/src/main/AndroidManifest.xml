@@ -8,12 +8,7 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-
-    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name="com.qust.assistant.App"
@@ -40,6 +35,7 @@
 
         <activity android:name=".ui.NavigationActivity"/>
         
+        <activity android:name=".ui.app.CustomizeActivity"/>
         <activity android:name=".ui.app.SettingActivity"/>
         <activity android:name=".ui.app.UpdateActivity"/>
     
@@ -48,16 +44,6 @@
         </activity>
         <activity android:name=".ui.app.AboutActivity"/>
         <activity android:name=".ui.app.LogActivity"/>
-    
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.qust.assistant"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/camera" />
-        </provider>
 
         <!-- 桌面小部件 -->
         <receiver

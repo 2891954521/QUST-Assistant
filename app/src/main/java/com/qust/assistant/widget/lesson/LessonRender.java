@@ -10,6 +10,7 @@ import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 
+import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
@@ -118,9 +119,9 @@ public class LessonRender{
 		
 		dateHeight = 40 + textHeight * 2;
 		
-		hideTeacher = SettingUtil.getBoolean(SettingUtil.KEY_HIDE_TEACHER, false);
-		showAllLesson = SettingUtil.getBoolean(SettingUtil.KEY_SHOW_ALL_LESSON, false);
-		hideFinishLesson = SettingUtil.getBoolean(SettingUtil.KEY_HIDE_FINISH_LESSON, false);
+		hideTeacher = SettingUtil.getBoolean(context.getString(R.string.KEY_HIDE_TEACHER), false);
+		showAllLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_SHOW_ALL_LESSON), false);
+		hideFinishLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_HIDE_FINISH_LESSON), false);
 	}
 	
 	
@@ -359,8 +360,7 @@ public class LessonRender{
 			i = srcPos + paintT.breakText(src, i, length, true, maxWidth, null);
 			des[desPos + lines] = src.substring(srcPos, i);
 			srcPos = i;
-			if(lines++ == maxLine){
-				lines--;
+			if(lines++ == maxLine && desPos + lines >= des.length){
 				return lines;
 			}
 		}
@@ -394,10 +394,14 @@ public class LessonRender{
 			this.len = lesson.len;
 
 			data = new String[len * 3 + (hideTeacher ? 1 : 2)];
+			int l = data.length;
 			
-			lines = splitString(lesson.name, data, cellWidth - (LESSON_PADDING << 2), 0, len * 3 - 2);
-			lines += splitString(lesson.place, data, cellWidth - (LESSON_PADDING << 2), lines + 1, len * 3 - lines - 1);
-			if(!hideTeacher) lines += splitString(lesson.teacher, data, cellWidth - (LESSON_PADDING << 2), lines + 2, len * 3 - lines);
+			int width = cellWidth - (LESSON_PADDING << 2);
+			lines = splitString(lesson.name, data, width, 0, l - 2);
+			lines += splitString(lesson.place, data, width, lines + 1, l - lines - 1);
+			if(!hideTeacher){
+				lines += splitString(lesson.teacher, data, width, lines + 2, l - lines);
+			}
 		}
 	}
 	
