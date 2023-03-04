@@ -250,6 +250,15 @@ public class LessonTable extends ViewPager{
 					}
 				}
 				return false;
+				
+			case MotionEvent.ACTION_CANCEL:
+				if(isMenuShowing){
+					lessonMenu.dismiss();
+				}else{
+					clearMenu = true;
+				}
+				return false;
+				
 			default:
 				return false;
 		}

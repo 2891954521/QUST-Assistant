@@ -4,12 +4,18 @@ import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.util.Xml;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 
+import com.app.hubert.guide.NewbieGuide;
+import com.app.hubert.guide.model.GuidePage;
+import com.app.hubert.guide.model.HighLight;
+import com.app.hubert.guide.model.RelativeGuide;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.base.BaseAnimActivity;
 import com.qust.assistant.ui.base.BaseFragment;
@@ -79,7 +85,7 @@ public class CustomizeActivity extends BaseAnimActivity{
 			selectedAdapter.notifyDataSetInvalidated();
 		});
 		
-		addMenuItem(R.drawable.ic_done, v -> {
+		ImageView save = addMenuItem(R.drawable.ic_done, v -> {
 			JSONArray js = new JSONArray();
 			for(MenuItem item : selectedItems) js.put(item.target);
 			SettingUtil.edit().putString(getString(R.string.homePages), js.toString()).commit();
@@ -87,7 +93,18 @@ public class CustomizeActivity extends BaseAnimActivity{
 			toast("保存成功，重启应用后生效");
 			finish();
 		});
-	}
+		
+		NewbieGuide.with(this).setLabel(getClass().getName())
+				.addGuidePage(GuidePage.newInstance()
+					.addHighLight(menuList, new RelativeGuide(R.layout.layout_welcome_customize, Gravity.TOP, 50))
+				).addGuidePage(GuidePage.newInstance()
+					.addHighLight(selectedList, new RelativeGuide(R.layout.layout_welcome_customize2, Gravity.BOTTOM, 50))
+				).addGuidePage(GuidePage.newInstance()
+						.addHighLight(save, HighLight.Shape.CIRCLE, 20)
+						.setLayoutRes(R.layout.layout_welcome_customize3)
+				).show();
+	
+}
 	
 	private void initMenuItems(){
 		HashMap<String, MenuItem> allItems = new HashMap<>(16);

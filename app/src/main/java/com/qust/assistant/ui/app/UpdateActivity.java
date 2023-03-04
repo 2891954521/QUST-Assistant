@@ -71,6 +71,10 @@ public class UpdateActivity extends BaseAnimActivity{
 		channelPicker.setMaxValue(1);
 		channelPicker.setValue(isDev ? 1 : 0);
 		
+		if(!isDev){
+			findViewById(R.id.activity_update_channel_layout).setVisibility(View.GONE);
+		}
+		
 		try{
 			PackageInfo pkg = getPackageManager().getPackageInfo(getPackageName(), 0);
 			((TextView)findViewById(R.id.activity_update_current_version)).setText("当前版本：" + pkg.versionName);

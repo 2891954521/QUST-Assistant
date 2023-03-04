@@ -78,16 +78,17 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	};
 	
 	public BaseSchoolFragment(){
-		this(false, true);
+		super();
 	}
 	
 	public BaseSchoolFragment(boolean isRoot, boolean hasToolBar){
 		super(isRoot, hasToolBar);
-		entranceTime = SettingUtil.getInt(getString(R.string.KEY_ENTRANCE_TIME), 0);
 	}
 	
 	@Override
 	protected void initLayout(LayoutInflater inflater){
+		entranceTime = SettingUtil.getInt(getString(R.string.KEY_ENTRANCE_TIME), 0);
+		
 		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "查询中").build();
 		
 		View view = findViewById(R.id.fragment_school_query);

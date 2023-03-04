@@ -360,7 +360,7 @@ public class LessonRender{
 			i = srcPos + paintT.breakText(src, i, length, true, maxWidth, null);
 			des[desPos + lines] = src.substring(srcPos, i);
 			srcPos = i;
-			if(lines++ == maxLine && desPos + lines >= des.length){
+			if(lines++ == maxLine || desPos + lines == des.length){
 				return lines;
 			}
 		}

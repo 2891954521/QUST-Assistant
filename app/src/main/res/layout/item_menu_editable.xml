@@ -28,6 +28,7 @@
         android:id="@+id/item_menu_home"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:layout_marginEnd="@dimen/widget_margin"
         android:src="@drawable/ic_home"
         android:padding="@dimen/base_margin"
         android:visibility="invisible"

@@ -44,6 +44,7 @@ public class SwipeTextView extends AppCompatTextView{
 				downX = event.getX();
 				setAlpha(0.5f);
 				break;
+				
 			case MotionEvent.ACTION_MOVE:
 				float moveX = event.getX();
 				if(Math.abs(moveX - downX) > touchSlop){
@@ -51,6 +52,8 @@ public class SwipeTextView extends AppCompatTextView{
 					downX = moveX;
 				}
 				break;
+				
+			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP:
 				setAlpha(1f);
 				break;

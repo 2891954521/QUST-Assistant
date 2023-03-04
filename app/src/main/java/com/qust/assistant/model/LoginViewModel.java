@@ -3,6 +3,7 @@ package com.qust.assistant.model;
 import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -118,6 +119,7 @@ public class LoginViewModel extends AndroidViewModel{
 			String[] param = getLoginParam();
 			if(param[0] == null || param[1] == null){
 				postValue(handler, "登陆失败，服务器异常", null);
+				return;
 			}
 			
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取RSA公钥"));
@@ -125,11 +127,13 @@ public class LoginViewModel extends AndroidViewModel{
 			String key = getPublicKey(param[0]);
 			if(key == null){
 				postValue(handler, "登陆失败，服务器异常", null);
+				return;
 			}
 			
 			String rsaPassword = encrypt(password, key);
-			if(rsaPassword == null){
+			if(TextUtils.isEmpty(rsaPassword)){
 				postValue(handler, "登陆失败，RSA加密出错", null);
+				return;
 			}
 			
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在尝试登陆"));
