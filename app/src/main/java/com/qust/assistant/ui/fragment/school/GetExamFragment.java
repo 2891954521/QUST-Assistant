@@ -8,20 +8,19 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.WebUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.qust.assistant.util.QustUtil.ExamUtil;
+import com.qust.assistant.vo.Exam;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
 
 public class GetExamFragment extends BaseSchoolFragment{
 	
-	private Exam[] exams;
+	/**
+	 * 选中的学年
+	 */
+	private int selectTerm;
+	
+	private Exam[][] exams;
 	
 	public GetExamFragment(){
 		super();
@@ -36,15 +35,20 @@ public class GetExamFragment extends BaseSchoolFragment{
 		super.initLayout(inflater);
 		
 		try{
-			exams = (Exam[])loadData("Exam","exam");
+			exams = (Exam[][])loadData("Exam","exam");
 		}catch(Exception e){
-			exams = new Exam[0];
+			exams = new Exam[TERM_NAME.length][0];
 		}
 		
 		initYearAndTermPicker();
 		
-		initList(new ExamAdapter());
+		selectTerm = yearPicker.getValue();
+		yearPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
+			selectTerm = newVal;
+			adapter.notifyDataSetChanged();
+		});
 		
+		initList(new ExamAdapter());
 	}
 	
 	@Override
@@ -61,41 +65,21 @@ public class GetExamFragment extends BaseSchoolFragment{
 	protected void doQuery(){
 		sendMessage(App.UPDATE_DIALOG, "正在查询考试");
 		
+		String[] y = getYearAndTerm();
+		
+		exams[selectTerm] = ExamUtil.queryExam(loginViewModel, y[0], y[1]);
+		
 		try{
-			String[] y = getYearAndTerm();
-			
-			String response = WebUtil.doPost(
-					loginViewModel.host + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query",
-					"JSESSIONID=" + loginViewModel.getCookie(),
-					String.format("xnm=%s&xqm=%s&queryModel.showCount=50",y[0],y[1])
-			);
-			if(!"".equals(response)){
-				ArrayList<Exam> array = new ArrayList<>();
-				JSONArray item = new JSONObject(response).getJSONArray("items");
-				for(int i=0;i<item.length();i++){
-					JSONObject j = item.getJSONObject(i);
-					Exam exam = new Exam();
-					exam.name = j.getString("kcmc");
-					exam.time = j.getString("kssj");
-					exam.place = j.getString("cdmc");
-					array.add(exam);
-				}
-				exams = array.toArray(new Exam[0]);
-				
-				saveData("Exam","exam", exams);
-				
-				sendMessage(App.NOTIFY_TOAST, "查询成功！");
-			}
-		}catch(IOException | JSONException e){
-			LogUtil.Log(e);
-			sendMessage(App.DISMISS_TOAST, "获取课表失败！");
-		}
+			saveData("Exam","exam", exams);
+		}catch(IOException ignored){ }
+		
+		sendMessage(App.NOTIFY_TOAST, "查询成功！");
 	}
 	
 	private class ExamAdapter extends BaseAdapter{
 		
 		@Override
-		public int getCount(){ return exams.length; }
+		public int getCount(){ return exams[selectTerm].length; }
 		
 		@Override
 		public Object getItem(int position){ return null; }
@@ -108,31 +92,12 @@ public class GetExamFragment extends BaseSchoolFragment{
 			if(convertView == null){
 				convertView = LayoutInflater.from(activity).inflate(R.layout.item_exam, null);
 			}
-			Exam exam = exams[position];
+			Exam exam = exams[selectTerm][position];
 			((TextView)convertView.findViewById(R.id.item_exam_time)).setText(exam.time);
 			((TextView)convertView.findViewById(R.id.item_exam_name)).setText(exam.name);
 			((TextView)convertView.findViewById(R.id.item_exam_place)).setText(exam.place);
 			return convertView;
 		}
-	}
-	
-	private static class Exam implements Serializable{
-		
-		private static final long serialVersionUID = 7170084777532665258L;
-		
-		/**
-		 * 科目名称
-		 */
-		public String name;
-		/**
-		 * 考试地点
-		 */
-		public String place;
-		/**
-		 * 考试时间
-		 */
-		public String time;
-		
 	}
 	
 }

@@ -9,23 +9,22 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.ParamUtil;
-import com.qust.assistant.util.WebUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.qust.assistant.util.QustUtil.MarkUtil;
+import com.qust.assistant.vo.Mark;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
 
+/**
+ * 成绩查询
+ */
 public class GetMarkFragment extends BaseSchoolFragment{
 	
-	private Mark[] marks;
+	/**
+	 * 选中的学年
+	 */
+	private int selectTerm;
+	
+	private Mark[][] marks;
 	
 	private MarkAdapter adapter;
 	
@@ -41,15 +40,21 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	protected void initLayout(LayoutInflater inflater){
 		super.initLayout(inflater);
 		
+		adapter = new MarkAdapter();
+		
 		try{
-			marks = (Mark[])loadData("Mark", "mark");
+			marks = (Mark[][])loadData("Mark", "mark");
 		}catch(Exception e){
-			marks = new Mark[0];
+			marks = new Mark[TERM_NAME.length][0];
 		}
 
 		initYearAndTermPicker();
 		
-		adapter = new MarkAdapter();
+		selectTerm = yearPicker.getValue();
+		yearPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
+			selectTerm = newVal;
+			adapter.notifyDataSetChanged();
+		});
 		
 		((ExpandableListView)findViewById(R.id.fragment_get_mark_list)).setAdapter(adapter);
 	}
@@ -59,83 +64,17 @@ public class GetMarkFragment extends BaseSchoolFragment{
 		
 		sendMessage(App.UPDATE_DIALOG, "正在查询成绩");
 		
-		HashMap<String, Mark> markMap = new HashMap<>(10);
+		String[] y = getYearAndTerm();
 		
-		String message = "查询成功";
-		
-		try{
-			String[] y = getYearAndTerm();
-			
-			String response = WebUtil.doPost(
-					loginViewModel.host + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query",
-					"JSESSIONID=" + loginViewModel.getCookie(),
-					String.format("xnm=%s&xqm=%s&queryModel.showCount=50", y[0], y[1])
-			);
-			
-			if(!"".equals(response)){
-				JSONArray item = new JSONObject(response).getJSONArray("items");
-				for(int i = 0; i<item.length(); i++){
-					JSONObject j = item.getJSONObject(i);
-					String name = j.getString("kcmc");
-					if(!markMap.containsKey(name)){
-						String cj = j.getString("cj");
-						String ksxz = j.getString("ksxz");
-						Mark mark = new Mark(name, ksxz, j.getString("xf"), ParamUtil.isFloat(cj) ? Float.parseFloat(cj) : 0f);
-						markMap.put(name, mark);
-					}
-				}
-			}
-			
-			response = WebUtil.doPost(
-					loginViewModel.host + "/jwglxt/cjcx/cjcx_cxXsKccjList.html",
-					"JSESSIONID=" + loginViewModel.getCookie(),
-					String.format("xnm=%s&xqm=%s&queryModel.showCount=50", y[0], y[1])
-			);
-			
-			if(!"".equals(response)){
-				JSONArray item = new JSONObject(response).getJSONArray("items");
-				for(int i = 0; i < item.length(); i++){
-					JSONObject j = item.getJSONObject(i);
-					String name = j.getString("kcmc");
-					Mark mark;
-					if(markMap.containsKey(name)){
-						mark = markMap.get(name);
-					}else{
-						mark = new Mark(name, j.getString("xf"), 0f);
-						markMap.put(name, mark);
-					}
-					String s = j.getString("xmblmc");
-					
-					if("总评".equals(s)){
-						if(mark.mark == 0 && j.has("xmcj")){
-							String cj = j.getString("xmcj");
-							mark.mark = ParamUtil.isFloat(cj) ? Float.parseFloat(cj) : 0f;
-						}
-					}else{
-						mark.item.add(s);
-						if(j.has("xmcj")){
-							mark.itemMark.add(j.getString("xmcj"));
-						}else{
-							mark.itemMark.add("");
-						}
-					}
-				}
-			}
-		}catch(IOException | JSONException e){
-			LogUtil.Log(e);
-			message = "查询失败！";
-		}
-		
-		marks = markMap.values().toArray(new Mark[0]);
+		marks[selectTerm] = MarkUtil.queryMark(loginViewModel, y[0], y[1]);
 		
 		try{
 			saveData("Mark","mark", marks);
 		}catch(IOException ignore){ }
-		
-		String finalMessage = message;
+
 		activity.runOnUiThread(() -> {
 			dialog.dismiss();
-			toast(finalMessage);
+			toast("查询完成");
 			adapter.notifyDataSetChanged();
 		});
 	}
@@ -154,11 +93,11 @@ public class GetMarkFragment extends BaseSchoolFragment{
 	private class MarkAdapter extends BaseExpandableListAdapter{
 		
 		@Override
-		public int getGroupCount(){ return marks.length; }
+		public int getGroupCount(){ return marks[selectTerm].length; }
 		
 		@Override
 		public int getChildrenCount(int groupPosition){
-			int len = marks[groupPosition].item.size();
+			int len = marks[selectTerm][groupPosition].items.length;
 			return len == 0 ? 0 : len + 1;
 		}
 		
@@ -182,7 +121,7 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			if(convertView == null){
 				convertView = LayoutInflater.from(activity).inflate(R.layout.item_mark_group, null);
 			}
-			Mark mark = marks[groupPosition];
+			Mark mark = marks[selectTerm][groupPosition];
 			
 			TextView nameText = convertView.findViewById(R.id.item_mark_name);
 			nameText.setText(mark.name);
@@ -208,14 +147,14 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			if(convertView == null){
 				convertView = LayoutInflater.from(activity).inflate(R.layout.item_mark, null);
 			}
-			Mark mark = marks[groupPosition];
+			Mark mark = marks[selectTerm][groupPosition];
 			
 			if(childPosition == 0){
 				((TextView)convertView.findViewById(R.id.item_mark_item)).setText("项目");
 				((TextView)convertView.findViewById(R.id.item_mark_value)).setText("成绩");
 			}else{
-				((TextView)convertView.findViewById(R.id.item_mark_item)).setText(mark.item.get(childPosition - 1));
-				((TextView)convertView.findViewById(R.id.item_mark_value)).setText(mark.itemMark.get(childPosition - 1));
+				((TextView)convertView.findViewById(R.id.item_mark_item)).setText(mark.items[childPosition - 1]);
+				((TextView)convertView.findViewById(R.id.item_mark_value)).setText(mark.itemMarks[childPosition - 1]);
 			}
 			
 			return convertView;
@@ -225,41 +164,4 @@ public class GetMarkFragment extends BaseSchoolFragment{
 		public boolean isChildSelectable(int groupPosition,int childPosition){ return false; }
 		
 	}
-	
-	
-	private static class Mark implements Serializable{
-		
-		private static final long serialVersionUID = 1304038646483514757L;
-		
-		// 科目
-		public String name;
-		// 考试类型
-		public String type;
-		// 学分
-		public String credit;
-		// 成绩
-		public float mark;
-		// 绩点
-		public String gpa;
-		
-		public ArrayList<String> item;
-		
-		public ArrayList<String> itemMark;
-		
-		public Mark(String name, String credit, float mark){
-			this(name, "正常考试", credit, mark);
-		}
-		
-		public Mark(String name, String type, String credit, float mark){
-			this.name = name.trim();
-			this.type = type;
-			this.credit = credit;
-			this.mark = mark;
-			this.gpa = String.format(Locale.CHINA, "%.2f",
-					mark < 60 ? 0f : ("正常考试".equals(type) ? (mark / 10 - 5) : 1f));
-			item = new ArrayList<>(3);
-			itemMark = new ArrayList<>(3);
-		}
-	}
-	
 }

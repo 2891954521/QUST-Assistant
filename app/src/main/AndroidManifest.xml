@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qust.assistant"
     android:versionCode="23"
-    android:versionName="2.2 beta2">
+    android:versionName="2.2 rc1">
 
     <uses-permission android:name="android.permission.INTERNET" />
 

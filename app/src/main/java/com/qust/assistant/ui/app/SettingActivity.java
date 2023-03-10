@@ -60,7 +60,7 @@ public class SettingActivity extends BaseAnimActivity{
 		
 		@Override
 		public void onCreatePreferences(Bundle savedInstanceState,String rootKey){
-			addPreferencesFromResource(R.xml.setting);
+			addPreferencesFromResource(R.xml.preference_setting);
 			
 			Preference startDay = getSetting(getString(R.string.KEY_START_DAY));
 			

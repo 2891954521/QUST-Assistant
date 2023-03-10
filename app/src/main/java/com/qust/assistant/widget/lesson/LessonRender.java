@@ -331,7 +331,7 @@ public class LessonRender{
 				
 				int lineY = y + baseLine + (cellHeight * lesson.len - textHeight * lesson.lines - linePadding * (hideTeacher ? 1 : 2)) / 2;
 				
-				int c = lesson.lines + (hideTeacher ? 1 : 2);
+				int c = lesson.data.length;
 				for(int n = 0; n < c; n++){
 					if(lesson.data[n] == null){
 						lineY += linePadding;
@@ -358,11 +358,13 @@ public class LessonRender{
 		int length = src.length();
 		for(int i = srcPos; i < length;){
 			i = srcPos + paintT.breakText(src, i, length, true, maxWidth, null);
+			
+			if(desPos + lines >= des.length) return lines;
+			
 			des[desPos + lines] = src.substring(srcPos, i);
 			srcPos = i;
-			if(lines++ == maxLine || desPos + lines == des.length){
-				return lines;
-			}
+			
+			if(lines++ == maxLine) return lines;
 		}
 		return lines;
 	}
@@ -397,7 +399,7 @@ public class LessonRender{
 			int l = data.length;
 			
 			int width = cellWidth - (LESSON_PADDING << 2);
-			lines = splitString(lesson.name, data, width, 0, l - 2);
+			lines = splitString(lesson.name, data, width, 0, l - 3);
 			lines += splitString(lesson.place, data, width, lines + 1, l - lines - 1);
 			if(!hideTeacher){
 				lines += splitString(lesson.teacher, data, width, lines + 2, l - lines);

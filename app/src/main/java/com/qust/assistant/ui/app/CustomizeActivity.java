@@ -111,7 +111,7 @@ public class CustomizeActivity extends BaseAnimActivity{
 		try{
 			String androidNM = "http://schemas.android.com/apk/res/android";
 			
-			for(XmlResourceParser parser = getResources().getXml(R.xml.menu); parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()){
+			for(XmlResourceParser parser = getResources().getXml(R.xml.menu_main); parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()){
 				
 				if(parser.getEventType() != XmlResourceParser.START_TAG) continue;
 				if(!"item".equals(parser.getName())) continue;

@@ -11,7 +11,6 @@ import com.billy.android.swipe.SmartSwipeBack;
 import com.billy.android.swipe.SwipeConsumer;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.LoginViewModel;
-import com.qust.assistant.service.LogService;
 import com.qust.assistant.ui.MainActivity;
 import com.qust.assistant.ui.app.GuideActivity;
 import com.qust.assistant.ui.fragment.third.DrinkViewModel;
@@ -23,7 +22,7 @@ public class App extends Application{
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 18;
+	public static final int DEV_VERSION = 19;
 	
 	/*
 	 * Handler 公用的 what 值
@@ -64,8 +63,6 @@ public class App extends Application{
 		
 		LogUtil.init(this);
 		
-		new LogService(this).start();
-		
 		loginViewModel = new LoginViewModel(this);
 		drinkViewModel = new DrinkViewModel(this);
 		lessonTableViewModel = new LessonTableViewModel(this);
@@ -97,7 +94,7 @@ public class App extends Application{
 		public void uncaughtException(@NonNull Thread thread, @NonNull final Throwable throwable){
 			toast("应用发生错误，错误类型：" + throwable.getClass());
 			LogUtil.Log("-------应用发生异常-------", throwable);
-			LogUtil.debugLog("-------应用异常退出-------");
+			LogUtil.debugLog("-------应用异常退出-------\n");
 			if(handler != null) handler.uncaughtException(thread, throwable);
 		}
 	}

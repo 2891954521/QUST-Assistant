@@ -3,6 +3,8 @@ package com.qust.assistant.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -10,14 +12,19 @@ import com.google.zxing.common.BitMatrix;
 
 import java.util.regex.Pattern;
 
-import androidx.annotation.Nullable;
-
 public class ParamUtil{
 	
 	private static final Pattern FLOAT_PATTERN = Pattern.compile("[0-9\\\\.]*");
 	
 	public static boolean isFloat(String str){
 		return FLOAT_PATTERN.matcher(str).matches();
+	}
+	
+	/**
+	 * 字符串转Float，字符串非法时返还0
+	 */
+	public static float parseFloat(String str){
+		return isFloat(str) ? Float.parseFloat(str) : 0f;
 	}
 	
 	/**

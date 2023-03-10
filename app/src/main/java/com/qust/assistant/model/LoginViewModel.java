@@ -98,11 +98,14 @@ public class LoginViewModel extends AndroidViewModel{
 				HttpURLConnection connection = WebUtil.get(host + "/jwglxt/xtgl/index_initMenu.html", "JSESSIONID=" + loginResult.getValue().cookie);
 				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
 					postValue(handler, "登录成功", loginResult.getValue().cookie);
+					return;
 				}
 			}catch(IOException e){
 				postValue(handler, "登录失败" + e.getMessage(), null);
+				return;
 			}
-		}else if(name == null || password == null){
+		}
+		if(name == null || password == null){
 			activity.runOnUiThread(() -> activity.addView(LoginFragment.class));
 		}else{
 			login(handler, name, password);
@@ -112,7 +115,7 @@ public class LoginViewModel extends AndroidViewModel{
 	/**
 	 * 教务登录
 	 */
-	public void login(Handler handler, String name, String password){
+	public void login(@NonNull Handler handler, String name, String password){
 		try{
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取Cookie"));
 			
@@ -168,6 +171,29 @@ public class LoginViewModel extends AndroidViewModel{
 		}
 	}
 	
+	/**
+	 * GET请求，携带Cookie
+	 * @param url 不带host的url
+	 */
+	public String doGet(String url) throws IOException{
+		return WebUtil.doGet(
+				host + url,
+				"JSESSIONID=" + getCookie()
+		);
+	}
+	
+	/**
+	 * POST请求，携带Cookie
+	 * @param url 不带host的url
+	 * @param data post数据
+	 */
+	public String doPost(String url, String data) throws IOException{
+		return WebUtil.doPost(
+				host + url,
+				"JSESSIONID=" + getCookie(),
+				data
+		);
+	}
 	
 	private void postValue(Handler handler, String message, String cookie){
 		loginResult.postValue(new QustLoginResult(handler, message, cookie));

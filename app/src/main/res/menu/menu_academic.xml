@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+	
+	<item
+		android:id="@+id/menu_academic_update"
+		android:title="更新数据"
+		android:icon="@drawable/ic_refresh"
+		app:showAsAction="always"/>
+	
+	<item
+		android:id="@+id/menu_academic_show_mode"
+		android:title="切换展示模式" />
+	
+<!--	<item-->
+<!--		android:id="@+id/menu_academic_calc_mode"-->
+<!--		android:title="进入计算模式" />-->
+
+
+	
+</menu>

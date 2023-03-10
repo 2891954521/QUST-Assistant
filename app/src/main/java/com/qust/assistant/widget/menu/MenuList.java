@@ -40,7 +40,7 @@ public class MenuList extends ListView implements AdapterView.OnItemClickListene
 
 		try{
 			String androidNM = "http://schemas.android.com/apk/res/android";
-			XmlResourceParser parser = context.getResources().getXml(R.xml.menu);
+			XmlResourceParser parser = context.getResources().getXml(R.xml.menu_main);
 			while(parser.getEventType() != XmlResourceParser.END_DOCUMENT){
 				if(parser.getEventType() == XmlResourceParser.START_TAG){
 					String tagName = parser.getName();

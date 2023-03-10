@@ -104,7 +104,7 @@ public abstract class BaseFragment extends Fragment{
 	/**
 	 * 初始化ToolBar
 	 */
-	protected final void initToolBar(){
+	protected void initToolBar(){
 		toolbar = layout.findViewById(R.id.toolbar);
 		if(toolbar != null){
 			toolbar.setTitle(getName());

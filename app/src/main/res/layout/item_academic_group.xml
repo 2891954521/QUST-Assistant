@@ -1,22 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/colorLight"
-    android:elevation="4dp">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:id="@+id/item_academic_background"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="@dimen/activity_margin"
+		android:layout_marginStart="@dimen/activity_margin"
+		android:layout_marginEnd="@dimen/activity_margin"
+		android:padding="@dimen/base_margin"
+		android:orientation="vertical"
+		android:background="@drawable/bg_stroke_top"
+		android:foreground="?attr/selectableItemBackground">
+		
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+			
+			<TextView
+				style="@style/TextSmall"
+				android:id="@+id/item_academic_passed_count"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:gravity="start|center"
+				tools:text="共10门 通过10门" />
+			
+			<TextView
+				style="@style/TextBig"
+				android:id="@+id/item_academic_name"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:gravity="start|center"
+				android:textStyle="bold"
+				tools:text="大一上" />
+			
+			<TextView
+				style="@style/TextSmall"
+				android:id="@+id/item_academic_require_credits"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:gravity="end|center"
+				tools:text="学分：10" />
+		
+		</FrameLayout>
+		
+		<com.qust.assistant.widget.TripleProgressBar
+			android:id="@+id/item_academic_trip_progress"
+			android:layout_width="match_parent"
+			android:layout_height="4dp"
+			android:layout_margin="@dimen/widget_margin"/>
+		
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
-    <TextView
-        style="@style/TextNormal"
-        android:id="@+id/item_academic_name"
-        android:background="?attr/selectableItemBackground"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_margin"
-        android:padding="@dimen/activity_margin"
-        android:gravity="start"
-        tools:text="大一下"/>
-
-</LinearLayout>
+</FrameLayout>

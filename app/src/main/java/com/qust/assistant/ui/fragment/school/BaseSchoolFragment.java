@@ -49,7 +49,7 @@ public abstract class BaseSchoolFragment extends BaseFragment{
 	/**
 	 * 年份选择器
 	 */
-	private NumberPicker yearPicker;
+	protected NumberPicker yearPicker;
 	
 	protected int entranceTime;
 	

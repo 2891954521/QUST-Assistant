@@ -12,11 +12,15 @@
         android:padding="@dimen/activity_margin"
         android:elevation="@dimen/widget_margin"
         android:inputType="textMultiLine"
-        android:ellipsize="none" />
+        android:ellipsize="none"
+        android:visibility="gone"/>
 
     <ExpandableListView
         android:id="@+id/activity_get_academic_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:groupIndicator="@null"
+        android:listSelector="@android:color/transparent"
+        android:divider="@null"/>
 
 </LinearLayout>

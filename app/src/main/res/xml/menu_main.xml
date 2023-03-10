@@ -15,7 +15,7 @@
         android:text="com.qust.assistant.ui.fragment.TermLessonFragment" />
 
     <item
-        android:name="登陆"
+        android:name="教务登陆"
         android:isDefault="true"
         android:icon="@drawable/ic_school"
         android:text="com.qust.assistant.ui.fragment.school.LoginFragment" />
@@ -36,25 +36,19 @@
         android:name="学业查询"
         android:isDefault="true"
         android:icon="@drawable/ic_school"
-        android:text="com.qust.assistant.ui.fragment.school.GetAcademicFragment" />
-
-    <item
-        android:name="自动教评"
-        android:isDefault="true"
-        android:icon="@drawable/ic_school"
-        android:text="com.qust.assistant.ui.fragment.school.AutoEvaluationFragment" />
-
+        android:text="com.qust.assistant.ui.fragment.academic.AcademicFragment" />
+    
     <item
         android:name="考试查询"
         android:isDefault="true"
         android:icon="@drawable/ic_school"
         android:text="com.qust.assistant.ui.fragment.school.GetExamFragment" />
 
-<!--    <item-->
-<!--        android:name="健康打卡"-->
-<!--        android:isDefault="true"-->
-<!--        android:icon="@drawable/ic_check_in"-->
-<!--        android:text="com.qust.assistant.ui.fragment.school.HealthCheckInFragment" />-->
+    <item
+        android:name="自动教评"
+        android:isDefault="true"
+        android:icon="@drawable/ic_school"
+        android:text="com.qust.assistant.ui.fragment.school.AutoEvaluationFragment" />
 
     <item
         android:name="饮水码"

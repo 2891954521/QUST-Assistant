@@ -22,6 +22,8 @@ public class AboutActivity extends BaseAnimActivity{
 		getSupportFragmentManager().beginTransaction().replace(R.id.activity_setting_contain, new PrefsFragment(this)).commit();
 		
 		initToolBar("关于");
+		
+		throw new RuntimeException("test log");
 	}
 	
 	public static class PrefsFragment extends PreferenceFragmentCompat{
@@ -39,7 +41,7 @@ public class AboutActivity extends BaseAnimActivity{
 		
 		@Override
 		public void onCreatePreferences(Bundle savedInstanceState, String rootKey){
-			addPreferencesFromResource(R.xml.about);
+			addPreferencesFromResource(R.xml.preference_bout);
 
 			try{
 				PackageInfo pkg = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
