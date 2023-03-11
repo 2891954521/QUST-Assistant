@@ -13,8 +13,8 @@
 		android:layout_marginEnd="@dimen/activity_margin"
 		android:padding="@dimen/base_margin"
 		android:orientation="vertical"
-		android:background="@drawable/bg_stroke_top"
-		android:foreground="?attr/selectableItemBackground">
+		android:foreground="?attr/selectableItemBackground"
+		tools:background="@drawable/bg_stroke">
 		
 		<FrameLayout
 			android:layout_width="match_parent"

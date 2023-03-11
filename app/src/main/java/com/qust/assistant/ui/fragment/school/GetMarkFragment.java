@@ -121,6 +121,13 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			if(convertView == null){
 				convertView = LayoutInflater.from(activity).inflate(R.layout.item_mark_group, null);
 			}
+			
+			if(isExpanded){
+				convertView.findViewById(R.id.item_mark_background).setBackgroundResource(R.drawable.bg_stroke_top);
+			}else{
+				convertView.findViewById(R.id.item_mark_background).setBackgroundResource(R.drawable.bg_stroke);
+			}
+			
 			Mark mark = marks[selectTerm][groupPosition];
 			
 			TextView nameText = convertView.findViewById(R.id.item_mark_name);
@@ -147,6 +154,9 @@ public class GetMarkFragment extends BaseSchoolFragment{
 			if(convertView == null){
 				convertView = LayoutInflater.from(activity).inflate(R.layout.item_mark, null);
 			}
+			
+			convertView.findViewById(R.id.item_mark_background).setBackgroundResource(isLastChild ? R.drawable.bg_stroke_bottom : R.drawable.bg_stroke_center);
+			
 			Mark mark = marks[selectTerm][groupPosition];
 			
 			if(childPosition == 0){

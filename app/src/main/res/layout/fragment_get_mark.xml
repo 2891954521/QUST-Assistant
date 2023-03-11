@@ -1,97 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:orientation="horizontal"
-        android:padding="@dimen/widget_margin"
-        android:gravity="center">
-
-        <TextView
-            style="@style/TextNormal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/widget_margin"
-            android:text="学期"/>
-
-        <NumberPicker
-            android:id="@+id/fragment_school_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_margin"
-            android:layout_marginEnd="@dimen/activity_margin"
-            android:descendantFocusability="blocksDescendants" />
-
-        <Button
-            android:id="@+id/fragment_school_query"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="查询"/>
-
-    </LinearLayout>
-
-<!--    <HorizontalScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:orientation="vertical">-->
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/widget_margin">
-
-                <TextView
-                    style="@style/TextNormal"
-                    android:layout_height="wrap_content"
-                    android:layout_width="0dp"
-                    android:layout_weight="4"
-                    android:text="科目" />
-
-                <TextView
-                    style="@style/TextNormal"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="学分" />
-
-                <TextView
-                    style="@style/TextNormal"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="成绩" />
-
-                <TextView
-                    style="@style/TextNormal"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="绩点" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider"/>
-
-            <ExpandableListView
-                android:id="@+id/fragment_get_mark_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-<!--        </LinearLayout>-->
-
-<!--    </HorizontalScrollView>-->
-
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="150dp"
+		android:orientation="horizontal"
+		android:padding="@dimen/widget_margin"
+		android:gravity="center">
+		
+		<TextView
+			style="@style/TextNormal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="@dimen/widget_margin"
+			android:text="学期" />
+		
+		<NumberPicker
+			android:id="@+id/fragment_school_year"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="@dimen/activity_margin"
+			android:layout_marginEnd="@dimen/activity_margin"
+			android:descendantFocusability="blocksDescendants" />
+		
+		<Button
+			android:id="@+id/fragment_school_query"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="查询" />
+	
+	</LinearLayout>
+	
+	<ExpandableListView
+		android:id="@+id/fragment_get_mark_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:groupIndicator="@null"
+		android:listSelector="@android:color/transparent"
+		android:divider="@null" />
+	
 </LinearLayout>

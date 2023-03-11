@@ -1,40 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/colorLight"
-    android:foreground="?attr/selectableItemBackground"
-    android:elevation="@dimen/widget_margin"
-    android:padding="@dimen/widget_margin">
-
-    <TextView
-        style="@style/TextNormal"
-        android:id="@+id/item_mark_name"
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="4" />
-
-    <TextView
-        style="@style/TextNormal"
-        android:id="@+id/item_mark_credit"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        style="@style/TextNormal"
-        android:id="@+id/item_mark_value"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        style="@style/TextNormal"
-        android:id="@+id/item_mark_gpa"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:id="@+id/item_mark_background"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="@dimen/activity_margin"
+		android:layout_marginStart="@dimen/activity_margin"
+		android:layout_marginEnd="@dimen/activity_margin"
+		android:padding="@dimen/base_margin"
+		android:orientation="vertical"
+		android:foreground="?attr/selectableItemBackground"
+        tools:background="@drawable/bg_stroke">
+		
+		<TextView
+			style="@style/TextBig"
+			android:id="@+id/item_mark_name"
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+            tools:text="高等数学"/>
+        
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            
+            <TextView
+                style="@style/TextNormal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="成绩："/>
+            
+            <TextView
+                style="@style/TextNormal"
+                android:id="@+id/item_mark_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center"
+                tools:text="100"/>
+            
+            <TextView
+                style="@style/TextNormal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="绩点："/>
+            
+            <TextView
+                style="@style/TextNormal"
+                android:id="@+id/item_mark_gpa"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center" />
+            
+            <TextView
+                style="@style/TextNormal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="学分："/>
+    
+            <TextView
+                style="@style/TextNormal"
+                android:id="@+id/item_mark_credit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center" />
+        
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        
+	</androidx.appcompat.widget.LinearLayoutCompat>
+ 
+</FrameLayout>

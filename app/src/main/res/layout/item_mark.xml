@@ -1,23 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="@dimen/widget_margin">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:id="@+id/item_mark_background"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="@dimen/activity_margin"
+		android:layout_marginEnd="@dimen/activity_margin"
+		android:padding="@dimen/base_margin"
+		android:foreground="?attr/selectableItemBackground"
+		android:orientation="horizontal"
+		android:focusable="true"
+		android:clickable="true"
+		tools:background="@drawable/bg_stroke_center">
+		
+		<TextView
+			style="@style/TextNormal"
+			android:id="@+id/item_mark_item"
+			android:layout_height="wrap_content"
+			android:layout_width="0dp"
+			android:layout_weight="2" />
+		
+		<TextView
+			style="@style/TextNormal"
+			android:id="@+id/item_mark_value"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:layout_height="wrap_content" />
+	
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
-    <TextView
-        style="@style/TextNormal"
-        android:id="@+id/item_mark_item"
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="2" />
-
-    <TextView
-        style="@style/TextNormal"
-        android:id="@+id/item_mark_value"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+</FrameLayout>
