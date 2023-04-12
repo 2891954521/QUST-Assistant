@@ -141,26 +141,10 @@ public class TermLessonFragment extends BaseFragment{
 		lessonTableViewModel.getUpdateLiveData().observe(this, update -> lessonTable.initAdapter());
 		
 		lessonTable.postDelayed(() -> {
-			int time = SettingUtil.getInt(activity, NewbieGuide.TAG, getClass().getName(), 0);
-			if(time == 0){
-				NewbieGuide.with(activity).setLabel(getClass().getName())
-					.setOnPageChangedListener(page -> {
-						if(page == 0) floatingActionButton.show();
-					})
-					.addGuidePage(GuidePage.newInstance()
-							.addHighLight(weekText, new RelativeGuide(R.layout.layout_welcome_term_lesson, Gravity.BOTTOM, 50))
-					).addGuidePage(GuidePage.newInstance()
-							.addHighLight(floatingActionButton, HighLight.Shape.CIRCLE, 20)
-							.setLayoutRes(R.layout.layout_welcome_term_lesson2)
-					).addGuidePage(GuidePage.newInstance()
-							.setLayoutRes(R.layout.layout_welcome_term_lesson3)
-					).show();
-			}
-
 			int week = LessonTableViewModel.getCurrentWeek();
 			lessonTable.setCurrentItem(week - 1, false);
 			weekText.setText("第 " + week + " 周");
-		}, 300);
+		}, 100);
 	}
 	
 	/**
@@ -322,6 +306,28 @@ public class TermLessonFragment extends BaseFragment{
 		weekText.setText("第 " + (currentWeek + 1) + " 周");
 		lessonTable.initAdapter();
 		lessonTable.setCurrentItem(currentWeek);
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		if(lessonTable != null){
+			int time = SettingUtil.getInt(activity, NewbieGuide.TAG, getClass().getName(), 0);
+			if(time == 0){
+				lessonTable.post(() -> NewbieGuide.with(activity).setLabel(getClass().getName())
+					.setOnPageChangedListener(page -> {
+						if(page == 0) floatingActionButton.show();
+					})
+					.addGuidePage(GuidePage.newInstance()
+							.addHighLight(weekText, new RelativeGuide(R.layout.layout_welcome_term_lesson, Gravity.BOTTOM, 50))
+					).addGuidePage(GuidePage.newInstance()
+							.addHighLight(floatingActionButton, HighLight.Shape.CIRCLE, 20)
+							.setLayoutRes(R.layout.layout_welcome_term_lesson2)
+					).addGuidePage(GuidePage.newInstance()
+							.setLayoutRes(R.layout.layout_welcome_term_lesson3)
+					).show());
+			}
+		}
 	}
 	
 	@Override

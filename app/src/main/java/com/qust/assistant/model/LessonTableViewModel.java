@@ -143,8 +143,8 @@ public class LessonTableViewModel extends AndroidViewModel{
 			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataFile))){
 				lessonGroups = (LessonGroup[][]) ois.readObject();
 				return;
-			}catch(Exception e){
-				LogUtil.Log(e);
+			}catch(Exception ignore){
+				lessonGroups = new LessonGroup[7][10];
 			}
 		}
 		

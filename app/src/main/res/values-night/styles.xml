@@ -1,3 +1,7 @@
 <resources>
-
+	
+	<style name="AppTheme" parent="BaseTheme">
+	
+	</style>
+	
 </resources>

@@ -26,7 +26,7 @@ public class UpdateUtil{
 	
 	public static final String NAVIGATION_PAGE_URL = "http://139.224.16.208/guide.json";
 	
-	public static final String GITHUB_UPDATE_URL = "https://api.github.com/repos/2891954521/QUST-Assistant/releases";
+	public static final String GITHUB_UPDATE_URL = "https://api.github.com/repos/2891954521/QUST-Assistant/releases/latest";
 	
 	/**
 	 * 异步检查更新
@@ -51,7 +51,7 @@ public class UpdateUtil{
 		new Thread(){
 			@Override
 			public void run(){
-				UpdateInfo info = checkVersion(activity, isDev);
+				UpdateInfo info = checkVersion(activity, isDev, false);
 				if(info != null){
 					activity.runOnUiThread(() -> {
 						DialogUtil.getBaseDialog(activity).title("更新").content("检查到新版本，是否更新？\n" + info.message)
@@ -66,15 +66,16 @@ public class UpdateUtil{
 	/**
 	 * 检查更新
 	 * @param isDev 是否检查开发版更新
+	 * @param isSpare 是否使用备用更新连接
 	 */
 	@Nullable
-	public static UpdateInfo checkVersion(Context context, boolean isDev){
-		// 先从 Github 上检查更新
-		try{
-			UpdateInfo info = checkVersionFromGitHub();
-			if(info != null) return info;
-		}catch(IOException | JSONException e){
-			LogUtil.Log(e);
+	public static UpdateInfo checkVersion(Context context, boolean isDev, boolean isSpare){
+		if(!isSpare){
+			// 从 Github 上检查更新
+			try{
+				UpdateInfo info = checkVersionFromGitHub();
+				if(info != null) return info;
+			}catch(IOException | JSONException ignore){ }
 		}
 		
 		try{
@@ -126,12 +127,7 @@ public class UpdateUtil{
 			return null;
 		}
 		
-		JSONArray array = new JSONArray(response);
-		if(array.length() == 0){
-			return null;
-		}
-		
-		JSONObject json = array.getJSONObject(0);
+		JSONObject json = new JSONObject(response);
 		Date buildDate;
 		Date publishDate;
 		try{
@@ -149,7 +145,7 @@ public class UpdateUtil{
 			}
 			
 			UpdateInfo info = new UpdateInfo();
-			info.versionName = json.getString("name");
+			info.versionName = json.getString("tag_name");
 			info.message = json.getString("body");
 			info.apkUrl = assets.getJSONObject(0).getString("browser_download_url");
 			return info;

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.qust.assistant"
-    android:versionCode="24"
-    android:versionName="2.2">
+    android:versionCode="25"
+    android:versionName="2.3">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -21,7 +22,8 @@
         android:requestLegacyExternalStorage="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:targetApi="q">
         
         <activity
             android:name=".ui.MainActivity"
@@ -39,9 +41,7 @@
         <activity android:name=".ui.app.SettingActivity"/>
         <activity android:name=".ui.app.UpdateActivity"/>
     
-        <activity android:name=".ui.app.GuideActivity">
-    
-        </activity>
+        <activity android:name=".ui.app.GuideActivity"/>
         <activity android:name=".ui.app.AboutActivity"/>
         <activity android:name=".ui.app.LogActivity"/>
     

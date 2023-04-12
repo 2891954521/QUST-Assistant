@@ -7,32 +7,39 @@
     
     <!-- SharedPreferences Key -->
     
-    <!-- 自动检查更新 -->
-    <string name="KEY_AUTO_UPDATE">key_auto_update</string>
-  
     <!-- 入学时间 -->
     <string name="KEY_ENTRANCE_TIME">key_entrance_time</string>
-    
-    <!-- 隐藏已结课课程 -->
-    <string name="KEY_HIDE_FINISH_LESSON">key_hide_finish_lesson</string>
-    
-    <!-- 隐藏教师 -->
-    <string name="KEY_HIDE_TEACHER">key_hide_teacher</string>
-    
-    <!-- 显示所有课程 -->
-    <string name="KEY_SHOW_ALL_LESSON">key_show_all_lesson</string>
-    
     <!-- 开学时间 -->
     <string name="KEY_START_DAY">key_start_day</string>
-    
     <!-- 课表时间表 0：冬季， 1：夏季 -->
     <string name="KEY_TIME_TABLE">key_time_table</string>
-    
     <!-- 总周数 -->
     <string name="KEY_TOTAL_WEEK">key_total_week</string>
     
+    <!-- 显示所有课程 -->
+    <string name="KEY_SHOW_ALL_LESSON">key_show_all_lesson</string>
+    <!-- 隐藏已结课课程 -->
+    <string name="KEY_HIDE_FINISH_LESSON">key_hide_finish_lesson</string>
+    <!-- 隐藏教师 -->
+    <string name="KEY_HIDE_TEACHER">key_hide_teacher</string>
+    <!-- 锁定课表 -->
+    <string name="KEY_LOCK_LESSON">key_lock_lesson</string>
+    
+    <!-- 暗色模式开关 -->
+    <string name="KEY_THEME_DARK">key_theme_dark</string>
+    <!-- 主题跟随系统 -->
+    <string name="KEY_THEME_FOLLOW_SYSTEM">key_theme_follow_system</string>
+    
+    <!-- 自动检查更新 -->
+    <string name="KEY_AUTO_UPDATE">key_auto_update</string>
     <!-- 更新开发版 -->
     <string name="KEY_UPDATE_DEV">key_update_dev</string>
+    
+    <!-- 上传错误日志 -->
+    <string name="KEY_UPLOAD_LOG">key_upload_log</string>
+    
+    
+    <!-- 其他 SharedPreferences -->
     
     <!-- 上次检查更新的时间 -->
     <string name="last_update_time">last_update_time</string>

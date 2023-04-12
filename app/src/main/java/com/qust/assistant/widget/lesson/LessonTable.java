@@ -70,6 +70,12 @@ public class LessonTable extends ViewPager{
 	private Runnable runnable;
 	
 	/**
+	 * 上一个点击事件是否为Move
+	 * 防止异常出现的Cancel执行错误的clearMenu
+	 */
+	private boolean lastIsMove;
+	
+	/**
 	 * 是否清除长按回调
 	 */
 	private boolean clearMenu;
@@ -79,6 +85,11 @@ public class LessonTable extends ViewPager{
 	 */
 	private boolean isMenuShowing;
 	
+	
+	/**
+	 * 是否已锁定
+	 */
+	private boolean lockLesson;
 	
 	/**
 	 * 隐藏已结课程
@@ -113,6 +124,7 @@ public class LessonTable extends ViewPager{
 		lessonClickListener = (week, count, lesson) -> { };
 		lessonUpdateListener = () -> { };
 		
+		lockLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_LOCK_LESSON), false);
 		hideFinishLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_HIDE_FINISH_LESSON), false);
 		
 		runnable = () -> {
@@ -167,6 +179,7 @@ public class LessonTable extends ViewPager{
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev){
+		if(lockLesson) return super.onTouchEvent(ev);
 		switch(ev.getAction()){
 			
 			case MotionEvent.ACTION_MOVE:
@@ -193,8 +206,8 @@ public class LessonTable extends ViewPager{
 			case MotionEvent.ACTION_DOWN:
 				
 				if(isMenuShowing) lessonMenu.dismiss();
-				
 				isMenuShowing = false;
+				lastIsMove = false;
 				clearMenu = false;
 				
 				// pop菜单坐标
@@ -217,12 +230,12 @@ public class LessonTable extends ViewPager{
 					}else{
 						selectedLesson = null;
 					}
-
-					postDelayed(runnable, longPressTime);
+					if(!lockLesson) postDelayed(runnable, longPressTime);
 				}
 				return false;
 			
 			case MotionEvent.ACTION_MOVE:
+				lastIsMove = true;
 				if(Math.abs(downX - event.getX()) > touchSlop || Math.abs(downY - event.getY()) > touchSlop){
 					clearMenu();
 				}
@@ -234,12 +247,17 @@ public class LessonTable extends ViewPager{
 				}else{
 					clearMenu = true;
 				}
+				lastIsMove = false;
 				
 				if(Math.abs(downX - event.getX()) < touchSlop && Math.abs(downY - event.getY()) < touchSlop){
 					if(currentWeek != -1 && currentCount != -1){
 						if(lastWeek == currentWeek && lastCount == currentCount){
 							// 触发课程点击事件
-							lessonClickListener.onClickLesson(currentWeek + 1, currentCount + 1, selectedLesson);
+							if(lockLesson){
+								Toast.makeText(getContext(), "课表已锁定", Toast.LENGTH_SHORT).show();
+							}else{
+								lessonClickListener.onClickLesson(currentWeek + 1, currentCount + 1, selectedLesson);
+							}
 						}else{
 							// 更新课程选中高亮框
 							lastWeek = currentWeek;
@@ -252,11 +270,7 @@ public class LessonTable extends ViewPager{
 				return false;
 				
 			case MotionEvent.ACTION_CANCEL:
-				if(isMenuShowing){
-					lessonMenu.dismiss();
-				}else{
-					clearMenu = true;
-				}
+				if(lastIsMove) clearMenu();
 				return false;
 				
 			default:

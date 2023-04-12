@@ -217,10 +217,15 @@ public class LessonRender{
 	public int[] getClickLesson(int showWeek, int downX, int downY){
 		if(downX < timeWidth || downY < dateHeight) return new int[] { -1, -1 , 0 };
 		
-		int y = downY - dateHeight;
-		
 		// 计算点击的位置在第几周
 		int currentWeek = (downX - timeWidth) / cellWidth;
+		
+		if(currentWeek >= WEEK_STRING.length){
+			return new int[]{ -1, -1 , 0 };
+		}
+		
+		int y = downY - dateHeight;
+		
 		
 		for(int i = 0; i < lessons[showWeek][currentWeek].length; i++){
 			

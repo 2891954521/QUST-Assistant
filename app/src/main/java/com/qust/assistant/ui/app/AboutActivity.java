@@ -22,8 +22,6 @@ public class AboutActivity extends BaseAnimActivity{
 		getSupportFragmentManager().beginTransaction().replace(R.id.activity_setting_contain, new PrefsFragment(this)).commit();
 		
 		initToolBar("关于");
-		
-		throw new RuntimeException("test log");
 	}
 	
 	public static class PrefsFragment extends PreferenceFragmentCompat{

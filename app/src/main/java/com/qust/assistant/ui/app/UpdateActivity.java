@@ -66,14 +66,10 @@ public class UpdateActivity extends BaseAnimActivity{
 		downloadDialog.setCanceledOnTouchOutside(false);
 		
 		channelPicker.setWrapSelectorWheel(false);
-		channelPicker.setDisplayedValues(new String[] { "稳定版", "开发版" });
+		channelPicker.setDisplayedValues(isDev ? new String[] { "稳定版", "开发版", "备用下载" } : new String[] { "稳定版", "备用下载" });
 		channelPicker.setMinValue(0);
 		channelPicker.setMaxValue(1);
 		channelPicker.setValue(isDev ? 1 : 0);
-		
-		if(!isDev){
-			findViewById(R.id.activity_update_channel_layout).setVisibility(View.GONE);
-		}
 		
 		try{
 			PackageInfo pkg = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -95,7 +91,7 @@ public class UpdateActivity extends BaseAnimActivity{
 		new Thread(){
 			@Override
 			public void run(){
-				info = UpdateUtil.checkVersion(UpdateActivity.this, channelPicker.getValue() == 1);
+				info = UpdateUtil.checkVersion(UpdateActivity.this, isDev && channelPicker.getValue() == 1, !isDev && channelPicker.getValue() == 1);
 				runOnUiThread(() -> {
 					if(info == null){
 						toast("当前无新版本");
@@ -146,8 +142,7 @@ public class UpdateActivity extends BaseAnimActivity{
 						runOnUiThread(() -> toast("连接服务器失败"));
 					}
 					
-				}catch(IOException e){
-					LogUtil.Log(e);
+				}catch(IOException ignore){
 					runOnUiThread(() -> toast("下载失败"));
 				}
 				if(downloadDialog.isShowing()) runOnUiThread(() -> downloadDialog.cancel());

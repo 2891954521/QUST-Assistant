@@ -1,105 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <PreferenceCategory
-        android:title="课表">
-
-        <SwitchPreference
-            android:key="@string/KEY_SHOW_ALL_LESSON"
-            android:defaultValue="false"
-            android:title="显示全部课程"
-            android:summaryOn="显示非本周课程"
-            android:summaryOff="不显示非本周课程" />
-
-        <SwitchPreference
-            android:key="@string/KEY_HIDE_FINISH_LESSON"
-            android:dependency="@string/KEY_SHOW_ALL_LESSON"
-            android:defaultValue="false"
-            android:title="隐藏已结课程"
-            android:summaryOn="隐藏已结课程"
-            android:summaryOff="不隐藏已结课程" />
-    
-        <SwitchPreference
-            android:key="@string/KEY_HIDE_TEACHER"
-            android:defaultValue="false"
-            android:title="隐藏教师"
-            android:summaryOn="隐藏教师"
-            android:summaryOff="不隐藏教师" />
-        
-        <Preference
-            android:key="@string/KEY_START_DAY"
-            android:title="设置开学时间" />
-
-       <Preference
-            android:key="@string/KEY_TOTAL_WEEK"
-            android:title="设置总周数"/>
-
-        <Preference
-            android:key="@string/KEY_TIME_TABLE"
-            android:title="设置时间表"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="杂项">
-    
-        <Preference
-            android:key="@string/KEY_ENTRANCE_TIME"
-            android:title="设置入学年份"/>
-    
-        <Preference
-            android:key="key_customize_home"
-            android:title="自定义首页"
-            android:summary="自定义首页展示的界面"/>
-        
-        <SwitchPreference
-            android:key="@string/KEY_AUTO_UPDATE"
-            android:defaultValue="true"
-            android:summaryOn="3天检查一次更新"
-            android:summaryOff="不检查更新"
-            android:title="自动检查更新"/>
-
-        <SwitchPreference
-            android:key="@string/KEY_UPDATE_DEV"
-            android:defaultValue="false"
-            android:dependency="@string/KEY_AUTO_UPDATE"
-            android:summaryOn="接收开发版更新"
-            android:summaryOff="不接收开发版更新"
-            android:title="接收开发版推送"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="其他">
-
-        <Preference
-            android:key="key_update"
-            android:title="更新"/>
-
-        <Preference
-            android:key="key_about"
-            android:title="关于"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="调试">
-
-        <SwitchPreference
-            android:key="key_debug"
-            android:defaultValue="false"
-            android:summaryOn="生成调试信息"
-            android:summaryOff="不生成调试信息"
-            android:title="调试模式"/>
-
-        <Preference
-            android:key="key_log"
-            android:title="运行日志"/>
-
-        <Preference
-            android:key="key_clear_log"
-            android:title="清除Log"/>
-
-    </PreferenceCategory>
+	
+	<PreferenceCategory android:title="课表">
+		
+		<SwitchPreference
+			android:key="@string/KEY_SHOW_ALL_LESSON"
+			android:defaultValue="false"
+			android:title="显示全部课程"
+			android:summaryOn="非本周课程会以灰色显示"
+			android:summaryOff="非本周课程不会显示" />
+		
+		<SwitchPreference
+			android:key="@string/KEY_HIDE_FINISH_LESSON"
+			android:dependency="@string/KEY_SHOW_ALL_LESSON"
+			android:defaultValue="false"
+			android:title="隐藏已结课程"
+			android:summaryOn="已结课程不会出现在课表中"
+			android:summaryOff="已结课程会出现在课表中" />
+		
+		<SwitchPreference
+			android:key="@string/KEY_HIDE_TEACHER"
+			android:defaultValue="false"
+			android:title="隐藏教师"
+			android:summaryOn="每周课表不会显示教师信息"
+			android:summaryOff="每周课表会显示教师信息" />
+		
+		<SwitchPreference
+			android:key="@string/KEY_LOCK_LESSON"
+			android:defaultValue="false"
+			android:title="锁定课表"
+			android:summaryOn="不允许编辑课表"
+			android:summaryOff="允许编辑课表" />
+		
+		<Preference
+			android:key="@string/KEY_START_DAY"
+			android:title="设置开学时间" />
+		
+		<Preference
+			android:key="@string/KEY_TOTAL_WEEK"
+			android:title="设置总周数" />
+		
+		<Preference
+			android:key="@string/KEY_TIME_TABLE"
+			android:title="设置时间表" />
+		
+		<Preference
+			android:key="@string/KEY_ENTRANCE_TIME"
+			android:title="设置入学年份" />
+	
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="界面">
+		
+		<SwitchPreference
+			android:key="@string/KEY_THEME_DARK"
+			android:title="暗色模式"
+			android:summaryOn="暗色模式已开启"
+			android:summaryOff="暗色模式已关闭"
+			android:disableDependentsState="true" />
+		
+		<SwitchPreference
+			android:key="@string/KEY_THEME_FOLLOW_SYSTEM"
+			android:dependency="@string/KEY_THEME_DARK"
+			android:defaultValue="true"
+			android:title="主题跟随系统"
+			android:summary="主题跟随系统" />
+		
+		<Preference
+			android:key="key_customize_home"
+			android:title="自定义首页"
+			android:summary="自定义首页展示的界面" />
+	
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="更新">
+		
+		<SwitchPreference
+			android:key="@string/KEY_AUTO_UPDATE"
+			android:defaultValue="true"
+			android:summaryOn="3天检查一次更新"
+			android:summaryOff="不检查更新"
+			android:title="自动检查更新" />
+		
+		<SwitchPreference
+			android:key="@string/KEY_UPDATE_DEV"
+			android:defaultValue="false"
+			android:dependency="@string/KEY_AUTO_UPDATE"
+			android:summaryOn="接收开发版更新"
+			android:summaryOff="不接收开发版更新"
+			android:title="接收开发版推送" />
+		
+		<Preference
+			android:key="key_update"
+			android:title="检查更新" />
+	
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="其他">
+		
+		<Preference
+			android:key="key_about"
+			android:title="关于" />
+	
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="日志">
+		
+		<SwitchPreference
+			android:key="@string/KEY_UPLOAD_LOG"
+			android:defaultValue="true"
+			android:title="上传匿名错误日志" />
+		
+		<SwitchPreference
+			android:key="key_debug"
+			android:defaultValue="false"
+			android:summaryOn="生成调试信息"
+			android:summaryOff="不生成调试信息"
+			android:title="调试模式" />
+		
+		<Preference
+			android:key="key_log"
+			android:title="运行日志" />
+		
+		<Preference
+			android:key="key_clear_log"
+			android:title="清除日志" />
+	
+	</PreferenceCategory>
 
 </PreferenceScreen>

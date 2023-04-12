@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.billy.android.swipe.SmartSwipeBack;
 import com.billy.android.swipe.SwipeConsumer;
@@ -67,9 +68,16 @@ public class App extends Application{
 		drinkViewModel = new DrinkViewModel(this);
 		lessonTableViewModel = new LessonTableViewModel(this);
 		
+		if(SettingUtil.getBoolean(getString(R.string.KEY_THEME_DARK), false)){
+			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+		}else if(!SettingUtil.getBoolean(getString(R.string.KEY_THEME_FOLLOW_SYSTEM), true)){
+			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+		}
+		
 		handler = Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 		
+		// 初始化滑动返回框架
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			SmartSwipeBack.activityBezierBack(this, activitySwipeBackFilter, 0);
 		} else {

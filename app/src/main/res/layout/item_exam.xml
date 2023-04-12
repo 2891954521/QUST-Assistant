@@ -1,66 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/item_academic_background"
+    <FrameLayout
+        android:id="@+id/item_exam_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_margin"
         android:padding="@dimen/base_margin"
-        android:orientation="vertical"
         android:background="@drawable/bg_stroke"
-        android:foreground="?attr/selectableItemBackground"
-        android:focusable="true"
-        android:clickable="true">
-
-        <TextView
-            style="@style/TextBig"
-            android:id="@+id/item_exam_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="高等数学"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                style="@style/TextNormal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="考试时间："/>
-
-            <TextView
-                style="@style/TextNormal"
-                android:id="@+id/item_exam_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
+        android:foreground="?attr/selectableItemBackground" >
     
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-        
-            <TextView
-                style="@style/TextNormal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="考试地点："/>
-        
-            <TextView
-                style="@style/TextNormal"
-                android:id="@+id/item_exam_place"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            android:orientation="vertical">
     
-        </LinearLayout>
+            <TextView
+                style="@style/TextBig"
+                android:id="@+id/item_exam_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="高等数学"/>
+    
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+            
+                    <TextView
+                        style="@style/TextNormal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="考试时间："/>
+            
+                    <TextView
+                        style="@style/TextNormal"
+                        android:id="@+id/item_exam_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
         
-    </androidx.appcompat.widget.LinearLayoutCompat>
+                </LinearLayout>
+        
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+            
+                    <TextView
+                        style="@style/TextNormal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="考试地点："/>
+            
+                    <TextView
+                        style="@style/TextNormal"
+                        android:id="@+id/item_exam_place"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+        
+                </LinearLayout>
+            
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    
+        <ImageView
+            android:id="@+id/item_exam_add_calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:padding="@dimen/widget_margin"
+            android:src="@drawable/ic_check_in"
+            app:tint="@color/icons" />
+        
+    </FrameLayout>
 
 </FrameLayout>

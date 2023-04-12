@@ -46,7 +46,6 @@
 
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/activity_update_channel_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/activity_margin"

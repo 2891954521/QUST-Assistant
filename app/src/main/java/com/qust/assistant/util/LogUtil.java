@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.qust.assistant.App;
 import com.qust.assistant.BuildConfig;
+import com.qust.assistant.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,9 +40,11 @@ public class LogUtil{
 		
 		LogFile = f.toString();
 		
-		File uploadData = new File(LogUtil.LogFile, "upload.log");
-		if(uploadData.exists()){
-			new LogThread(app).start();
+		if(SettingUtil.getBoolean(app.getString(R.string.KEY_UPLOAD_LOG), true)){
+			File uploadData = new File(LogUtil.LogFile, "upload.log");
+			if(uploadData.exists()){
+				new LogThread(app).start();
+			}
 		}
 	}
 	
@@ -116,22 +119,23 @@ public class LogUtil{
 				try{
 					int index = log.indexOf('|');
 					String hash = index == -1 ? log : log.substring(0, index);
-					String name = (index == -1 || index + 1 == log.length()) ? null : log.substring(index + 1);
+					String name = (index == -1 || index + 1 == log.length()) ? "" : log.substring(index + 1);
 					String content = index == -1 ? null : URLEncoder.encode(FileUtil.readFile(new File(LogUtil.LogFile, hash + ".log")), "UTF-8");
 					
-					String result = WebUtil.doPost(UPLOAD_LOG_URL,null,
-							"id=" + ANDROID_ID +		// 设备ID
-								"&hash=" + hash +			// 异常hash
-								"&name=" + name +			// 异常简述
-								"&brand=" + Build.BRAND +	// 手机品牌
-								"&model=" + Build.MODEL +	// 手机型号
-								"&android=" + Build.VERSION.RELEASE + // 系统版本号
-								"&appver=" + version + 		// app版本号
-								"&devVer=" + devVer + 		// 开发版版本号
-								(content == null ? "" : "&content=" + content),
-							"ContentType", "multipart/form-data");
+					String data = "id=" + ANDROID_ID +	// 设备ID
+							"&hash=" + hash +			// 异常hash
+							"&name=" + name +			// 异常简述
+							"&brand=" + Build.BRAND +	// 手机品牌
+							"&model=" + Build.MODEL +	// 手机型号
+							"&android=" + Build.VERSION.RELEASE + // 系统版本号
+							"&appver=" + version + 		// app版本号
+							"&devVer=" + devVer;		// 开发版版本号
 					
-					LogUtil.debugLog(result);
+					if(content != null) data += "&content=" + content;
+					
+					String result = WebUtil.doPost(UPLOAD_LOG_URL,null, data, "ContentType", "multipart/form-data");
+					
+					LogUtil.Log(result);
 					
 					JSONObject js = new JSONObject(result);
 					

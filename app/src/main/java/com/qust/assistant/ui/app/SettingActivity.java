@@ -1,8 +1,10 @@
 package com.qust.assistant.ui.app;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -12,8 +14,10 @@ import android.widget.NumberPicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
@@ -37,19 +41,39 @@ public class SettingActivity extends BaseAnimActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
 		
-		getSupportFragmentManager().beginTransaction().replace(R.id.activity_setting_contain, new PrefsFragment(this)).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.activity_setting_contain, new PrefsFragment()).commit();
 		
 		initToolBar("设置");
 	}
 	
+	@Override
+	public void onConfigurationChanged(@NonNull Configuration newConfig){
+		super.onConfigurationChanged(newConfig);
+		int currentNightMode = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+		switch (currentNightMode) {
+			case Configuration.UI_MODE_NIGHT_NO:
+				// Night mode is not active, we're using the light theme
+				toast("light");
+				break;
+			case Configuration.UI_MODE_NIGHT_YES:
+				// Night mode is active, we're using dark theme
+				toast("dark");
+				break;
+		}
+	}
+	
 	public static class PrefsFragment extends PreferenceFragmentCompat{
 		
-		private final SettingActivity activity;
+		private SettingActivity activity;
 		
 		private LessonTableViewModel lessonTableViewModel;
 		
-		public PrefsFragment(SettingActivity _activity){
-			activity = _activity;
+		public PrefsFragment(){}
+		
+		@Override
+		public void onAttach(@NonNull Context context){
+			super.onAttach(context);
+			activity = (SettingActivity) getActivity();
 		}
 		
 		@Override
@@ -146,6 +170,12 @@ public class SettingActivity extends BaseAnimActivity{
 						p.setSummary(String.valueOf(val));
 					})
 					.show();
+				return true;
+			});
+			
+			SwitchPreference dark = getSetting(getString(R.string.KEY_THEME_DARK));
+			dark.setOnPreferenceChangeListener((preference, isDark) -> {
+				AppCompatDelegate.setDefaultNightMode((boolean)isDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
 				return true;
 			});
 			

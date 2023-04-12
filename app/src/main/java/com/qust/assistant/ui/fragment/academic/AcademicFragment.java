@@ -131,7 +131,7 @@ public class AcademicFragment extends BaseSchoolFragment{
 		
 		for(int i = 0; i < lessons.length; i++){
 			LessonInfo lesson = lessons[i];
-			int index = (lesson.year - entranceTime) * 2 + lesson.term - 1;
+			int index = Math.max(0, (lesson.year - entranceTime) * 2 + lesson.term - 1);
 			if(index < builders.length){
 				builders[index].addLesson(i);
 			}
