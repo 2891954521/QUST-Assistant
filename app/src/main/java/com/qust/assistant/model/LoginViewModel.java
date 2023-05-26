@@ -15,7 +15,6 @@ import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.base.QFragmentActivity;
 import com.qust.assistant.ui.fragment.school.LoginFragment;
-import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.WebUtil;
 import com.qust.assistant.vo.QustLoginResult;
@@ -88,23 +87,21 @@ public class LoginViewModel extends AndroidViewModel{
 		return loginResult;
 	}
 	
+	
 	/**
-	 * 教务登录, 使用储存的用户名和密码
+	 * 异步登录请求, 使用储存的用户名和密码
 	 */
-	public void login(QFragmentActivity activity, Handler handler){
-		if(loginResult.getValue().cookie != null){
-			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在检查登陆状态"));
-			try{
-				HttpURLConnection connection = WebUtil.get(host + "/jwglxt/xtgl/index_initMenu.html", "JSESSIONID=" + loginResult.getValue().cookie);
-				if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
-					postValue(handler, "登录成功", loginResult.getValue().cookie);
-					return;
-				}
-			}catch(IOException e){
-				postValue(handler, "登录失败" + e.getMessage(), null);
+	public synchronized void login(QFragmentActivity activity, @NonNull Handler handler){
+		handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在检查登陆状态"));
+		try{
+			if(checkLogin()){
+				postValue(handler, "登录成功", loginResult.getValue().cookie);
 				return;
 			}
+		}catch(IOException e){
+			postValue(handler, "登录失败" + e.getMessage(), null);
 		}
+
 		if(name == null || password == null){
 			activity.runOnUiThread(() -> activity.addView(LoginFragment.class));
 		}else{
@@ -113,9 +110,11 @@ public class LoginViewModel extends AndroidViewModel{
 	}
 	
 	/**
-	 * 教务登录
+	 * 异步登录请求
+	 * @param name 		用户名
+	 * @param password	密码
 	 */
-	public void login(@NonNull Handler handler, String name, String password){
+	public synchronized void login(@NonNull Handler handler, String name, String password){
 		try{
 			handler.sendMessage(handler.obtainMessage(App.UPDATE_DIALOG, "正在获取Cookie"));
 			
@@ -172,6 +171,68 @@ public class LoginViewModel extends AndroidViewModel{
 	}
 	
 	/**
+	 * 同步登录请求，使用储存的用户名和密码，直接返还Cookie，自动更新ViewModel里的Cookie
+	 * @return Cookie
+	 */
+	public synchronized String login(){
+		try{
+			if(checkLogin()) return getCookie();
+		}catch(IOException ignored){ }
+		
+		if(name == null || password == null){
+			return null;
+		}else{
+			String cookie = login(name, password);
+			postValue(null, null, cookie);
+			return cookie;
+		}
+	}
+	
+	/**
+	 * 同步登录请求，直接返还Cookie，不更新ViewModel里的Cookie
+	 * @param name 用户名
+	 * @param password 密码
+	 * @return Cookie | null
+	 */
+	public synchronized String login(String name, String password){
+		try{
+			String[] param = getLoginParam();
+			if(param[0] == null || param[1] == null) return null;
+			
+			String key = getPublicKey(param[0]);
+			if(key == null) return null;
+			
+			String rsaPassword = encrypt(password, key);
+			if(TextUtils.isEmpty(rsaPassword)) return null;
+			
+			HttpURLConnection connection = WebUtil.post(
+					host + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis(),
+					"JSESSIONID=" + param[0],
+					"csrftoken=" + param[1] + "&language=zh_CN&yhm=" + name + "&mm=" + URLEncoder.encode(rsaPassword, "utf-8")
+			);
+			
+			switch(connection.getResponseCode()){
+				case HttpURLConnection.HTTP_MOVED_PERM:
+				case HttpURLConnection.HTTP_MOVED_TEMP:
+				case 307:
+					SettingUtil.edit()
+							.putString(getApplication().getString(R.string.SCHOOL_NAME), name)
+							.putString(getApplication().getString(R.string.SCHOOL_PASSWORD), password).apply();
+					
+					Matcher matcher = JESSIONID_PATTERN.matcher(connection.getHeaderField("Set-Cookie"));
+					return matcher.find() ? matcher.group(1) : param[0];
+					
+				case HttpURLConnection.HTTP_OK:
+				default:
+					return null;
+			}
+		}catch(IOException e){
+			return null;
+		}
+	}
+	
+	
+	/**
 	 * GET请求，携带Cookie
 	 * @param url 不带host的url
 	 */
@@ -195,37 +256,42 @@ public class LoginViewModel extends AndroidViewModel{
 		);
 	}
 	
+	/**
+	 * 检查Cookie是否有效
+	 */
+	private boolean checkLogin() throws IOException{
+		if(loginResult.getValue() == null) return false;
+		HttpURLConnection connection = WebUtil.get(host + "/jwglxt/xtgl/index_initMenu.html", "JSESSIONID=" + loginResult.getValue().cookie);
+		return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
+	}
+	
 	private void postValue(Handler handler, String message, String cookie){
 		loginResult.postValue(new QustLoginResult(handler, message, cookie));
 	}
 	
 	/**
 	 * 获取登录参数
-	 * @return param[0] = Cookie, param[1] = csrfToken
+	 * @return param[0] = [ Cookie | null ], param[1] = [ csrfToken | null ]
 	 */
 	@NonNull
-	private String[] getLoginParam(){
+	private String[] getLoginParam() throws IOException{
 		String[] result = new String[2];
-		String html = null;
-		try{
-			HttpURLConnection connection = WebUtil.get(host + "/jwglxt/xtgl/login_slogin.html", null);
-			if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
-				String s = connection.getHeaderField("Set-Cookie");
-				if(s != null){
-					Matcher matcher = JESSIONID_PATTERN.matcher(s);
-					if(matcher.find()){
-						result[0] = matcher.group(1);
-					}
-					html = WebUtil.inputStream2string(connection.getInputStream());
-				}
-			}
-		}catch(IOException e){
-			LogUtil.Log(e);
-		}
-		if(html != null){
-			Matcher matcher = Pattern.compile("<input (.*?)>").matcher(html);
+		
+		HttpURLConnection connection = WebUtil.get(host + "/jwglxt/xtgl/login_slogin.html", null);
+		
+		if(connection.getResponseCode() == HttpURLConnection.HTTP_OK){
+			
+			String s = connection.getHeaderField("Set-Cookie");
+			
+			if(s == null) return result;
+			
+			Matcher matcher = JESSIONID_PATTERN.matcher(s);
+			if(matcher.find()) result[0] = matcher.group(1);
+			
+			s = WebUtil.inputStream2string(connection.getInputStream());
+			matcher = Pattern.compile("<input (.*?)>").matcher(s);
 			while(matcher.find()){
-				String s = matcher.group();
+				 s = matcher.group();
 				if(s.contains("csrftoken")){
 					matcher = Pattern.compile("value=\"(.*?)\"").matcher(s);
 					if(matcher.find()) result[1] = matcher.group(1);

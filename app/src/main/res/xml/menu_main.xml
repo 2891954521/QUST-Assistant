@@ -17,9 +17,15 @@
     <item
         android:name="教务登陆"
         android:isDefault="true"
-        android:icon="@drawable/ic_school"
+        android:icon="@drawable/ic_login"
         android:text="com.qust.assistant.ui.fragment.school.LoginFragment" />
-
+    
+    <item
+        android:name="教务通知"
+        android:isDefault="true"
+        android:icon="@drawable/ic_notifications"
+        android:text="com.qust.assistant.ui.fragment.school.NoticeFragment" />
+    
     <item
         android:name="课表查询"
         android:isDefault="true"

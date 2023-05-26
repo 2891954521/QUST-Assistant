@@ -193,8 +193,8 @@ public class AutoEvaluationFragment extends BaseSchoolFragment{
 							sendMessage(App.DISMISS_TOAST, "提交失败！" + response);
 						}
 					}
-				}catch(Exception e){
-					LogUtil.Log(e);
+				}catch(IOException e){
+					LogUtil.Log(e, false);
 					sendMessage(App.DISMISS_TOAST, "提交失败！");
 				}
 			}

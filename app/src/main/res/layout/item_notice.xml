@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:id="@+id/item_exam_background"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="@dimen/activity_margin"
+		android:padding="@dimen/base_margin"
+		android:background="@drawable/bg_stroke"
+		android:foreground="?attr/selectableItemBackground"
+		android:clickable="true"
+		android:orientation="vertical">
+		
+		<TextView
+			style="@style/TextNormal"
+			android:id="@+id/item_notice_content"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:singleLine="false" />
+		
+		<TextView
+			style="@style/TextSmall"
+			android:id="@+id/item_notice_time"
+			android:gravity="end|center"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			tools:text="2023年5月23日 17:20:11"/>
+	
+	</androidx.appcompat.widget.LinearLayoutCompat>
+
+</FrameLayout>

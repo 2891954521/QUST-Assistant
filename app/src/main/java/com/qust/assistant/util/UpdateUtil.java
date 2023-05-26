@@ -46,7 +46,7 @@ public class UpdateUtil{
 			return;
 		}
 		
-		SettingUtil.edit().putLong("last_update_time", current).apply();
+		SettingUtil.edit().putLong(activity.getString(R.string.last_update_time), current).apply();
 		
 		new Thread(){
 			@Override
@@ -110,7 +110,7 @@ public class UpdateUtil{
 			return checkVersion(versionCode, json.getString("getUpdateInfo"));
 			
 		}catch(IOException | JSONException e){
-			LogUtil.Log(e);
+			LogUtil.Log(e, false);
 			return null;
 		}
 	}

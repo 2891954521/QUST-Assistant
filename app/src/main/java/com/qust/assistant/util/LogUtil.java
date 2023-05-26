@@ -28,6 +28,8 @@ public class LogUtil{
 	
 	private static boolean DEBUG;
 	
+	private static boolean UPLOAD_LOG;
+	
 	/**
 	 * 初始化日志模块并处理日志上报
 	 */
@@ -40,7 +42,9 @@ public class LogUtil{
 		
 		LogFile = f.toString();
 		
-		if(SettingUtil.getBoolean(app.getString(R.string.KEY_UPLOAD_LOG), true)){
+		UPLOAD_LOG = SettingUtil.getBoolean(app.getString(R.string.KEY_UPLOAD_LOG), true);
+		
+		if(UPLOAD_LOG){
 			File uploadData = new File(LogUtil.LogFile, "upload.log");
 			if(uploadData.exists()){
 				new LogThread(app).start();
@@ -72,8 +76,19 @@ public class LogUtil{
 		FileUtil.appendFile(new File(LogFile, "debug.log"), string + "\n");
 	}
 	
-	// log输出异常
+	/**
+	 * Log 输出异常
+	 */
 	public static void Log(@NonNull Throwable e){
+		Log(e, UPLOAD_LOG);
+	}
+	
+	/**
+	 * Log 输出异常
+	 * @param e 异常
+	 * @param needUpload 是否需要上报
+	 */
+	public static void Log(@NonNull Throwable e, boolean needUpload){
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		e.printStackTrace(printWriter);
@@ -82,11 +97,11 @@ public class LogUtil{
 		File f = new File(LogFile, hash + ".log");
 		if(f.exists()){
 			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + str.hashCode());
-			FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "\n");
+			if(needUpload) FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "\n");
 		}else{
 			FileUtil.writeFile(f.toString(), str);
 			String message = e.getClass().getName() + " : " + e.getMessage();
-			FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "|" + message + "\n");
+			if(needUpload) FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "|" + message + "\n");
 			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + str.hashCode() + "\n" + message);
 		}
 	}

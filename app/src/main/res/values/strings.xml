@@ -44,6 +44,11 @@
     <!-- 上次检查更新的时间 -->
     <string name="last_update_time">last_update_time</string>
     
+    <!-- 上次检查教务公告的时间 -->
+    <string name="last_check_notice_time">last_check_notice_time</string>
+    <!-- 上一个教务公告的ID -->
+    <string name="last_notice_id">last_notice_id</string>
+    
     <!-- 是否首次使用 -->
     <string name="isFirstUse">isFirstUse</string>
     

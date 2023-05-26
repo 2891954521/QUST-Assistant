@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.app.GuideActivity;
 import com.qust.assistant.ui.base.QFragmentActivity;
+import com.qust.assistant.util.QustUtil.NoticeUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.util.UpdateUtil;
 
@@ -24,6 +25,9 @@ public class MainActivity extends QFragmentActivity{
 		
 		// 检查更新
 		UpdateUtil.checkUpdate(this);
+		
+		// 检查教务通知
+		NoticeUtil.checkNotice(this);
 	}
 
 	@Override

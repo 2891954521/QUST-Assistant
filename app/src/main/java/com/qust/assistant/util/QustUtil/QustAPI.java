@@ -60,4 +60,14 @@ public class QustAPI{
 	 */
 	public static final String SCHOOL_YEAR_DATA = "/jwglxt/xtgl/index_cxAreaFive.html?localeKey=zh_CN&gnmkdm=index";
 	
+	
+	/**
+	 * 系统消息查询
+	 * POST:
+	 * queryModel.showCount: 15
+	 * queryModel.currentPage: 1
+	 * queryModel.sortName: cjsj
+	 * queryModel.sortOrder: desc
+	 */
+	public static final String SCHOOL_SYSTEM_NOTICE = "/jwglxt/xtgl/index_cxDbsy.html?doType=query";
 }
