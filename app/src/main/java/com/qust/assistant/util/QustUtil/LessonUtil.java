@@ -4,20 +4,23 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.model.LoginViewModel;
+import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.ui.fragment.school.BaseSchoolFragment;
+import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.WebUtil;
 import com.qust.assistant.vo.QueryLessonResult;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,9 +59,11 @@ public class LessonUtil{
 		
 		QueryLessonResult result = getSchoolYearData(loginViewModel, new QueryLessonResult());
 		
+		String response = null;
+		
 		try{
 			// 从教务查询课表
-			String response = WebUtil.doPost(loginViewModel.host + QustAPI.GET_LESSON_TABLE,
+			response = WebUtil.doPost(loginViewModel.host + QustAPI.GET_LESSON_TABLE,
 					"JSESSIONID=" + loginViewModel.getCookie(),
 					"xnm=" + year + "&xqm=" + term + "&kzlx=ck"
 			);
@@ -68,13 +73,45 @@ public class LessonUtil{
 				return result;
 			}
 			
+			JSONObject js = new JSONObject(response);
+			
+			if(!js.has("xsxx")){
+				result.message = "获取课表失败：该学年学期无您的注册信息";
+				return result;
+			}
+			
+			if(Boolean.parseBoolean(js.optString("xnxqsfkz"))){
+				result.message = "获取课表失败：该学年学期课表当前时间段不允许查看";
+				return result;
+			}
+			
+			int kblen = js.getJSONArray("kbList").length();
+			int sjklen = js.getJSONArray("sjkList").length();
+			int jxhjkclen = js.getJSONArray("jxhjkcList").length();
+			boolean xkkg = js.optBoolean("xkkg", false);       // 选课开关
+			boolean jfckbkg = js.optBoolean("jfckbkg", false); // 缴费查课表开关
+			
+			if(kblen == 0 && sjklen == 0 && jxhjkclen == 0 && xkkg && jfckbkg){
+				result.message = "获取课表失败：该学年学期尚无您的课表";
+				return result;
+			}else if(!xkkg){
+				result.message = "获取课表失败：该学年学期的课表尚未开放";
+				return result;
+			}else if(!jfckbkg){
+				result.message = "获取课表失败：缴费后可查询";
+				return result;
+			}
+			
 			result.lessonGroups = new LessonGroup[7][10];
-			if(!LessonTableViewModel.loadFromJson(new JSONObject(response), result.lessonGroups)){
+			if(!loadFromJson(js, result.lessonGroups)){
 				result.message = "解析课表信息失败";
 			}
 			
-		}catch(IOException | JSONException e){
-			LogUtil.Log(e);
+		}catch(IOException e){
+			result.message = "获取课表失败, 网络异常";
+			
+		}catch(JSONException e){
+			LogUtil.Log(response, e);
 			result.message = "获取课表失败";
 		}
 		return result;
@@ -129,7 +166,7 @@ public class LessonUtil{
 			);
 			
 			result.lessonGroups = new LessonGroup[7][10];
-			if(!LessonTableViewModel.loadFromJson(new JSONObject(response), result.lessonGroups)){
+			if(!loadFromJson(new JSONObject(response), result.lessonGroups)){
 				result.message = "解析课表信息失败";
 			}
 			
@@ -141,6 +178,56 @@ public class LessonUtil{
 	}
 	
 	
+	/**
+	 * 从json中解析课表
+	 */
+	public static boolean loadFromJson(@NonNull JSONObject json, LessonGroup[][] lessonGroups){
+		try{
+			if(!json.has("kbList")) return false;
+			
+			JSONArray array = json.getJSONArray("kbList");
+			
+			ArrayList<String> colors = new ArrayList<>();
+			int index = 0;
+			
+			for(int i = 0; i < array.length(); i++){
+				
+				JSONObject js = array.getJSONObject(i);
+				
+				int week = js.getInt("xqj");
+				
+				String[] sp = js.getString("jcs").split("-");
+				
+				int count = Integer.parseInt(sp[0]);
+				
+				Lesson lesson = new Lesson(js);
+				
+				lesson.len = Integer.parseInt(sp[1]) - count + 1;
+				
+				for(int j = 0; j < colors.size(); j++){
+					if(colors.get(j).equals(lesson.name)){
+						lesson.color = j % (ColorUtil.BACKGROUND_COLORS.length - 1) + 1;
+						break;
+					}
+				}
+				
+				if(lesson.color == 0){
+					if(++index == ColorUtil.BACKGROUND_COLORS.length) index = 1;
+					lesson.color = index;
+					colors.add(lesson.name);
+				}
+				
+				if(lessonGroups[week - 1][count - 1] == null){
+					lessonGroups[week - 1][count - 1] = new LessonGroup(week, count);
+				}
+				lessonGroups[week - 1][count - 1].addLesson(lesson);
+			}
+			return true;
+		}catch(JSONException e){
+			LogUtil.Log(e);
+			return false;
+		}
+	}
 	
 	/**
 	 * 获取当前学期

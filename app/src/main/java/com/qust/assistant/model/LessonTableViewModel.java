@@ -12,13 +12,12 @@ import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.model.lesson.Lesson;
 import com.qust.assistant.model.lesson.LessonGroup;
-import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.FileUtil;
 import com.qust.assistant.util.LogUtil;
+import com.qust.assistant.util.QustUtil.LessonUtil;
 import com.qust.assistant.util.SettingUtil;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +27,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -152,7 +150,7 @@ public class LessonTableViewModel extends AndroidViewModel{
 		if(jsonFile.exists()){
 			try{
 				// 从文件中读取课表
-				if(loadFromJson(new JSONObject(FileUtil.readFile(jsonFile)), lessonGroups)){
+				if(LessonUtil.loadFromJson(new JSONObject(FileUtil.readFile(jsonFile)), lessonGroups)){
 					saveLessonData(context, lessonGroups);
 				}
 			}catch(JSONException e){
@@ -298,57 +296,6 @@ public class LessonTableViewModel extends AndroidViewModel{
 	 */
 	public static String[][] getLessonTimeText(){
 		return lessonTimeText;
-	}
-	
-	/**
-	 * 从json中解析课表
- 	 */
-	public static boolean loadFromJson(@NonNull JSONObject json, LessonGroup[][] lessonGroups){
-		try{
-			if(!json.has("kbList")) return false;
-			
-			JSONArray array = json.getJSONArray("kbList");
-			
-			ArrayList<String> colors = new ArrayList<>();
-			int index = 0;
-			
-			for(int i = 0; i < array.length(); i++){
-				
-				JSONObject js = array.getJSONObject(i);
-				
-				int week = js.getInt("xqj");
-				
-				String[] sp = js.getString("jcs").split("-");
-				
-				int count = Integer.parseInt(sp[0]);
-				
-				Lesson lesson = new Lesson(js);
-				
-				lesson.len = Integer.parseInt(sp[1]) - count + 1;
-				
-				for(int j = 0; j < colors.size(); j++){
-					if(colors.get(j).equals(lesson.name)){
-						lesson.color = j % (ColorUtil.BACKGROUND_COLORS.length - 1) + 1;
-						break;
-					}
-				}
-				
-				if(lesson.color == 0){
-					if(++index == ColorUtil.BACKGROUND_COLORS.length) index = 1;
-					lesson.color = index;
-					colors.add(lesson.name);
-				}
-				
-				if(lessonGroups[week - 1][count - 1] == null){
-					lessonGroups[week - 1][count - 1] = new LessonGroup(week, count);
-				}
-				lessonGroups[week - 1][count - 1].addLesson(lesson);
-			}
-			return true;
-		}catch(JSONException e){
-			LogUtil.Log(e);
-			return false;
-		}
 	}
 	
 	

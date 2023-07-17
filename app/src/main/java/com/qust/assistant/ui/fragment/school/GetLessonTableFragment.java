@@ -115,7 +115,10 @@ public class GetLessonTableFragment extends BaseSchoolFragment{
 		}
 		
 		if(result.message != null){
-			sendMessage(App.DISMISS_TOAST, result.message);
+			activity.runOnUiThread(() -> {
+				dialog.dismiss();
+				DialogUtil.getBaseDialog(activity).title("提示").content(result.message).onPositive((dialog, which) -> dialog.dismiss()).show();
+			});
 		}else{
 			termText = result.termText;
 			startTime = result.startTime;

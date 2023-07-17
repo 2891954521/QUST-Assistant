@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.util.QustUtil.MarkUtil;
+import com.qust.assistant.util.QustUtil.QUSTQueryUtil;
 import com.qust.assistant.vo.Mark;
 
 import java.io.IOException;
@@ -66,7 +66,7 @@ public class GetMarkFragment extends BaseSchoolFragment{
 		
 		String[] y = getYearAndTerm();
 		
-		marks[selectTerm] = MarkUtil.queryMark(loginViewModel, y[0], y[1]);
+		marks[selectTerm] = QUSTQueryUtil.queryMark(loginViewModel, y[0], y[1]);
 		
 		try{
 			saveData("Mark","mark", marks);

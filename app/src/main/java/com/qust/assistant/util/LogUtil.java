@@ -5,6 +5,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.qust.assistant.App;
 import com.qust.assistant.BuildConfig;
@@ -62,13 +63,7 @@ public class LogUtil{
 			debugLog(msg);
 		}
 	}
-	
-	// 输出log
-	public static void Log(String s, Throwable e){
-		debugLog(s);
-		Log(e);
-	}
-	
+
 	/**
 	 * 强制输出到 debug 文件
  	 */
@@ -85,24 +80,45 @@ public class LogUtil{
 	
 	/**
 	 * Log 输出异常
+	 */
+	public static void Log(@Nullable String s, @NonNull Throwable e){
+		Log(s, e, UPLOAD_LOG);
+	}
+	
+	/**
+	 * Log 输出异常
 	 * @param e 异常
 	 * @param needUpload 是否需要上报
 	 */
 	public static void Log(@NonNull Throwable e, boolean needUpload){
+		Log(null, e, needUpload);
+	}
+	
+	/**
+	 * Log 输出异常
+	 * @param msg 附加错误信息
+	 * @param e 异常
+	 * @param needUpload 是否需要上报
+	 */
+	public static void Log(@Nullable String msg, @NonNull Throwable e, boolean needUpload){
 		StringWriter stringWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(stringWriter);
-		e.printStackTrace(printWriter);
+		e.printStackTrace(new PrintWriter(stringWriter));
+		
 		String str = stringWriter.toString();
+		
+		if(msg != null) str += msg.length() > 4096 ? msg.substring(0, 4096) : msg;
+		
 		int hash = str.hashCode();
 		File f = new File(LogFile, hash + ".log");
+		
 		if(f.exists()){
-			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + str.hashCode());
+			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + hash);
 			if(needUpload) FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "\n");
 		}else{
 			FileUtil.writeFile(f.toString(), str);
 			String message = e.getClass().getName() + " : " + e.getMessage();
 			if(needUpload) FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "|" + message + "\n");
-			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + str.hashCode() + "\n" + message);
+			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + hash + "\n" + message);
 		}
 	}
 	

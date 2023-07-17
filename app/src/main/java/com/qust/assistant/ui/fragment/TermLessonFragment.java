@@ -28,8 +28,8 @@ import com.qust.assistant.ui.base.BaseFragment;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.DialogRoundTop;
-import com.qust.assistant.widget.LessonTime;
 import com.qust.assistant.widget.lesson.LessonTable;
+import com.qust.assistant.widget.lesson.LessonTime;
 import com.qust.assistant.widget.swipe.SwipeTextView;
 
 public class TermLessonFragment extends BaseFragment{

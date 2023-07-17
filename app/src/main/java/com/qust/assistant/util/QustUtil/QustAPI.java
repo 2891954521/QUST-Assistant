@@ -15,6 +15,27 @@ public class QustAPI{
 			"https://jwglxt6.qust.edu.cn",
 	};
 	
+	
+	/**
+	 * 教务登录 	<p>
+	 * Get: 		<p>
+	 * - 登录界面 	<p>
+	 * Post: 		<p>
+	 * - csrftoken: HTML里拿
+	 * <p>
+	 * - language: 	zh_CN
+	 * <p>
+	 * - yhm:		用户名
+	 * <p>
+	 * - mm:		RSA加密后的密码
+	 */
+	public static final String EA_LOGIN = "/jwglxt/xtgl/login_slogin.html";
+	
+	/**
+	 * 教务登录，获取RSA公钥
+	 */
+	public static final String EA_LOGIN_PUBLIC_KEY = "/jwglxt/xtgl/login_getPublicKey.html";
+
 	/**
 	 * 成绩查询
 	 */
@@ -28,7 +49,7 @@ public class QustAPI{
 	/**
 	 * 查询学生课表
 	 */
-	public static final String GET_LESSON_TABLE = "/jwglxt/kbcx/xskbcx_cxXsKb.html";
+	public static final String GET_LESSON_TABLE = "/jwglxt/kbcx/xskbcx_cxXsgrkb.html";
 	
 	/**
 	 * 查询班级课表

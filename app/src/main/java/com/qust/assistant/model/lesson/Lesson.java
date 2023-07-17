@@ -105,4 +105,107 @@ public class Lesson implements Serializable, Cloneable{
 		return copy;
 	}
 	
+	
+	/*
+	    {
+        "ZDM": "sj",
+        "SFXS": "1",
+        "ZDMC": "时间"
+    },
+    {
+        "ZDM": "cd",
+        "SFXS": "1",
+        "ZDMC": "场地"
+    },
+    {
+        "ZDM": "js",
+        "SFXS": "1",
+        "ZDMC": "教师"
+    },
+    {
+        "ZDM": "jszc",
+        "SFXS": "0",
+        "ZDMC": "教师职称"
+    },
+    {
+        "ZDM": "jxb",
+        "SFXS": "1",
+        "ZDMC": "教学班"
+    },
+    {
+        "ZDM": "xkbz",
+        "SFXS": "1",
+        "ZDMC": "选课备注"
+    },
+    {
+        "ZDM": "kcxszc",
+        "SFXS": "1",
+        "ZDMC": "课程学时组成"
+    },
+    {
+        "ZDM": "zhxs",
+        "SFXS": "1",
+        "ZDMC": "周学时"
+    },
+    {
+        "ZDM": "zxs",
+        "SFXS": "1",
+        "ZDMC": "总学时"
+    },
+    {
+        "ZDM": "khfs",
+        "SFXS": "1",
+        "ZDMC": "考核方式"
+    },
+    {
+        "ZDM": "xf",
+        "SFXS": "1",
+        "ZDMC": "学分"
+    },
+    {
+        "ZDM": "xq",
+        "SFXS": "1",
+        "ZDMC": "校区"
+    },
+    {
+        "ZDM": "zxxx",
+        "SFXS": "0",
+        "ZDMC": "在线信息"
+    },
+    {
+        "ZDM": "skfsmc",
+        "SFXS": "0",
+        "ZDMC": "授课方式"
+    },
+    {
+        "ZDM": "jxbzc",
+        "SFXS": "1",
+        "ZDMC": "教学班组成"
+    },
+    {
+        "ZDM": "cxbj",
+        "SFXS": "0",
+        "ZDMC": "重修标记"
+    },
+    {
+        "ZDM": "zfj",
+        "SFXS": "0",
+        "ZDMC": "主辅讲"
+    },
+    {
+        "ZDM": "kcxz",
+        "SFXS": "0",
+        "ZDMC": "课程性质"
+    },
+    {
+        "ZDM": "kcbj",
+        "SFXS": "0",
+        "ZDMC": "课程标记"
+    },
+    {
+        "ZDM": "kczxs",
+        "SFXS": "0",
+        "ZDMC": "课程总学时"
+    }
+	 */
 }

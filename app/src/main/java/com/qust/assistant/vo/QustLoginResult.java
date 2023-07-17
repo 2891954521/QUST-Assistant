@@ -14,6 +14,10 @@ public class QustLoginResult{
 	
 	public String cookie;
 	
+	public QustLoginResult(){
+	
+	}
+	
 	public QustLoginResult(Handler from, String message){
 		this.from = from;
 		this.message = message;

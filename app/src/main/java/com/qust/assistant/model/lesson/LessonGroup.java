@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.qust.assistant.R;
 import com.qust.assistant.model.LessonTableViewModel;
 import com.qust.assistant.util.ColorUtil;
-import com.qust.assistant.widget.LessonBackground;
+import com.qust.assistant.widget.lesson.LessonBackground;
 
 import java.io.Serializable;
 import java.util.Arrays;

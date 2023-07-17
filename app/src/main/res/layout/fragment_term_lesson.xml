@@ -269,7 +269,7 @@
 
                     </LinearLayout>
 
-                    <com.qust.assistant.widget.LessonTime
+                    <com.qust.assistant.widget.lesson.LessonTime
                         android:id="@+id/layout_lesson_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 import com.qust.assistant.App;
 import com.qust.assistant.R;
 import com.qust.assistant.util.DialogUtil;
-import com.qust.assistant.util.QustUtil.ExamUtil;
+import com.qust.assistant.util.QustUtil.QUSTQueryUtil;
 import com.qust.assistant.vo.Exam;
 
 import java.io.IOException;
@@ -77,7 +77,7 @@ public class GetExamFragment extends BaseSchoolFragment{
 		
 		String[] y = getYearAndTerm();
 		
-		exams[selectTerm] = ExamUtil.queryExam(loginViewModel, y[0], y[1]);
+		exams[selectTerm] = QUSTQueryUtil.queryExam(loginViewModel, y[0], y[1]);
 		
 		try{
 			saveData("Exam","exam", exams);

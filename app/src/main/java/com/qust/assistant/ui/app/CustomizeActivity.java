@@ -1,26 +1,30 @@
 package com.qust.assistant.ui.app;
 
-import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Xml;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.hubert.guide.NewbieGuide;
-import com.app.hubert.guide.model.GuidePage;
-import com.app.hubert.guide.model.HighLight;
-import com.app.hubert.guide.model.RelativeGuide;
 import com.qust.assistant.R;
 import com.qust.assistant.ui.base.BaseAnimActivity;
 import com.qust.assistant.ui.base.BaseFragment;
 import com.qust.assistant.ui.fragment.DailyLessonFragment;
 import com.qust.assistant.ui.fragment.TermLessonFragment;
+import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.widget.menu.MenuAdapter;
@@ -51,12 +55,12 @@ public class CustomizeActivity extends BaseAnimActivity{
 	
 	private MenuAdapter hideAdapter;
 	
-	private SelectItemAdapter selectedAdapter;
+	private RecyclerItemAdapter selectedAdapter;
 	
 	/**
-	 * 展示的界面
+	 * 作为主页的界面
 	 */
-	private int homeOffset;
+	private int homePosition;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState){
@@ -67,45 +71,35 @@ public class CustomizeActivity extends BaseAnimActivity{
 		initToolBar("自定义主页");
 		
 		hideAdapter = new MenuAdapter(this, hideItems);
-		selectedAdapter = new SelectItemAdapter(this, selectedItems);
-		
 		ListView menuList = findViewById(R.id.menu_list);
 		menuList.setAdapter(hideAdapter);
 		menuList.setOnItemClickListener((parent, view, position, id) -> {
 			selectedItems.add(hideItems.get(position));
-			selectedAdapter.setItems(selectedItems);
+			selectedAdapter.notifyItemInserted(selectedItems.size());
 			hideItems.remove(position);
 			hideAdapter.setItems(hideItems);
 		});
 		
-		ListView selectedList = findViewById(R.id.selected_list);
+		selectedAdapter = new RecyclerItemAdapter();
+		RecyclerView selectedList = findViewById(R.id.selected_list);
+		selectedList.setLayoutManager(new LinearLayoutManager(this));
 		selectedList.setAdapter(selectedAdapter);
-		selectedList.setOnItemClickListener((parent, view, position, id) -> {
-			homeOffset = position;
-			selectedAdapter.notifyDataSetInvalidated();
-		});
 		
-		ImageView save = addMenuItem(R.drawable.ic_done, v -> {
+		helper.attachToRecyclerView(selectedList);
+		
+		addMenuItem(R.drawable.ic_done, v -> {
 			JSONArray js = new JSONArray();
 			for(MenuItem item : selectedItems) js.put(item.target);
 			SettingUtil.edit().putString(getString(R.string.homePages), js.toString()).commit();
-			SettingUtil.edit().putInt(getString(R.string.homeOffset), homeOffset).commit();
+			SettingUtil.edit().putInt(getString(R.string.homeOffset), homePosition).commit();
 			toast("保存成功，重启应用后生效");
 			finish();
 		});
-		
-		NewbieGuide.with(this).setLabel(getClass().getName())
-				.addGuidePage(GuidePage.newInstance()
-					.addHighLight(menuList, new RelativeGuide(R.layout.layout_welcome_customize, Gravity.TOP, 50))
-				).addGuidePage(GuidePage.newInstance()
-					.addHighLight(selectedList, new RelativeGuide(R.layout.layout_welcome_customize2, Gravity.BOTTOM, 50))
-				).addGuidePage(GuidePage.newInstance()
-						.addHighLight(save, HighLight.Shape.CIRCLE, 20)
-						.setLayoutRes(R.layout.layout_welcome_customize3)
-				).show();
+	}
 	
-}
-	
+	/**
+	 * 扫描可用的功能界面并初始化数据
+	 */
 	private void initMenuItems(){
 		HashMap<String, MenuItem> allItems = new HashMap<>(16);
 		try{
@@ -133,7 +127,7 @@ public class CustomizeActivity extends BaseAnimActivity{
 			LogUtil.Log(e);
 		}
 		
-		homeOffset = SettingUtil.getInt(getString(R.string.homeOffset), 0);
+		homePosition = SettingUtil.getInt(getString(R.string.homeOffset), 0);
 		
 		try{
 			JSONArray js = new JSONArray(SettingUtil.getString(getString(R.string.homePages), ""));
@@ -154,31 +148,111 @@ public class CustomizeActivity extends BaseAnimActivity{
 			allItems.remove(TermLessonFragment.class.getName());
 		}finally{
 			hideItems = new ArrayList<>(allItems.values());
+			if(selectedItems.size() <= homePosition) homePosition = 0;
 		}
 	}
 	
-	private class SelectItemAdapter extends MenuAdapter{
+	
+	private class RecyclerItemAdapter extends RecyclerView.Adapter<ItemViewHolder>{
 		
-		public SelectItemAdapter(Context context, ArrayList<MenuItem> items){
-			super(context, items);
-		}
-		
+		@NonNull
 		@Override
-		protected int getLayout(){
-			return R.layout.item_menu_editable;
-		}
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent){
-			convertView = super.getView(position, convertView, parent);
-			convertView.findViewById(R.id.item_menu_remove).setOnClickListener(v -> {
-				hideItems.add(selectedItems.get(position));
-				hideAdapter.setItems(hideItems);
-				selectedItems.remove(position);
-				setItems(selectedItems);
+		public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
+			View itemView = LayoutInflater.from(CustomizeActivity.this).inflate(R.layout.item_menu_editable, parent, false);
+			ItemViewHolder holder = new ItemViewHolder(itemView);
+			itemView.setOnClickListener(v -> {
+				int tmp = homePosition;
+				homePosition = holder.getAdapterPosition();
+				selectedAdapter.notifyItemChanged(tmp);
+				selectedAdapter.notifyItemChanged(homePosition);
 			});
-			convertView.findViewById(R.id.item_menu_home).setVisibility(position == homeOffset ? View.VISIBLE : View.INVISIBLE);
-			return convertView;
+			return holder;
+		}
+		
+		@Override
+		public void onBindViewHolder(@NonNull ItemViewHolder holder, int position){
+			holder.onBind(selectedItems.get(position), position);
+		}
+		
+		@Override
+		public int getItemCount(){
+			return selectedItems.size();
 		}
 	}
+	
+	private class ItemViewHolder extends RecyclerView.ViewHolder{
+		
+		private TextView title;
+		private ImageView icon;
+		
+		private View isHome, remove;
+		
+		public ItemViewHolder(@NonNull View convertView){
+			super(convertView);
+			icon = convertView.findViewById(R.id.item_menu_icon);
+			title = convertView.findViewById(R.id.item_menu_title);
+			isHome = convertView.findViewById(R.id.item_menu_home);
+			remove = convertView.findViewById(R.id.item_menu_remove);
+			
+			remove.setOnClickListener(v -> {
+				int position = getAdapterPosition();
+				if(position == -1) return;
+				hideItems.add(selectedItems.get(position));
+				selectedItems.remove(position);
+				hideAdapter.setItems(hideItems);
+				selectedAdapter.notifyItemRemoved(position);
+			});
+		}
+		
+		public void onBind(@NonNull MenuItem menuItem, int position){
+			title.setText(menuItem.title);
+			icon.setImageResource(menuItem.icon);
+			isHome.setVisibility(position == homePosition ? View.VISIBLE : View.INVISIBLE);
+			
+			if(menuItem.hasMask){
+				int color = ColorUtil.TEXT_COLORS[position % (ColorUtil.BACKGROUND_COLORS.length - 1) + 1];
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+					icon.setImageTintList(new ColorStateList(new int[][]{{android.R.attr.state_checked}, {-android.R.attr.state_checked}}, new int[]{color, color}));
+				}else{
+					icon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+				}
+			}else{
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) icon.setImageTintList(null);
+				else icon.clearColorFilter();
+			}
+		}
+		
+	}
+	
+	ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback(){
+		
+		@Override
+		public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder){
+			return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
+		}
+		
+		@Override
+		public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target){
+			recyclerView.getParent().requestDisallowInterceptTouchEvent(true);
+			int fromPosition = viewHolder.getAdapterPosition();
+			int toPosition = target.getAdapterPosition();
+			if(fromPosition < toPosition){
+				selectedItems.set(fromPosition, selectedItems.set(toPosition, selectedItems.get(fromPosition)));
+			}else{
+				selectedItems.set(toPosition, selectedItems.set(fromPosition, selectedItems.get(toPosition)));
+			}
+			if(fromPosition == homePosition){
+				homePosition = toPosition;
+			}else if(toPosition == homePosition){
+				homePosition = fromPosition;
+			}
+			selectedAdapter.notifyItemMoved(fromPosition, toPosition);
+			return true;
+		}
+		
+		@Override
+		public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction){ }
+
+	});
+	
 }

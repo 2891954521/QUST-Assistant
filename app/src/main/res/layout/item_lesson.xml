@@ -13,7 +13,7 @@
         android:textColor="@color/colorSecondaryText"
         android:padding="@dimen/widget_margin" />
 
-    <com.qust.assistant.widget.LessonBackground
+    <com.qust.assistant.widget.lesson.LessonBackground
         android:id="@+id/item_lesson_color"
         android:layout_width="6dp"
         android:layout_height="match_parent"

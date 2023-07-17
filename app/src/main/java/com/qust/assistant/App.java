@@ -23,7 +23,7 @@ public class App extends Application{
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 20;
+	public static final int DEV_VERSION = 21;
 	
 	/*
 	 * Handler 公用的 what 值
@@ -101,7 +101,7 @@ public class App extends Application{
 		@Override
 		public void uncaughtException(@NonNull Thread thread, @NonNull final Throwable throwable){
 			toast("应用发生错误，错误类型：" + throwable.getClass());
-			LogUtil.Log("-------应用发生异常-------", throwable);
+			LogUtil.Log("-------应用异常退出-------", throwable);
 			LogUtil.debugLog("-------应用异常退出-------\n");
 			if(handler != null) handler.uncaughtException(thread, throwable);
 		}

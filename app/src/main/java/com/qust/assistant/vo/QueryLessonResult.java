@@ -10,7 +10,7 @@ import com.qust.assistant.model.lesson.LessonGroup;
 public class QueryLessonResult{
 	
 	/**
-	 * 消息
+	 * 错误消息
 	 */
 	@Nullable
 	public String message;

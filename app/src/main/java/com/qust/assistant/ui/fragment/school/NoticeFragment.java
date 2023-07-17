@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.qust.assistant.App;
 import com.qust.assistant.R;
-import com.qust.assistant.util.QustUtil.NoticeUtil;
+import com.qust.assistant.util.QustUtil.QUSTQueryUtil;
 import com.qust.assistant.vo.Notice;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class NoticeFragment extends BaseSchoolFragment{
 	protected void doQuery(){
 		sendMessage(App.UPDATE_DIALOG, "正在查询");
 		
-		notices = NoticeUtil.queryNotice(loginViewModel, 1, 20);
+		notices = QUSTQueryUtil.queryNotice(loginViewModel, 1, 20);
 		
 		try{
 			saveData("Notice","notice", notices);

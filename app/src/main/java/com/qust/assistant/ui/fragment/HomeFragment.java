@@ -83,6 +83,7 @@ public class HomeFragment extends BaseFragment{
 		}
 		viewPager.setAdapter(new PagerAdapter(this));
 		if(current < layouts.length) viewPager.setCurrentItem(current, false);
+		else current = 0;
 	}
 	
 	@Override
