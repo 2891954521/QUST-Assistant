@@ -1,12 +1,30 @@
-## 青科助手
+<p align="center">
+  <img src="https://files.catbox.moe/5go8fg.png" width="130" height="130" alt="qust"></a>
+</p>
 
-### 功能简介
+<div align="center">
 
-- APP登录QUST教务系统，可以在手机端查看学期课表和当日课表，查询考试成绩及其他教务功能
+# 青科助手
+
+✨ 青岛科技大学-教务系统APP ✨
+</div>
+
+<p align="center">
+  <a href="https://github.com/2891954521/QUST-Assistant/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="license">
+  </a>
+  <a href="https://github.com/2891954521/QUST-Assistant/releases">
+    <img src="https://img.shields.io/github/v/release/2891954521/QUST-Assistant" alt="release">
+  </a>
+</p>
 
 
+### 功能简介 📃
 
-### 功能实现
+- 丢弃繁重的QUSB教务系统,实现APP登录查询
+
+
+### 功能实现 💻
 
 - [ ] 自动查询课表
 - [ ] 自动评教添加批量教评
@@ -19,7 +37,7 @@
 - [x] 暗色模式开关
 - [x] 设置新增隐藏教师功能
 
-### 更新日志
+### 更新日志 🔖
 
 #### V2.3.2 beta
 
