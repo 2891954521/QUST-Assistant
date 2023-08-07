@@ -62,15 +62,18 @@
     <string name="homeOffset">homeOffset</string>
     
     <!-- 教务学号 -->
-    <string name="SCHOOL_NAME">user</string>
-    
+    <string name="EA_NAME">eaName</string>
     <!-- 教务密码 -->
-    <string name="SCHOOL_PASSWORD">password</string>
+    <string name="EA_PASSWORD">eaPassword</string>
+    <!-- 教务密码 -->
+    <string name="EA_COOKIE">eaCookie</string>
     
-    <!-- 健康打卡相关 -->
-    <string name="HEALTH_CHECK_COOKIE">healthCheckInCookie</string>
-    <string name="HEALTH_CHECK_USER">healthCheckInUser</string>
-    <string name="HEALTH_CHECK_PASSWORD">healthCheckInPassword</string>
-    <string name="HEALTH_CHECK_NSFYJZXGYM">healthCheckInNsfyjzxgym</string>
+    
+    <!-- 智慧青科大学号 -->
+    <string name="VPN_NAME">vpnName</string>
+    <!-- 智慧青科大密码 -->
+    <string name="VPN_PASSWORD">vpnPassword</string>
+    <!-- 智慧青科大Cookie -->
+    <string name="VPN_Cookie">vpnCookie</string>
     
 </resources>

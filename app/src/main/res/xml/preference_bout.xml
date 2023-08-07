@@ -17,6 +17,17 @@
     </PreferenceCategory>
     
     <PreferenceCategory
+        android:title="群组">
+        
+        <Preference
+            android:key="join_QQ_group"
+            android:title="QQ"
+            android:layout="@layout/item_preference">
+        </Preference>
+    
+    </PreferenceCategory>
+    
+    <PreferenceCategory
         android:title="源代码">
         
         <Preference

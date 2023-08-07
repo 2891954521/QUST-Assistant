@@ -10,11 +10,9 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.billy.android.swipe.SmartSwipeBack;
 import com.billy.android.swipe.SwipeConsumer;
-import com.qust.assistant.model.LessonTableViewModel;
-import com.qust.assistant.model.LoginViewModel;
-import com.qust.assistant.ui.MainActivity;
-import com.qust.assistant.ui.app.GuideActivity;
-import com.qust.assistant.ui.fragment.third.DrinkViewModel;
+import com.qust.app.GuideActivity;
+import com.qust.app.MainActivity;
+import com.qust.fragment.third.DrinkViewModel;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
 
@@ -23,36 +21,10 @@ public class App extends Application{
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 21;
+	public static final int DEV_VERSION = 23;
 	
-	/*
-	 * Handler 公用的 what 值
-	 */
-	/**
-	 * 更新 Dialog
-	 */
-	public static final int UPDATE_DIALOG = 0;
-	
-	/**
-	 * 关闭 Dialog 并 Toast
-	 */
-	public static final int DISMISS_TOAST = 1;
-	
-	/**
-	 * 更新 AdapterView
-	 */
-	public static final int NOTIFY_TOAST = 2;
-	
-	/**
-	 * 仅 Toast
-	 */
-	public static final int TOAST = 3;
-	
-	public LoginViewModel loginViewModel;
 	
 	public DrinkViewModel drinkViewModel;
-	
-	public LessonTableViewModel lessonTableViewModel;
 	
 	private Thread.UncaughtExceptionHandler handler;
 	
@@ -64,9 +36,7 @@ public class App extends Application{
 		
 		LogUtil.init(this);
 		
-		loginViewModel = new LoginViewModel(this);
 		drinkViewModel = new DrinkViewModel(this);
-		lessonTableViewModel = new LessonTableViewModel(this);
 		
 		if(SettingUtil.getBoolean(getString(R.string.KEY_THEME_DARK), false)){
 			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.qust.assistant"
     android:versionCode="26"
-    android:versionName="2.3.2 beta">
+    android:versionName="2.4 rc2">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -26,24 +26,25 @@
         tools:targetApi="q">
         
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.qust.app.MainActivity"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustNothing">
+            android:windowSoftInputMode="adjustNothing"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.NavigationActivity"/>
-        
-        <activity android:name=".ui.app.CustomizeActivity"/>
-        <activity android:name=".ui.app.SettingActivity"/>
-        <activity android:name=".ui.app.UpdateActivity"/>
     
-        <activity android:name=".ui.app.GuideActivity"/>
-        <activity android:name=".ui.app.AboutActivity"/>
-        <activity android:name=".ui.app.LogActivity"/>
+        <activity android:name="com.qust.base.ui.FragmentActivity"/>
+        
+        <activity android:name="com.qust.app.CustomizeActivity"/>
+        <activity android:name="com.qust.app.SettingActivity"/>
+        <activity android:name="com.qust.app.UpdateActivity"/>
+    
+        <activity android:name="com.qust.app.GuideActivity"/>
+        <activity android:name="com.qust.app.AboutActivity"/>
+        <activity android:name="com.qust.app.LogActivity"/>
     
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -12,6 +12,7 @@
         app:cardCornerRadius="32dp">
 
         <LinearLayout
+            android:id="@+id/nav_main_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="32dp"

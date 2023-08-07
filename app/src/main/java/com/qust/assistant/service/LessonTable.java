@@ -13,10 +13,10 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.qust.assistant.R;
-import com.qust.assistant.model.LessonTableViewModel;
-import com.qust.assistant.model.lesson.Lesson;
-import com.qust.assistant.model.lesson.LessonGroup;
 import com.qust.assistant.util.ColorUtil;
+import com.qust.lesson.Lesson;
+import com.qust.lesson.LessonGroup;
+import com.qust.lesson.LessonTableViewModel;
 
 import java.util.Calendar;
 
@@ -46,9 +46,9 @@ public class LessonTable extends AppWidgetProvider{
 		
 		LessonTableViewModel lessonTableViewModel = LessonTableViewModel.getInstance(context);
 		
-		LessonGroup[] lessonGroups = LessonTableViewModel.getLessonGroups()[LessonTableViewModel.getDayOfWeek()];
+		LessonGroup[] lessonGroups = lessonTableViewModel.getLessonGroups()[lessonTableViewModel.getDayOfWeek()];
 		
-		int currentWeek = LessonTableViewModel.getCurrentWeek();
+		int currentWeek = lessonTableViewModel.getCurrentWeek();
 		
 		if(remoteView == null){
 			remoteView = new RemoteViews(context.getPackageName(), R.layout.widget_day_lesson);
@@ -75,7 +75,7 @@ public class LessonTable extends AppWidgetProvider{
 					t.setTextViewText(R.id.view_text, time[i]);
 					remoteView.addView(R.id.widget_day_lesson, t);
 				}
-				createLesson(context, remoteView, lessonGroups[i] == null ? null : lessonGroups[i].getCurrentLesson(currentWeek), paint, i, i % 4 != 0);
+				createLesson(context, lessonTableViewModel, remoteView, lessonGroups[i] == null ? null : lessonGroups[i].getCurrentLesson(currentWeek), paint, i, i % 4 != 0);
 			}
 		}
 		
@@ -99,7 +99,7 @@ public class LessonTable extends AppWidgetProvider{
 				}
 			}
 			
-			int delta = LessonTableViewModel.getLessonTime()[i];
+			int delta = lessonTableViewModel.getLessonTime()[i];
 			h -= delta / 60;
 			m -= delta % 60;
 			if(m < 0){
@@ -137,7 +137,7 @@ public class LessonTable extends AppWidgetProvider{
 		
 	}
 	
-	private void createLesson(Context context, RemoteViews remoteViews, Lesson lesson, Paint paint, int count, boolean canHide){
+	private void createLesson(Context context, LessonTableViewModel lessonTableViewModel, RemoteViews remoteViews, Lesson lesson, Paint paint, int count, boolean canHide){
 		if(lesson == null && canHide) return;
 		lessonView[count] = new RemoteViews(context.getPackageName(), R.layout.widget_lesson);
 		RemoteViews view = lessonView[count];
@@ -155,7 +155,7 @@ public class LessonTable extends AppWidgetProvider{
 				view.setTextViewText(R.id.widget_lesson_info, lesson.place + lesson.teacher);
 			else view.setTextViewText(R.id.widget_lesson_info, lesson.place + "|" + lesson.teacher);
 		}
-		view.setTextViewText(R.id.widget_lesson_time, LessonTableViewModel.getLessonTimeText()[0][count] + "\n" + LessonTableViewModel.getLessonTimeText()[1][count + len]);
+		view.setTextViewText(R.id.widget_lesson_time, lessonTableViewModel.getLessonTimeText()[0][count] + "\n" + lessonTableViewModel.getLessonTimeText()[1][count + len]);
 		remoteViews.addView(R.id.widget_day_lesson, view);
 	}
 	

@@ -8,11 +8,13 @@ import android.util.Xml;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.qust.assistant.R;
-import com.qust.assistant.ui.MainActivity;
-import com.qust.assistant.ui.base.BaseActivity;
-import com.qust.assistant.ui.base.BaseFragment;
+import com.qust.base.ui.FragmentActivity;
+import com.qust.base.ui.BaseActivity;
+import com.qust.base.fragment.BaseFragment;
+import com.qust.base.ui.MenuAble;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -24,7 +26,7 @@ import java.util.ArrayList;
  */
 public class MenuList extends ListView implements AdapterView.OnItemClickListener{
 	
-	private final MainActivity activity;
+	private final MenuAble activity;
 	
 	private final ArrayList<MenuItem> items;
 	
@@ -34,7 +36,7 @@ public class MenuList extends ListView implements AdapterView.OnItemClickListene
 	
 	public MenuList(Context context, AttributeSet attributeSet, int defStyleAttr){
 		super(context, attributeSet, defStyleAttr);
-		activity = (MainActivity)context;
+		activity = (MenuAble)context;
 		
 		items = new ArrayList<>(16);
 
@@ -73,10 +75,12 @@ public class MenuList extends ListView implements AdapterView.OnItemClickListene
 			Class<?> clazz = Class.forName(item.target);
 			if(BaseFragment.class.isAssignableFrom(clazz)){
 				activity.closeMenu();
-				activity.addView((Class<? extends BaseFragment>)clazz);
+				getContext().startActivity(new Intent(getContext(), FragmentActivity.class).putExtra("fragmentClazz", clazz));
 			}else if(BaseActivity.class.isAssignableFrom(clazz)){
 				activity.closeMenu();
-				activity.startActivity(new Intent(activity, clazz));
+				getContext().startActivity(new Intent(getContext(), clazz));
+			}else{
+				Toast.makeText(getContext(), "参数错误", Toast.LENGTH_SHORT).show();
 			}
 		}catch(ClassNotFoundException ignored){ }
 	}

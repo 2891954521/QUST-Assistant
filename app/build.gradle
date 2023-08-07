@@ -8,13 +8,13 @@ static def getCurrentTime(){
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.qust.assistant"
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 33
         buildConfigField("String", "PACKAGE_TIME", "\"" + getCurrentTime() + "\"")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -32,18 +32,21 @@ android {
 }
 
 dependencies {
+
+    implementation project(':base')
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     implementation 'com.google.android.material:material:1.4.0'
 
     implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.navigation:navigation-ui:2.3.5'
-    implementation 'androidx.navigation:navigation-fragment:2.3.5'
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
 
     // 生成条形码
     implementation 'com.google.zxing:core:3.3.1'

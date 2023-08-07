@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.util.Set;
+
 public class SettingUtil {
 	
 	public static SharedPreferences defaultSharedPreferences;
@@ -91,6 +93,10 @@ public class SettingUtil {
 	
 	public static String getString(String key, @Nullable String defaultString){
 		return getString(null, null, key, defaultString);
+	}
+	
+	public static Set<String> getStringSet(String key, @Nullable Set<String> defaultString){
+		return defaultSharedPreferences.getStringSet(key, defaultString);
 	}
 	
 	public static String getString(Context context, String name, String key, @Nullable String defaultString){

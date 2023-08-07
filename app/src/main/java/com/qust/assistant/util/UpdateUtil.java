@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.qust.assistant.App;
 import com.qust.assistant.BuildConfig;
 import com.qust.assistant.R;
-import com.qust.assistant.ui.app.UpdateActivity;
+import com.qust.app.UpdateActivity;
 import com.qust.assistant.vo.UpdateInfo;
 
 import org.json.JSONArray;

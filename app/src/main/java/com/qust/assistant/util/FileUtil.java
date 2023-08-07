@@ -2,18 +2,21 @@ package com.qust.assistant.util;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
-
-import androidx.annotation.NonNull;
 
 public class FileUtil{
     
@@ -97,6 +100,32 @@ public class FileUtil{
         }catch(IOException e){
             LogUtil.Log(e);
         }
+    }
+    
+    /**
+     * 从文件读取序列化后的数据
+     * @param file  文件
+     * @return      反序列化后的数据
+     */
+    public static Object loadData(@NonNull File file) throws Exception{
+        if(file.exists()){
+            ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file));
+            Object o = stream.readObject();
+            stream.close();
+            return o;
+        }else throw new FileNotFoundException();
+    }
+    
+    /**
+     * 将获取到的数据序列化存储
+     * @param file  文件
+     * @param o     数据对象
+     */
+    public static void saveData(File file, Object o) throws IOException{
+        ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file));
+        stream.writeObject(o);
+        stream.flush();
+        stream.close();
     }
     
     // 获取不重命文件名

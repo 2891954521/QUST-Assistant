@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center"
+	android:gravity="center"
+	android:orientation="vertical"
+	app:cardBackgroundColor="#7A000000"
+	app:cardCornerRadius="16dp"
+	app:cardElevation="0px">
+	
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:minWidth="110dp"
+		android:minHeight="110dp"
+		android:padding="@dimen/widget_margin"
+		android:orientation="vertical">
+		
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/tips_icon"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			app:srcCompat="@drawable/tips_warning" />
+		
+		<androidx.appcompat.widget.AppCompatTextView
+			style="@style/TextNormal"
+			android:id="@+id/tips_message"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:maxLines="3"
+			android:textColor="@android:color/primary_text_dark"
+			tools:text="提示语" />
+		
+	</LinearLayout>
+
+</androidx.cardview.widget.CardView>

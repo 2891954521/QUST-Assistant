@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+		
+		
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+			
+			<TextView
+				style="@style/TextNormal"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="@dimen/activity_margin"
+				android:text="卡号" />
+			
+			<TextView
+				style="@style/TextNormal"
+				android:id="@+id/electricity_account"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="@dimen/widget_margin"
+				tools:text="0000" />
+			
+			<TextView
+				style="@style/TextNormal"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="@dimen/activity_margin"
+				android:text="卡余额" />
+			
+			<TextView
+				style="@style/TextNormal"
+				android:id="@+id/electricity_balance"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="@dimen/widget_margin"
+				tools:text="0.00" />
+		
+		</LinearLayout>
+		
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/electricity_room_list"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:divider="@null" />
+	
+	</LinearLayout>
+	
+	<RelativeLayout
+		android:id="@+id/electricity_choose_back"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="#802C2C2C"
+		android:visibility="gone">
+		
+		<com.qust.assistant.widget.DialogRoundTop
+			android:id="@+id/electricity_choose"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:minHeight="300dp"
+			android:layout_alignParentBottom="true"
+			android:orientation="vertical"
+			android:focusable="true"
+			android:clickable="true">
+			
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:padding="@dimen/activity_margin"
+				android:orientation="vertical">
+				
+				<TextView
+					style="@style/TextTitle"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="添加宿舍" />
+				
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:gravity="center">
+					
+					<TextView
+						style="@style/TextBig"
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="电控" />
+					
+					<TextView
+						style="@style/TextNormal"
+						android:id="@+id/electricity_aid"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center|end"
+						android:text="请选择"
+						android:textColor="@color/colorSecondaryText"/>
+					
+				</LinearLayout>
+				
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:gravity="center">
+					
+					<TextView
+						style="@style/TextBig"
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="校区"/>
+					
+					<TextView
+						style="@style/TextNormal"
+						android:id="@+id/electricity_area"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center|end"
+						android:text="请选择"
+						android:textColor="@color/colorSecondaryText"/>
+				
+				</LinearLayout>
+				
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:gravity="center">
+					
+					<TextView
+						style="@style/TextBig"
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="楼栋"/>
+					
+					<TextView
+						style="@style/TextNormal"
+						android:id="@+id/electricity_building"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center|end"
+						android:text="请选择"
+						android:textColor="@color/colorSecondaryText"/>
+				
+				</LinearLayout>
+				
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:gravity="center">
+					
+					<TextView
+						style="@style/TextBig"
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="楼层"/>
+					
+					<TextView
+						style="@style/TextNormal"
+						android:id="@+id/electricity_floor"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center|end"
+						android:text="请选择"
+						android:textColor="@color/colorSecondaryText"/>
+				
+				</LinearLayout>
+				
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:gravity="center">
+					
+					<TextView
+						style="@style/TextBig"
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="房间"/>
+					
+					<TextView
+						style="@style/TextNormal"
+						android:id="@+id/electricity_room"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center|end"
+						android:text="请选择"
+						android:textColor="@color/colorSecondaryText"/>
+				
+				</LinearLayout>
+				
+			</LinearLayout>
+			
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+				
+				<TextView
+					style="@style/TextNormal"
+					android:id="@+id/electricity_cancel"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:padding="@dimen/activity_margin"
+					android:text="取消"
+					android:textColor="@color/colorError"/>
+				
+				<TextView
+					style="@style/TextNormal"
+					android:id="@+id/electricity_done"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:padding="@dimen/activity_margin"
+					android:text="确认" />
+				
+			</LinearLayout>
+			
+		</com.qust.assistant.widget.DialogRoundTop>
+	
+	</RelativeLayout>
+	
+</RelativeLayout>

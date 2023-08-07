@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
-import com.qust.assistant.model.LessonTableViewModel;
+import com.qust.lesson.LessonTableViewModel;
 
 import java.util.Arrays;
 
@@ -50,7 +50,7 @@ public class LessonTime extends View{
 	public LessonTime(Context context, @Nullable AttributeSet attrs, int defStyleAttr){
 		super(context, attrs, defStyleAttr);
 		
-		booleans = new boolean[LessonTableViewModel.getTotalWeek()];
+		booleans = new boolean[LessonTableViewModel.getInstance(context).getTotalWeek()];
 		hasMove = new boolean[booleans.length];
 		
 		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
@@ -111,8 +111,7 @@ public class LessonTime extends View{
 	protected void onDraw(Canvas canvas){
 		super.onDraw(canvas);
 		float t = paintT.getTextSize() / 2 + (paintT.getFontMetrics().descent - paintT.getFontMetrics().ascent) / 2 - paintT.getFontMetrics().descent;
-		int weeks = LessonTableViewModel.getTotalWeek();
-		for(int i = 0; i < weeks; i++){
+		for(int i = 0; i < booleans.length; i++){
 			if(booleans[i]){
 				paint.setColor(Color.argb(192, 230, 244, 255));
 				paintT.setColor(Color.rgb(31, 157, 208));
@@ -135,8 +134,30 @@ public class LessonTime extends View{
 		return booleans;
 	}
 	
+	public long getLong(){
+		long result = 0L;
+		long val = 1L;
+		for(int i = 0; i < booleans.length; i++, val <<= 1){
+			if(booleans[i]) result |= val;
+		}
+		return result;
+	}
+	
 	public void setBooleans(boolean[] _booleans){
 		booleans = _booleans;
+		ViewGroup.LayoutParams layoutParams = getLayoutParams();
+		layoutParams.height = height * booleans.length / ROW_COUNT;
+		setLayoutParams(layoutParams);
+		invalidate();
+	}
+	
+	public void setLong(long _long){
+		int i = 0;
+		long val = 1L;
+		for(; i < booleans.length; i++, val <<= 1){
+			booleans[i] = (_long & val) == 1;
+		}
+		
 		ViewGroup.LayoutParams layoutParams = getLayoutParams();
 		layoutParams.height = height * booleans.length / ROW_COUNT;
 		setLayoutParams(layoutParams);

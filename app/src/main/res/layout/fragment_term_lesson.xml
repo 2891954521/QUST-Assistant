@@ -45,7 +45,7 @@
         </LinearLayout>
 
     
-        <com.qust.assistant.widget.lesson.LessonTable
+        <com.qust.lesson.view.LessonTableView
             android:id="@+id/fragment_timetable_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

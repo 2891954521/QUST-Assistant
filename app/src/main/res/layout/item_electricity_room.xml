@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<androidx.cardview.widget.CardView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="@dimen/widget_margin"
+		android:foreground="?attr/selectableItemBackground"
+		android:longClickable="true"
+		app:cardBackgroundColor="@color/colorLight"
+		app:cardCornerRadius="8dp"
+		app:cardElevation="6dp">
+		
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			
+			<ImageView
+				android:id="@+id/item_electricity_delete"
+				android:alpha="0.5"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="@dimen/base_margin"
+				android:layout_alignParentEnd="true"
+				android:layout_alignParentTop="true"
+				android:src="@drawable/ic_clear" />
+			
+			<TextView
+				style="@style/TextBig"
+				android:id="@+id/item_electricity_roomName"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:layout_margin="@dimen/widget_margin"
+				android:gravity="start|center"
+				tools:text="宿舍名称" />
+			
+			<androidx.appcompat.widget.LinearLayoutCompat
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/item_electricity_roomName"
+				android:orientation="horizontal"
+				android:gravity="center"
+				android:layout_margin="@dimen/base_margin">
+				
+				<TextView
+					style="@style/TextNormal"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:gravity="start|center"
+					android:text="剩余电量: " />
+				
+				<TextView
+					style="@style/TextSmall"
+					android:id="@+id/item_electricity_balance"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="start|center"
+					tools:text="余额" />
+				
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:id="@+id/item_electricity_refresh"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:gravity="center"
+					android:layout_margin="@dimen/base_margin">
+					
+					<ImageView
+						android:id="@+id/item_electricity_refresh_anim"
+						android:layout_width="22dp"
+						android:layout_height="22dp"
+						android:src="@drawable/ic_refresh" />
+					
+					<TextView
+						style="@style/TextNormal"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="刷新" />
+				
+				</androidx.appcompat.widget.LinearLayoutCompat>
+				
+				
+				<TextView
+					style="@style/TextNormal"
+					android:id="@+id/item_electricity_add"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="充值"
+					android:drawableStart="@drawable/ic_add" />
+			
+			
+			</androidx.appcompat.widget.LinearLayoutCompat>
+		
+		</RelativeLayout>
+	
+	</androidx.cardview.widget.CardView>
+
+</FrameLayout>
