@@ -1,17 +1,14 @@
 package com.qust.fragment.electricity;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.widget.TextView;
 
@@ -22,9 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.qust.account.RequestCallback;
 import com.qust.account.RequestErrorCallback;
+import com.qust.account.vpn.VpnViewModel;
 import com.qust.assistant.R;
-import com.qust.base.ui.FragmentActivity;
-import com.qust.fragment.login.VpnLoginFragment;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.FileUtil;
 import com.qust.assistant.util.LogUtil;
@@ -32,7 +28,9 @@ import com.qust.assistant.util.ParamUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.base.HandlerCode;
 import com.qust.base.fragment.BaseFragment;
-import com.qust.account.vpn.VpnViewModel;
+import com.qust.base.ui.FragmentActivity;
+import com.qust.fragment.login.VpnLoginFragment;
+import com.qust.widget.BottomDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -93,8 +91,7 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 	
 	private VpnViewModel vpnViewModel;
 	
-	private TextView accountText;
-	private TextView balanceText;
+	private TextView accountText, balanceText;
 	
 	private String account;
 	
@@ -129,13 +126,10 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 		}
 	};
 	
-	private boolean isChooseDialogShowing;
-	
-	private Animation animIn, animOut;
-	
-	private View chooseBack, choose;
+	private BottomDialog bottomDialog;
 	
 	private RecyclerItemAdapter adapter;
+	
 	
 	public ElectricityFragment(){ }
 	
@@ -159,31 +153,17 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 		accountText = findViewById(R.id.electricity_account);
 		balanceText = findViewById(R.id.electricity_balance);
 		
-		choose = findViewById(R.id.electricity_choose);
-		chooseBack = findViewById(R.id.electricity_choose_back);
 		
 		adapter = new RecyclerItemAdapter();
 		RecyclerView selectedList = findViewById(R.id.electricity_room_list);
 		selectedList.setLayoutManager(new LinearLayoutManager(activity));
 		selectedList.setAdapter(adapter);
 		
-		animIn = AnimationUtils.loadAnimation(activity, R.anim.anim_bottom_in);
-		animOut = AnimationUtils.loadAnimation(activity, R.anim.anim_bottom_out);
-		animOut.setAnimationListener(new Animation.AnimationListener(){
-			@Override
-			public void onAnimationStart(Animation animation){ }
-			@Override
-			public void onAnimationEnd(Animation animation){
-				isChooseDialogShowing = false;
-				chooseBack.setVisibility(View.GONE);
-			}
-			@Override
-			public void onAnimationRepeat(Animation animation){ }
-		});
-		
-		DisplayMetrics displayMetrics = new DisplayMetrics();
-		activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-		choose.getLayoutParams().height = displayMetrics.heightPixels / 2;
+		bottomDialog = new BottomDialog(activity,
+				findViewById(R.id.electricity_choose_back),
+				findViewById(R.id.electricity_choose),
+				0.5f
+		);
 		
 		addMenuItem(inflater, R.drawable.ic_add, this::showChooseDialog);
 		
@@ -193,7 +173,7 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 		findViewById(R.id.electricity_floor).setOnClickListener(v -> doChoose((TextView)v, 3));
 		findViewById(R.id.electricity_room).setOnClickListener(v -> doChoose((TextView)v, 4));
 		
-		findViewById(R.id.electricity_cancel).setOnClickListener(this::hideChooseDialog);
+		findViewById(R.id.electricity_cancel).setOnClickListener(v -> bottomDialog.hide());
 		findViewById(R.id.electricity_done).setOnClickListener(v -> {
 			if(selectList.size() < 5){
 				toast("请选择所有选项");
@@ -211,7 +191,7 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 				rooms.add(room);
 				saveData();
 				adapter.notifyItemInserted(rooms.size());
-				hideChooseDialog(v);
+				bottomDialog.hide();
 			}
 
 		});
@@ -223,9 +203,9 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 		dialog.setContent("正在获取信息");
 		dialog.show();
 		
-		post(TSM, "{\"query_card\":{\"idtype\":\"sno\",\"id\":\"" + SettingUtil.get(getString(R.string.VPN_NAME), "") + "\"}}", "synjones.onecard.query.card", response -> {
+		post(TSM, "{\"query_card\":{\"idtype\":\"sno\",\"id\":\"" + SettingUtil.get(getString(R.string.VPN_NAME), "") + "\"}}", "synjones.onecard.query.card", (response, html) -> {
 			try{
-				JSONObject js = new JSONObject(response.body().string());
+				JSONObject js = new JSONObject(html);
 				JSONArray cards = js.getJSONObject("query_card").getJSONArray("card");
 				
 				if(cards.length() == 0){
@@ -237,14 +217,14 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 				
 				account = cards.getJSONObject(0).getString("account");
 				
-				vpnViewModel.postWithOutCheck(CARD_BALANCE, RequestBody.create("{}", MediaType.parse("application/json")), response1 -> {
-					float balance = Float.parseFloat(response1.body().string());
+				try(Response resp = vpnViewModel.postWithOutCheck(CARD_BALANCE, RequestBody.create("{}", MediaType.parse("application/json")))){
+					float balance = Float.parseFloat(resp.body().string());
 					activity.runOnUiThread(() -> {
 						accountText.setText(account);
 						balanceText.setText(String.valueOf(balance));
 						dialog.dismiss();
 					});
-				}, new RequestErrorCallback(){ });
+				}
 			}catch(JSONException e){
 				handler.sendMessage(handler.obtainMessage(HandlerCode.DISMISS_TOAST, "获取卡信息失败"));
 			}
@@ -255,43 +235,32 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 	 * 打开添加宿舍的窗口
 	 */
 	private void showChooseDialog(View v){
-		isChooseDialogShowing = true;
-		chooseBack.setVisibility(View.VISIBLE);
-		choose.startAnimation(animIn);
+		bottomDialog.show();
 		
-		if(nodes.child == null){
-			dialog.setContent("正在获取电控信息");
-			dialog.show();
-			post(APP_LIST, "{\"query_applist\":{\"apptype\":\"elec\"}}", "synjones.onecard.query.applist", response -> activity.runOnUiThread(() -> {
-				try{
-					JSONObject js = new JSONObject(response.body().string());
-					JSONArray appList = js.getJSONObject("query_applist").getJSONArray("applist");
-					ArrayList<Node> nodeAid = new ArrayList<>(appList.length());
-					for(int i = 0; i < appList.length(); i++){
-						JSONObject obj = appList.getJSONObject(i);
-						Node node = new Node();
-						node.name = obj.getString("name");
-						node.nodeId = obj.getString("aid");
-						nodeAid.add(node);
-					}
-					nodes.child = nodeAid;
-				}catch(IOException | NullPointerException | JSONException e){
-					toast("获取电控信息失败: " + e.getMessage());
-				}finally{
-					dialog.dismiss();
+		if(nodes.child != null) return;
+		
+		// 加载首级数据
+		dialog.setContent("正在获取电控信息");
+		dialog.show();
+		post(APP_LIST, "{\"query_applist\":{\"apptype\":\"elec\"}}", "synjones.onecard.query.applist", (response, html) -> activity.runOnUiThread(() -> {
+			try{
+				JSONObject js = new JSONObject(html);
+				JSONArray appList = js.getJSONObject("query_applist").getJSONArray("applist");
+				ArrayList<Node> nodeAid = new ArrayList<>(appList.length());
+				for(int i = 0; i < appList.length(); i++){
+					JSONObject obj = appList.getJSONObject(i);
+					Node node = new Node();
+					node.name = obj.getString("name");
+					node.nodeId = obj.getString("aid");
+					nodeAid.add(node);
 				}
-			}));
-		}
-	}
-	
-	/**
-	 * 关闭添加宿舍的窗口
-	 */
-	private void hideChooseDialog(View v){
-		if(isChooseDialogShowing){
-			isChooseDialogShowing = false;
-			choose.startAnimation(animOut);
-		}
+				nodes.child = nodeAid;
+			}catch(NullPointerException | JSONException e){
+				toast("获取电控信息失败: " + e.getMessage());
+			}finally{
+				dialog.dismiss();
+			}
+		}));
 	}
 	
 	/**
@@ -302,12 +271,17 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 			toast("请先选择上一级");
 			return;
 		}
+		
+		// 定位到这一级
 		ArrayList<Node> list = nodes.child;
 		for(int i = 0; i < index; i++){
 			list = list.get(selectList.get(i)).child;
 		}
-		String[] name = new String[list.size()];
-		for(int i = 0; i < list.size(); i++) name[i] = list.get(i).name;
+		
+		// 获取这一级的所有选项的名字
+		int len = list == null ? 0 : list.size();
+		String[] name = new String[len];
+		for(int i = 0; i < len; i++) name[i] = list.get(i).name;
 		
 		ArrayList<Node> finalList = list;
 		DialogUtil.getListDialog(activity, TITLE[index], name, (dialog, itemView, position, text) -> {
@@ -338,9 +312,9 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 				query.put(PARAMS[i][2], new JSONObject().put(PARAMS[i][3], node.name).put(PARAMS[i][4], node.nodeId));
 			}
 			
-			post(TSM, new JSONObject().put(PARAMS[index][0], query).toString(), FUN_NAME[selectList.size()], response -> {
+			post(TSM, new JSONObject().put(PARAMS[index][0], query).toString(), FUN_NAME[selectList.size()], (response, html) -> {
 				try{
-					JSONObject js = new JSONObject(response.body().string());
+					JSONObject js = new JSONObject(html);
 					String name = PARAMS[index][3];
 					String id = PARAMS[index][4];
 					JSONArray array = js.getJSONObject(PARAMS[index][0]).getJSONArray(PARAMS[index][1]);
@@ -357,7 +331,7 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 					}
 					currentNode.child = nodeAid;
 
-				}catch(IOException | NullPointerException | JSONException e){
+				}catch(NullPointerException | JSONException e){
 					activity.runOnUiThread(() -> toast("获取" + TITLE[selectList.size()] + "信息失败: " + e.getMessage()));
 				}finally{
 					activity.runOnUiThread(() -> dialog.dismiss());
@@ -379,19 +353,19 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 					try{
 						String ticket;
 						
-						Response response = vpnViewModel.getSync("http-7280/77726476706e69737468656265737421a2a610d27f6726012b5dc7f4c8/ias/prelogin?sysid=FWDT");
+						Response response = vpnViewModel.getWithOutCheck("http-7280/77726476706e69737468656265737421a2a610d27f6726012b5dc7f4c8/ias/prelogin?sysid=FWDT");
 						Matcher matcher = SSO_TICKET_ID_PATTERN.matcher(response.body().string());
 						if(!matcher.find()) throw new IOException("单点登陆失败，无法获取ticket");
 						ticket = matcher.group(1);
 						response.close();
 						
 						handler.sendMessage(handler.obtainMessage(HandlerCode.UPDATE_DIALOG, "正在进行单点登录"));
-						vpnViewModel.postSync("http-8080/77726476706e69737468656265737421a2a610d27f6726012b5dc7f5ca/cassyno/index",
+						vpnViewModel.postWithOutCheck("http-8080/77726476706e69737468656265737421a2a610d27f6726012b5dc7f5ca/cassyno/index",
 								new FormBody.Builder().add("errorcode", "1").add("continueurl", "").add("ssoticketid", ticket).build()
 						).close();
 						
 						handler.sendMessage(handler.obtainMessage(HandlerCode.UPDATE_DIALOG, "正在登录到电费平台"));
-						response = vpnViewModel.postSync("http-8080/77726476706e69737468656265737421a2a610d27f6726012b5dc7f5ca/Page/Page",
+						response = vpnViewModel.postWithOutCheck("http-8080/77726476706e69737468656265737421a2a610d27f6726012b5dc7f5ca/Page/Page",
 								new FormBody.Builder().add("flowID", "151").add("type", "1").add("apptype", "4").add("Url", "http%3a%2f%2fdf.qust.edu.cn%2fweb%2fcommon%2fcheckEle.html").build());
 						
 						Matcher matcher2 = TICKET_PATTERN.matcher(response.body().string());
@@ -399,7 +373,7 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 						ticket = matcher2.group(1);
 						response.close();
 						
-						vpnViewModel.getSync("http/77726476706e69737468656265737421f4f10f8d32237c1e7b0c9ce29b5b/web/common/checkEle.html?ticket=" + ticket).close();
+						vpnViewModel.getWithOutCheck("http/77726476706e69737468656265737421f4f10f8d32237c1e7b0c9ce29b5b/web/common/checkEle.html?ticket=" + ticket).close();
 						
 						isSSOLogin = true;
 					}catch(IOException e){
@@ -411,13 +385,12 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 				
 				handler.sendMessage(handler.obtainMessage(HandlerCode.UPDATE_DIALOG, "正在充值"));
 				
-				try{
-					Response response = vpnViewModel.postSync(PAY, new FormBody.Builder().add("acctype", "###").add("json", "true")
-							.add("paytype", "1").add("qpwd", "")
-							.add("account", account).add("tran", String.valueOf(f))
-							.add("aid", room.id[0])
-							.add("roomid", room.id[4]).add("room", room.name[4])
-							.build());
+				try(Response response = vpnViewModel.postWithOutCheck(PAY, new FormBody.Builder().add("acctype", "###").add("json", "true")
+						.add("paytype", "1").add("qpwd", "")
+						.add("account", account).add("tran", String.valueOf(f))
+						.add("aid", room.id[0])
+						.add("roomid", room.id[4]).add("room", room.name[4])
+						.build())){
 					
 					JSONObject js = new JSONObject(response.body().string()).getJSONObject("pay_elec_gdc");
 					handler.sendMessage(handler.obtainMessage(HandlerCode.DISMISS_TOAST, js.getString("errmsg")));
@@ -534,13 +507,13 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 				for(int i = 1; i < room.id.length; i++){
 					query.put(PARAMS[i][2], new JSONObject().put(PARAMS[i][3], room.name[i]).put(PARAMS[i][4], room.id[i]));
 				}
-				post(TSM, new JSONObject().put("query_elec_roominfo", query).toString(), "synjones.onecard.query.elec.roominfo", response -> {
+				post(TSM, new JSONObject().put("query_elec_roominfo", query).toString(), "synjones.onecard.query.elec.roominfo", (response, html) -> {
 					float val = Float.NaN;
 					try{
-						JSONObject js = new JSONObject(response.body().string()).getJSONObject("query_elec_roominfo");
+						JSONObject js = new JSONObject(html).getJSONObject("query_elec_roominfo");
 						Matcher matcher = ParamUtil.FLOAT_PATTERN.matcher(js.getString("errmsg"));
 						if(matcher.find()) val = Float.parseFloat(matcher.group());
-					}catch(JSONException | IOException | NumberFormatException e){
+					}catch(JSONException | NumberFormatException e){
 						LogUtil.Log(e, false);
 					}
 					room.balance = val;
@@ -586,7 +559,7 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 		activity.runOnUiThread(() -> {
 			dialog.dismiss();
 			activity.toastWarning("请先登录");
-			startActivity(new Intent(getContext(), FragmentActivity.class).putExtra("fragmentClazz", VpnLoginFragment.class));
+			FragmentActivity.startActivity(activity, VpnLoginFragment.class);
 		});
 	}
 	

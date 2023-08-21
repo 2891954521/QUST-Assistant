@@ -4,13 +4,13 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 
 import com.google.android.material.textfield.TextInputLayout;
-import com.qust.account.RequestErrorCallback;
 import com.qust.assistant.R;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.base.HandlerCode;
 import com.qust.base.fragment.BaseEAFragment;
 
+import java.io.IOException;
 import java.util.Calendar;
 
 public class EALoginFragment extends BaseEAFragment{
@@ -39,11 +39,11 @@ public class EALoginFragment extends BaseEAFragment{
 	}
 	
 	@Override
-	protected void doQuery(){
+	protected boolean beforeQuery(){
 		String user = nameText.getEditText().getText().toString();
 		if(TextUtils.isEmpty(user)){
 			nameText.setError("请输入学号");
-			return;
+			return false;
 		}else{
 			nameText.setError(null);
 		}
@@ -51,42 +51,49 @@ public class EALoginFragment extends BaseEAFragment{
 		String password = passwordText.getEditText().getText().toString();
 		if(TextUtils.isEmpty(password)){
 			passwordText.setError("请输入密码");
-			return;
+			return false;
 		}else{
 			passwordText.setError(null);
 		}
+		return true;
+	}
+	
+	@Override
+	protected void doQuery(){
+		String user = nameText.getEditText().getText().toString();
+		String password = passwordText.getEditText().getText().toString();
 		
-		dialog.show();
-		eaViewModel.loginAsync(user, password, response -> activity.runOnUiThread(() -> {
-			// 同步更新入学年份
-			String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
-			int newEntranceTime = Integer.parseInt(year.substring(0, year.length() - 2) + user.substring(0, 2));
-			if(entranceTime == 0){
-				SettingUtil.edit().putInt(getString(R.string.KEY_ENTRANCE_TIME), newEntranceTime).apply();
-			}else if(newEntranceTime != entranceTime){
-				DialogUtil.getBaseDialog(activity).content("是否更新入学年份为" + newEntranceTime + "年").onPositive((dialog, what) -> {
-					SettingUtil.edit().putInt(getString(R.string.KEY_ENTRANCE_TIME), newEntranceTime).apply();
+		try{
+			if(eaViewModel.loginSync(user, password)){
+				handler.post(() -> {
+					// 同步更新入学年份
+					String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+					int newEntranceTime = Integer.parseInt(year.substring(0, year.length() - 2) + user.substring(0, 2));
+					if(entranceTime == -1){
+						eaViewModel.setEntranceTime(newEntranceTime);
+					}else if(newEntranceTime != entranceTime){
+						DialogUtil.getBaseDialog(activity).content("是否更新入学年份为" + newEntranceTime + "年").onPositive((dialog1, what) -> {
+							eaViewModel.setEntranceTime(newEntranceTime);
+							dialog1.dismiss();
+							dialog.dismiss();
+							toast("登陆成功！");
+							finish();
+						}).show();
+						return;
+					}
 					dialog.dismiss();
 					toast("登陆成功！");
 					finish();
-				}).show();
-				dialog.dismiss();
-				return;
+				});
+			}else{
+				handler.post(() -> {
+					dialog.dismiss();
+					nameText.setError("用户名或密码错误");
+				});
 			}
-			dialog.dismiss();
-			toast("登陆成功！");
-			finish();
-		}), new RequestErrorCallback(){
-			@Override
-			public void onNeedLogin(){
-				sendMessage(HandlerCode.DISMISS_TOAST, "用户名或密码错误");
-			}
-			
-			@Override
-			public void onNetworkError(Exception e){
-				sendMessage(HandlerCode.DISMISS_TOAST, "网络错误: " + e.getMessage());
-			}
-		});
+		}catch(IOException e){
+			sendMessage(HandlerCode.TOAST, "网络错误");
+		}
 	}
 	
 	@Override

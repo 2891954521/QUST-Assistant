@@ -1,5 +1,6 @@
 package com.qust.base.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,11 @@ import com.qust.assistant.util.LogUtil;
 import com.qust.base.fragment.BaseFragment;
 
 public class FragmentActivity extends BaseFragmentAbleActivity{
+	
+	
+	public static void startActivity(@NonNull Context context, Class<? extends BaseFragment> clazz){
+		context.startActivity(new Intent(context, FragmentActivity.class).putExtra("fragmentClazz", clazz));
+	}
 	
 	private BaseFragment fragment;
 	
@@ -71,6 +77,13 @@ public class FragmentActivity extends BaseFragmentAbleActivity{
 	@Override
 	public void closeFragment(){
 		finish();
+	}
+	
+	@Override
+	public void onBackPressed(){
+		if(fragment.onBackPressed()){
+			super.onBackPressed();
+		}
 	}
 	
 	@Override

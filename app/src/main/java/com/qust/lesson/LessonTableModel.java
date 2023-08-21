@@ -3,10 +3,11 @@ package com.qust.lesson;
 import androidx.annotation.NonNull;
 
 import com.qust.QustAPI;
+import com.qust.account.NeedLoginException;
 import com.qust.account.ea.EAViewModel;
-import com.qust.base.fragment.BaseEAFragment;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.LogUtil;
+import com.qust.base.fragment.BaseEAFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,11 +52,11 @@ public class LessonTableModel{
 	 * @param term 学期
 	 */
 	@NonNull
-	public static QueryLessonResult queryLessonTable(EAViewModel eaViewModel, String year, String term){
+	public static QueryLessonResult queryLessonTable(EAViewModel eaViewModel, String year, String term) throws NeedLoginException{
 		
 		QueryLessonResult result = getSchoolYearData(eaViewModel, new QueryLessonResult());
 		
-		try(Response response = eaViewModel.postSync(QustAPI.GET_LESSON_TABLE, new FormBody.Builder().add("xnm", year).add("xqm", term).add("kzlx", "ck").build())){
+		try(Response response = eaViewModel.post(QustAPI.GET_LESSON_TABLE, new FormBody.Builder().add("xnm", year).add("xqm", term).add("kzlx", "ck").build())){
 			String html = response.body().string();
 			JSONObject js = new JSONObject(html);
 			
@@ -92,10 +93,10 @@ public class LessonTableModel{
 			
 		}catch(IOException e){
 			result.message = "获取课表失败, 网络异常";
-			
 		}catch(JSONException e){
 			result.message = "获取课表失败";
 		}
+		
 		return result;
 	}
 	
@@ -106,11 +107,11 @@ public class LessonTableModel{
 	 * @param term 学期
 	 */
 	@NonNull
-	public static QueryLessonResult queryClassLessonTable(EAViewModel eaViewModel, int entranceTime, String year, String term){
+	public static QueryLessonResult queryClassLessonTable(EAViewModel eaViewModel, int entranceTime, String year, String term) throws NeedLoginException{
 		
 		QueryLessonResult result = getSchoolYearData(eaViewModel, new QueryLessonResult());
 		
-		try(Response response = eaViewModel.getSync(QustAPI.RECOMMENDED_LESSON_TABLE_PRINTING)){
+		try(Response response = eaViewModel.get(QustAPI.RECOMMENDED_LESSON_TABLE_PRINTING)){
 			
 			String html = response.body().string();
 			
@@ -140,7 +141,7 @@ public class LessonTableModel{
 				return result;
 			}
 			
-			try(Response response1 = eaViewModel.postSync(QustAPI.GET_CLASS_LESSON_TABLE, new FormBody.Builder()
+			try(Response response1 = eaViewModel.post(QustAPI.GET_CLASS_LESSON_TABLE, new FormBody.Builder()
 					.add("tjkbzdm", "1")
 					.add("tjkbzxsdm", "1")
 					.add("xnm", year)
@@ -180,10 +181,10 @@ public class LessonTableModel{
 	/**
 	 * 获取学年信息
 	 */
-	private static QueryLessonResult getSchoolYearData(EAViewModel eaViewModel, @NonNull QueryLessonResult lessonResult){
+	private static QueryLessonResult getSchoolYearData(EAViewModel eaViewModel, @NonNull QueryLessonResult lessonResult) throws NeedLoginException{
 		try{
 			// 从教务获取本学年信息
-			String response = eaViewModel.getSync(QustAPI.EA_YEAR_DATA).body().string();
+			String response = eaViewModel.get(QustAPI.EA_YEAR_DATA).body().string();
 			
 			// 学年信息
 			Matcher matcher = TIME_MATCHER.matcher(response);

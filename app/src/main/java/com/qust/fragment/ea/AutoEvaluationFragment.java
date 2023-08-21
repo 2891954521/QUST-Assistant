@@ -13,11 +13,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.qust.account.NeedLoginException;
 import com.qust.assistant.R;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.base.HandlerCode;
 import com.qust.base.fragment.BaseEAFragment;
+import com.qust.base.ui.FragmentActivity;
+import com.qust.fragment.login.EALoginFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -97,7 +100,7 @@ public class AutoEvaluationFragment extends BaseEAFragment{
 	protected void initLayout(LayoutInflater inflater){
 		super.initLayout(inflater);
 		
-		addMenuItem(inflater, R.drawable.ic_refresh, v -> beforeQuery());
+		addMenuItem(inflater, R.drawable.ic_refresh, v -> startQuery());
 		
 		lessons = new ArrayList<>();
 		
@@ -107,13 +110,13 @@ public class AutoEvaluationFragment extends BaseEAFragment{
 	}
 	
 	@Override
-	protected void doQuery(){
+	protected void doQuery() throws NeedLoginException{
 		
 		sendMessage(HandlerCode.UPDATE_DIALOG, "正在查询教评");
 		
 		lessons = new ArrayList<>();
 		
-		try(Response response = eaViewModel.postSync("jwglxt/xspjgl/xspj_cxXspjIndex.html?doType=query&gnmkdm=0", new FormBody.Builder()
+		try(Response response = eaViewModel.post("jwglxt/xspjgl/xspj_cxXspjIndex.html?doType=query&gnmkdm=0", new FormBody.Builder()
 				.add("queryModel.showCount", "30")
 				.build())){
 			
@@ -149,7 +152,7 @@ public class AutoEvaluationFragment extends BaseEAFragment{
 			@Override
 			public void run(){
 				EvaluationLesson lesson = lessons.get(position);
-				try(Response response = eaViewModel.postSync("jwglxt/xspjgl/xspj_cxXspjDisplay.html?gnmkdm=0", new FormBody.Builder()
+				try(Response response = eaViewModel.post("jwglxt/xspjgl/xspj_cxXspjDisplay.html?gnmkdm=0", new FormBody.Builder()
 						.add("jxb_id", lesson.jxb_id)
 						.add("kch_id", lesson.kch_id)
 						.add("kch_id", lesson.kch_id)
@@ -171,7 +174,7 @@ public class AutoEvaluationFragment extends BaseEAFragment{
 					postData.append("&modelList%5B0%5D.py="); // 评语
 					postData.append("&tjzt=").append(lesson.tjzt);
 					
-					try(Response response1 = eaViewModel.postSync("jwglxt/xspjgl/xspj_bcXspj.html?gnmkdm=0",
+					try(Response response1 = eaViewModel.post("jwglxt/xspjgl/xspj_bcXspj.html?gnmkdm=0",
 							RequestBody.create(postData.toString(), MediaType.get("application/x-www-form-urlencoded"))
 					)){
 						String ret = response1.body().string();
@@ -182,6 +185,8 @@ public class AutoEvaluationFragment extends BaseEAFragment{
 							sendMessage(HandlerCode.DISMISS_TOAST, "提交失败！" + ret);
 						}
 					}
+				}catch(NeedLoginException e){
+					activity.runOnUiThread(() -> FragmentActivity.startActivity(activity, EALoginFragment.class));
 				}catch(IOException e){
 					LogUtil.Log(e, false);
 					sendMessage(HandlerCode.DISMISS_TOAST, "提交失败！");

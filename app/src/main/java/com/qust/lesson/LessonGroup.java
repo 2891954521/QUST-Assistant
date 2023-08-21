@@ -12,8 +12,6 @@ import java.util.Arrays;
  */
 public class LessonGroup implements Serializable, Cloneable{
 	
-	public static final LessonGroup EMPTY_LESSON_GROUP = new LessonGroup(0, 0);
-	
 	private static final long serialVersionUID = 0L;
 	
 	/**
@@ -68,7 +66,7 @@ public class LessonGroup implements Serializable, Cloneable{
 	@Nullable
 	public Lesson getCurrentLesson(int currentWeek){
 		for(Lesson lesson : lessons){
-			if((lesson.week & (1L << (currentWeek - 1))) == 1) return lesson;
+			if((lesson.week & (1L << (currentWeek - 1))) > 0) return lesson;
 		}
 		return null;
 	}
@@ -89,7 +87,7 @@ public class LessonGroup implements Serializable, Cloneable{
 		long val = 1L << i;
 		for(; i <= maxWeek; i++, val <<= 1){
 			for(Lesson lesson : lessons){
-				if((lesson.week & val) == 1) return lesson;
+				if((lesson.week & val) > 0) return lesson;
 			}
 		}
 
@@ -99,18 +97,11 @@ public class LessonGroup implements Serializable, Cloneable{
 			val = 1L >> i;
 			for(; i >= 0; i--, val >>= 1){
 				for(Lesson lesson : lessons){
-					if((lesson.week & val) == 1) return lesson;
+					if((lesson.week & val) > 0) return lesson;
 				}
 			}
 		}
 		return null;
-	}
-	
-	
-	public static LessonGroup getLesson(LessonGroup lessonGroup, int week){
-		if(lessonGroup == null) return EMPTY_LESSON_GROUP;
-		Lesson baseLesson = lessonGroup.getCurrentLesson(week);
-		return baseLesson == null ? EMPTY_LESSON_GROUP : lessonGroup;
 	}
 	
 	@NonNull

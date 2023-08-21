@@ -6,6 +6,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.qust.account.NeedLoginException;
 import com.qust.account.ea.EAViewModel;
 import com.qust.assistant.R;
 import com.qust.assistant.util.NotificationUtil;
@@ -52,21 +53,18 @@ public class AutoQueryModel{
 				String xqm = currentYear % 2 == 0 ? "3" : "12";
 				
 				EAViewModel eaViewModel = EAViewModel.getInstance(activity);
-				
-				String noticeContent = queryNotice(activity, eaViewModel);
-				if(noticeContent != null){
-					NotificationUtil.sendNotification(activity, "教务通知", noticeContent);
-				}
-				
-				String mark = queryMark(activity, eaViewModel, currentYear, xnm, xqm);
-				if(mark != null){
-					NotificationUtil.sendNotification(activity, "成绩查询", mark);
-				}
-				
-				String exam = queryExam(activity, eaViewModel, currentYear, xnm, xqm);
-				if(exam != null){
-					NotificationUtil.sendNotification(activity, "考试查询", mark);
-				}
+				try{
+					if(eaViewModel.isLogin() || eaViewModel.loginSync()){
+						String noticeContent = queryNotice(activity, eaViewModel);
+						if(noticeContent != null) NotificationUtil.sendNotification(activity, "教务通知", noticeContent);
+						
+						String mark = queryMark(activity, eaViewModel, currentYear, xnm, xqm);
+						if(mark != null) NotificationUtil.sendNotification(activity, "成绩查询", mark);
+						
+						String exam = queryExam(activity, eaViewModel, currentYear, xnm, xqm);
+						if(exam != null) NotificationUtil.sendNotification(activity, "考试查询", mark);
+					}
+				}catch(NeedLoginException | IOException ignore){ }
 				
 				SettingUtil.edit().putLong(activity.getString(R.string.last_auto_check_time), current).apply();
 			}
@@ -81,7 +79,7 @@ public class AutoQueryModel{
 	 * @return
 	 */
 	@Nullable
-	public static String queryNotice(Activity activity, EAViewModel eaViewModel){
+	public static String queryNotice(Activity activity, EAViewModel eaViewModel) throws NeedLoginException{
 		Notice[] notices = QUSTQueryModel.queryNotice(eaViewModel);
 		if(notices.length == 0) return null;
 		
@@ -111,7 +109,7 @@ public class AutoQueryModel{
 	 * @return
 	 */
 	@Nullable
-	public static String queryMark(Activity activity, EAViewModel eaViewModel, int currentYear, String xnm, String xqm){
+	public static String queryMark(Activity activity, EAViewModel eaViewModel, int currentYear, String xnm, String xqm) throws NeedLoginException{
 		Mark[] newMarks = QUSTQueryModel.queryMark(eaViewModel, xnm, xqm);
 		
 		Mark[][] marks;
@@ -141,7 +139,7 @@ public class AutoQueryModel{
 	 * @return
 	 */
 	@Nullable
-	public static String queryExam(Activity activity, EAViewModel eaViewModel, int currentYear, String xnm, String xqm){
+	public static String queryExam(Activity activity, EAViewModel eaViewModel, int currentYear, String xnm, String xqm) throws NeedLoginException{
 		Exam[] newExams = QUSTQueryModel.queryExam(eaViewModel, xnm, xqm);
 		
 		try{

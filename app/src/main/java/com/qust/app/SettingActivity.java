@@ -1,6 +1,5 @@
 package com.qust.app;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +19,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
+import com.qust.QustAPI;
+import com.qust.account.ea.EAViewModel;
 import com.qust.assistant.R;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.DialogUtil;
@@ -64,6 +65,8 @@ public class SettingActivity extends BaseAnimActivity{
 		
 		private SettingActivity activity;
 		
+		private EAViewModel eaViewModel;
+		
 		private LessonTableViewModel lessonTableViewModel;
 		
 		public PrefsFragment(){}
@@ -72,6 +75,8 @@ public class SettingActivity extends BaseAnimActivity{
 		public void onAttach(@NonNull Context context){
 			super.onAttach(context);
 			activity = (SettingActivity) getActivity();
+			
+			eaViewModel = EAViewModel.getInstance(activity);
 			lessonTableViewModel = LessonTableViewModel.getInstance(activity);
 		}
 		
@@ -138,8 +143,8 @@ public class SettingActivity extends BaseAnimActivity{
 			});
 			
 			Preference entranceTime = getSetting(getString(R.string.KEY_ENTRANCE_TIME));
-			int entrance = SettingUtil.getInt(getString(R.string.KEY_ENTRANCE_TIME), 0);
-			entranceTime.setSummary(entrance == 0 ? "未设置" : String.valueOf(entrance));
+			int entrance = eaViewModel.getEntranceTime();
+			entranceTime.setSummary(entrance == -1 ? "未设置" : String.valueOf(entrance));
 			entranceTime.setOnPreferenceClickListener(p -> {
 				ViewGroup layout = (ViewGroup)LayoutInflater.from(getActivity()).inflate(R.layout.layout_number_picker, null,false);
 				
@@ -149,17 +154,37 @@ public class SettingActivity extends BaseAnimActivity{
 				
 				int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 				numberPicker.setMaxValue(currentYear);
-				numberPicker.setValue(SettingUtil.getInt(getString(R.string.KEY_ENTRANCE_TIME), currentYear));
+				
+				int v = eaViewModel.getEntranceTime();
+				numberPicker.setValue(v == -1 ? currentYear : v);
 				
 				DialogUtil.getBaseDialog(getActivity()).title("入学年份")
 					.customView(layout, false)
 					.onPositive((dialog, what) -> {
 						int val = numberPicker.getValue();
-						SettingUtil.put(getString(R.string.KEY_ENTRANCE_TIME), val);
+						eaViewModel.setEntranceTime(val);
 						p.setSummary(String.valueOf(val));
 					}).show();
 				return true;
 			});
+			
+			
+			Preference eaHost = getSetting(getString(R.string.KEY_EA_HOST));
+			int index =  SettingUtil.getInt(getString(R.string.KEY_EA_HOST), 0);
+			eaHost.setSummary(QustAPI.EA_HOSTS[index]);
+			eaHost.setOnPreferenceClickListener(p -> {
+				DialogUtil.getBaseDialog(getActivity()).title("选择节点")
+						.items(QustAPI.EA_HOSTS)
+						.itemsCallbackSingleChoice(index, (dialog, itemView, position, text) -> {
+							EAViewModel.getInstance(activity).changeEAHost(position);
+							p.setSummary(QustAPI.EA_HOSTS[position]);
+							activity.toast("设置完成");
+							dialog.dismiss();
+							return true;
+						}).show();
+				return true;
+			});
+			
 			
 			SwitchPreference dark = getSetting(getString(R.string.KEY_THEME_DARK));
 			dark.setOnPreferenceChangeListener((preference, isDark) -> {

@@ -8,6 +8,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.qust.account.NeedLoginException;
 import com.qust.assistant.R;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.DialogUtil;
@@ -59,7 +60,6 @@ public class GetLessonTableFragment extends BaseEAFragment{
 		saveButton = findViewById(R.id.button_save);
 		
 		lessonTableView = findViewById(R.id.fragment_get_lesson_table_preview);
-		lessonTableView.initAdapter(lessonTable);
 		lessonTableView.setCurrentItem(lessonTableViewModel.getCurrentWeek() - 1);
 		lessonTableView.setUpdateListener(() -> {
 			int currentWeek = lessonTableView.getCurrentItem();
@@ -93,9 +93,7 @@ public class GetLessonTableFragment extends BaseEAFragment{
 	}
 	
 	@Override
-	protected void doQuery(){
-		dialog.setContent("正在查询课表");
-		dialog.show();
+	protected void doQuery() throws NeedLoginException{
 		
 		String[] y = getYearAndTerm();
 		

@@ -5,6 +5,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 
 import com.qust.QustAPI;
+import com.qust.account.NeedLoginException;
 import com.qust.account.ea.EAViewModel;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.vo.Exam;
@@ -31,7 +32,7 @@ public class QUSTQueryModel{
 	 * @param eaViewModel 登录
 	 */
 	@NonNull
-	public static Notice[] queryNotice(@NonNull EAViewModel eaViewModel){
+	public static Notice[] queryNotice(@NonNull EAViewModel eaViewModel) throws NeedLoginException{
 		return queryNotice(eaViewModel, 1, 1);
 	}
 	
@@ -43,9 +44,9 @@ public class QUSTQueryModel{
 	 * @param pageSize  	 每页数量
 	 */
 	@NonNull
-	public static Notice[] queryNotice(@NonNull EAViewModel eaViewModel, int page, int pageSize){
+	public static Notice[] queryNotice(@NonNull EAViewModel eaViewModel, int page, int pageSize) throws NeedLoginException{
 		String json = null;
-		try(Response response = eaViewModel.postSync(QustAPI.EA_SYSTEM_NOTICE, new FormBody.Builder()
+		try(Response response = eaViewModel.post(QustAPI.EA_SYSTEM_NOTICE, new FormBody.Builder()
 				.add("queryModel.showCount", String.valueOf(pageSize))
 				.add("queryModel.currentPage", String.valueOf(page))
 				.add("queryModel.sortName", "cjsj")
@@ -55,14 +56,18 @@ public class QUSTQueryModel{
 			json = response.body().string();
 			
 			ArrayList<Notice> array = new ArrayList<>();
-			JSONArray item = new JSONObject(json).getJSONArray("items");
-			for(int i = 0; i < item.length(); i++) array.add(new Notice(item.getJSONObject(i)));
+			
+			if(json.startsWith("{") || json.startsWith("[")){
+				JSONArray item = new JSONObject(json).getJSONArray("items");
+				for(int i = 0; i < item.length(); i++) array.add(new Notice(item.getJSONObject(i)));
+			}
 			
 			return array.toArray(new Notice[0]);
 			
 		}catch(IOException ignored){
 		}catch(JSONException e){
-			LogUtil.Log(json, e);
+			String msg = "url:" + QustAPI.EA_SYSTEM_NOTICE + "\n" + json;
+			LogUtil.Log(msg, e);
 		}
 		return new Notice[0];
 	}
@@ -75,10 +80,10 @@ public class QUSTQueryModel{
 	 * @param xqm            学期代码 12 | 3
 	 */
 	@NonNull
-	public static Exam[] queryExam(@NonNull EAViewModel eaViewModel, String xnm, String xqm){
+	public static Exam[] queryExam(@NonNull EAViewModel eaViewModel, String xnm, String xqm) throws NeedLoginException{
 		String json = null;
 		
-		try(Response response = eaViewModel.postSync(QustAPI.GET_EXAM, new FormBody.Builder()
+		try(Response response = eaViewModel.post(QustAPI.GET_EXAM, new FormBody.Builder()
 				.add("xnm", xnm)
 				.add("xqm", xqm)
 				.add("queryModel.showCount", "50")
@@ -98,7 +103,8 @@ public class QUSTQueryModel{
 			
 		}catch(IOException ignore){
 		}catch(JSONException e){
-			LogUtil.Log(json, e);
+			String msg = "url:" + QustAPI.GET_EXAM + "\n" + json;
+			LogUtil.Log(msg, e);
 		}
 		return new Exam[0];
 	}
@@ -111,13 +117,13 @@ public class QUSTQueryModel{
 	 * @param xqm            学期代码 12 | 3
 	 */
 	@NonNull
-	public static Mark[] queryMark(@NonNull EAViewModel eaViewModel, String xnm, String xqm){
+	public static Mark[] queryMark(@NonNull EAViewModel eaViewModel, String xnm, String xqm) throws NeedLoginException{
 		
 		HashMap<String, Mark.Builder> markMap = new HashMap<>(8);
 		
 		String json = null;
 		
-		try(Response response = eaViewModel.postSync(QustAPI.GET_MARK, new FormBody.Builder()
+		try(Response response = eaViewModel.post(QustAPI.GET_MARK, new FormBody.Builder()
 				.add("xnm", xnm)
 				.add("xqm", xqm)
 				.add("queryModel.showCount", "50")
@@ -133,7 +139,7 @@ public class QUSTQueryModel{
 				markMap.put(name, Mark.Builder.createFromJson(js));
 			}
 			
-			try(Response response1 = eaViewModel.postSync(QustAPI.GET_MARK_DETAIL, new FormBody.Builder()
+			try(Response response1 = eaViewModel.post(QustAPI.GET_MARK_DETAIL, new FormBody.Builder()
 					.add("xnm", xnm)
 					.add("xqm", xqm)
 					.add("queryModel.showCount", "100")
@@ -159,7 +165,8 @@ public class QUSTQueryModel{
 			
 		}catch(IOException ignored){
 		}catch(JSONException e){
-			LogUtil.Log(json, e);
+			String msg = "url:" + QustAPI.GET_MARK_DETAIL + "\n" + json;
+			LogUtil.Log(msg, e);
 		}
 		
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){

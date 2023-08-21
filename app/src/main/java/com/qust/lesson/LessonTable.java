@@ -1,14 +1,10 @@
 package com.qust.lesson;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
-import com.qust.assistant.R;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.SettingUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -137,7 +133,7 @@ public class LessonTable implements Serializable, Cloneable{
 			return true;
 			
 		}catch(JSONException e){
-			LogUtil.Log(e);
+			LogUtil.Log(String.valueOf(json), e);
 			return false;
 		}
 	}

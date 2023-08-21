@@ -4,6 +4,8 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.qust.assistant.util.SettingUtil;
 
@@ -16,6 +18,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * 自动处理账号登录状态
@@ -41,8 +44,15 @@ public abstract class AccountViewModel extends AndroidViewModel{
 	
 	protected AccountCookieJar cookieJar;
 	
+	/**
+	 * 登录成功时发送事件
+	 */
+	protected MutableLiveData<Boolean> loginData;
+	
+	
 	public AccountViewModel(@NonNull Application application){
 		super(application);
+		loginData = new MutableLiveData<>(false);
 	}
 	
 	public void init(String scheme, String host, String accountName, String passwordName, String cookieName){
@@ -54,6 +64,15 @@ public abstract class AccountViewModel extends AndroidViewModel{
 		clientNoFollowRedirects = new OkHttpClient.Builder().cookieJar(cookieJar).followRedirects(false).build();
 		
 		this.host = scheme + "://" + host + "/";
+	}
+	
+	
+	public boolean isLogin(){
+		return isLogin;
+	}
+	
+	public LiveData<Boolean> getLoginData(){
+		return loginData;
 	}
 	
 	
@@ -84,7 +103,8 @@ public abstract class AccountViewModel extends AndroidViewModel{
 			
 			@Override
 			public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException{
-				callback.onSuccess(response);
+				ResponseBody body = response.body();
+				callback.onSuccess(response, body == null ? null : body.string());
 			}
 		});
 	}
@@ -98,7 +118,8 @@ public abstract class AccountViewModel extends AndroidViewModel{
 			
 			@Override
 			public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException{
-				callback.onSuccess(response);
+				ResponseBody body = response.body();
+				callback.onSuccess(response, body == null ? null : body.string());
 			}
 		});
 	}
@@ -111,7 +132,7 @@ public abstract class AccountViewModel extends AndroidViewModel{
 		if(isLogin){
 			request(request, callback, errorCallback);
 		}else{
-			checkLoginAsync(response -> request(request, callback, errorCallback), errorCallback);
+			checkLoginAsync((response, html) -> request(request, callback, errorCallback), errorCallback);
 		}
 	}
 	
@@ -134,7 +155,8 @@ public abstract class AccountViewModel extends AndroidViewModel{
 						errorCallback.onNeedLogin();
 					}
 				}else{
-					callback.onSuccess(response);
+					ResponseBody body = response.body();
+					callback.onSuccess(response, body == null ? null : body.string());
 				}
 			}
 		});
@@ -176,17 +198,45 @@ public abstract class AccountViewModel extends AndroidViewModel{
 	/**
 	 * 同步GET请求
 	 */
-	public Response getSync(String url) throws IOException{
-		return okHttpClient.newCall(new Request.Builder().url(host + url).build()).execute();
+	public Response get(String url) throws IOException, NeedLoginException{
+		if(isLogin || checkLoginSync()){
+			return okHttpClient.newCall(new Request.Builder().url(host + url).build()).execute();
+		}else{
+			throw new NeedLoginException();
+		}
 	}
 	
 	/**
 	 * 同步POST请求
 	 */
-	public Response postSync(String url, RequestBody body) throws IOException{
-		return okHttpClient.newCall(new Request.Builder().url(host + url).post(body).build()).execute();
+	public Response post(String url, RequestBody body) throws IOException, NeedLoginException{
+		if(isLogin || checkLoginSync()){
+			return okHttpClient.newCall(new Request.Builder().url(host + url).post(body).build()).execute();
+		}else{
+			throw new NeedLoginException();
+		}
 	}
 	
+	/**
+	 * 同步GET请求，不检查登录状态
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 */
+	public Response getWithOutCheck(String url) throws IOException{
+		return okHttpClient.newCall(new Request.Builder().url(host + url).build()).execute();
+	}
+	
+	/**
+	 * 同步POST请求，不检查登录状态
+	 * @param url
+	 * @param requestBody
+	 * @return
+	 * @throws IOException
+	 */
+	public Response postWithOutCheck(String url, RequestBody requestBody) throws IOException{
+		return okHttpClient.newCall(new Request.Builder().url(host + url).post(requestBody).build()).execute();
+	}
 	
 	/**
 	 * 同步检查登陆状态，有账号信息时自动进行登录

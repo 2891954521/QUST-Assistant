@@ -24,6 +24,11 @@ public class Lesson implements Serializable, Cloneable{
 	public int type;
 	
 	/**
+	 * 课程ID
+	 */
+	public String kchID;
+	
+	/**
 	 * 课程颜色
  	 */
 	public int color;
@@ -84,6 +89,8 @@ public class Lesson implements Serializable, Cloneable{
 		Lesson lesson = new Lesson();
 		try{
 			
+			lesson.kchID = json.getString("kch");
+			
 			lesson.name = json.getString("kcmc").trim();
 			
 			if(json.has("cdmc")) lesson.place = json.getString("cdmc").trim();
@@ -119,15 +126,16 @@ public class Lesson implements Serializable, Cloneable{
 	 * @param type -1 正常 0 单周 1 双周
 	 */
 	public static void fillLesson(Lesson lesson, int start, int end, int type){
+		long mask;
 		if(type == -1){
-			lesson.week ^= ((1L << (end - start + 1)) - 1) << start;
+			mask = ((1L << (end - start)) - 1) << start;
 		}else{
-			long mask = 0L;
+			mask = 0L;
 			for(int i = type == 0 ? start : start + 1; i < end; i += 2){
 				mask |= (1L << i);
 			}
-			lesson.week ^= mask;
 		}
+		lesson.week ^= mask;
 	}
 	
 }

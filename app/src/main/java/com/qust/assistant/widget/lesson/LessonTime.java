@@ -155,7 +155,7 @@ public class LessonTime extends View{
 		int i = 0;
 		long val = 1L;
 		for(; i < booleans.length; i++, val <<= 1){
-			booleans[i] = (_long & val) == 1;
+			booleans[i] = (_long & val) > 0;
 		}
 		
 		ViewGroup.LayoutParams layoutParams = getLayoutParams();

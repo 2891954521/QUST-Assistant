@@ -1,13 +1,9 @@
 package com.qust.fragment.lesson;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -23,15 +19,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qust.assistant.R;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.widget.ColorPicker;
-import com.qust.assistant.widget.DialogRoundTop;
+import com.qust.assistant.widget.lesson.LessonTime;
+import com.qust.assistant.widget.swipe.SwipeTextView;
+import com.qust.base.fragment.BaseFragment;
 import com.qust.lesson.Lesson;
 import com.qust.lesson.LessonGroup;
 import com.qust.lesson.LessonTableModel;
 import com.qust.lesson.LessonTableViewModel;
 import com.qust.lesson.view.LessonTableView;
-import com.qust.assistant.widget.lesson.LessonTime;
-import com.qust.assistant.widget.swipe.SwipeTextView;
-import com.qust.base.fragment.BaseFragment;
+import com.qust.widget.BottomDialog;
 
 public class TermLessonFragment extends BaseFragment{
 	
@@ -45,8 +41,6 @@ public class TermLessonFragment extends BaseFragment{
  	 */
 	private LessonTableView lessonTableView;
 	
-	private boolean isInitLessonInfo, isLessonInfoShowing;
-	
 	// 课程编辑相关
 	private TextView lessonLen;
 	
@@ -54,17 +48,13 @@ public class TermLessonFragment extends BaseFragment{
 	
 	private ColorPicker lessonColor;
 	
-	private ViewGroup lessonInfoBack;
-	
-	private DialogRoundTop lessonInfo;
-	
 	private EditText lessonName, lessonPlace, lessonTeacher;
-	
-	private Animation animIn, animOut;
-	
+
 	private int week, count;
 	
 	private Lesson editLesson;
+	
+	private BottomDialog lessonEdit;
 	
 	private InputMethodManager inputManager;
 	
@@ -117,15 +107,8 @@ public class TermLessonFragment extends BaseFragment{
 			}
 		});
 		
-		lessonTableView.initAdapter(lessonTableViewModel.getLessonTable());
 		lessonTableView.setUpdateListener(this::updateLesson);
-		lessonTableView.setLessonClickListener((week, count, lesson) -> {
-			if(!isInitLessonInfo){
-				initLessonInfoDialog();
-				isInitLessonInfo = true;
-			}
-			showLessonInfoDialog(week, count, lesson);
-		});
+		lessonTableView.setLessonClickListener(this::showLessonInfoDialog);
 		lessonTableView.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
 			@Override
 			public void onPageScrolled(int position,float positionOffset,int positionOffsetPixels){ }
@@ -155,20 +138,16 @@ public class TermLessonFragment extends BaseFragment{
 	 * 初始化课程编辑界面
 	 */
 	private void initLessonInfoDialog(){
-		lessonInfoBack = findViewById(R.id.layout_lesson_info_back);
-		lessonInfo = findViewById(R.id.layout_lesson_info);
+		View back = LayoutInflater.from(activity).inflate(R.layout.layout_lesson_edit, findViewById(R.id.fragment_term_lesson_base));
 		
-		DisplayMetrics displayMetrics = new DisplayMetrics();
-		activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+		lessonEdit = new BottomDialog(activity, back, back.findViewById(R.id.layout_lesson_info), 0.75f);
 		
-		lessonInfo.getLayoutParams().height = displayMetrics.heightPixels / 4 * 3;
-		
-		lessonInfo.findViewById(R.id.layout_lesson_back).setOnClickListener(v -> {
+		lessonEdit.findViewById(R.id.layout_lesson_back).setOnClickListener(v -> {
 			inputManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
-			lessonInfo.startAnimation(animOut);
+			lessonEdit.hide();
 		});
 		
-		lessonInfo.findViewById(R.id.layout_lesson_done).setOnClickListener(v -> {
+		lessonEdit.findViewById(R.id.layout_lesson_done).setOnClickListener(v -> {
 			
 			boolean[] booleans = lessonTime.getBooleans();
 			boolean hasLesson = false;
@@ -208,36 +187,36 @@ public class TermLessonFragment extends BaseFragment{
 			
 			editLesson.color = lessonColor.getChoose();
 			
-			lessonInfo.startAnimation(animOut);
+			lessonEdit.hide();
 			
 			updateLesson();
 			
 			inputManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
 		});
 		
-		lessonName = lessonInfo.findViewById(R.id.layout_lesson_name);
-		lessonPlace = lessonInfo.findViewById(R.id.layout_lesson_place);
-		lessonTeacher = lessonInfo.findViewById(R.id.layout_lesson_teacher);
+		lessonName = lessonEdit.findViewById(R.id.layout_lesson_name);
+		lessonPlace = lessonEdit.findViewById(R.id.layout_lesson_place);
+		lessonTeacher = lessonEdit.findViewById(R.id.layout_lesson_teacher);
 		
-		lessonLen = lessonInfo.findViewById(R.id.layout_lesson_len);
+		lessonLen = lessonEdit.findViewById(R.id.layout_lesson_len);
 		
-		lessonInfo.findViewById(R.id.layout_lesson_len_add).setOnClickListener(v -> {
+		lessonEdit.findViewById(R.id.layout_lesson_len_add).setOnClickListener(v -> {
 			int n = Integer.parseInt(lessonLen.getText().toString()) + 1;
 			if(n <= lessonTableViewModel.getLessonGroups()[0].length){
 				lessonLen.setText(String.valueOf(n));
 			}
 		});
 		
-		lessonInfo.findViewById(R.id.layout_lesson_len_remove).setOnClickListener(v -> {
+		lessonEdit.findViewById(R.id.layout_lesson_len_remove).setOnClickListener(v -> {
 			int n = Integer.parseInt(lessonLen.getText().toString()) - 1;
 			if(n > 0){
 				lessonLen.setText(String.valueOf(n));
 			}
 		});
 		
-		lessonTime = lessonInfo.findViewById(R.id.layout_lesson_time);
+		lessonTime = lessonEdit.findViewById(R.id.layout_lesson_time);
 		
-		RadioGroup lessonType = lessonInfo.findViewById(R.id.layout_lesson_type);
+		RadioGroup lessonType = lessonEdit.findViewById(R.id.layout_lesson_type);
 		lessonType.setOnCheckedChangeListener((group, checkedId) -> {
 			if(checkedId == R.id.layout_lesson_all){
 				lessonTime.setFill();
@@ -248,29 +227,16 @@ public class TermLessonFragment extends BaseFragment{
 			}
 		});
 		
-		lessonColor = lessonInfo.findViewById(R.id.layout_lesson_color);
-		
-		animIn = AnimationUtils.loadAnimation(activity, R.anim.anim_bottom_in);
-		animOut = AnimationUtils.loadAnimation(activity, R.anim.anim_bottom_out);
-		animOut.setAnimationListener(new Animation.AnimationListener(){
-			@Override
-			public void onAnimationStart(Animation animation){ }
-			@Override
-			public void onAnimationEnd(Animation animation){
-				isLessonInfoShowing = false;
-				lessonInfoBack.setVisibility(View.GONE);
-			}
-			@Override
-			public void onAnimationRepeat(Animation animation){ }
-		});
+		lessonColor = lessonEdit.findViewById(R.id.layout_lesson_color);
 	}
 	
 	/**
 	 * 显示课程编辑框
  	 */
 	private void showLessonInfoDialog(int _week, int _count, Lesson lesson){
-		
-		isLessonInfoShowing = true;
+		if(lessonEdit == null){
+			initLessonInfoDialog();
+		}
 		
 		week = _week - 1;
 		count = _count - 1;
@@ -296,8 +262,7 @@ public class TermLessonFragment extends BaseFragment{
 		
 		lessonColor.setChoose(editLesson.color);
 		
-		lessonInfoBack.setVisibility(View.VISIBLE);
-		lessonInfo.startAnimation(animIn);
+		lessonEdit.show();
 	}
 	
 	/**
@@ -342,8 +307,8 @@ public class TermLessonFragment extends BaseFragment{
 	@Override
 	public boolean onBackPressed(){
 		lessonTableView.clearMenu();
-		if(isLessonInfoShowing){
-			lessonInfo.startAnimation(animOut);
+		if(lessonEdit.isShowing()){
+			lessonEdit.hide();
 			return false;
 		}else{
 			return super.onBackPressed();

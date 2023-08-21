@@ -3,8 +3,8 @@ package com.qust.fragment.academic;
 import android.view.LayoutInflater;
 import android.widget.ExpandableListView;
 
+import com.qust.account.NeedLoginException;
 import com.qust.assistant.R;
-import com.qust.assistant.util.SettingUtil;
 import com.qust.base.HandlerCode;
 import com.qust.base.fragment.BaseEAFragment;
 import com.qust.model.AcademicModel;
@@ -59,20 +59,20 @@ public class AcademicFragment extends BaseEAFragment{
 				showMode = showMode == 0 ? 1 : 0;
 				changeShowMode();
 			}else if(itemId == R.id.menu_academic_update){
-				beforeQuery();
+				startQuery();
 			}
 			return true;
 		});
 	}
 	
 	@Override
-	protected void doQuery(){
+	protected void doQuery() throws NeedLoginException{
 		sendMessage(HandlerCode.UPDATE_DIALOG, "正在查询");
 		
 		LessonResult lessonResult = AcademicModel.getLessons(eaViewModel);
 		
 		showModeGroup[0] = lessonResult.lessonInfoGroup;
-	
+		
 		try{
 			File file = new File(activity.getFilesDir(), "academic");
 			if(!file.exists() && !file.mkdirs()) throw new IOException();
@@ -133,7 +133,11 @@ public class AcademicFragment extends BaseEAFragment{
 			builders[i].group.groupName = TERM_NAME[i];
 		}
 		
-		int entranceTime = SettingUtil.getInt(getString(R.string.KEY_ENTRANCE_TIME), 0);
+		int entranceTime = eaViewModel.getEntranceTime();
+		if(entranceTime == -1){
+			toast("未设置入学年份");
+			entranceTime = 0;
+		}
 		
 		for(int i = 0; i < lessons.length; i++){
 			LessonInfo lesson = lessons[i];

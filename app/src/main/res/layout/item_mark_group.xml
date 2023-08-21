@@ -30,7 +30,7 @@
             
             <TextView
                 style="@style/TextNormal"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="成绩："/>
@@ -38,7 +38,7 @@
             <TextView
                 style="@style/TextNormal"
                 android:id="@+id/item_mark_value"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start|center"
@@ -46,7 +46,7 @@
             
             <TextView
                 style="@style/TextNormal"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="绩点："/>
@@ -54,14 +54,15 @@
             <TextView
                 style="@style/TextNormal"
                 android:id="@+id/item_mark_gpa"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="start|center" />
+                android:gravity="start|center"
+				tools:text="100" />
             
             <TextView
                 style="@style/TextNormal"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="学分："/>
@@ -69,10 +70,11 @@
             <TextView
                 style="@style/TextNormal"
                 android:id="@+id/item_mark_credit"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="start|center" />
+                android:gravity="start|center"
+				tools:text="100" />
         
         </androidx.appcompat.widget.LinearLayoutCompat>
         

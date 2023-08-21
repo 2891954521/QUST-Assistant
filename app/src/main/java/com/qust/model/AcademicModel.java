@@ -5,12 +5,13 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 
 import com.qust.QustAPI;
+import com.qust.account.NeedLoginException;
 import com.qust.account.ea.EAViewModel;
+import com.qust.assistant.util.LogUtil;
+import com.qust.assistant.util.ParamUtil;
 import com.qust.fragment.academic.LessonInfo;
 import com.qust.fragment.academic.LessonInfoGroup;
 import com.qust.fragment.academic.LessonResult;
-import com.qust.assistant.util.LogUtil;
-import com.qust.assistant.util.ParamUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +43,7 @@ public class AcademicModel{
 	
 	
 	@NonNull
-	public static LessonResult getLessons(@NonNull EAViewModel eaViewModel){
+	public static LessonResult getLessons(@NonNull EAViewModel eaViewModel) throws NeedLoginException{
 		
 		LessonResult lessonResult = new LessonResult();
 		lessonResult.lessonInfo = new LessonInfo[0];
@@ -50,7 +51,7 @@ public class AcademicModel{
 		
 		ArrayList<LessonInfo> lessonInfo = new ArrayList<>(64);
 		
-		try(Response response =  eaViewModel.getSync(QustAPI.ACADEMIC_PAGE)){
+		try(Response response =  eaViewModel.get(QustAPI.ACADEMIC_PAGE)){
 			String html = response.body().string();
 			
 			HashMap<String, LessonInfoGroup> xfyqjd = new HashMap<>();
@@ -75,7 +76,7 @@ public class AcademicModel{
 			}
 			
 			for(String param : xfyqjd.keySet()){
-				try(Response response1 = eaViewModel.postSync(QustAPI.ACADEMIC_INFO, new FormBody.Builder().add("xfyqjd_id", param).add("xh_id", eaViewModel.getAccountName()).build())){
+				try(Response response1 = eaViewModel.post(QustAPI.ACADEMIC_INFO, new FormBody.Builder().add("xfyqjd_id", param).add("xh_id", eaViewModel.getAccountName()).build())){
 					html = response1.body().string();
 				}
 		

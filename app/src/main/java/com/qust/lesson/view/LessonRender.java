@@ -95,6 +95,8 @@ public class LessonRender{
 		startDate = Calendar.getInstance();
 		currentDay = Calendar.getInstance();
 		
+		lessons = new LessonCell[1][7][10];
+		
 		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 		paint.setStyle(Paint.Style.FILL);
 		paint.setAntiAlias(true);
@@ -127,78 +129,24 @@ public class LessonRender{
 	
 	/**
 	 * 设置 / 更新 课表信息
-	 * @param lessonTable 课表信息
+	 * @param _lessonTable 课表信息
 	 */
-	public void setLessonTable(@NonNull LessonTable lessonTable){
-		startDate.setTime(lessonTable.getStartDay());
-		
-		int totalWeeks = lessonTable.getTotalWeek();
-		
-		LessonGroup[][] lessonGroups = lessonTable.getLessons();
-		
-		lessons = new LessonCell[totalWeeks][lessonGroups.length][lessonGroups[0].length];
-		
-		for(int week = 0; week < totalWeeks; week++){
-			for(int i = 0; i < lessonGroups.length; i++){
-				int j = 0;
-				while(j < lessonGroups[0].length){
-					LessonGroup lessonGroup = lessonGroups[i][j];
-					if(lessonGroup != null){
-						Lesson lesson = lessonGroup.getCurrentLesson(week + 1);
-						if(lesson != null){
-							lessons[week][i][j] = new LessonCell(lesson.color, lesson);
-							j += lesson.len;
-							continue;
-						}
-					}
-					j++;
-				}
-			}
-		}
-		
-		if(showAllLesson){
-			for(int week = 0; week < totalWeeks; week++){
-				for(int i = 0; i < lessonGroups.length; i++){
-					int j = 0;
-					while(j < lessonGroups[0].length){
-						LessonCell lessonCell = lessons[week][i][j];
-						if(lessonCell != null){
-							j += lessonCell.len;
-							continue;
-						}
-						LessonGroup lessonGroup = lessonGroups[i][j];
-						if(lessonGroup != null){
-							// 本周该时间无课但是其他周有课
-							Lesson lesson = lessonGroup.findLesson(week + 1, totalWeeks, !hideFinishLesson);
-							if(lesson != null){
-								boolean conflictFlag = false;
-								for(int p = j + 1, l = 0; p < lessonGroups[0].length && l < lesson.len - 1; p++, l++){
-									// 向下检查是否有冲突
-									if(lessons[week][i][p] != null){
-										conflictFlag = true;
-										break;
-									}
-								}
-								if(!conflictFlag){
-									lessons[week][i][j] = new LessonCell(-1, lesson);
-									j += lesson.len;
-									continue;
-								}
-							}
-						}
-						j++;
-					}
-				}
-			}
+	public void setLessonTable(@NonNull LessonTable _lessonTable){
+		lessonTable = _lessonTable;
+		if(cellWidth != 0 && cellHeight != 0){
+			calcLessonData();
 		}
 	}
 	
 	/**
 	 * 设置 View Measure 数据
+	 * 必须调用，不然无法显示
 	 */
 	public void setMeasureData(int measuredWidth, int measuredHeight){
 		cellWidth = (measuredWidth - timeWidth) / WEEK_STRING.length;
 		cellHeight = (measuredHeight - dateHeight) / timeText[0].length;
+		
+		if(lessonTable != null) calcLessonData();
 	}
 	
 	/**
@@ -263,6 +211,72 @@ public class LessonRender{
 		paint.setStyle(Paint.Style.FILL);
 	}
 	
+	/**
+	 * 计算绘制课程的信息
+	 */
+	protected void calcLessonData(){
+		startDate.setTime(lessonTable.getStartDay());
+		
+		int totalWeeks = lessonTable.getTotalWeek();
+		
+		LessonGroup[][] lessonGroups = lessonTable.getLessons();
+		
+		lessons = new LessonCell[totalWeeks][lessonGroups.length][lessonGroups[0].length];
+		
+		for(int week = 0; week < totalWeeks; week++){
+			for(int i = 0; i < lessonGroups.length; i++){
+				int j = 0;
+				while(j < lessonGroups[0].length){
+					LessonGroup lessonGroup = lessonGroups[i][j];
+					if(lessonGroup != null){
+						Lesson lesson = lessonGroup.getCurrentLesson(week + 1);
+						if(lesson != null){
+							lessons[week][i][j] = new LessonCell(lesson.color, lesson);
+							j += lesson.len;
+							continue;
+						}
+					}
+					j++;
+				}
+			}
+		}
+		
+		if(showAllLesson){
+			for(int week = 0; week < totalWeeks; week++){
+				for(int i = 0; i < lessonGroups.length; i++){
+					int j = 0;
+					while(j < lessonGroups[0].length){
+						LessonCell lessonCell = lessons[week][i][j];
+						if(lessonCell != null){
+							j += lessonCell.len;
+							continue;
+						}
+						LessonGroup lessonGroup = lessonGroups[i][j];
+						if(lessonGroup != null){
+							// 本周该时间无课但是其他周有课
+							Lesson lesson = lessonGroup.findLesson(week + 1, totalWeeks, !hideFinishLesson);
+							if(lesson != null){
+								boolean conflictFlag = false;
+								for(int p = j + 1, l = 0; p < lessonGroups[0].length && l < lesson.len - 1; p++, l++){
+									// 向下检查是否有冲突
+									if(lessons[week][i][p] != null){
+										conflictFlag = true;
+										break;
+									}
+								}
+								if(!conflictFlag){
+									lessons[week][i][j] = new LessonCell(-1, lesson);
+									j += lesson.len;
+									continue;
+								}
+							}
+						}
+						j++;
+					}
+				}
+			}
+		}
+	}
 	
 	protected void drawTime(Canvas canvas){
 		paintT.setColor(Color.GRAY);

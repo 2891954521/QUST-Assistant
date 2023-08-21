@@ -7,11 +7,11 @@ import android.view.View;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.qust.account.RequestErrorCallback;
+import com.qust.account.vpn.VpnViewModel;
 import com.qust.assistant.R;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.base.fragment.BaseFragment;
-import com.qust.account.vpn.VpnViewModel;
 
 public class VpnLoginFragment extends BaseFragment{
 	
@@ -57,7 +57,7 @@ public class VpnLoginFragment extends BaseFragment{
 			passwordText.setError(null);
 		}
 		
-		vpnViewModel.loginAsync(user, password, response -> activity.runOnUiThread(() -> {
+		vpnViewModel.loginAsync(user, password, (response, html) -> activity.runOnUiThread(() -> {
 			toast("登录成功");
 			dialog.dismiss();
 			finish();

@@ -71,13 +71,15 @@ public class VpnViewModel extends AccountViewModel{
 				int code = response.code();
 				if((code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP) && response.header("Location").contains("login")){
 					try{
-						if(loginSync()) callback.onSuccess(response);
+						if(loginSync()) callback.onSuccess(response, null);
 						else errorCallback.onNeedLogin();
 					}catch(IOException e){
 						errorCallback.onNetworkError(e);
 					}
 				}else{
-					callback.onSuccess(response);
+					isLogin = true;
+					loginData.postValue(true);
+					callback.onSuccess(response, null);
 				}
 			}
 		});
@@ -130,7 +132,8 @@ public class VpnViewModel extends AccountViewModel{
 							if(priorResponseCode == HttpURLConnection.HTTP_MOVED_PERM || priorResponseCode == HttpURLConnection.HTTP_MOVED_TEMP){
 								SettingUtil.edit().putString(accountName, userName).putString(passwordName, password).apply();
 								isLogin = true;
-								callback.onSuccess(response);
+								loginData.postValue(true);
+								callback.onSuccess(response, null);
 							}else{
 								errorCallback.onNeedLogin();
 							}
@@ -153,6 +156,8 @@ public class VpnViewModel extends AccountViewModel{
 			if(code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP){
 				return !response.header("Location").contains("login") || loginSync();
 			}else{
+				isLogin = true;
+				loginData.postValue(true);
 				return true;
 			}
 		}
@@ -204,6 +209,7 @@ public class VpnViewModel extends AccountViewModel{
 				if(priorResponseCode == HttpURLConnection.HTTP_MOVED_PERM || priorResponseCode == HttpURLConnection.HTTP_MOVED_TEMP){
 					SettingUtil.edit().putString(accountName, userName).putString(passwordName, password).apply();
 					isLogin = true;
+					loginData.postValue(true);
 					return true;
 				}else{
 					return false;

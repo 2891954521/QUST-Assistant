@@ -15,7 +15,6 @@ import com.qust.fragment.lesson.DailyLessonFragment;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class HomeFragment extends BaseFragment{
@@ -56,13 +55,13 @@ public class HomeFragment extends BaseFragment{
 	 */
 	private void initLayout(){
 		current = SettingUtil.getInt(getString(R.string.homeOffset), 0);
-
-		Set<String> set = SettingUtil.getStringSet(getString(R.string.homePages), new HashSet<>(0));
-		if(!set.isEmpty()){
-			ArrayList<BaseFragment> fragments = new ArrayList<>(set.size());
-			for(Iterator<String> it = set.iterator(); it.hasNext();){
-				try{
-					Class<?> object = Class.forName(it.next());
+		
+		try{
+			Set<String> set = SettingUtil.getStringSet(getString(R.string.homePages), new HashSet<>(0));
+			if(!set.isEmpty()){
+				ArrayList<BaseFragment> fragments = new ArrayList<>(set.size());
+				for(String s : set){
+					Class<?> object = Class.forName(s);
 					if(BaseFragment.class.isAssignableFrom(object)){
 						try{
 							fragments.add((BaseFragment)object.getConstructor(boolean.class, boolean.class).newInstance(true, false));
@@ -70,16 +69,17 @@ public class HomeFragment extends BaseFragment{
 							fragments.add((BaseFragment)object.newInstance());
 						}
 					}
-				}catch(ReflectiveOperationException e){
-					LogUtil.Log(e);
 				}
+				layouts = fragments.toArray(new BaseFragment[0]);
 			}
-			layouts = fragments.toArray(new BaseFragment[0]);
-		}else{
-			DailyLessonFragment dailyLesson = new DailyLessonFragment(true, false);
-			layouts = new BaseFragment[]{ dailyLesson };
-		}
+		}catch(ReflectiveOperationException e){
+			LogUtil.Log(e);
+		}catch(ClassCastException ignore){ }
 		
+		if(layouts == null || layouts.length == 0){
+			layouts = new BaseFragment[]{ new DailyLessonFragment(true, false) };
+		}
+	
 		viewPager.setAdapter(new PagerAdapter(this));
 		if(current < layouts.length) viewPager.setCurrentItem(current, false);
 		else current = 0;

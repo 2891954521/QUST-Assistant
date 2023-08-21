@@ -7,6 +7,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import com.qust.account.NeedLoginException;
 import com.qust.assistant.R;
 import com.qust.assistant.vo.Mark;
 import com.qust.base.HandlerCode;
@@ -63,7 +64,7 @@ public class GetMarkFragment extends BaseEAFragment{
 	}
 	
 	@Override
-	protected void doQuery(){
+	protected void doQuery() throws NeedLoginException{
 		
 		sendMessage(HandlerCode.UPDATE_DIALOG, "正在查询成绩");
 		

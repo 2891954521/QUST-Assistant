@@ -11,12 +11,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.qust.account.NeedLoginException;
 import com.qust.assistant.R;
-import com.qust.model.QUSTQueryModel;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.vo.Exam;
 import com.qust.base.HandlerCode;
 import com.qust.base.fragment.BaseEAFragment;
+import com.qust.model.QUSTQueryModel;
 import com.qust.utils.FileUtils;
 
 import java.io.File;
@@ -75,7 +76,7 @@ public class GetExamFragment extends BaseEAFragment{
 	}
 	
 	@Override
-	protected void doQuery(){
+	protected void doQuery() throws NeedLoginException{
 		sendMessage(HandlerCode.UPDATE_DIALOG, "正在查询考试");
 		
 		String[] y = getYearAndTerm();

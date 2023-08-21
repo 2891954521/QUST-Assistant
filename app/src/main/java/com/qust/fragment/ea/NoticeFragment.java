@@ -8,11 +8,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.qust.account.NeedLoginException;
 import com.qust.assistant.R;
-import com.qust.model.QUSTQueryModel;
 import com.qust.assistant.vo.Notice;
 import com.qust.base.HandlerCode;
 import com.qust.base.fragment.BaseEAFragment;
+import com.qust.model.QUSTQueryModel;
 import com.qust.utils.FileUtils;
 
 import java.io.File;
@@ -36,11 +37,11 @@ public class NoticeFragment extends BaseEAFragment{
 		
 		initList(new NoticeAdapter());
 		
-		addMenuItem(inflater, R.drawable.ic_refresh, v -> beforeQuery());
+		addMenuItem(inflater, R.drawable.ic_refresh, v -> startQuery());
 	}
 	
 	@Override
-	protected void doQuery(){
+	protected void doQuery() throws NeedLoginException{
 		sendMessage(HandlerCode.UPDATE_DIALOG, "正在查询");
 		
 		notices = QUSTQueryModel.queryNotice(eaViewModel, 1, 20);

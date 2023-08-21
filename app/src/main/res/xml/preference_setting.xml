@@ -50,6 +50,20 @@
 	
 	</PreferenceCategory>
 	
+	<PreferenceCategory android:title="教务">
+		
+		<Preference
+			android:key="@string/KEY_EA_HOST"
+			android:title="教务节点" />
+		
+<!--		<SwitchPreference-->
+<!--			android:key="tmp"-->
+<!--			android:title="使用VPN访问教务"-->
+<!--			android:summary="校外无法访问教务请启用，访问速度会变慢" />-->
+	
+	</PreferenceCategory>
+	
+	
 	<PreferenceCategory android:title="界面">
 		
 		<SwitchPreference

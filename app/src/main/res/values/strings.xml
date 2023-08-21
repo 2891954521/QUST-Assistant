@@ -4,6 +4,8 @@
     <string name="text_ok">确定</string>
     <string name="text_cancel">取消</string>
     
+    <string name="text_need_login">请先登录</string>
+    
     
     <!-- SharedPreferences Key -->
     
@@ -24,6 +26,11 @@
     <string name="KEY_HIDE_TEACHER">key_hide_teacher</string>
     <!-- 锁定课表 -->
     <string name="KEY_LOCK_LESSON">key_lock_lesson</string>
+    
+    
+    <!-- 教务节点 -->
+    <string name="KEY_EA_HOST">key_ea_host</string>
+    
     
     <!-- 暗色模式开关 -->
     <string name="KEY_THEME_DARK">key_theme_dark</string>

@@ -18,16 +18,17 @@ import androidx.annotation.Nullable;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.qust.account.NeedLoginException;
 import com.qust.account.RequestErrorCallback;
 import com.qust.account.ea.EAViewModel;
 import com.qust.assistant.R;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.SettingUtil;
+import com.qust.base.HandlerCode;
+import com.qust.base.ui.BaseActivity;
 import com.qust.lesson.LessonTableModel;
 import com.qust.lesson.LessonTableViewModel;
 import com.qust.lesson.QueryLessonResult;
-import com.qust.base.HandlerCode;
-import com.qust.base.ui.BaseActivity;
 
 import java.util.Calendar;
 
@@ -144,7 +145,7 @@ public class GuideActivity extends BaseActivity{
 		String year = String.valueOf(currentYear);
 		entranceTime = Integer.parseInt(year.substring(0, year.length() - 2) + user.substring(0, 2));
 		
-		eaViewModel.loginAsync(user, password, response -> getLessonTable(), new RequestErrorCallback(){
+		eaViewModel.loginAsync(user, password, (response, html) -> getLessonTable(), new RequestErrorCallback(){
 			@Override
 			public void onNeedLogin(){
 				handler.sendMessage(handler.obtainMessage(HandlerCode.DISMISS_TOAST, "用户名或密码错误"));
@@ -163,9 +164,10 @@ public class GuideActivity extends BaseActivity{
 		
 		int index = LessonTableModel.getCurrentYear(entranceTime);
 		
-		QueryLessonResult result = LessonTableModel.queryLessonTable(eaViewModel, String.valueOf(index / 2 + entranceTime), entranceTime % 2 == 0 ? "3" : "12");
-		
-		LessonTableViewModel.getInstance(this).saveLessonData(result.lessonTable);
+		try{
+			QueryLessonResult result = LessonTableModel.queryLessonTable(eaViewModel, String.valueOf(index / 2 + entranceTime), entranceTime % 2 == 0 ? "3" : "12");
+			LessonTableViewModel.getInstance(this).saveLessonData(result.lessonTable);
+		}catch(NeedLoginException ignored){ }
 		
 		runOnUiThread(() -> {
 			SettingUtil.edit().putBoolean(getString(R.string.isFirstUse), false).apply();
