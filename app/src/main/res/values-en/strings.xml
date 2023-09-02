@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">青科助手</string>
+
+    <string name="text_ok">OK</string>
+    <string name="text_cancel">Cancel</string>
+    
+    <string name="text_week">%s Week</string>
+    
+    <string name="text_need_login">Please log in first</string>
+    
+</resources>

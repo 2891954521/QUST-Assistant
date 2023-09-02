@@ -20,18 +20,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qust.assistant.R;
-import com.qust.fragment.lesson.DailyLessonFragment;
-import com.qust.fragment.lesson.TermLessonFragment;
 import com.qust.assistant.util.ColorUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.assistant.widget.menu.MenuAdapter;
 import com.qust.assistant.widget.menu.MenuItem;
-import com.qust.base.ui.BaseAnimActivity;
 import com.qust.base.fragment.BaseFragment;
+import com.qust.base.ui.BaseAnimActivity;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -129,30 +125,22 @@ public class CustomizeActivity extends BaseAnimActivity{
 			LogUtil.Log(e);
 		}
 		
-		homePosition = SettingUtil.getInt(getString(R.string.homeOffset), 0);
-		
-		try{
-			JSONArray js = new JSONArray(SettingUtil.getString(getString(R.string.homePages), ""));
-			selectedItems = new ArrayList<>(js.length());
-			for(int i = 0; i < js.length(); i++){
-				String target = js.getString(i);
-				MenuItem item = allItems.get(target);
-				if(item != null){
-					allItems.remove(target);
-					selectedItems.add(item);
-				}
+		Set<String> pages = SettingUtil.getStringSet(getString(R.string.homePages), new HashSet<>(0));
+		selectedItems = new ArrayList<>(pages.size());
+		for(String target : pages){
+			MenuItem item = allItems.get(target);
+			if(item != null){
+				allItems.remove(target);
+				selectedItems.add(item);
 			}
-		}catch(JSONException e){
-			selectedItems = new ArrayList<>(16);
-			selectedItems.add(allItems.get(DailyLessonFragment.class.getName()));
-			selectedItems.add(allItems.get(TermLessonFragment.class.getName()));
-			allItems.remove(DailyLessonFragment.class.getName());
-			allItems.remove(TermLessonFragment.class.getName());
-		}finally{
-			hideItems = new ArrayList<>(allItems.values());
-			if(selectedItems.size() <= homePosition) homePosition = 0;
 		}
+		
+		homePosition = SettingUtil.getInt(getString(R.string.homeOffset), 0);
+		if(selectedItems.size() <= homePosition) homePosition = 0;
+		
+		hideItems = new ArrayList<>(allItems.values());
 	}
+	
 	
 	
 	private class RecyclerItemAdapter extends RecyclerView.Adapter<ItemViewHolder>{

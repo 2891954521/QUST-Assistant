@@ -4,83 +4,85 @@
     <string name="text_ok">确定</string>
     <string name="text_cancel">取消</string>
     
+    <string name="text_week">第 %s 周</string>
+    
     <string name="text_need_login">请先登录</string>
     
     
     <!-- SharedPreferences Key -->
     
     <!-- 入学时间 -->
-    <string name="KEY_ENTRANCE_TIME">key_entrance_time</string>
+    <string name="KEY_ENTRANCE_TIME" translatable="false">key_entrance_time</string>
     <!-- 开学时间 -->
-    <string name="KEY_START_DAY">key_start_day</string>
+    <string name="KEY_START_DAY" translatable="false">key_start_day</string>
     <!-- 课表时间表 0：冬季， 1：夏季 -->
-    <string name="KEY_TIME_TABLE">key_time_table</string>
+    <string name="KEY_TIME_TABLE" translatable="false">key_time_table</string>
     <!-- 总周数 -->
-    <string name="KEY_TOTAL_WEEK">key_total_week</string>
+    <string name="KEY_TOTAL_WEEK" translatable="false">key_total_week</string>
     
     <!-- 显示所有课程 -->
-    <string name="KEY_SHOW_ALL_LESSON">key_show_all_lesson</string>
+    <string name="KEY_SHOW_ALL_LESSON" translatable="false">key_show_all_lesson</string>
     <!-- 隐藏已结课课程 -->
-    <string name="KEY_HIDE_FINISH_LESSON">key_hide_finish_lesson</string>
+    <string name="KEY_HIDE_FINISH_LESSON" translatable="false">key_hide_finish_lesson</string>
     <!-- 隐藏教师 -->
-    <string name="KEY_HIDE_TEACHER">key_hide_teacher</string>
+    <string name="KEY_HIDE_TEACHER" translatable="false">key_hide_teacher</string>
     <!-- 锁定课表 -->
-    <string name="KEY_LOCK_LESSON">key_lock_lesson</string>
+    <string name="KEY_LOCK_LESSON" translatable="false">key_lock_lesson</string>
     
     
     <!-- 教务节点 -->
-    <string name="KEY_EA_HOST">key_ea_host</string>
+    <string name="KEY_EA_HOST" translatable="false">key_ea_host</string>
     
     
     <!-- 暗色模式开关 -->
-    <string name="KEY_THEME_DARK">key_theme_dark</string>
+    <string name="KEY_THEME_DARK" translatable="false">key_theme_dark</string>
     <!-- 主题跟随系统 -->
-    <string name="KEY_THEME_FOLLOW_SYSTEM">key_theme_follow_system</string>
+    <string name="KEY_THEME_FOLLOW_SYSTEM" translatable="false">key_theme_follow_system</string>
     
     <!-- 自动检查更新 -->
-    <string name="KEY_AUTO_UPDATE">key_auto_update</string>
+    <string name="KEY_AUTO_UPDATE" translatable="false">key_auto_update</string>
     <!-- 更新开发版 -->
-    <string name="KEY_UPDATE_DEV">key_update_dev</string>
+    <string name="KEY_UPDATE_DEV" translatable="false">key_update_dev</string>
     
     <!-- 上传错误日志 -->
-    <string name="KEY_UPLOAD_LOG">key_upload_log</string>
+    <string name="KEY_UPLOAD_LOG" translatable="false">key_upload_log</string>
     
     
     <!-- 其他 SharedPreferences -->
     
     <!-- 上次检查更新的时间 -->
-    <string name="last_update_time">last_update_time</string>
+    <string name="last_update_time" translatable="false">last_update_time</string>
     
     <!-- 上次检查教务公告的时间 -->
-    <string name="last_auto_check_time">last_auto_check_time</string>
+    <string name="last_auto_check_time" translatable="false">last_auto_check_time</string>
     
     <!-- 上次检查教务公告的时间 -->
-    <string name="last_check_notice_time">last_check_notice_time</string>
+    <string name="last_check_notice_time" translatable="false">last_check_notice_time</string>
     <!-- 上一个教务公告的ID -->
-    <string name="last_notice_id">last_notice_id</string>
+    <string name="last_notice_id" translatable="false">last_notice_id</string>
     
     <!-- 是否首次使用 -->
-    <string name="isFirstUse">isFirstUse</string>
+    <string name="isFirstUse" translatable="false">isFirstUse</string>
     
     <!-- 主页展示的界面 -->
-    <string name="homePages">homePages</string>
+    <string name="homePages" translatable="false">homePages</string>
     
     <!-- 主页界面展示的位置 -->
-    <string name="homeOffset">homeOffset</string>
+    <string name="homeOffset" translatable="false">homeOffset</string>
     
     <!-- 教务学号 -->
-    <string name="EA_NAME">eaName</string>
+    <string name="EA_NAME" translatable="false">eaName</string>
     <!-- 教务密码 -->
-    <string name="EA_PASSWORD">eaPassword</string>
+    <string name="EA_PASSWORD" translatable="false">eaPassword</string>
     <!-- 教务密码 -->
-    <string name="EA_COOKIE">eaCookie</string>
+    <string name="EA_COOKIE" translatable="false">eaCookie</string>
     
     
     <!-- 智慧青科大学号 -->
-    <string name="VPN_NAME">vpnName</string>
+    <string name="VPN_NAME" translatable="false">vpnName</string>
     <!-- 智慧青科大密码 -->
-    <string name="VPN_PASSWORD">vpnPassword</string>
+    <string name="VPN_PASSWORD" translatable="false">vpnPassword</string>
     <!-- 智慧青科大Cookie -->
-    <string name="VPN_Cookie">vpnCookie</string>
+    <string name="VPN_Cookie" translatable="false">vpnCookie</string>
     
 </resources>

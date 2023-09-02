@@ -94,6 +94,7 @@ public abstract class BaseEAFragment extends BaseFragment{
 	@Override
 	protected void initLayout(LayoutInflater inflater){
 		
+		
 		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "查询中").build();
 		
 		View view = findViewById(R.id.fragment_school_query);
@@ -101,6 +102,8 @@ public abstract class BaseEAFragment extends BaseFragment{
 		
 		threadPool = Executors.newFixedThreadPool(1);
 		eaViewModel = EAViewModel.getInstance(getContext());
+		
+		entranceTime = eaViewModel.getEntranceTime();
 		
 		eaViewModel.getEntranceTimeData().observe(this, _entranceTime -> entranceTime = _entranceTime);
 	}
