@@ -14,7 +14,6 @@ import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.lesson.LessonTime;
 import com.qust.base.ui.BaseActivity;
 import com.qust.lesson.Lesson;
-import com.qust.lesson.LessonGroup;
 import com.qust.lesson.LessonTableModel;
 import com.qust.lesson.LessonTableViewModel;
 import com.qust.utils.CodeUtils;
@@ -37,6 +36,8 @@ public class LessonEditor{
 	private ViewGroup rootView;
 	
 	private int week, count;
+	
+	private boolean isNewLesson;
 	
 	private Lesson editLesson;
 	
@@ -74,44 +75,7 @@ public class LessonEditor{
 			lessonEdit.hide();
 		});
 		
-		lessonEdit.findViewById(R.id.layout_lesson_done).setOnClickListener(v -> {
-			
-			long time = lessonTime.getLong();
-			if(time == 0){
-				activity.toastWarning("请选择上课时间！");
-				return;
-			}
-			
-			int len = editLesson.len;
-			long weeks = editLesson.week;
-			
-			editLesson.len = Integer.parseInt(lessonLen.getText().toString());
-			editLesson.week = time;
-			
-			if(LessonTableModel.isConflict(lessonTableViewModel.getLessonTable(), week, count, editLesson)){
-				editLesson.len = len;
-				editLesson.week = weeks;
-				activity.toastWarning("课程时间冲突！");
-				return;
-			}
-			
-			String name = lessonName.getText().toString();
-			if("".equals(name)){
-				activity.toastWarning("请输入课程名称！");
-				return;
-			}
-			
-			editLesson.name = name;
-			editLesson.color = lessonColor.getChoose();
-			editLesson.place = lessonPlace.getText().toString();
-			editLesson.teacher = lessonTeacher.getText().toString();
-			
-			// 通知课表更新
-			callback.callback();
-			
-			lessonEdit.hide();
-			inputManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
-		});
+		lessonEdit.findViewById(R.id.layout_lesson_done).setOnClickListener(this::saveLessonData);
 		
 		lessonName = lessonEdit.findViewById(R.id.layout_lesson_name);
 		lessonPlace = lessonEdit.findViewById(R.id.layout_lesson_place);
@@ -160,14 +124,12 @@ public class LessonEditor{
 		week = _week - 1;
 		count = _count - 1;
 		
-		LessonGroup l = lessonTableViewModel.getLessonGroups()[week][count];
-		
-		if(l == null) l = new LessonGroup(_week, _count);
-		
 		if(lesson == null){
+			isNewLesson = true;
 			editLesson = new Lesson();
-			l.addLesson(editLesson);
+			lessonTableViewModel.getLessonTable().getLessonGroupNotNull(week, count).addLesson(editLesson);
 		}else{
+			isNewLesson = false;
 			editLesson = lesson;
 		}
 		
@@ -182,6 +144,73 @@ public class LessonEditor{
 		lessonColor.setChoose(editLesson.color);
 		
 		lessonEdit.show();
+	}
+	
+	
+	private void saveLessonData(View v){
+		long time = lessonTime.getLong();
+		if(time == 0){
+			activity.toastWarning("请选择上课时间！");
+			return;
+		}
+		int len = Integer.parseInt(lessonLen.getText().toString());
+		
+		boolean hasEdit = isNewLesson;
+		System.out.println(isNewLesson);
+		
+		if(time != editLesson.week || len != editLesson.len){
+			int bakLen = editLesson.len;
+			long bakWeeks = editLesson.week;
+			
+			editLesson.len = len;
+			editLesson.week = time;
+			
+			if(LessonTableModel.isConflict(lessonTableViewModel.getLessonTable(), week, count, editLesson)){
+				editLesson.len = bakLen;
+				editLesson.week = bakWeeks;
+				activity.toastWarning("课程时间冲突！");
+				return;
+			}
+			
+			hasEdit = true;
+		}
+		
+		String name = lessonName.getText().toString();
+		if(!name.equals(editLesson.name)){
+			editLesson.name = name;
+			hasEdit = true;
+		}
+		
+		String place = lessonPlace.getText().toString();
+		if(!place.equals(editLesson.place)){
+			editLesson.place = place;
+			hasEdit = true;
+		}
+		
+		String teacher = lessonPlace.getText().toString();
+		if(!teacher.equals(editLesson.teacher)){
+			editLesson.teacher = teacher;
+			hasEdit = true;
+		}
+		
+		boolean hasEditColor = false;
+		int color = lessonColor.getChoose();
+		if(color != editLesson.color){
+			editLesson.color = color;
+			hasEditColor = true;
+		}
+		
+		if(hasEdit){
+			editLesson.type = 1;
+		}
+		
+		if(hasEdit || hasEditColor){
+			// 通知课表更新
+			callback.callback();
+		}
+		
+		lessonEdit.hide();
+		inputManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
 	}
 	
 	public boolean isShowing(){

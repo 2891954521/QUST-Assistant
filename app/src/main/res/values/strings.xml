@@ -4,10 +4,6 @@
     <string name="text_ok">确定</string>
     <string name="text_cancel">取消</string>
     
-    <string name="text_week">第 %s 周</string>
-    
-    <string name="text_need_login">请先登录</string>
-    
     
     <!-- SharedPreferences Key -->
     
@@ -85,4 +81,22 @@
     <!-- 智慧青科大Cookie -->
     <string name="VPN_Cookie" translatable="false">vpnCookie</string>
     
+    
+    <!-- UI文本 -->
+    
+    <string name="text_week">第 %s 周</string>
+    
+    <string name="text_need_login">请先登录</string>
+    
+    
+    <string name="text_current_version">当前版本：%s</string>
+    <string name="text_checking_version">正在检查更新</string>
+    <string name="text_download_url">下载地址：%s\n%s</string>
+    
+    <string name="text_downloading">正在下载</string>
+    
+    <string name="text_get_lesson_save_lesson">保存课表</string>
+    
+	<string name="text_get_lesson_start_time">当前开学日期: %s\n查询到的开学日期: %s</string>
+
 </resources>

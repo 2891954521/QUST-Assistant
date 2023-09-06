@@ -7,5 +7,11 @@
     <string name="text_week">%s Week</string>
     
     <string name="text_need_login">Please log in first</string>
-    
+	<string name="text_current_version">Current version: %s</string>
+    <string name="text_checking_version">Checking for updates</string>
+    <string name="text_downloading">Downloading</string>
+	<string name="text_download_url">Download link: %s\\n%s</string>
+	<string name="text_get_lesson_save_lesson">Save lesson table</string>
+	<string name="text_get_lesson_start_time">Current start date: %s\\nQueryed start date: %s</string>
+
 </resources>

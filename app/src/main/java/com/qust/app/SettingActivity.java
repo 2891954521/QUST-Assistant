@@ -81,6 +81,15 @@ public class SettingActivity extends BaseAnimActivity{
 		}
 		
 		@Override
+		public void startActivity(Intent intent){
+			if(activity != null){
+				activity.startActivity(intent);
+			}else{
+				super.startActivity(intent);
+			}
+		}
+		
+		@Override
 		public void onCreate(@Nullable Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 		}

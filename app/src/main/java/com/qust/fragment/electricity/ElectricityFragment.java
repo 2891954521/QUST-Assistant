@@ -215,7 +215,12 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 					handler.sendMessage(handler.obtainMessage(HandlerCode.TOAST, "用户有多张卡，默认使用第一张"));
 				}
 				
-				account = cards.getJSONObject(0).getString("account");
+				js = cards.getJSONObject(0);
+				if(js.has("account")){
+					account = js.getString("account");
+				}else{
+					account = "";
+				}
 				
 				try(Response resp = vpnViewModel.postWithOutCheck(CARD_BALANCE, RequestBody.create("{}", MediaType.parse("application/json")))){
 					float balance = Float.parseFloat(resp.body().string());

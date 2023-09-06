@@ -101,7 +101,9 @@ public abstract class BaseFragment extends Fragment{
 				toolbar.setNavigationIcon(R.drawable.ic_menu);
 				toolbar.setNavigationOnClickListener(v -> ((MenuAble)activity).openMenu());
 			}else{
-				toolbar.setNavigationOnClickListener(v -> finish());
+				toolbar.setNavigationOnClickListener(v -> {
+					if(onBackPressed()) finish();
+				});
 			}
 		}
 	}

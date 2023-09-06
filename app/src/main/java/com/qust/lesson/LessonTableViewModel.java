@@ -189,7 +189,7 @@ public class LessonTableViewModel extends AndroidViewModel{
 		lessonTime = LESSON_TIME[index];
 		lessonTimeText = LESSON_TIME_TEXT[index];
 		lessonTableLiveData.postValue(lessonTable);
-		SettingUtil.put(getApplication().getString(R.string.KEY_TIME_TABLE), 0);
+		SettingUtil.put(getApplication().getString(R.string.KEY_TIME_TABLE), index);
 	}
 	
 	
@@ -278,7 +278,7 @@ public class LessonTableViewModel extends AndroidViewModel{
 		}
 		
 		if(lessonTable == null){
-			lessonTable = new LessonTable(new Date(), 20);
+			lessonTable = new LessonTable();
 		}
 	}
 	

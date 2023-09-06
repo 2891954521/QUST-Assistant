@@ -35,6 +35,7 @@ public class LessonTable implements Serializable, Cloneable{
 	private LessonGroup[][] lessons;
 	
 	public LessonTable(){
+		startDay = new Date();
 		lessons = new LessonGroup[7][10];
 	}
 	
@@ -85,6 +86,13 @@ public class LessonTable implements Serializable, Cloneable{
 		this.lessons = lessons;
 	}
 	
+	@NonNull
+	public LessonGroup getLessonGroupNotNull(int week, int count){
+		if(lessons[week][count] == null){
+			lessons[week][count] = new LessonGroup(week + 1, count + 1);
+		}
+		return lessons[week][count];
+	}
 	
 	/**
 	 * 从json中解析课表
@@ -138,6 +146,24 @@ public class LessonTable implements Serializable, Cloneable{
 		}
 	}
 	
+	/**
+	 * 将用户定义的课程合并到当前课程
+	 * @param other
+	 */
+	public LessonTable mergeUserDefinedLesson(LessonTable other){
+		int i, j;
+		for(i = 0; i < lessons.length; i++){
+			LessonGroup[] groups = lessons[i];
+			LessonGroup[] otherGroups = other.getLessons()[i];
+			for(j = 0; j < groups.length; j++){
+				if(otherGroups[j] != null){
+					if(groups[j] == null) groups[j] = new LessonGroup(i + 1, j + 1);
+					groups[j].mergeUserDefinedLesson(otherGroups[j]);
+				}
+			}
+		}
+		return this;
+	}
 	
 	@NonNull
 	@Override

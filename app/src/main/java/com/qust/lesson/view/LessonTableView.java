@@ -127,7 +127,7 @@ public class LessonTableView extends ViewPager{
 			lastWeek = currentWeek;
 			lastCount = currentCount;
 			lessonMenu.show((int)popX, (int)popY);
-			getAdapter().notifyDataSetChanged();
+//			getAdapter().notifyDataSetChanged();
 		};
 	}
 	
@@ -327,11 +327,7 @@ public class LessonTableView extends ViewPager{
 				if(LessonTableModel.isConflict(lessonTable, currentWeek, currentCount, copyLesson)){
 					Toast.makeText(getContext(), "课程时间冲突！", Toast.LENGTH_SHORT).show();
 				}else{
-					LessonGroup lessonGroup = lessonTable.getLessons()[currentWeek][currentCount];
-					if(lessonGroup == null){
-						lessonGroup = new LessonGroup(currentWeek + 1, currentCount + 1);
-					}
-					lessonGroup.addLesson(copyLesson.clone());
+					lessonTable.getLessonGroupNotNull(currentWeek, currentCount).addLesson(copyLesson.clone());
 				}
 				lessonUpdateListener.updateLesson();
 				dismiss();
@@ -344,12 +340,8 @@ public class LessonTableView extends ViewPager{
 			});
 			
 			addLesson.setOnClickListener(v -> {
-				LessonGroup lessonGroup = lessonTable.getLessons()[currentWeek][currentCount];
-				if(lessonGroup == null){
-					lessonGroup = new LessonGroup(currentWeek + 1, currentCount + 1);
-				}
 				selectedLesson = new Lesson();
-				lessonGroup.addLesson(selectedLesson);
+				lessonTable.getLessonGroupNotNull(currentWeek, currentCount).addLesson(selectedLesson);
 				lessonClickListener.onClickLesson(currentWeek + 1, currentCount + 1, selectedLesson);
 			});
 			

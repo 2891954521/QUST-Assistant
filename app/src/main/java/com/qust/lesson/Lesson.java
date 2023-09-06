@@ -131,9 +131,8 @@ public class Lesson implements Serializable, Cloneable{
 			mask = ((1L << (end - start)) - 1) << start;
 		}else{
 			mask = 0L;
-			for(int i = type == 0 ? start : start + 1; i < end; i += 2){
-				mask |= (1L << i);
-			}
+			if((type == 0 && start % 2 == 1) || (type == 1 && start % 2 == 0)) start += 1;
+			for(int i = start; i < end; i += 2) mask |= (1L << i);
 		}
 		lesson.week ^= mask;
 	}

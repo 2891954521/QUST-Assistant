@@ -48,9 +48,13 @@
     <style name="TextNormal" parent="BaseText">
         <item name="android:textSize">@dimen/text_small</item>
     </style>
+    
+    <style name="TextMedium" parent="BaseText">
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
 
     <style name="TextBig" parent="BaseText">
-        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textSize">@dimen/text_big</item>
     </style>
 
     <style name="TextTitle" parent="BaseText">

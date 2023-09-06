@@ -27,9 +27,11 @@ public class BottomDialog{
 		backView = _backView;
 		contentView = _contentView;
 		
-		DisplayMetrics displayMetrics = new DisplayMetrics();
-		activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-		contentView.getLayoutParams().height = (int)(displayMetrics.heightPixels * height);
+		if(height > 0){
+			DisplayMetrics displayMetrics = new DisplayMetrics();
+			activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+			contentView.getLayoutParams().height = (int)(displayMetrics.heightPixels * height);
+		}
 		
 		animIn = AnimationUtils.loadAnimation(activity, R.anim.anim_bottom_in);
 		animIn.setAnimationListener(new AnimationListenerAdapter(){

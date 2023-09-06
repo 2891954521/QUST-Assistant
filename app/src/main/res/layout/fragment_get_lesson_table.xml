@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
@@ -88,5 +89,103 @@
         app:backgroundTint="@color/colorPrimaryDark"
         app:elevation="4dp"
         app:pressedTranslationZ="8dp" />
+    
+    <RelativeLayout
+        android:id="@+id/layout_bottom_back"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#802C2C2C"
+        android:visibility="gone"
+        tools:visibility="visible">
+        
+        <com.qust.assistant.widget.DialogRoundTop
+            android:id="@+id/layout_bottom_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:clickable="true">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="@dimen/activity_margin"
+                android:orientation="vertical">
+        
+                <TextView
+                    style="@style/TextTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_margin"
+                    android:text="@string/text_get_lesson_save_lesson" />
+            
+                <CheckBox
+                    style="@style/TextMedium"
+                    android:id="@+id/get_lesson_save_start_time"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:gravity="start|center"
+                    android:checked="true"
+                    android:text="更新开学时间" />
+                
+                <TextView
+                    android:id="@+id/get_lesson_start_time"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:padding="@dimen/widget_margin"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/colorSecondaryText"
+                    android:text="当前开学时间"/>
+                
+                <CheckBox
+                    style="@style/TextMedium"
+                    android:id="@+id/get_lesson_keep_lesson"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:gravity="start|center"
+                    android:checked="true"
+                    android:text="保留被修改过的课程" />
+                
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:padding="@dimen/widget_margin"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/colorSecondaryText"
+                    android:text="同一门课程若被用户修改过则会保留"/>
+                
+            </LinearLayout>
+    
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+        
+                <TextView
+                    style="@style/TextBig"
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/activity_margin"
+                    android:text="取消"
+                    android:textColor="@color/colorError"/>
+        
+                <TextView
+                    style="@style/TextBig"
+                    android:id="@+id/btn_ok"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/activity_margin"
+                    android:text="确认" />
+    
+            </LinearLayout>
+
+        </com.qust.assistant.widget.DialogRoundTop>
+    
+    </RelativeLayout>
     
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

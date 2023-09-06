@@ -19,9 +19,9 @@ import com.qust.assistant.R;
 import com.qust.assistant.util.DialogUtil;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
-import com.qust.assistant.util.UpdateUtil;
 import com.qust.assistant.vo.UpdateInfo;
 import com.qust.base.ui.BaseAnimActivity;
+import com.qust.utils.UpdateUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,8 +33,6 @@ import java.net.URL;
 public class UpdateActivity extends BaseAnimActivity{
 	
 	private File file;
-	
-	private boolean isDev;
 	
 	private UpdateInfo info;
 	
@@ -54,26 +52,27 @@ public class UpdateActivity extends BaseAnimActivity{
 		initToolBar(null);
 		
 		file = new File(getExternalCacheDir(),"release.apk");
-		isDev = SettingUtil.getBoolean(getString(R.string.KEY_UPDATE_DEV), false);
-		
+
 		updateButton = findViewById(R.id.activity_update_update);
 		channelPicker = findViewById(R.id.activity_update_channel);
 		
-		checkDialog = DialogUtil.getIndeterminateProgressDialog(this,"正在检查更新").build();
+		checkDialog = DialogUtil.getIndeterminateProgressDialog(this, getString(R.string.text_checking_version)).build();
 		checkDialog.setCanceledOnTouchOutside(false);
 		
-		downloadDialog = DialogUtil.getIndeterminateProgressDialog(this, "正在下载").build();
+		downloadDialog = DialogUtil.getIndeterminateProgressDialog(this, getString(R.string.text_downloading)).build();
 		downloadDialog.setCanceledOnTouchOutside(false);
 		
+		boolean isDev = SettingUtil.getBoolean(getString(R.string.KEY_UPDATE_DEV), false);
+		String[] channel = isDev ? new String[] { "Gitee", "Github", "备用源", "开发版" } : new String[] { "Gitee", "Github", "备用源" };
 		channelPicker.setWrapSelectorWheel(false);
-		channelPicker.setDisplayedValues(isDev ? new String[] { "稳定版", "开发版", "备用下载" } : new String[] { "稳定版", "备用下载" });
+		channelPicker.setMaxValue(channel.length - 1);
 		channelPicker.setMinValue(0);
-		channelPicker.setMaxValue(1);
-		channelPicker.setValue(isDev ? 1 : 0);
+		channelPicker.setDisplayedValues(channel);
+		channelPicker.setValue(isDev ? 3 : 0);
 		
 		try{
 			PackageInfo pkg = getPackageManager().getPackageInfo(getPackageName(), 0);
-			((TextView)findViewById(R.id.activity_update_current_version)).setText("当前版本：" + pkg.versionName);
+			((TextView)findViewById(R.id.activity_update_current_version)).setText(getString(R.string.text_current_version, pkg.versionName));
 		}catch(PackageManager.NameNotFoundException ignore){ }
 		
 		findViewById(R.id.activity_update_check).setOnClickListener(v -> checkUpdate());
@@ -91,13 +90,22 @@ public class UpdateActivity extends BaseAnimActivity{
 		new Thread(){
 			@Override
 			public void run(){
-				info = UpdateUtil.checkVersion(UpdateActivity.this, isDev && channelPicker.getValue() == 1, !isDev && channelPicker.getValue() == 1);
+				switch(channelPicker.getValue()){
+					case 0:
+						info = UpdateUtils.checkVersionFromGit(UpdateUtils.GITEE_UPDATE_URL); break;
+					case 1:
+						info = UpdateUtils.checkVersionFromGit(UpdateUtils.GITHUB_UPDATE_URL); break;
+					case 2:
+						info = UpdateUtils.checkVersion(UpdateActivity.this, false); break;
+					case 3:
+						info = UpdateUtils.checkVersion(UpdateActivity.this, true); break;
+				}
 				runOnUiThread(() -> {
 					if(info == null){
 						toast("当前无新版本");
 						updateButton.setVisibility(View.GONE);
 					}else{
-						((TextView)findViewById(R.id.activity_update_info)).setText("下载地址：" + info.apkUrl + "\n" + info.message);
+						((TextView)findViewById(R.id.activity_update_info)).setText(getString(R.string.text_download_url, info.apkUrl, info.message));
 						updateButton.setVisibility(View.VISIBLE);
 					}
 					checkDialog.cancel();
@@ -173,11 +181,9 @@ public class UpdateActivity extends BaseAnimActivity{
 	}
 	
 	private void askForReDownload(){
-		new MaterialDialog.Builder(this)
-				.title("校验失败")
+		DialogUtil.getBaseDialog(this).title("校验失败")
 				.content("安装包异常，是否仍要安装？")
 				.positiveText("安装").onPositive((d, which)-> installApk())
-				.negativeText("取消").onNegative((d, which)-> d.dismiss())
 				.neutralText("重新下载").onNeutral((d, which) -> downloadApk())
 				.show();
 	}

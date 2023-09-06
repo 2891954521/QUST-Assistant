@@ -125,14 +125,19 @@ public class CustomizeActivity extends BaseAnimActivity{
 			LogUtil.Log(e);
 		}
 		
-		Set<String> pages = SettingUtil.getStringSet(getString(R.string.homePages), new HashSet<>(0));
-		selectedItems = new ArrayList<>(pages.size());
-		for(String target : pages){
-			MenuItem item = allItems.get(target);
-			if(item != null){
-				allItems.remove(target);
-				selectedItems.add(item);
+		try{
+			Set<String> pages = SettingUtil.getStringSet(getString(R.string.homePages), new HashSet<>(0));
+			selectedItems = new ArrayList<>(pages.size());
+			for(String target : pages){
+				MenuItem item = allItems.get(target);
+				if(item != null){
+					allItems.remove(target);
+					selectedItems.add(item);
+				}
 			}
+		}catch(RuntimeException e){
+			selectedItems = new ArrayList<>(16);
+			LogUtil.Log(e);
 		}
 		
 		homePosition = SettingUtil.getInt(getString(R.string.homeOffset), 0);
@@ -140,7 +145,6 @@ public class CustomizeActivity extends BaseAnimActivity{
 		
 		hideItems = new ArrayList<>(allItems.values());
 	}
-	
 	
 	
 	private class RecyclerItemAdapter extends RecyclerView.Adapter<ItemViewHolder>{

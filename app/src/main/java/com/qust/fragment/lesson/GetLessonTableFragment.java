@@ -1,12 +1,13 @@
 package com.qust.fragment.lesson;
 
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CheckBox;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.qust.account.NeedLoginException;
 import com.qust.assistant.R;
@@ -18,6 +19,7 @@ import com.qust.lesson.LessonTableModel;
 import com.qust.lesson.LessonTableViewModel;
 import com.qust.lesson.QueryLessonResult;
 import com.qust.lesson.view.LessonTableView;
+import com.qust.widget.BottomDialog;
 
 public class GetLessonTableFragment extends BaseEAFragment{
 	
@@ -25,7 +27,7 @@ public class GetLessonTableFragment extends BaseEAFragment{
 	
 	private String termText;
 	
-	private TextView weekTextView, termTextView;
+	private TextView weekTextView, termTextView, startTimeTextView;
 	
 	/**
 	 * 查询方案
@@ -35,6 +37,8 @@ public class GetLessonTableFragment extends BaseEAFragment{
 	private FloatingActionButton saveButton;
 	
 	private LessonTable lessonTable;
+	
+	private BottomDialog bottomDialog;
 	
 	private LessonTableView lessonTableView;
 	
@@ -55,6 +59,7 @@ public class GetLessonTableFragment extends BaseEAFragment{
 		lessonTableViewModel = LessonTableViewModel.getInstance(activity);
 		lessonTable = lessonTableViewModel.getLessonTable();
 		
+		startTimeTextView = findViewById(R.id.get_lesson_start_time);
 		weekTextView = findViewById(R.id.fragment_get_lesson_table_week);
 		termTextView = findViewById(R.id.fragment_get_lesson_table_term);
 		saveButton = findViewById(R.id.button_save);
@@ -72,21 +77,28 @@ public class GetLessonTableFragment extends BaseEAFragment{
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels){ }
 			@Override
 			public void onPageSelected(int position){
-				weekTextView.setText("第 " + (position + 1) + " 周");
+				weekTextView.setText(getString(R.string.text_week, String.valueOf(position + 1)));
 			}
 			@Override
 			public void onPageScrollStateChanged(int state){ }
 		});
 
-		weekTextView.setText("第 1 周");
-		saveButton.setOnClickListener(v -> saveData());
+		weekTextView.setText(getString(R.string.text_week, "1"));
+		saveButton.setOnClickListener(v -> showSaveData());
 		
 		typePicker = findViewById(R.id.fragment_school_type);
 		typePicker.setWrapSelectorWheel(false);
 		typePicker.setDisplayedValues(new String[]{ "个人课表", "班级课表" });
 		typePicker.setMinValue(0);
 		typePicker.setMaxValue(1);
-
+	
+		bottomDialog = new BottomDialog(activity, findViewById(R.id.layout_bottom_back), findViewById(R.id.layout_bottom_content), 0f);
+		findViewById(R.id.btn_cancel).setOnClickListener(v -> {
+			bottomDialog.hide();
+			saveButton.show();
+		});
+		findViewById(R.id.btn_ok).setOnClickListener(this::saveData);
+		
 		initYearAndTermPicker();
 		
 		setNeedSave(false);
@@ -115,6 +127,12 @@ public class GetLessonTableFragment extends BaseEAFragment{
 			
 			activity.runOnUiThread(() -> {
 				termTextView.setText(termText);
+				
+				startTimeTextView.setText(getString(R.string.text_get_lesson_start_time,
+						DateUtil.YMD.format(lessonTableViewModel.getStartDay()),
+						DateUtil.YMD.format(lessonTable.getStartDay())
+				));
+				
 				lessonTableView.initAdapter(lessonTable);
 				setNeedSave(true);
 				dialog.dismiss();
@@ -135,31 +153,32 @@ public class GetLessonTableFragment extends BaseEAFragment{
 		}
 	}
 	
-	private void saveData(){
-		if(lessonTable.getStartDay().equals(lessonTableViewModel.getStartDay())){
-			// 开学日期没查到或者与现在相同就不更新
+	private void showSaveData(){
+		if(lessonTableViewModel.getTotalWeek() == 0){
+			// 当前没有课表，直接保存
 			lessonTableViewModel.saveLessonData(lessonTable);
 			finish();
-		}else{
-			new MaterialDialog.Builder(activity).title("提示")
-					.content("查询到的新课表开学日期与当前不一致, 是否更新开学日期？\n当前开学日期: "
-							+ DateUtil.YMD.format(lessonTableViewModel.getStartDay())
-							+ "\n查询开学日期: "
-							+ DateUtil.YMD.format(lessonTable.getStartDay())
-					).positiveText("全部更新").onPositive((dialog, which) -> {
-						lessonTableViewModel.saveLessonData(lessonTable);
-						dialog.dismiss();
-						finish();
-					})
-					.negativeText("取消更新").onNegative((dialog, which) -> dialog.dismiss())
-					.neutralText("仅更新课表").onNeutral((dialog, which) -> {
-						lessonTable.setStartDay(lessonTableViewModel.getStartDay());
-						lessonTable.setTotalWeek(lessonTable.getTotalWeek());
-						lessonTableViewModel.saveLessonData(lessonTable);
-						dialog.dismiss();
-						finish();
-					}).show();
+			return;
 		}
+		
+		saveButton.hide();
+		bottomDialog.show();
+	}
+	
+	private void saveData(View v){
+		LessonTable newLessonTable = lessonTable;
+		
+		if(!((CheckBox)findViewById(R.id.get_lesson_save_start_time)).isChecked()){
+			newLessonTable.setStartDay(lessonTableViewModel.getStartDay());
+		}
+		
+		if(((CheckBox)findViewById(R.id.get_lesson_keep_lesson)).isChecked()){
+			newLessonTable.mergeUserDefinedLesson(lessonTableViewModel.getLessonTable());
+		}
+		
+		lessonTableViewModel.saveLessonData(newLessonTable);
+		
+		finish();
 	}
 	
 	@Override
@@ -177,7 +196,7 @@ public class GetLessonTableFragment extends BaseEAFragment{
 		if(needSave){
 			DialogUtil.getBaseDialog(activity).title("提示").content("课表信息未保存，是否保存？").onPositive((dialog, which) -> {
 				dialog.dismiss();
-				saveData();
+				showSaveData();
 			}).onNegative((dialog, which) -> {
 				dialog.dismiss();
 				finish();

@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.qust.assistant.R;
-import com.qust.model.AutoQueryModel;
 import com.qust.assistant.util.SettingUtil;
-import com.qust.assistant.util.UpdateUtil;
 import com.qust.base.ui.QFragmentActivity;
+import com.qust.model.AutoQueryModel;
+import com.qust.utils.UpdateUtils;
 
 public class MainActivity extends QFragmentActivity{
 	
@@ -23,7 +23,7 @@ public class MainActivity extends QFragmentActivity{
 		}
 		
 		// 检查更新
-		UpdateUtil.checkUpdate(this);
+		UpdateUtils.checkUpdateAsync(this);
 		
 		// 自动检查工具
 		AutoQueryModel.startAutoQuery(this);

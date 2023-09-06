@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 一个时间的课程组
@@ -102,6 +104,21 @@ public class LessonGroup implements Serializable, Cloneable{
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * 将用户定义的课程合并到当前课程
+	 * @param oldGroup
+	 */
+	public void mergeUserDefinedLesson(LessonGroup oldGroup){
+		Map<String, Lesson> mergedMap = new HashMap<>();
+		for(Lesson obj : lessons) mergedMap.put(obj.kchID, obj);
+
+		for(Lesson obj : oldGroup.lessons){
+			if(obj.type == 1) mergedMap.put(obj.kchID, obj);
+		}
+
+		lessons = mergedMap.values().toArray(new Lesson[0]);
 	}
 	
 	@NonNull
