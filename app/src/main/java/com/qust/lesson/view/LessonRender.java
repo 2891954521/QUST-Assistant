@@ -9,6 +9,7 @@ import android.os.Build;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.qust.assistant.R;
 import com.qust.assistant.util.ColorUtil;
@@ -16,7 +17,6 @@ import com.qust.assistant.util.DateUtil;
 import com.qust.assistant.util.ParamUtil;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.lesson.Lesson;
-import com.qust.lesson.LessonGroup;
 import com.qust.lesson.LessonTable;
 import com.qust.lesson.LessonTableViewModel;
 
@@ -35,19 +35,9 @@ public class LessonRender{
 	private static final int LESSON_PADDING = 3;
 	
 	/**
-	 * 开学日期
-	 */
-	private Calendar startDate;
-	
-	/**
 	 * 今天的日期
 	 */
 	private Calendar currentDay;
-	
-	/**
-	 * 课表信息
-	 */
-	private LessonTable lessonTable;
 	
 	/**
 	 * 显示全部课程
@@ -88,14 +78,10 @@ public class LessonRender{
 	
 	private String[][] timeText;
 	
-	private LessonCell[][][] lessons;
-	
+	private  LessonRenderData lessonRenderData;
 	
 	public LessonRender(@NonNull Context context){
-		startDate = Calendar.getInstance();
 		currentDay = Calendar.getInstance();
-		
-		lessons = new LessonCell[1][7][10];
 		
 		paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 		paint.setStyle(Paint.Style.FILL);
@@ -124,17 +110,20 @@ public class LessonRender{
 		hideTeacher = SettingUtil.getBoolean(context.getString(R.string.KEY_HIDE_TEACHER), false);
 		showAllLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_SHOW_ALL_LESSON), false);
 		hideFinishLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_HIDE_FINISH_LESSON), false);
+		
+		lessonRenderData = new LessonRenderData(hideTeacher, paintT);
 	}
 	
 	
 	/**
 	 * 设置 / 更新 课表信息
-	 * @param _lessonTable 课表信息
+	 * @param lessonTable 课表信息
 	 */
-	public void setLessonTable(@NonNull LessonTable _lessonTable){
-		lessonTable = _lessonTable;
+	public void setLessonTable(@NonNull LessonTable lessonTable){
+		lessonRenderData.setLessonTable(lessonTable);
 		if(cellWidth != 0 && cellHeight != 0){
-			calcLessonData();
+			lessonRenderData.setMeasureData(cellWidth - (LESSON_PADDING << 2));
+			lessonRenderData.calcLessonData();
 		}
 	}
 	
@@ -145,43 +134,78 @@ public class LessonRender{
 	public void setMeasureData(int measuredWidth, int measuredHeight){
 		cellWidth = (measuredWidth - timeWidth) / WEEK_STRING.length;
 		cellHeight = (measuredHeight - dateHeight) / timeText[0].length;
-		
-		if(lessonTable != null) calcLessonData();
+		lessonRenderData.setMeasureData(cellWidth - (LESSON_PADDING << 2));
+		lessonRenderData.calcLessonData();
 	}
 	
 	/**
 	 * 获取点击位置的课程
-	 * @return [week, count, 是否有课(0为无课)]
+	 * @param week 当前周
+	 * @param downX 点击X坐标
+	 * @param downY 点击Y坐标
+	 * @param result 存放计算出的点击位置
+	 * @return result 里为 [dayOfWeek, timeSlot]， return 值为点击到的课程
 	 */
-	public int[] getClickLesson(int showWeek, int downX, int downY){
-		if(downX < timeWidth || downY < dateHeight) return new int[] { -1, -1 , 0 };
-		
-		// 计算点击的位置在第几周
-		int currentWeek = (downX - timeWidth) / cellWidth;
-		
-		if(currentWeek >= WEEK_STRING.length){
-			return new int[]{ -1, -1 , 0 };
+	@Nullable
+	public Lesson getClickLesson(int week, int downX, int downY, int[] result){
+		if(downX < timeWidth || downY < dateHeight){
+			result[0] = -1;
+			result[1] = -1;
+			return null;
 		}
+		
+		// 计算点击的位置是星期几
+		int dayOfWeek = (downX - timeWidth) / cellWidth;
+		
+		if(dayOfWeek >= WEEK_STRING.length){
+			result[0] = -1;
+			result[1] = -1;
+			return null;
+		}
+		
+		result[0] = dayOfWeek;
 		
 		int y = downY - dateHeight;
 		
+		LessonRenderData.LessonHolder holder;
+		LessonRenderData.LessonData lessonData;
 		
-		for(int i = 0; i < lessons[showWeek][currentWeek].length; i++){
+		for(int timeSlot = 0; timeSlot < lessonRenderData.lessons[dayOfWeek].length; timeSlot++, y -= cellHeight){
+			holder = lessonRenderData.lessons[dayOfWeek][timeSlot];
 			
-			LessonCell lesson = lessons[showWeek][currentWeek][i];
-			
-			if(lesson != null && y < lesson.len * cellHeight){
-				return new int[] { currentWeek, i , 1 };
+			if(holder != null){
+				lessonData = holder.current(week);
+				
+				if(lessonData == null && showAllLesson){
+					lessonData = holder.findLesson(week, !hideFinishLesson);
+				}
+				
+				if(lessonData != null){
+					if(y < lessonData.len * cellHeight){
+						result[1] = timeSlot;
+						return lessonRenderData.getLessonByHolder(week, dayOfWeek, timeSlot);
+					}
+				}
 			}
 			
 			if(y < cellHeight){
-				return new int[] { currentWeek, i , 0 };
+				result[1] = timeSlot;
+				return null;
 			}
-			
-			y -= cellHeight;
 		}
 		
-		return new int[] { -1, -1, 0 };
+		result[0] = -1;
+		result[1] = -1;
+		return null;
+	}
+	
+	public boolean hasNextLesson(int week, int dayOfWeek, int timeSlot){
+		return lessonRenderData.lessons[dayOfWeek][timeSlot].hasNext(week);
+	}
+	
+	public Lesson nextLesson(int week, int dayOfWeek, int timeSlot){
+		lessonRenderData.lessons[dayOfWeek][timeSlot].next(week);
+		return lessonRenderData.getLessonByHolder(week, dayOfWeek, timeSlot);
 	}
 	
 	/**
@@ -211,78 +235,11 @@ public class LessonRender{
 		paint.setStyle(Paint.Style.FILL);
 	}
 	
-	/**
-	 * 计算绘制课程的信息
-	 */
-	protected void calcLessonData(){
-		startDate.setTime(lessonTable.getStartDay());
-		
-		int totalWeeks = lessonTable.getTotalWeek();
-		
-		LessonGroup[][] lessonGroups = lessonTable.getLessons();
-		
-		lessons = new LessonCell[totalWeeks][lessonGroups.length][lessonGroups[0].length];
-		
-		for(int week = 0; week < totalWeeks; week++){
-			for(int i = 0; i < lessonGroups.length; i++){
-				int j = 0;
-				while(j < lessonGroups[0].length){
-					LessonGroup lessonGroup = lessonGroups[i][j];
-					if(lessonGroup != null){
-						Lesson lesson = lessonGroup.getCurrentLesson(week + 1);
-						if(lesson != null){
-							lessons[week][i][j] = new LessonCell(lesson.color, lesson);
-							j += lesson.len;
-							continue;
-						}
-					}
-					j++;
-				}
-			}
-		}
-		
-		if(showAllLesson){
-			for(int week = 0; week < totalWeeks; week++){
-				for(int i = 0; i < lessonGroups.length; i++){
-					int j = 0;
-					while(j < lessonGroups[0].length){
-						LessonCell lessonCell = lessons[week][i][j];
-						if(lessonCell != null){
-							j += lessonCell.len;
-							continue;
-						}
-						LessonGroup lessonGroup = lessonGroups[i][j];
-						if(lessonGroup != null){
-							// 本周该时间无课但是其他周有课
-							Lesson lesson = lessonGroup.findLesson(week + 1, totalWeeks, !hideFinishLesson);
-							if(lesson != null){
-								boolean conflictFlag = false;
-								for(int p = j + 1, l = 0; p < lessonGroups[0].length && l < lesson.len - 1; p++, l++){
-									// 向下检查是否有冲突
-									if(lessons[week][i][p] != null){
-										conflictFlag = true;
-										break;
-									}
-								}
-								if(!conflictFlag){
-									lessons[week][i][j] = new LessonCell(-1, lesson);
-									j += lesson.len;
-									continue;
-								}
-							}
-						}
-						j++;
-					}
-				}
-			}
-		}
-	}
-	
 	protected void drawTime(Canvas canvas){
 		paintT.setColor(Color.GRAY);
 		int x = timeWidth / 2;
 		int y = dateHeight + baseLine + (cellHeight - textHeight * 2) / 2;
-		for(int i = 0; i < lessons[0][0].length; i++){
+		for(int i = 0; i < lessonRenderData.lessons[0].length; i++){
 			canvas.drawText(timeText[0][i], x, y, paintT);
 			canvas.drawText(timeText[1][i], x, y + textHeight, paintT);
 			y += cellHeight;
@@ -290,8 +247,7 @@ public class LessonRender{
 	}
 	
 	protected void drawDate(Canvas canvas, int week){
-		
-		Calendar c = (Calendar) startDate.clone();
+		Calendar c = (Calendar) lessonRenderData.startDate.clone();
 		
 		c.add(Calendar.WEEK_OF_YEAR, week);
 		int dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
@@ -316,26 +272,50 @@ public class LessonRender{
 		}
 	}
 	
-	protected void drawLessons(Canvas canvas, int showWeek){
+	protected void drawLessons(Canvas canvas, int week){
 		int x = timeWidth;
 		
-		for(int i = 0; i < lessons[showWeek].length; i++, x += cellWidth){
+		boolean colorFlag;
+		
+		for(int i = 0; i < lessonRenderData.lessons.length; i++, x += cellWidth){
 			
 			int y = dateHeight;
 			
-			for(int j = 0; j < lessons[showWeek][0].length; j++, y += cellHeight){
+			for(int j = 0; j < lessonRenderData.lessons[0].length; j++, y += cellHeight){
 				
-				LessonCell lesson = lessons[showWeek][i][j];
+				LessonRenderData.LessonHolder holder = lessonRenderData.lessons[i][j];
 				
-				if(lesson == null) continue;
+				if(holder == null) continue;
 				
-				paint.setColor(lesson.color == -1 ? ColorUtil.BACKGROUND_COLOR_SECOND : ColorUtil.BACKGROUND_COLORS[lesson.color]);
-				paintT.setColor(lesson.color == -1 ? ColorUtil.TEXT_COLOR_SECOND : ColorUtil.TEXT_COLORS[lesson.color]);
+				LessonRenderData.LessonData lesson = holder.current(week);
+				
+				if(lesson == null){
+					if(!showAllLesson) continue;
+					lesson = holder.findLesson(week, !hideFinishLesson);
+					if(lesson == null) continue;
+					colorFlag = false;
+				}else{
+					colorFlag = true;
+				}
+				
+				if(colorFlag){
+					paint.setColor(ColorUtil.BACKGROUND_COLORS[lesson.color]);
+					paintT.setColor(ColorUtil.TEXT_COLORS[lesson.color]);
+				}else{
+					paint.setColor(ColorUtil.BACKGROUND_COLOR_SECOND);
+					paintT.setColor(ColorUtil.TEXT_COLOR_SECOND);
+				}
 				
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
 					canvas.drawRoundRect(x + LESSON_PADDING, y + LESSON_PADDING, x + cellWidth - LESSON_PADDING, y + cellHeight * lesson.len - LESSON_PADDING, 16, 16, paint);
 				}else{
 					canvas.drawRoundRect(new RectF(x + LESSON_PADDING, y + LESSON_PADDING, x + cellWidth - LESSON_PADDING, y + cellHeight * lesson.len - LESSON_PADDING), 16, 16, paint);
+				}
+				
+				canvas.drawText(lesson.type == 0 ? "A" : "U", x + (LESSON_PADDING << 2) + 3, y + baseLine + (LESSON_PADDING << 2), paintT);
+				
+				if(holder.count[week] > 1){
+					canvas.drawText((holder.index[week] + 1) + "/" + holder.count[week], x + cellWidth / 2, y + cellHeight * lesson.len - textHeight + baseLine - (LESSON_PADDING << 2), paintT);
 				}
 				
 				int lineY = y + baseLine + (cellHeight * lesson.len - textHeight * lesson.lines - linePadding * (hideTeacher ? 1 : 2)) / 2;
@@ -349,69 +329,6 @@ public class LessonRender{
 						lineY += textHeight;
 					}
 				}
-			}
-		}
-	}
-
-	/**
-	 * 字符串分行
-	 * @param src 要分行的字符串
-	 * @param des 分行后的字符串
-	 * @param maxWidth 一行最大的长度
-	 * @param desPos 目标数组开始的位置
-	 * @param maxLine 最大支持的行数
-	 */
-	private int splitString(@NonNull String src, String[] des, int maxWidth, int desPos, int maxLine){
-		int srcPos = 0;
-		int lines = 0;
-		int length = src.length();
-		for(int i = srcPos; i < length;){
-			i = srcPos + paintT.breakText(src, i, length, true, maxWidth, null);
-			
-			if(desPos + lines >= des.length) return lines;
-			
-			des[desPos + lines] = src.substring(srcPos, i);
-			srcPos = i;
-			
-			if(lines++ == maxLine) return lines;
-		}
-		return lines;
-	}
-	
-	
-	private class LessonCell{
-		/**
-		 * 课程长度
-		 */
-		public int len;
-		
-		/**
-		 * 课程颜色
-		 */
-		public int color;
-		
-		/**
-		 * 文本信息的行数
-		 */
-		public int lines;
-		
-		/**
-		 * 课程文本信息
-		 */
-		public String[] data;
-		
-		public LessonCell(int color, @NonNull Lesson lesson){
-			this.color = color;
-			this.len = lesson.len;
-
-			data = new String[len * 3 + (hideTeacher ? 1 : 2)];
-			int l = data.length;
-			
-			int width = cellWidth - (LESSON_PADDING << 2);
-			lines = splitString(lesson.name, data, width, 0, l - 3);
-			lines += splitString(lesson.place, data, width, lines + 1, l - lines - 1);
-			if(!hideTeacher){
-				lines += splitString(lesson.teacher, data, width, lines + 2, l - lines);
 			}
 		}
 	}

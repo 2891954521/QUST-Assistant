@@ -125,7 +125,7 @@ public class Lesson implements Serializable, Cloneable{
 	 * @param end
 	 * @param type -1 正常 0 单周 1 双周
 	 */
-	public static void fillLesson(Lesson lesson, int start, int end, int type){
+	private static void fillLesson(Lesson lesson, int start, int end, int type){
 		long mask;
 		if(type == -1){
 			mask = ((1L << (end - start)) - 1) << start;

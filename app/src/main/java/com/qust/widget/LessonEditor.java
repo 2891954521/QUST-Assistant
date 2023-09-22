@@ -14,7 +14,6 @@ import com.qust.assistant.widget.ColorPicker;
 import com.qust.assistant.widget.lesson.LessonTime;
 import com.qust.base.ui.BaseActivity;
 import com.qust.lesson.Lesson;
-import com.qust.lesson.LessonTableModel;
 import com.qust.lesson.LessonTableViewModel;
 import com.qust.utils.CodeUtils;
 
@@ -156,22 +155,10 @@ public class LessonEditor{
 		int len = Integer.parseInt(lessonLen.getText().toString());
 		
 		boolean hasEdit = isNewLesson;
-		System.out.println(isNewLesson);
 		
 		if(time != editLesson.week || len != editLesson.len){
-			int bakLen = editLesson.len;
-			long bakWeeks = editLesson.week;
-			
 			editLesson.len = len;
 			editLesson.week = time;
-			
-			if(LessonTableModel.isConflict(lessonTableViewModel.getLessonTable(), week, count, editLesson)){
-				editLesson.len = bakLen;
-				editLesson.week = bakWeeks;
-				activity.toastWarning("课程时间冲突！");
-				return;
-			}
-			
 			hasEdit = true;
 		}
 		
@@ -187,7 +174,7 @@ public class LessonEditor{
 			hasEdit = true;
 		}
 		
-		String teacher = lessonPlace.getText().toString();
+		String teacher = lessonTeacher.getText().toString();
 		if(!teacher.equals(editLesson.teacher)){
 			editLesson.teacher = teacher;
 			hasEdit = true;

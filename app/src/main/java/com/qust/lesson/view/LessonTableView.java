@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,9 +21,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.qust.assistant.R;
 import com.qust.assistant.util.SettingUtil;
 import com.qust.lesson.Lesson;
-import com.qust.lesson.LessonGroup;
 import com.qust.lesson.LessonTable;
-import com.qust.lesson.LessonTableModel;
 
 public class LessonTableView extends ViewPager{
 	
@@ -37,6 +36,11 @@ public class LessonTableView extends ViewPager{
 	private int longPressTime;
 	
 	/**
+	 * 震动
+	 */
+	private Vibrator vibrator;
+	
+	/**
 	 * POP菜单出现的坐标
 	 */
 	private float popX, popY;
@@ -49,12 +53,13 @@ public class LessonTableView extends ViewPager{
 	/**
 	 * 上一次点击的课程位置
 	 */
-	private int lastWeek, lastCount;
+	private int lastDayOfWeek, lastTimeSlot;
 	
 	/**
 	 * 点击的课程位置
 	 */
-	private int currentWeek, currentCount;
+	private int[] pos;
+	private int currentDayOfWeek, currentTimeSlot;
 	
 	/**
 	 * 选中的课程
@@ -86,11 +91,6 @@ public class LessonTableView extends ViewPager{
 	 */
 	private boolean lockLesson;
 	
-	/**
-	 * 隐藏已结课程
-	 */
-	private boolean hideFinishLesson;
-	
 	private LessonMenu lessonMenu;
 	
 	private LessonTable lessonTable;
@@ -106,6 +106,9 @@ public class LessonTableView extends ViewPager{
 	
 	public LessonTableView(Context context, AttributeSet attrs){
 		super(context, attrs);
+		pos = new int[2];
+		
+		vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		
 		touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		longPressTime = ViewConfiguration.getLongPressTimeout();
@@ -113,21 +116,21 @@ public class LessonTableView extends ViewPager{
 		lessonMenu = new LessonMenu(context);
 		lessonRender = new LessonRender(context);
 		
-		lastCount = lastWeek = -1;
+		lastTimeSlot = lastDayOfWeek = -1;
 		
 		lessonClickListener = (week, count, lesson) -> { };
 		lessonUpdateListener = () -> { };
 		
 		lockLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_LOCK_LESSON), false);
-		hideFinishLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_HIDE_FINISH_LESSON), false);
 		
 		runnable = () -> {
 			if(clearMenu) return;
 			isMenuShowing = true;
-			lastWeek = currentWeek;
-			lastCount = currentCount;
+			lastDayOfWeek = currentDayOfWeek;
+			lastTimeSlot = currentTimeSlot;
+			getAdapter().notifyDataSetChanged();
 			lessonMenu.show((int)popX, (int)popY);
-//			getAdapter().notifyDataSetChanged();
+			vibrator.vibrate(50);
 		};
 	}
 	
@@ -168,6 +171,7 @@ public class LessonTableView extends ViewPager{
 	
 	/**
 	 * 处理LessonView的点击事件
+	 * @param week 当前是第几周（从0开始）
 	 * @return 是否重绘View
 	 */
 	protected boolean onLessonTouch(@NonNull MotionEvent event, int week){
@@ -186,20 +190,11 @@ public class LessonTableView extends ViewPager{
 				downX = event.getX();
 				downY = event.getY();
 				
-				int[] pos = lessonRender.getClickLesson(week, (int) downX, (int) downY);
-				currentWeek = pos[0];
-				currentCount = pos[1];
+				selectedLesson = lessonRender.getClickLesson(week, (int) downX, (int) downY, pos);
+				currentDayOfWeek = pos[0];
+				currentTimeSlot = pos[1];
 				
-				if(currentWeek != -1 && currentCount != -1){
-					LessonGroup lessonGroup = lessonTable.getLessons()[currentWeek][currentCount];
-					if(pos[2] == 1){
-						selectedLesson = lessonGroup.getCurrentLesson(week + 1);
-						if(selectedLesson == null){
-							selectedLesson = lessonGroup.findLesson(week + 1, lessonTable.getTotalWeek(), !hideFinishLesson);
-						}
-					}else{
-						selectedLesson = null;
-					}
+				if(currentDayOfWeek != -1 && currentTimeSlot != -1){
 					if(!lockLesson) postDelayed(runnable, longPressTime);
 				}
 				return false;
@@ -220,18 +215,22 @@ public class LessonTableView extends ViewPager{
 				lastIsMove = false;
 				
 				if(Math.abs(downX - event.getX()) < touchSlop && Math.abs(downY - event.getY()) < touchSlop){
-					if(currentWeek != -1 && currentCount != -1){
-						if(lastWeek == currentWeek && lastCount == currentCount){
+					if(currentDayOfWeek != -1 && currentTimeSlot != -1){
+						if(lastDayOfWeek == currentDayOfWeek && lastTimeSlot == currentTimeSlot){
 							// 触发课程点击事件
 							if(lockLesson){
 								Toast.makeText(getContext(), "课表已锁定", Toast.LENGTH_SHORT).show();
 							}else{
-								lessonClickListener.onClickLesson(currentWeek + 1, currentCount + 1, selectedLesson);
+								if(lessonRender.hasNextLesson(week, currentDayOfWeek, currentTimeSlot)){
+									selectedLesson = lessonRender.nextLesson(week, currentDayOfWeek, currentTimeSlot);
+								}else{
+									lessonClickListener.onClickLesson(currentDayOfWeek + 1, currentTimeSlot + 1, selectedLesson);
+								}
 							}
 						}else{
 							// 更新课程选中高亮框
-							lastWeek = currentWeek;
-							lastCount = currentCount;
+							lastDayOfWeek = currentDayOfWeek;
+							lastTimeSlot = currentTimeSlot;
 						}
 						// 通知LessonView重绘
 						return true;
@@ -254,8 +253,8 @@ public class LessonTableView extends ViewPager{
 	 */
 	protected void drawView(Canvas canvas, int week){
 		lessonRender.drawView(canvas, week);
-		if(lastWeek != -1 && lastCount != -1){
-			lessonRender.drawHighlightBox(canvas, lastWeek, lastCount, selectedLesson == null ? 1 : selectedLesson.len);
+		if(lastDayOfWeek != -1 && lastTimeSlot != -1){
+			lessonRender.drawHighlightBox(canvas, lastDayOfWeek, lastTimeSlot, selectedLesson == null ? 1 : selectedLesson.len);
 		}
 	}
 	
@@ -292,7 +291,7 @@ public class LessonTableView extends ViewPager{
 		
 		private int popWidth, popHeight;
 		
-		private View copy, paste, delete, addLesson;
+		private View edit, copy, paste, delete, addLesson;
 		
 		private Lesson copyLesson;
 		
@@ -312,10 +311,16 @@ public class LessonTableView extends ViewPager{
 			popWidth = contentView.getMeasuredWidth() / 4;
 			popHeight = contentView.getMeasuredHeight();
 			
+			edit = contentView.findViewById(R.id.menu_lesson_edit);
 			copy = contentView.findViewById(R.id.menu_lesson_copy);
 			paste = contentView.findViewById(R.id.menu_lesson_paste);
 			delete = contentView.findViewById(R.id.menu_lesson_delete);
 			addLesson = contentView.findViewById(R.id.menu_lesson_new);
+			
+			edit.setOnClickListener(v -> {
+				lessonClickListener.onClickLesson(currentDayOfWeek + 1, currentTimeSlot + 1, selectedLesson);
+				dismiss();
+			});
 			
 			copy.setOnClickListener(v -> {
 				copyLesson = selectedLesson.clone();
@@ -324,25 +329,22 @@ public class LessonTableView extends ViewPager{
 			
 			paste.setOnClickListener(v -> {
 				if(copyLesson == null) return;
-				if(LessonTableModel.isConflict(lessonTable, currentWeek, currentCount, copyLesson)){
-					Toast.makeText(getContext(), "课程时间冲突！", Toast.LENGTH_SHORT).show();
-				}else{
-					lessonTable.getLessonGroupNotNull(currentWeek, currentCount).addLesson(copyLesson.clone());
-				}
+				lessonTable.getLessonGroupNotNull(currentDayOfWeek, currentTimeSlot).addLesson(copyLesson.clone());
 				lessonUpdateListener.updateLesson();
 				dismiss();
 			});
 			
 			delete.setOnClickListener(v -> {
-				lessonTable.getLessons()[currentWeek][currentCount].removeLesson(selectedLesson);
+				lessonTable.getLessons()[currentDayOfWeek][currentTimeSlot].removeLesson(selectedLesson);
 				lessonUpdateListener.updateLesson();
 				dismiss();
 			});
 			
 			addLesson.setOnClickListener(v -> {
 				selectedLesson = new Lesson();
-				lessonTable.getLessonGroupNotNull(currentWeek, currentCount).addLesson(selectedLesson);
-				lessonClickListener.onClickLesson(currentWeek + 1, currentCount + 1, selectedLesson);
+				lessonTable.getLessonGroupNotNull(currentDayOfWeek, currentTimeSlot).addLesson(selectedLesson);
+				lessonClickListener.onClickLesson(currentDayOfWeek + 1, currentTimeSlot + 1, selectedLesson);
+				dismiss();
 			});
 			
 			setContentView(contentView);

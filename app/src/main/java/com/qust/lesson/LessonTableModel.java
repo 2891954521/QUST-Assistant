@@ -238,27 +238,4 @@ public class LessonTableModel{
 		return lessonResult;
 	}
 	
-	
-	/**
-	 * 检查课程是否冲突
-	 * @param week 目标星期，从0开始
-	 * @param count 目标节次，从0开始
-	 * @param lesson 需要检查的课程，检查冲突时会忽略自己
-	 */
-	public static boolean isConflict(@NonNull LessonTable lessonTable, int week, int count, @NonNull Lesson lesson){
-		LessonGroup[][] lessonGroups = lessonTable.getLessons();
-		for(int i = count; i < count + lesson.len && i < lessonGroups[0].length; i++){
-			LessonGroup l = lessonGroups[week][i];
-			if(l == null) continue;
-			
-			for(int j = 0; j < l.lessons.length; j++){
-				Lesson lesson2 = l.lessons[j];
-				// 忽略自己
-				if(lesson2.equals(lesson)) continue;
-				if((lesson2.week & lesson.week) > 0) return true;
-			}
-		}
-		return false;
-	}
-	
 }

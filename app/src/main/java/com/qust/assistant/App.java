@@ -12,16 +12,16 @@ import com.billy.android.swipe.SmartSwipeBack;
 import com.billy.android.swipe.SwipeConsumer;
 import com.qust.app.GuideActivity;
 import com.qust.app.MainActivity;
-import com.qust.fragment.third.DrinkViewModel;
 import com.qust.assistant.util.LogUtil;
 import com.qust.assistant.util.SettingUtil;
+import com.qust.fragment.third.DrinkViewModel;
 
 public class App extends Application{
 	
 	/**
 	 * 开发版版本号
 	 */
-	public static final int DEV_VERSION = 23;
+	public static final int DEV_VERSION = 24;
 	
 	
 	public DrinkViewModel drinkViewModel;
