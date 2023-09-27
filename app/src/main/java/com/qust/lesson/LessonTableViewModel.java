@@ -286,19 +286,23 @@ public class LessonTableViewModel extends AndroidViewModel{
 	 * 序列化储存课表数据
 	 */
 	private void saveLesson(){
+		
 		// 去除上课周数为0的课程
-		// TODO: 好像还能优化一下
-		for(LessonGroup[] value : lessonTable.getLessons()){
-			for(LessonGroup lessonGroup : value){
-				if(lessonGroup == null || lessonGroup.lessons.length < 2) continue;
-				for(int k = 0; k < lessonGroup.lessons.length; k++){
-					if(lessonGroup.lessons[k].week == 0){
-						lessonGroup.removeLesson(k);
+		LessonGroup[][] lessonGroups = lessonTable.getLessons();
+		for(LessonGroup[] lessonGroup : lessonGroups){
+			for(int timeSlot = 0; timeSlot < lessonGroup.length; timeSlot++){
+				LessonGroup group = lessonGroup[timeSlot];
+				if(group == null) continue;
+				if(group.lessons.length == 0) lessonGroup[timeSlot] = null;
+				for(int k = 0; k < group.lessons.length; k++){
+					if(group.lessons[k].week == 0){
+						group.removeLesson(k);
 						break;
 					}
 				}
 			}
 		}
+		
 		File dataFile = new File(getApplication().getFilesDir(),"lessonTables");
 		if(!dataFile.exists() && !dataFile.mkdirs()) return;
 		try{

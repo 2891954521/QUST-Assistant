@@ -68,7 +68,7 @@ public class LessonRenderData{
 		for(int dayOfWeek = 0; dayOfWeek < lessonGroups.length; dayOfWeek++){
 			for(int timeSlot = 0; timeSlot < lessonGroups[0].length; timeSlot++){
 				LessonGroup lessonGroup = lessonGroups[dayOfWeek][timeSlot];
-				if(lessonGroup == null) continue;
+				if(lessonGroup == null || lessonGroup.lessons.length == 0) continue;
 				LessonHolder holder = new LessonHolder(lessonGroup, totalWeek);
 				lessons[dayOfWeek][timeSlot] = holder;
 			}
@@ -118,6 +118,7 @@ public class LessonRenderData{
 		public int[] index;
 		
 		public int[] count;
+		
 		public int[] lessonTime;
 		
 		public LessonData[] lessonData;

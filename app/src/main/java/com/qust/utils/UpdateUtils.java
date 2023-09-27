@@ -34,7 +34,7 @@ import java.util.Date;
  */
 public class UpdateUtils{
 	
-	public static final String NAVIGATION_PAGE_URL = "http://qusb.kituin.fun/guide.json";
+	public static final String NAVIGATION_PAGE_URL = "https://nacho.kituin.fun/guide.json";
 	
 	public static final String GITHUB_UPDATE_URL = "https://api.github.com/repos/2891954521/QUST-Assistant/releases/latest";
 	

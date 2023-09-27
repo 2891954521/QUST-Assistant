@@ -125,11 +125,11 @@ public class LessonTableView extends ViewPager{
 		
 		runnable = () -> {
 			if(clearMenu) return;
-			isMenuShowing = true;
 			lastDayOfWeek = currentDayOfWeek;
 			lastTimeSlot = currentTimeSlot;
 			getAdapter().notifyDataSetChanged();
 			lessonMenu.show((int)popX, (int)popY);
+			isMenuShowing = true;
 			vibrator.vibrate(50);
 		};
 	}
@@ -217,15 +217,13 @@ public class LessonTableView extends ViewPager{
 				if(Math.abs(downX - event.getX()) < touchSlop && Math.abs(downY - event.getY()) < touchSlop){
 					if(currentDayOfWeek != -1 && currentTimeSlot != -1){
 						if(lastDayOfWeek == currentDayOfWeek && lastTimeSlot == currentTimeSlot){
-							// 触发课程点击事件
-							if(lockLesson){
+							if(lessonRender.hasNextLesson(week, currentDayOfWeek, currentTimeSlot)){
+								selectedLesson = lessonRender.nextLesson(week, currentDayOfWeek, currentTimeSlot);
+							}else if(lockLesson){
 								Toast.makeText(getContext(), "课表已锁定", Toast.LENGTH_SHORT).show();
 							}else{
-								if(lessonRender.hasNextLesson(week, currentDayOfWeek, currentTimeSlot)){
-									selectedLesson = lessonRender.nextLesson(week, currentDayOfWeek, currentTimeSlot);
-								}else{
-									lessonClickListener.onClickLesson(currentDayOfWeek + 1, currentTimeSlot + 1, selectedLesson);
-								}
+								// 触发课程点击事件
+								lessonClickListener.onClickLesson(currentDayOfWeek + 1, currentTimeSlot + 1, selectedLesson);
 							}
 						}else{
 							// 更新课程选中高亮框
