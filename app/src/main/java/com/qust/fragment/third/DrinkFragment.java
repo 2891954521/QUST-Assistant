@@ -2,7 +2,6 @@ package com.qust.fragment.third;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -15,14 +14,11 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.qust.assistant.R;
 import com.qust.assistant.util.ParamUtil;
 import com.qust.assistant.util.WebUtil;
 import com.qust.base.fragment.BaseFragment;
+import com.qust.utils.LinearBarCode;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -201,21 +197,7 @@ public class DrinkFragment extends BaseFragment{
 	private void createCode(){
 		String code = DrinkData.getDrinkCode(activity);
 		if(code == null) return;
-		try{
-			BitMatrix bitMatrix = new MultiFormatWriter().encode(code, BarcodeFormat.CODE_128, 1000, 200);
-			int width = bitMatrix.getWidth();
-			int height = bitMatrix.getHeight();
-			int[] pixels = new int[width * height];
-			for(int y = 0; y < height; y++){
-				int offset = y * width;
-				for(int x = 0; x < width; x++){
-					pixels[offset + x] = bitMatrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF;
-				}
-			}
-			Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-			bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-			image.setImageBitmap(bitmap);
-		}catch(WriterException ignored){ }
+		image.setImageBitmap(LinearBarCode.createCode128Barcode(code, 1000, 200));
 	}
 	
 	private void hideCode(){

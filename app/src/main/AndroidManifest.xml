@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.qust.assistant"
     android:versionCode="29"
-    android:versionName="2.4.3 alpha">
+    android:versionName="2.4.3.20231019_alpha">
 
     <uses-permission android:name="android.permission.INTERNET" />
     

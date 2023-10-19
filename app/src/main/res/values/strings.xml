@@ -88,6 +88,7 @@
     
     <string name="text_need_login">请先登录</string>
     
+    <string name="text_querying">查询中</string>
     
     <string name="text_current_version">当前版本：%s</string>
     <string name="text_checking_version">正在检查更新</string>

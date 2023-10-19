@@ -148,7 +148,7 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 		
 		vpnViewModel = VpnViewModel.getInstance(activity);
 		
-		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "请稍后").build();
+		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "请稍后").canceledOnTouchOutside(false).build();
 		
 		accountText = findViewById(R.id.electricity_account);
 		balanceText = findViewById(R.id.electricity_balance);

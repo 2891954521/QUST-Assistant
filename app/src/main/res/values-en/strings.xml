@@ -7,6 +7,7 @@
     <string name="text_week">%s Week</string>
     
     <string name="text_need_login">Please log in first</string>
+	<string name="text_querying">Querying</string>
 	<string name="text_current_version">Current version: %s</string>
     <string name="text_checking_version">Checking for updates</string>
     <string name="text_downloading">Downloading</string>

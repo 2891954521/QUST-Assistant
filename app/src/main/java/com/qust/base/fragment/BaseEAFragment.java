@@ -94,8 +94,7 @@ public abstract class BaseEAFragment extends BaseFragment{
 	@Override
 	protected void initLayout(LayoutInflater inflater){
 		
-		
-		dialog = DialogUtil.getIndeterminateProgressDialog(activity, "查询中").build();
+		dialog = DialogUtil.getIndeterminateProgressDialog(activity, getString(R.string.text_querying)).canceledOnTouchOutside(false).build();
 		
 		View view = findViewById(R.id.fragment_school_query);
 		if(view != null) view.setOnClickListener(v -> startQuery());
@@ -148,8 +147,10 @@ public abstract class BaseEAFragment extends BaseFragment{
 				}catch(NeedLoginException e){
 					handler.post(() -> {
 						dialog.dismiss();
-						toast(getString(R.string.text_need_login));
-						FragmentActivity.startActivity(activity, EALoginFragment.class);
+						if(isAdded()){
+							toast(getString(R.string.text_need_login));
+							FragmentActivity.startActivity(activity, EALoginFragment.class);
+						}
 					});
 				}finally{
 					isRunning = false;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -66,6 +67,7 @@ public class LessonTableView extends ViewPager{
 	 */
 	private Lesson selectedLesson;
 	
+	private Handler handler;
 	
 	private Runnable runnable;
 	
@@ -123,6 +125,7 @@ public class LessonTableView extends ViewPager{
 		
 		lockLesson = SettingUtil.getBoolean(context.getString(R.string.KEY_LOCK_LESSON), false);
 		
+		handler = new Handler(context.getMainLooper());
 		runnable = () -> {
 			if(clearMenu) return;
 			lastDayOfWeek = currentDayOfWeek;
@@ -195,7 +198,7 @@ public class LessonTableView extends ViewPager{
 				currentTimeSlot = pos[1];
 				
 				if(currentDayOfWeek != -1 && currentTimeSlot != -1){
-					if(!lockLesson) postDelayed(runnable, longPressTime);
+					if(!lockLesson) handler.postDelayed(runnable, longPressTime);
 				}
 				return false;
 			
@@ -211,6 +214,7 @@ public class LessonTableView extends ViewPager{
 					return false;
 				}else{
 					clearMenu = true;
+					handler.removeCallbacks(runnable);
 				}
 				lastIsMove = false;
 				
@@ -264,6 +268,7 @@ public class LessonTableView extends ViewPager{
 			lessonMenu.dismiss();
 		}else{
 			clearMenu = true;
+			handler.removeCallbacks(runnable);
 		}
 	}
 	
@@ -289,7 +294,7 @@ public class LessonTableView extends ViewPager{
 		
 		private int popWidth, popHeight;
 		
-		private View edit, copy, paste, delete, addLesson;
+		private View copy, paste, delete, addLesson;
 		
 		private Lesson copyLesson;
 		
@@ -309,12 +314,12 @@ public class LessonTableView extends ViewPager{
 			popWidth = contentView.getMeasuredWidth() / 4;
 			popHeight = contentView.getMeasuredHeight();
 			
-			edit = contentView.findViewById(R.id.menu_lesson_edit);
 			copy = contentView.findViewById(R.id.menu_lesson_copy);
 			paste = contentView.findViewById(R.id.menu_lesson_paste);
 			delete = contentView.findViewById(R.id.menu_lesson_delete);
 			addLesson = contentView.findViewById(R.id.menu_lesson_new);
 			
+			View edit = contentView.findViewById(R.id.menu_lesson_edit);
 			edit.setOnClickListener(v -> {
 				lessonClickListener.onClickLesson(currentDayOfWeek + 1, currentTimeSlot + 1, selectedLesson);
 				dismiss();
@@ -358,7 +363,7 @@ public class LessonTableView extends ViewPager{
 			if(selectedLesson == null){
 				copy.setVisibility(View.GONE);
 				delete.setVisibility(View.GONE);
-				addLesson.setVisibility(View.VISIBLE);
+				addLesson.setVisibility(View.GONE);
 			}else{
 				copy.setVisibility(View.VISIBLE);
 				delete.setVisibility(View.VISIBLE);

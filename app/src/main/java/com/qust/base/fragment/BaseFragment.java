@@ -58,6 +58,12 @@ public abstract class BaseFragment extends Fragment{
 		activity = (BaseFragmentAbleActivity)getActivity();
 	}
 	
+	@Override
+	public void onDetach(){
+		super.onDetach();
+		activity = null;
+	}
+	
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
