@@ -70,6 +70,23 @@ public class FileUtil{
             }
         }
     }
+    
+    public static void appendFileNewLine(@NonNull File file, String s){
+        RandomAccessFile raf = null;
+        try{
+            if(!file.exists()) file.createNewFile();
+            raf = new RandomAccessFile(file, "rw");
+            raf.seek(raf.length());
+            raf.write(s.getBytes());
+            raf.writeChar('\n');
+        }catch(IOException ignored){
+        
+        }finally{
+            try{
+                if(raf != null) raf.close();
+            }catch(IOException ignored){ }
+        }
+    }
 
     public static void copyFile(InputStream in,String targetPath){
         copyFile(in,new File(targetPath));

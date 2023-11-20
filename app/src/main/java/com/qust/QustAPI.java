@@ -5,12 +5,38 @@ package com.qust;
  */
 public class QustAPI{
 	
-
-	
 	/**
-	 * 智慧青科大HOST
+	 * 智慧青科大VPN HOST
 	 */
 	public static final String VPN_HOST = "wvpn.qust.edu.cn";
+	
+	/**
+	 * 智慧青科大VPN登录入口
+	 * <p>
+	 * Get:
+	 * <p>
+	 * - 登录界面
+	 * <p>
+	 * Post:
+	 * <p>
+	 * - ul: 	用户名长度
+	 * <p>
+	 * - pl: 	密码长度
+	 * <p>
+	 * - lt:	HTML里拿
+	 * <p>
+	 * - rsa:	加密后的用户名密码
+	 * <p>
+	 * - execution: e1s1
+	 * <p>
+	 * - _eventId: submit
+	 */
+	public static final String VPN_LOGIN = "https://wvpn.qust.edu.cn/";
+	
+	/**
+	 * 智慧青科大 HOST
+	 */
+	public static final String IPASS_HOST = "ipass.qust.edu.cn";
 	
 	/**
 	 * 智慧青科大登录入口
@@ -33,7 +59,7 @@ public class QustAPI{
 	 * <p>
 	 * - _eventId: submit
 	 */
-	public static final String VPN_LOGIN = "https://wvpn.qust.edu.cn/";
+	public static final String IPASS_LOGIN = "http://ipass.qust.edu.cn/tpass/login/";
 	
 	
 	/**

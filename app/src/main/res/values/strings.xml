@@ -78,7 +78,11 @@
     <string name="VPN_NAME" translatable="false">vpnName</string>
     <!-- 智慧青科大密码 -->
     <string name="VPN_PASSWORD" translatable="false">vpnPassword</string>
+    
     <!-- 智慧青科大Cookie -->
+    <string name="IPass_Cookie" translatable="false">ipassCookie</string>
+    
+    <!-- 智慧青科大VPN Cookie -->
     <string name="VPN_Cookie" translatable="false">vpnCookie</string>
     
     

@@ -1,4 +1,4 @@
-package com.qust.account.vpn;
+package com.qust.account.ipass;
 
 import android.app.Application;
 import android.content.Context;
@@ -10,6 +10,7 @@ import com.qust.QustAPI;
 import com.qust.account.AccountViewModel;
 import com.qust.account.RequestCallback;
 import com.qust.account.RequestErrorCallback;
+import com.qust.account.vpn.VpnEncodeUtil;
 import com.qust.assistant.R;
 import com.qust.assistant.util.SettingUtil;
 
@@ -24,40 +25,34 @@ import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * QUST VPN登录模块
- */
-public class VpnViewModel extends AccountViewModel{
+public class IPassViewModel extends AccountViewModel{
 	
-	private static volatile VpnViewModel INSTANCE;
+	private static volatile IPassViewModel INSTANCE;
 	
-	public static VpnViewModel getInstance(Context context){
+	public static IPassViewModel getInstance(Context context){
 		if(INSTANCE == null){
-			synchronized(VpnViewModel.class){
+			synchronized(IPassViewModel.class){
 				if(INSTANCE == null){
-					INSTANCE = new VpnViewModel((Application)context.getApplicationContext());
+					INSTANCE = new IPassViewModel((Application)context.getApplicationContext());
 				}
 			}
 		}
 		return INSTANCE;
 	}
 	
-	public VpnViewModel(@NonNull Application application){
+	public IPassViewModel(@NonNull Application application){
 		super(application);
 		Resources resources = application.getResources();
-		init("https", QustAPI.VPN_HOST,
+		init("https", QustAPI.IPASS_HOST,
 				resources.getString(R.string.VPN_NAME),
 				resources.getString(R.string.VPN_PASSWORD),
-				resources.getString(R.string.VPN_Cookie)
+				resources.getString(R.string.IPass_Cookie)
 		);
 	}
 	
-	/**
-	 * 异步检查登陆状态，有账号信息时自动进行登录
-	 * @see #loginAsync(RequestCallback, RequestErrorCallback)
-	 */
-	public synchronized void checkLoginAsync(RequestCallback callback, RequestErrorCallback errorCallback){
-		clientNoFollowRedirects.newCall(new Request.Builder().url(QustAPI.VPN_LOGIN).build()).enqueue(new Callback(){
+	@Override
+	public void checkLoginAsync(RequestCallback callback, RequestErrorCallback errorCallback){
+		clientNoFollowRedirects.newCall(new Request.Builder().url(host + "tp_up/view?m=up").build()).enqueue(new Callback(){
 			@Override
 			public void onFailure(@NonNull Call call, @NonNull IOException e){
 				errorCallback.onNetworkError(e);
@@ -66,31 +61,31 @@ public class VpnViewModel extends AccountViewModel{
 			@Override
 			public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException{
 				int code = response.code();
-				if((code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP) && response.header("Location").contains("login")){
-					try{
-						if(loginSync()) callback.onSuccess(response, null);
-						else errorCallback.onNeedLogin();
-					}catch(IOException e){
-						errorCallback.onNetworkError(e);
-					}
-				}else{
+				if(code == HttpURLConnection.HTTP_OK){
 					isLogin = true;
 					loginData.postValue(true);
 					callback.onSuccess(response, null);
+				}else if(code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP){
+					if(response.header("Location").contains("login")){
+						if(loginSync()){
+							callback.onSuccess(response, null);
+						}else{
+							errorCallback.onNeedLogin();
+						}
+					}else{
+						callback.onSuccess(response, null);
+					}
+				}else{
+					errorCallback.onNeedLogin();
 				}
 			}
 		});
 	}
 	
-	
-	/**
-	 * 异步登录请求
-	 * @param callback 登录成功时的回调
-	 * @param errorCallback 网络错误或者用户名或密码错误时的回调
-	 */
-	public synchronized void loginAsync(String userName, String password, RequestCallback callback, RequestErrorCallback errorCallback){
+	@Override
+	public void loginAsync(String userName, String password, RequestCallback callback, RequestErrorCallback errorCallback){
 		cookieJar.clearCookies();
-		okHttpClient.newCall(new Request.Builder().url(QustAPI.VPN_LOGIN).build()).enqueue(new Callback(){
+		okHttpClient.newCall(new Request.Builder().url(QustAPI.IPASS_LOGIN).build()).enqueue(new Callback(){
 			@Override
 			public void onFailure(@NonNull Call call, @NonNull IOException e){
 				errorCallback.onNetworkError(e);
@@ -143,12 +138,9 @@ public class VpnViewModel extends AccountViewModel{
 		});
 	}
 	
-	/**
-	 * 同步检查登陆状态，有账号信息时自动进行登录
-	 * @see #loginSync()
-	 */
-	public synchronized boolean checkLoginSync() throws IOException{
-		try(Response response = clientNoFollowRedirects.newCall(new Request.Builder().url(QustAPI.VPN_LOGIN).build()).execute()){
+	@Override
+	public boolean checkLoginSync() throws IOException{
+		try(Response response = clientNoFollowRedirects.newCall(new Request.Builder().url(host + "tp_up/view?m=up").build()).execute()){
 			int code = response.code();
 			if(code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP){
 				return !response.header("Location").contains("login") || loginSync();
@@ -160,22 +152,14 @@ public class VpnViewModel extends AccountViewModel{
 		}
 	}
 	
-	/**
-	 * 同步登录请求
-	 * @return 登录是否成功（失败的情况下为账号或密码错误）
-	 * @throws IOException 网络错误
-	 */
-	public synchronized boolean loginSync(String userName, String password) throws IOException{
+	@Override
+	public boolean loginSync(String userName, String password) throws IOException{
 		cookieJar.clearCookies();
-
+		
 		String lt;
 		HttpUrl loginUrl;
 		
-		try(Response response = okHttpClient.newCall(
-				new Request.Builder()
-						.url(QustAPI.VPN_LOGIN)
-						.build()
-		).execute()){
+		try(Response response = okHttpClient.newCall(new Request.Builder().url(QustAPI.IPASS_LOGIN).build()).execute()){
 			String html = response.body().string();
 			Matcher matcher = VpnEncodeUtil.LT_PATTERN.matcher(html);
 			if(matcher.find()){

@@ -18,7 +18,6 @@ public class MainActivity extends QFragmentActivity{
 		// 第一次使用跳转到引导页
 		if(SettingUtil.getBoolean(getString(R.string.isFirstUse), true)){
 			startActivity(new Intent(this, GuideActivity.class));
-			finish();
 			return;
 		}
 		

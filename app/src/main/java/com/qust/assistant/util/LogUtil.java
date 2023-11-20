@@ -113,11 +113,19 @@ public class LogUtil{
 		
 		if(f.exists()){
 			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + hash);
-			if(needUpload) FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "\n");
+			if(needUpload){
+				try{
+					FileUtil.appendFileNewLine(new File(LogFile, "upload.log"), new JSONObject().put("hash", hash).toString());
+				}catch(JSONException ignored){ }
+			}
 		}else{
 			FileUtil.writeFile(f.toString(), str);
 			String message = e.getClass().getName() + " : " + e.getMessage();
-			if(needUpload) FileUtil.appendFile(new File(LogFile, "upload.log"), hash + "|" + message + "\n");
+			if(needUpload){
+				try{
+					FileUtil.appendFileNewLine(new File(LogFile, "upload.log"), new JSONObject().put("hash", hash).put("message", message).toString());
+				}catch(JSONException ignored){ }
+			}
 			debugLog(DateUtil.YMD_HM.format(new Date(System.currentTimeMillis())) + " 发生异常:" + hash + "\n" + message);
 		}
 	}
@@ -146,12 +154,13 @@ public class LogUtil{
 			
 			f.delete();
 			
+			JSONObject js;
 			for(String log : logs){
 				try{
-					int index = log.indexOf('|');
-					String hash = index == -1 ? log : log.substring(0, index);
-					String name = (index == -1 || index + 1 == log.length()) ? "" : log.substring(index + 1);
-					String content = index == -1 ? null : URLEncoder.encode(FileUtil.readFile(new File(LogUtil.LogFile, hash + ".log")), "UTF-8");
+					js = new JSONObject(log);
+					String hash = js.getString("hash");
+					String name = js.has("message") ? js.getString("message") : "";
+					String content = js.has("message") ? URLEncoder.encode(FileUtil.readFile(new File(LogUtil.LogFile, hash + ".log")), "UTF-8") : null;
 					
 					String data = "id=" + ANDROID_ID +	// 设备ID
 							"&hash=" + hash +			// 异常hash
@@ -168,12 +177,11 @@ public class LogUtil{
 					
 					LogUtil.Log(result);
 					
-					JSONObject js = new JSONObject(result);
+					js = new JSONObject(result);
 					
 					if(js.getInt("code") != 200){
 						LogUtil.debugLog("日志上传失败：" + js.getString("msg"));
 					}
-					
 				}catch(IOException | JSONException | IndexOutOfBoundsException e){
 					LogUtil.debugLog("日志上传失败：" + e.getMessage());
 				}

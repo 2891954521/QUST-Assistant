@@ -55,7 +55,7 @@ public class ElectricityFragment extends BaseFragment implements RequestErrorCal
 	private static final String TSM = "http/77726476706e69737468656265737421f4f10f8d32237c1e7b0c9ce29b5b/web/Common/Tsm.html";
 	private static final String PAY = "http/77726476706e69737468656265737421f4f10f8d32237c1e7b0c9ce29b5b/web/Elec/PayElecGdc.html";
 	
-	private static final String CARD_BALANCE = "http/77726476706e69737468656265737421f9b95089342426557a1dc7af96/tp_up/up/subgroup/queryCardBalance";
+	private static final String CARD_BALANCE = "https/77726476706e69737468656265737421f9b95089342426557a1dc7af96/tp_up/up/subgroup/queryCardBalance";
 	
 	/*
 		POST /User/GetCardInfoByAccountNoParm HTTP/1.1

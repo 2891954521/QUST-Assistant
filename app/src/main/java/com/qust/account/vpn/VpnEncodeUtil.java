@@ -3,8 +3,11 @@ package com.qust.account.vpn;
 import androidx.annotation.NonNull;
 
 import java.math.BigInteger;
+import java.util.regex.Pattern;
 
 public class VpnEncodeUtil{
+	
+	public static final Pattern LT_PATTERN = Pattern.compile("name=\"lt\" value=\"(LT-\\d+-[a-zA-Z\\d]+-tpass)\"");
 	
 	private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 	
