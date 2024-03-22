@@ -5,7 +5,6 @@ local.properties
 .DS_Store
 .externalNativeBuild
 /bak
-/captures
 /.idea
 /build
 /local.properties
