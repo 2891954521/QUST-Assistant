@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">QustHelper</string>
+	<string name="text_welcome">Welcome</string>
+	<string name="text_skip">Skip</string>
+	<string name="text_ok">OK</string>
+	<string name="text_cancel">Cancel</string>
+	<string name="text_term">Term</string>
+	<string name="text_query">Query</string>
+	<string name="text_week">%s Week</string>
+	<string name="text_query_term_start_time">Current start date: %s\nQueryed start date: %s</string>
+	<string name="text_save_lesson_table">Save Lesson Table</string>
+	<string name="text_login">Login</string>
+</resources>
