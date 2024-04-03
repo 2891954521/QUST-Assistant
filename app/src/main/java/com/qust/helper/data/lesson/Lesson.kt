@@ -21,12 +21,15 @@ data class Lesson(
 	var kchID: String = "",
 	var color: Int = 0,
 	var len: Int = 1,
-	var week: Long = 0,
+	var week: Long = 0L,
 	var name: String = "",
 	var place: String = "",
 	var teacher: String = "",
 ){
 	companion object {
+
+		val EMPTY_LESSON = Lesson()
+
 		/**
 		 * 从json中解析Lesson
 		 * @param json

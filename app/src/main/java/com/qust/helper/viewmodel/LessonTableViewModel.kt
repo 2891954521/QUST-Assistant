@@ -1,19 +1,20 @@
 package com.qust.helper.viewmodel
 
 import android.app.Application
-import android.content.Context
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
+import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.data.lesson.LessonTable
-import com.qust.helper.ui.widget.LessonRender
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.json.encodeToStream
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.Calendar
 
 class LessonTableViewModel(application: Application): AndroidViewModel(application) {
@@ -33,15 +34,32 @@ class LessonTableViewModel(application: Application): AndroidViewModel(applicati
 	 */
 	var dayOfWeek = mutableIntStateOf(0)
 
+	/**
+	 * 显示所有课程
+	 */
+	var showAllLesson = mutableStateOf(Setting.getBoolean(Keys.KEY_SHOW_ALL_LESSON, true))
+
+	/**
+	 * 隐藏已结课课程
+	 */
+	var hideFinishLesson =  mutableStateOf(Setting.getBoolean(Keys.KEY_HIDE_FINISH_LESSON, false))
+
+	/**
+	 * 隐藏教师
+	 */
+	var hideTeacher = mutableStateOf(Setting.getBoolean(Keys.KEY_HIDE_TEACHER, true))
+
+
 	var lessonTable = mutableStateOf(LessonTable(
 		totalWeek = 20,
 		lessons = Array(7){ arrayOfNulls(10) }
 	))
 
-	var lessonRender = mutableStateOf(LessonRender())
+	private var dataFile: File
 
 	init {
-		loadLesson(application)
+		dataFile = File(application.filesDir, "lessonTables")
+		loadLesson()
 		updateDate()
 //		lessonTime = LessonTableViewModel.LESSON_TIME.get(currentTimeTable)
 //		lessonTimeText = LessonTableViewModel.LESSON_TIME_TEXT.get(currentTimeTable)
@@ -62,8 +80,7 @@ class LessonTableViewModel(application: Application): AndroidViewModel(applicati
 	 * 从本地文件初始化课表
 	 */
 	@OptIn(ExperimentalSerializationApi::class)
-	private fun loadLesson(context: Context) {
-		val dataFile = File(context.filesDir, "lessonTables")
+	private fun loadLesson() {
 		if(dataFile.exists()) {
 			dataFile.listFiles()?.let{
 				for(file in it){
@@ -80,7 +97,34 @@ class LessonTableViewModel(application: Application): AndroidViewModel(applicati
 		} else {
 			dataFile.mkdirs()
 		}
-		lessonRender.value.setLessonTable(lessonTable = lessonTable.value)
+	}
+
+	@OptIn(ExperimentalSerializationApi::class)
+	fun saveLessonTable(): Boolean{
+
+		// 去除上课周数为0的课程
+		val lessonGroups: Array<Array<LessonGroup?>> = lessonTable.value.lessons
+		for(dailyLesson in lessonGroups) {
+			for(timeSlot in dailyLesson.indices) {
+				val group: LessonGroup = dailyLesson[timeSlot] ?: continue
+				if(group.lessons.isEmpty()){
+					dailyLesson[timeSlot] = null
+					continue
+				}
+				group.lessons = group.lessons.filter { it.week != 0L }.toTypedArray()
+			}
+		}
+
+		if(!dataFile.exists()) dataFile.mkdirs()
+		val file = File(dataFile, "lessonTable")
+		return try{
+			FileOutputStream(file).use { stream ->
+				Json.encodeToStream<LessonTable>(lessonTable.value, stream)
+			}
+			true
+		}catch(_: Exception) {
+			false
+		}
 	}
 
 }

@@ -12,8 +12,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 1
-		versionName = "v3.0 Alpha"
+		versionCode = 2
+		versionName = "v3.0.20240403 Beta"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 		vectorDrawables {
@@ -49,20 +49,18 @@ android {
 
 dependencies {
 
-	val composeBom = platform("androidx.compose:compose-bom:2024.01.00")
-	implementation("androidx.compose:compose-bom:2024.02.02")
-	androidTestImplementation("androidx.compose:compose-bom:2024.02.02")
+	implementation("androidx.compose:compose-bom:2024.03.00")
+	androidTestImplementation("androidx.compose:compose-bom:2024.03.00")
 
 	implementation("androidx.core:core-ktx:1.12.0")
 	implementation("androidx.compose.runtime:runtime")
-	implementation("androidx.compose.foundation:foundation:1.7.0-alpha04")
+	implementation("androidx.compose.foundation:foundation:1.7.0-alpha05")
 	implementation("androidx.compose.foundation:foundation-layout")
 	implementation("androidx.compose.ui:ui-util")
 	implementation("androidx.compose.ui:ui-graphics")
 	implementation("androidx.compose.ui:ui-tooling-preview")
-	implementation("androidx.compose.material:material:1.6.3")
+	implementation("androidx.compose.material:material:1.6.4")
 	implementation("androidx.compose.material3:material3:1.2.1")
-
 	implementation("androidx.preference:preference-ktx:1.2.1")
 
 	implementation("androidx.appcompat:appcompat:1.6.1")
@@ -85,7 +83,7 @@ dependencies {
 
 	androidTestImplementation("androidx.test.ext:junit:1.1.5")
 	androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-	androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+//	androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
 	debugImplementation("androidx.compose.ui:ui-tooling")
 	debugImplementation("androidx.compose.ui:ui-test-manifest")

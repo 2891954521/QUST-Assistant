@@ -15,7 +15,9 @@ class LessonRenderData(
 	 * 隐藏教师
 	 */
 	private val hideTeacher: Boolean,
-	private val textPaint: Paint
+	private val textPaint: Paint,
+	private val cellWidth: Int = 0,
+	val lessonTable: LessonTable? = null
 ) {
 
 	/**
@@ -24,10 +26,6 @@ class LessonRenderData(
 	var startDate: Calendar = Calendar.getInstance()
 
 	var lessons: Array<Array<LessonHolder?>> = Array(7) { arrayOfNulls(10) }
-
-	var cellWidth = 0
-
-	var lessonTable: LessonTable? = null
 
 	/**
 	 * 计算绘制课程的信息
@@ -87,25 +85,36 @@ class LessonRenderData(
 		lessonGroup: LessonGroup,
 		totalWeek: Int
 	) {
-		var index = IntArray(totalWeek)
-		var count = IntArray(totalWeek)
+
+		/**
+		 * 某一周的这个时间点同时有几节课
+		 */
+		var lessonCount = IntArray(totalWeek)
+
+		/**
+		 * 当前正在展示的是第几节课，从0开始
+		 */
+		var index = IntArray(totalWeek).also { Arrays.fill(it, -1) }
+
+		/**
+		 * 某一周的这个时间点同时有课的课
+		 * 5 = 101，表示当第1，3课会上，第2课不会上
+		 */
 		private var lessonTime = IntArray(totalWeek)
+
 		private var lessonData: Array<LessonData>
 
 		init {
-			Arrays.fill(index, -1)
-			val group: Array<Lesson> = lessonGroup.lessons
 			var offset = 1
-			val array = ArrayList<LessonData>(group.size)
-			for(i in group.indices) {
-				val lesson: Lesson = group[i]
+			val array = ArrayList<LessonData>(lessonGroup.lessons.size)
+			lessonGroup.lessons.forEachIndexed { i, lesson ->
 				array.add(LessonData(lesson))
 				var week = 1L
 				for(j in 0 until totalWeek) {
 					if(lesson.week and week > 0) {
 						if(index[j] == -1) index[j] = i
 						lessonTime[j] = lessonTime[j] or offset
-						count[j]++
+						lessonCount[j]++
 					}
 					week = week shl 1
 				}
@@ -115,19 +124,20 @@ class LessonRenderData(
 		}
 
 		/**
-		 * 是否有下一节课
+		 * 是否有多节课
 		 */
 		fun hasNext(week: Int): Boolean {
-			return count[week] > 1
+			return lessonCount[week] > 1
 		}
 
 		/**
 		 * 显示下一节课
 		 */
 		fun next(week: Int) {
-			var offset = 1L shl index[week] + 1
-			for(i in (index[week] + 1) until  count[week]) {
-				if(lessonTime[week].toLong() and offset > 0) {
+			val currentIndex = (index[week] + 1)
+			var offset = 1 shl currentIndex
+			for(i in currentIndex until  lessonCount[week]) {
+				if(lessonTime[week] and offset > 0) {
 					index[week] = i
 					return
 				}
@@ -137,7 +147,7 @@ class LessonRenderData(
 		}
 
 		fun current(week: Int): LessonData? {
-			return if(count[week] == 0) null else lessonData[index[week]]
+			return if(lessonCount[week] == 0) null else lessonData[index[week]]
 		}
 
 		/**
@@ -150,7 +160,7 @@ class LessonRenderData(
 			if(index[week] != -1) return lessonData[index[week]]
 
 			// 向后查找课程
-			for(i in (week + 1) until count.size) {
+			for(i in (week + 1) until lessonCount.size) {
 				if(lessonTime[i] > 0) {
 					val pos = java.lang.Long.numberOfTrailingZeros(lessonTime[i].toLong())
 					index[week] = pos
@@ -177,7 +187,6 @@ class LessonRenderData(
 	 * @param type 课程类型
 	 * @param len 课程长度
 	 * @param color 课程颜色
-	 * @param week 上课周数
 	 */
 	inner class LessonData(
 		lesson: Lesson,

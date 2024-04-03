@@ -1,4 +1,4 @@
-package com.qust.helper.ui.page
+package com.qust.helper.ui.page.lesson
 
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
@@ -26,6 +26,7 @@ import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.ui.common.Texts
 import com.qust.helper.ui.theme.TEXT_COLORS
+import com.qust.helper.ui.theme.TEXT_COLOR_SECOND_COLOR
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.viewmodel.LessonTableViewModel
 
@@ -129,7 +130,7 @@ object DailyLesson {
 				modifier = Modifier.padding(8.dp)
 			)
 
-			LessonLabel(color = Color(TEXT_COLORS[0]))
+			LessonLabel(color = TEXT_COLOR_SECOND_COLOR)
 
 			Column(modifier = Modifier.weight(1F).padding(8.dp)) {
 				Texts.SingleLineTextNoPadding(

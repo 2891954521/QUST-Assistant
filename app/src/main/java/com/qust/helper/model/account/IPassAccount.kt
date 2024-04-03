@@ -10,7 +10,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.net.HttpURLConnection
 
-class IPassAccount : Account(
+class IPassAccount private constructor() : Account(
 	QustApi.VPN_HOST,
 	Keys.IPASS_ACCOUNT,
 	Keys.IPASS_PASSWORD,

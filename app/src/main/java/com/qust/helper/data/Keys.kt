@@ -37,6 +37,10 @@ object Keys {
 	 */
 	const val KEY_TIME_TABLE = "key_time_table"
 
+	/**
+	 * 锁定课表
+	 */
+	const val KEY_LOCK_LESSON = "key_lock_lesson"
 
 	const val EAS_ACCOUNT = "eas_account"
 	const val EAS_PASSWORD = "eas_password"

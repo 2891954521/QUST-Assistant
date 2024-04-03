@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,8 +36,6 @@ object Inputs {
 		login: () -> Unit
 	){
 		var passwordHidden by remember{ mutableStateOf(true) }
-
-		val keyboardController = LocalSoftwareKeyboardController.current
 
 		OutlinedTextField(
 			value = account.value,

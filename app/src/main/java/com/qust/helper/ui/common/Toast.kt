@@ -1,5 +1,14 @@
 package com.qust.helper.ui.common
 
+import android.content.Context
+import android.graphics.PixelFormat
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.WindowManager
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +33,55 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+
+open class ToastAble(context: Context){
+	private var isShowToast = false
+
+	private var toastWindow = context.getSystemService(ComponentActivity.WINDOW_SERVICE) as WindowManager
+
+	private var toastLayout = LayoutInflater.from(context).inflate(R.layout.layout_tips, null) as FrameLayout
+
+	private var toastIcon = toastLayout.findViewById<ImageView>(R.id.tips_icon)
+	private var toastMessage = toastLayout.findViewById<TextView>(R.id.tips_message)
+
+	private var toastParams = WindowManager.LayoutParams().also {
+		it.gravity = Gravity.CENTER
+		it.format = PixelFormat.TRANSLUCENT
+		it.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+		it.width = WindowManager.LayoutParams.WRAP_CONTENT
+		it.height = WindowManager.LayoutParams.WRAP_CONTENT
+		it.windowAnimations = android.R.style.Animation_Toast
+	}
+
+	fun toast(icon: Int, message: String){
+		if(isShowToast){
+			toastIcon.setImageResource(icon)
+			toastMessage.text = message
+		}else{
+			isShowToast = true
+			toastIcon.setImageResource(icon)
+			toastMessage.text = message
+			toastWindow.addView(toastLayout, toastParams)
+			CoroutineScope(Dispatchers.Main).launch {
+				delay(4000)
+				toastWindow.removeView(toastLayout)
+				isShowToast = false
+			}
+		}
+	}
+
+	fun toastOK(message: String){ toast(R.drawable.tips_finish, message) }
+
+	fun toastWarning(message: String) { toast(R.drawable.tips_warning, message) }
+
+	fun toastError(message: String) { toast(R.drawable.tips_error, message) }
+}
+
 
 fun toastOK(message: String): ToastContent {
 	return ToastContent(R.drawable.tips_finish, message)

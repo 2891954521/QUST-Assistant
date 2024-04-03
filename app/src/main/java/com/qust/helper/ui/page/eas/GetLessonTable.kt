@@ -98,9 +98,9 @@ object GetLessonTable {
 					}
 				}
 			}
-		) { padding ->
+		) { _ ->
 
-			Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+			Column(modifier = Modifier.fillMaxSize()) {
 				Row(
 					modifier = Modifier.fillMaxWidth(),
 					horizontalArrangement = Arrangement.Center,

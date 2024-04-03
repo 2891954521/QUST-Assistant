@@ -26,7 +26,7 @@ data class LessonGroup(
 	 * 移除一节课程
 	 */
 	fun removeLesson(lesson: Lesson){
-		lessons = lessons.filterNot { it == lesson }.toTypedArray()
+		lessons = lessons.filterNot { it === lesson }.toTypedArray()
 	}
 
 	/**

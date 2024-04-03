@@ -20,11 +20,6 @@ import com.qust.helper.viewmodel.LessonTableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToStream
-import java.io.File
-import java.io.FileOutputStream
 
 class GetLessonTableViewModel(application: Application): BaseEasViewModel(application) {
 
@@ -37,9 +32,7 @@ class GetLessonTableViewModel(application: Application): BaseEasViewModel(applic
 
 	private var lessonTable by mutableStateOf(LessonTable())
 
-	var lessonRender = mutableStateOf(LessonRender().also {
-		it.setLessonTable(lessonTable = LessonTable())
-	})
+	var lessonRender = mutableStateOf(LessonRender().also { it.lessonTable = LessonTable() })
 
 	fun queryLesson(lessonTableViewModel: LessonTableViewModel){
 		viewModelScope.launch {
@@ -66,7 +59,7 @@ class GetLessonTableViewModel(application: Application): BaseEasViewModel(applic
 					needSave = true
 					toastContent.value = toastOK("获取课表成功！")
 
-					lessonRender.value.setLessonTable(lessonTable = lessonTable)
+					lessonRender.value.lessonTable = lessonTable
 				}else{
 					toastContent.value = toastError(error)
 				}
@@ -75,25 +68,12 @@ class GetLessonTableViewModel(application: Application): BaseEasViewModel(applic
 		}
 	}
 
-	@OptIn(ExperimentalSerializationApi::class)
 	fun saveLessonTable(lessonTableViewModel: LessonTableViewModel){
-		val dataFile = File(getApplication<App>().filesDir, "lessonTables")
-		if(!dataFile.exists()) dataFile.mkdirs()
-		val file = File(dataFile, "lessonTable")
-
-		try{
-			FileOutputStream(file).use { stream ->
-				Json.encodeToStream<LessonTable>(lessonTable, stream)
-			}
-			needSave = false
-			toastContent.value = toastOK("保存成功")
-		}catch(_: Exception) {
-			toastContent.value = toastError("保存失败")
-		}
-
 		lessonTableViewModel.lessonTable.value = lessonTable
-		val render = lessonTableViewModel.lessonRender.value
-		render.setLessonTable(lessonTable = lessonTable)
-		lessonTableViewModel.lessonRender.value = render
+		if(lessonTableViewModel.saveLessonTable()){
+			toastOK("保存成功")
+		}else{
+			toastError("保存失败")
+		}
 	}
 }

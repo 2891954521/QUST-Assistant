@@ -1,14 +1,14 @@
 package com.qust.helper.model.account
 
+import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
 import com.qust.helper.data.api.QustApi
-import com.qust.helper.data.Keys
 import com.qust.helper.utils.VpnEncodeUtils
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
 
-class VpnEASAccount(
+class VpnEASAccount private constructor(
 	private val vpnAccount: IPassAccount = IPassAccount.getInstance()
 ): EASAccount(), IAccount by vpnAccount{
 

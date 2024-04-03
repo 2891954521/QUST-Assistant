@@ -1,18 +1,22 @@
 package com.qust.helper.data
 
 import androidx.activity.ComponentActivity
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.qust.helper.R
-import com.qust.helper.ui.page.DailyLesson
 import com.qust.helper.ui.page.DrinkPage
+import com.qust.helper.ui.page.ElectricRecharge
 import com.qust.helper.ui.page.LoginPage
-import com.qust.helper.ui.page.TermLesson
+import com.qust.helper.ui.page.SettingPage
 import com.qust.helper.ui.page.eas.GetAcademic
 import com.qust.helper.ui.page.eas.GetExams
 import com.qust.helper.ui.page.eas.GetLessonTable
 import com.qust.helper.ui.page.eas.GetMarks
 import com.qust.helper.ui.page.eas.GetNotice
+import com.qust.helper.ui.page.lesson.DailyLesson
+import com.qust.helper.ui.page.lesson.TermLesson
 
 object Data {
 
@@ -33,9 +37,9 @@ object Data {
 
 		"drinkCode"     to Page("drinkCode",    "饮水码",       iconRes = R.drawable.ic_water)      { DrinkPage.DrinkPage(activity = it) },
 
-//		"electricRecharge"  to Page("electricRecharge", "电费充值", iconRes = R.drawable.ic_electric) {  },
+		"electricRecharge"  to Page("electricRecharge", "电费充值", iconRes = R.drawable.ic_electric) { ElectricRecharge.ElectricRecharge(activity = it) },
 
-//		"setting"       to Page("setting",      "设置",         image = Icons.Rounded.Settings)     {  },
+		"setting"       to Page("setting",      "设置",         image = Icons.Rounded.Settings)     { SettingPage.SettingPage(activity = it) },
 	)
 
 	val TermName = arrayOf(

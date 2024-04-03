@@ -1,6 +1,5 @@
 package com.qust.helper.ui.common
 
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,20 +18,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.data.Data
-import com.qust.helper.ui.activity.ComposeActivity
 import com.qust.helper.ui.theme.TEXT_COLORS
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun MainAppDrawer(drawerState: DrawerState){
-	val context = LocalContext.current
+fun MainAppDrawer(drawerState: DrawerState, navController: NavController){
+//	val context = LocalContext.current
 	val scope = rememberCoroutineScope()
 
 	Column(modifier = Modifier.padding(16.dp)) {
@@ -68,7 +66,13 @@ fun MainAppDrawer(drawerState: DrawerState){
 					},
 					onClick = {
 						scope.launch { drawerState.apply { if(isOpen) close() } }
-						context.startActivity(Intent(context, ComposeActivity::class.java).putExtra("page", page.key))
+						if(navController.currentDestination?.route != page.key){
+							navController.navigate(page.key){
+								popUpTo(page.key) { inclusive = true }
+								launchSingleTop = true
+							}
+						}
+//						context.startActivity(Intent(context, ComposeActivity::class.java).putExtra("page", page.key))
 					}
 				)
 			}

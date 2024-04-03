@@ -3,6 +3,9 @@ package com.qust.helper.ui.widget
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,8 +51,8 @@ class LessonRender {
 	/**
 	 * 左侧时间和顶部日期的宽度
 	 */
-	var timeWidth = 0
-	var dateHeight = 0
+	private var timeWidth = 0
+	private var dateHeight = 0
 
 	/**
 	 * 最小的一节课的大小
@@ -62,46 +65,41 @@ class LessonRender {
 	 */
 	private var linePadding = 0
 
-	private val paint: Paint = Paint(Paint.FILTER_BITMAP_FLAG)
-	private val paintT: Paint = Paint()
+	private var composeWidth: Int = 0
+	private var composeHeight: Int = 0
 
-	private val timeText: Array<Array<String>> = Data.LESSON_TIME_TEXT[0]
-
-	private val lessonRenderData: LessonRenderData
-
-	var totalWeek: Int = 0
-
-	init {
+	private val paint: Paint = Paint(Paint.FILTER_BITMAP_FLAG).also { paint ->
 		paint.style = Paint.Style.FILL
 		paint.isAntiAlias = true
 		paint.strokeWidth = 3f
+	}
 
+	private val paintT: Paint = Paint().also { paintT ->
 		paintT.isDither = true
 		paintT.isAntiAlias = true
 		paintT.isSubpixelText = true
 		paintT.textAlign = Paint.Align.CENTER
-
-		lessonRenderData = LessonRenderData(hideTeacher, paintT)
 	}
 
-	/**
-	 * 设置 / 更新 课表信息
-	 * @param lessonTable 课表信息
-	 */
-	fun setLessonTable(lessonTable: LessonTable) {
-		lessonRenderData.lessonTable = lessonTable
-		totalWeek = lessonTable.totalWeek
-		if(cellWidth != 0 && cellHeight != 0) {
-			lessonRenderData.cellWidth = (cellWidth - (LESSON_PADDING shl 2))
-			lessonRenderData.calcLessonData()
+	private val timeText: Array<Array<String>> = Data.LESSON_TIME_TEXT[0]
+
+	private var lessonRenderData by mutableStateOf(LessonRenderData(hideTeacher, paintT))
+
+	var lessonTable: LessonTable? = null
+		set(value) {
+			field = value
+			if(cellWidth != 0 && cellHeight != 0) {
+				lessonRenderData = LessonRenderData(hideTeacher, paintT, (cellWidth - (LESSON_PADDING shl 2)), lessonTable)
+				lessonRenderData.calcLessonData()
+			}
 		}
-	}
 
 	/**
 	 * 设置 View Measure 数据
 	 * 必须调用，不然无法显示
 	 */
 	fun setMeasureData(measuredWidth: Int, measuredHeight: Int, density: Density) {
+		if(measuredWidth == composeWidth && measuredHeight == composeHeight) return
 		with(density) {
 			timeWidth = 48.dp.toPx().toInt()
 			linePadding = 4.dp.toPx().toInt()
@@ -110,35 +108,30 @@ class LessonRender {
 			textHeight = (paintT.textSize + 3).toInt()
 			dateHeight = 40 + textHeight * 2
 		}
+		composeWidth = measuredWidth
+		composeHeight = measuredHeight
 		cellWidth = (measuredWidth - timeWidth) / Data.WEEK_STRING.size
 		cellHeight = (measuredHeight - dateHeight) / timeText[0].size
-		lessonRenderData.cellWidth = (cellWidth - (LESSON_PADDING shl 2))
+		lessonRenderData = LessonRenderData(hideTeacher, paintT, (cellWidth - (LESSON_PADDING shl 2)), lessonTable)
 		lessonRenderData.calcLessonData()
 	}
 
 	/**
 	 * 获取点击位置的课程
-	 * @param week 当前周
+	 * @param week 当前周(从0开始)
 	 * @param downX 点击X坐标
 	 * @param downY 点击Y坐标
-	 * @param result 存放计算出的点击位置
-	 * @return result 里为 [dayOfWeek, timeSlot]， return 值为点击到的课程
 	 */
-	fun getClickLesson(week: Int, downX: Int, downY: Int, result: IntArray): Lesson? {
+	fun getClickLesson(week: Int, downX: Int, downY: Int): SelectLesson {
 		if(downX < timeWidth || downY < dateHeight) {
-			result[0] = -1
-			result[1] = -1
-			return null
+			return SelectLesson(-1, -1, null)
 		}
 
 		// 计算点击的位置是星期几
 		val dayOfWeek = (downX - timeWidth) / cellWidth
 		if(dayOfWeek >= Data.WEEK_STRING.size) {
-			result[0] = -1
-			result[1] = -1
-			return null
+			return SelectLesson(-1, -1, null)
 		}
-		result[0] = dayOfWeek
 		var y = downY - dateHeight
 
 		for(timeSlot in lessonRenderData.lessons[dayOfWeek].indices) {
@@ -149,21 +142,17 @@ class LessonRender {
 				}
 				if(lessonData != null) {
 					if(y < lessonData.len * cellHeight) {
-						result[1] = timeSlot
-						return lessonRenderData.getLessonByHolder(week, dayOfWeek, timeSlot)
+						return SelectLesson(dayOfWeek, timeSlot, lessonRenderData.getLessonByHolder(week, dayOfWeek, timeSlot))
 					}
 				}
 			}
 
 			if(y < cellHeight) {
-				result[1] = timeSlot
-				return null
+				return SelectLesson(dayOfWeek, timeSlot, null)
 			}
 			y -= cellHeight
 		}
-		result[0] = -1
-		result[1] = -1
-		return null
+		return SelectLesson(-1, -1, null)
 	}
 
 	fun hasNextLesson(week: Int, dayOfWeek: Int, timeSlot: Int): Boolean {
@@ -261,8 +250,8 @@ class LessonRender {
 				canvas.drawRoundRect((x + LESSON_PADDING).toFloat(), (y + LESSON_PADDING).toFloat(), (x + cellWidth - LESSON_PADDING).toFloat(), (y + cellHeight * lesson.len - LESSON_PADDING).toFloat(), 16f, 16f, paint)
 				canvas.drawText(if(lesson.type == 0) "A" else "U", (x + (LESSON_PADDING shl 2) + 3).toFloat(), (y + baseLine + (LESSON_PADDING shl 2)).toFloat(), paintT)
 
-				if(holder.count[week] > 1) {
-					canvas.drawText((holder.index[week] + 1).toString() + "/" + holder.count[week], (x + cellWidth / 2).toFloat(), (y + cellHeight * lesson.len - textHeight + baseLine - (LESSON_PADDING shl 2)).toFloat(), paintT)
+				if(holder.lessonCount[week] > 1) {
+					canvas.drawText((holder.index[week] + 1).toString() + "/" + holder.lessonCount[week], (x + cellWidth / 2).toFloat(), (y + cellHeight * lesson.len - textHeight + baseLine - (LESSON_PADDING shl 2)).toFloat(), paintT)
 				}
 
 				var lineY: Int = y + baseLine + (cellHeight * lesson.len - textHeight * lesson.lines - linePadding * if(hideTeacher) 1 else 2) / 2
@@ -279,6 +268,14 @@ class LessonRender {
 			x += cellWidth
 		}
 	}
+
+
+	data class SelectLesson(
+		val dayOfWeek: Int,
+		val timeSlot: Int,
+		val lesson: Lesson?
+	)
+
 
 	companion object {
 		/**

@@ -26,7 +26,7 @@ import java.util.Calendar
 import java.util.regex.Pattern
 import javax.crypto.Cipher
 
-open class EASAccount : Account(
+open class EASAccount protected constructor(): Account(
 	QustApi.EA_HOSTS[Setting.getInt(Keys.EA_HOST, 0)],
 	Keys.EAS_ACCOUNT,
 	Keys.EAS_PASSWORD,
@@ -36,7 +36,7 @@ open class EASAccount : Account(
 
 	companion object {
 		fun getInstance(): EASAccount {
-			return Instance.INSTANCE;
+			return Instance.INSTANCE
 		}
 	}
 

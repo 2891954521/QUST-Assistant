@@ -1,9 +1,15 @@
 package com.qust.helper.ui.page
 
+import android.annotation.SuppressLint
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
@@ -24,6 +30,7 @@ import com.qust.helper.ui.common.AppBar.TopBar
 import com.qust.helper.ui.common.MainAppDrawer
 import kotlinx.coroutines.launch
 
+@SuppressLint("RestrictedApi", "StateFlowValueCalledInComposition")
 @Composable
 fun MainApp(activity: ComponentActivity) {
 
@@ -34,24 +41,50 @@ fun MainApp(activity: ComponentActivity) {
 	Surface {
 		ModalNavigationDrawer(
 			drawerState = drawerState,
-			drawerContent = { ModalDrawerSheet { MainAppDrawer(drawerState = drawerState) } },
+			drawerContent = { ModalDrawerSheet() { MainAppDrawer(drawerState = drawerState, navController = navController) } },
 		) {
-
-			Scaffold(
-				topBar = {
-					TopBar(title = stringResource(id = R.string.app_name), navigationIcon = Icons.Rounded.Menu){
-						scope.launch { drawerState.open() }
+			NavHost(
+				navController = navController,
+				startDestination = "home"
+			) {
+				composable(route = "home"){
+					Scaffold(
+						topBar = {
+							TopBar(title = stringResource(id = R.string.app_name), navigationIcon = Icons.Rounded.Menu) {
+								scope.launch { drawerState.open() }
+							}
+						},
+					) { padding ->
+						Box(modifier = Modifier.padding(padding)){
+							HomePage.HomePage(activity)
+						}
 					}
-				},
-			) { innerPadding ->
-				NavHost(
-					navController = navController,
-					startDestination = "termLesson",
-					modifier = Modifier.fillMaxSize().padding(innerPadding)
-				) {
-					for(page in Data.Pages.values){
-						composable(route = page.key) {
-							page.content(activity)
+				}
+
+				for(page in Data.Pages.values) {
+					composable(
+						route = page.key,
+						enterTransition = {
+							slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween())
+					    },
+						exitTransition = { ExitTransition.None },
+						popEnterTransition = { EnterTransition.None },
+						popExitTransition = {
+//							if(initialState.destination.route == page.key) {
+								slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween())
+//							}else null
+						}
+					) {
+						Scaffold(
+							topBar = {
+								TopBar(title = page.name, navigationIcon = Icons.AutoMirrored.Filled.ArrowBack){
+									navController.popBackStack()
+								}
+							},
+						) { padding ->
+							Box(modifier = Modifier.padding(padding)){
+								page.content(activity)
+							}
 						}
 					}
 				}

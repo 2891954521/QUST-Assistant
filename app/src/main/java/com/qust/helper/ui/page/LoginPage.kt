@@ -2,6 +2,7 @@ package com.qust.helper.ui.page
 
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -69,21 +70,23 @@ object LoginPage {
 			}
 		}
 
-		Inputs.AccountInput(
-			account = account,
-			password = password,
-			accountError = errorText.ifEmpty { accountError },
-			passwordError = passwordError,
-			"学号", "教务系统密码"
-		) {
-			login()
-		}
+		Column {
+			Inputs.AccountInput(
+				account = account,
+				password = password,
+				accountError = errorText.ifEmpty { accountError },
+				passwordError = passwordError,
+				"学号", "教务系统密码"
+			) {
+				login()
+			}
 
-		Button(
-			modifier = Modifier.fillMaxWidth().padding(32.dp, 16.dp, 32.dp, 0.dp),
-			onClick = { login() }
-		){
-			Text(text = stringResource(id = R.string.text_ok))
+			Button(
+				modifier = Modifier.fillMaxWidth().padding(32.dp, 16.dp, 32.dp, 0.dp),
+				onClick = { login() }
+			){
+				Text(text = stringResource(id = R.string.text_ok))
+			}
 		}
 	}
 
@@ -114,21 +117,23 @@ object LoginPage {
 			}
 		}
 
-		Inputs.AccountInput(
-			account = account,
-			password = password,
-			accountError = errorText.ifEmpty { accountError },
-			passwordError = passwordError,
-			"学号", "密码"
-		) {
-			login()
-		}
+		Column {
+			Inputs.AccountInput(
+				account = account,
+				password = password,
+				accountError = errorText.ifEmpty { accountError },
+				passwordError = passwordError,
+				"学号", "密码"
+			) {
+				login()
+			}
 
-		Button(
-			modifier = Modifier.fillMaxWidth().padding(32.dp, 16.dp, 32.dp, 0.dp),
-			onClick = { login() }
-		){
-			Text(text = stringResource(id = R.string.text_ok))
+			Button(
+				modifier = Modifier.fillMaxWidth().padding(32.dp, 16.dp, 32.dp, 0.dp),
+				onClick = { login() }
+			){
+				Text(text = stringResource(id = R.string.text_ok))
+			}
 		}
 	}
 }
