@@ -19,7 +19,7 @@ data class LessonTable(
 	@Serializable(with = DateUtils.DateSerializer::class)
 	var startDay: Date = Date(),
 	var totalWeek: Int = 1,
-	var lessons: Array<Array<LessonGroup?>> = Array(7) {
+	val lessons: Array<Array<LessonGroup?>> = Array(7) {
 		arrayOfNulls(10)
 	},
 ){
@@ -117,5 +117,9 @@ data class LessonTable(
 		result = 31 * result + totalWeek
 		result = 31 * result + lessons.contentDeepHashCode()
 		return result
+	}
+
+	companion object{
+		val EMPTY_LESSON_TABLE = LessonTable()
 	}
 }

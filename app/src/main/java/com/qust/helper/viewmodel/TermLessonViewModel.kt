@@ -9,18 +9,13 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import com.qust.helper.R
 import com.qust.helper.data.lesson.Lesson
+import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.common.ToastAble
 import com.qust.helper.ui.widget.LessonRender
 
-class TermLessonViewModel(
-	activity: Activity,
-	private val lessonTableViewModel: LessonTableViewModel
-): ViewModel() {
+class TermLessonViewModel(activity: Activity): ViewModel() {
 
-	val uiState = TermLessonUIState(
-		totalWeek = lessonTableViewModel.lessonTable.value.totalWeek,
-		lessonRender = LessonRender().also { it.lessonTable = lessonTableViewModel.lessonTable.value }
-	)
+	val uiState = TermLessonUIState(totalWeek = LessonTableRepository.lessonTable.totalWeek)
 
 	val uiEvent = object: TermLessonUIEvent{
 		override fun showEdit() { uiState.isShowEdit = true }
@@ -54,9 +49,7 @@ class TermLessonViewModel(
 				selectLesson = select.lesson
 				uiState.isNewLesson = false
 			}else{
-				val lesson = Lesson(type = 1)
-				lessonTableViewModel.lessonTable.value.getLessonGroupNotNull(currentDayOfWeek, currentTimeSlot).addLesson(lesson)
-				selectLesson = lesson
+				selectLesson = Lesson.EMPTY_LESSON
 				uiState.isNewLesson = true
 			}
 		}
@@ -82,9 +75,7 @@ class TermLessonViewModel(
 			selectLesson = select.lesson
 			uiState.isNewLesson = false
 		}else{
-			val lesson = Lesson(type = 1)
-			lessonTableViewModel.lessonTable.value.getLessonGroupNotNull(currentDayOfWeek, currentTimeSlot).addLesson(lesson)
-			selectLesson = lesson
+			selectLesson = Lesson.EMPTY_LESSON
 			uiState.isNewLesson = true
 		}
 
@@ -119,18 +110,18 @@ class TermLessonViewModel(
 
 	fun pasteLesson(){
 		if(copyLesson !== Lesson.EMPTY_LESSON){
-			lessonTableViewModel.lessonTable.value.getLessonGroupNotNull(currentDayOfWeek, currentTimeSlot).addLesson(copyLesson.copy())
-			lessonTableViewModel.saveLessonTable()
-			uiState.lessonRender.lessonTable = lessonTableViewModel.lessonTable.value
+			LessonTableRepository.lessonTable.getLessonGroupNotNull(currentDayOfWeek, currentTimeSlot).addLesson(copyLesson.copy())
+			LessonTableRepository.saveLessonTable()
+			uiState.lessonRender.updateLessonTable()
 		}
 		uiState.isShowPopup = false
 	}
 
 	fun deleteLesson(){
-		lessonTableViewModel.lessonTable.value.lessons[currentDayOfWeek][currentTimeSlot]?.let {
+		LessonTableRepository.lessonTable.lessons[currentDayOfWeek][currentTimeSlot]?.let {
 			it.removeLesson(selectLesson)
-			lessonTableViewModel.saveLessonTable()
-			uiState.lessonRender.lessonTable = lessonTableViewModel.lessonTable.value
+			LessonTableRepository.saveLessonTable()
+			uiState.lessonRender.updateLessonTable()
 		}
 		uiState.isShowPopup = false
 	}
@@ -149,6 +140,8 @@ class TermLessonViewModel(
 		}
 
 		var hasEdit: Boolean = uiState.isNewLesson
+
+		if(uiState.isNewLesson){ selectLesson = Lesson(type = 1) }
 
 		if(week != selectLesson.week || uiState.len != selectLesson.len) {
 			selectLesson.len = uiState.len
@@ -180,18 +173,18 @@ class TermLessonViewModel(
 		if(hasEdit) selectLesson.type = 1
 
 		if(hasEdit || hasEditColor) {
-			uiState.lessonRender.lessonTable = lessonTableViewModel.lessonTable.value
-			lessonTableViewModel.saveLessonTable()
+			if(uiState.isNewLesson) LessonTableRepository.lessonTable.getLessonGroupNotNull(currentDayOfWeek, currentTimeSlot).addLesson(selectLesson)
+			LessonTableRepository.saveLessonTable()
+			uiState.lessonRender.updateLessonTable()
 		}
 
 		uiState.isShowEdit = false
 	}
 }
 
-class TermLessonUIState(
-	totalWeek: Int = 1,
-	val lessonRender: LessonRender = LessonRender()
-) {
+class TermLessonUIState(totalWeek: Int = 1) {
+	val lessonRender = LessonRender()
+
 	var totalWeek by mutableIntStateOf(totalWeek)
 
 	var name by mutableStateOf("")

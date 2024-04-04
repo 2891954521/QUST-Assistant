@@ -1,7 +1,6 @@
 package com.qust.helper.viewmodel.eas
 
 import android.app.Application
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -11,30 +10,31 @@ import com.qust.helper.App
 import com.qust.helper.R
 import com.qust.helper.data.lesson.LessonTable
 import com.qust.helper.data.lesson.LessonTableQueryResult
-import com.qust.helper.model.LessonTableModel
+import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.common.toastError
 import com.qust.helper.ui.common.toastOK
 import com.qust.helper.ui.widget.LessonRender
 import com.qust.helper.utils.DateUtils
-import com.qust.helper.viewmodel.LessonTableViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class GetLessonTableViewModel(application: Application): BaseEasViewModel(application) {
 
-	val pickType: MutableState<Int> = mutableIntStateOf(0)
+	val pickType = mutableIntStateOf(0)
 
 	var termText by mutableStateOf("")
 	var termTimeText by mutableStateOf("")
 
 	var needSave by mutableStateOf(false)
 
-	private var lessonTable by mutableStateOf(LessonTable())
+	private val startDay = mutableStateOf(LessonTableRepository.startDay)
+	private val totalWeek = mutableIntStateOf(LessonTableRepository.totalWeek)
+	private val lessonTable = mutableStateOf(LessonTable())
 
-	var lessonRender = mutableStateOf(LessonRender().also { it.lessonTable = LessonTable() })
+	var lessonRender = LessonRender(startDay = startDay, totalWeek = totalWeek, lessonTable = lessonTable)
 
-	fun queryLesson(lessonTableViewModel: LessonTableViewModel){
+	fun queryLesson(){
 		viewModelScope.launch {
 			dialogText = "查询中"
 			val pair = getYearAndTerm()
@@ -42,24 +42,25 @@ class GetLessonTableViewModel(application: Application): BaseEasViewModel(applic
 
 			withContext(Dispatchers.IO){
 				easAccount.checkLogin()
-				result = if(pickType.value == 0) {
-					LessonTableModel.queryLessonTable(easAccount = easAccount, pair.first, pair.second)
+				result = if(pickType.intValue == 0) {
+					LessonTableRepository.queryLessonTable(easAccount = easAccount, pair.first, pair.second)
 				} else {
-					LessonTableModel.queryClassLessonTable(easAccount = easAccount, pair.first, pair.second)
+					LessonTableRepository.queryClassLessonTable(easAccount = easAccount, pair.first, pair.second)
 				}
 				val error = result.error
 				if(error == null) {
 					termText = result.termText
-					lessonTable = result.lessonTable
 					termTimeText = getApplication<App>().getString(
 						R.string.text_query_term_start_time,
-						DateUtils.YMD.format(lessonTableViewModel.lessonTable.value.startDay),
-						DateUtils.YMD.format(lessonTable.startDay)
+						DateUtils.YMD.format(LessonTableRepository.startDay),
+						DateUtils.YMD.format(result.lessonTable.startDay)
 					)
 					needSave = true
 					toastContent.value = toastOK("获取课表成功！")
 
-					lessonRender.value.lessonTable = lessonTable
+					lessonTable.value = result.lessonTable
+					startDay.value = result.lessonTable.startDay
+					totalWeek.intValue = result.lessonTable.totalWeek
 				}else{
 					toastContent.value = toastError(error)
 				}
@@ -68,9 +69,8 @@ class GetLessonTableViewModel(application: Application): BaseEasViewModel(applic
 		}
 	}
 
-	fun saveLessonTable(lessonTableViewModel: LessonTableViewModel){
-		lessonTableViewModel.lessonTable.value = lessonTable
-		if(lessonTableViewModel.saveLessonTable()){
+	fun saveLessonTable(){
+		if(LessonTableRepository.saveLessonTable(lessonRender.lessonTable)){
 			toastOK("保存成功")
 		}else{
 			toastError("保存失败")

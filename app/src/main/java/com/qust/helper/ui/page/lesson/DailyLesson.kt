@@ -1,7 +1,6 @@
 package com.qust.helper.ui.page.lesson
 
 import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -21,24 +19,22 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.qust.helper.data.Data
 import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.data.lesson.LessonGroup
+import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.common.Texts
 import com.qust.helper.ui.theme.TEXT_COLORS
 import com.qust.helper.ui.theme.TEXT_COLOR_SECOND_COLOR
 import com.qust.helper.ui.theme.colorSecondaryText
-import com.qust.helper.viewmodel.LessonTableViewModel
+import com.qust.helper.ui.widget.LessonTableView
 
 object DailyLesson {
 
 	@Composable
 	fun DailyLesson(activity: ComponentActivity){
-		val viewModel: LessonTableViewModel by activity.viewModels()
-		val lessonTable by viewModel.lessonTable
 		DailyLessonUI(
-			lessonGroups = lessonTable.lessons[viewModel.dayOfWeek.intValue],
-			currentWeek = viewModel.currentWeek.intValue
+			lessonGroups = LessonTableRepository.lessonTable.lessons[LessonTableRepository.dayOfWeek.intValue],
+			currentWeek = LessonTableRepository.currentWeek.intValue
 		)
 	}
 
@@ -100,7 +96,9 @@ object DailyLesson {
 		) {
 
 			Text(
-				text = "${Data.LESSON_TIME_TEXT[0][0][count]}\n${Data.LESSON_TIME_TEXT[0][1][count + lesson.len - 1]}",
+				text = if(LessonTableRepository.currentTimeTable == 0)
+					"${LessonTableView.LESSON_TIME1[0][count]}\n${LessonTableView.LESSON_TIME1[1][count + lesson.len - 1]}"
+					else "${LessonTableView.LESSON_TIME2[0][count]}\n${LessonTableView.LESSON_TIME2[1][count + lesson.len - 1]}",
 				color = colorSecondaryText,
 				modifier = Modifier.padding(8.dp)
 			)
@@ -125,7 +123,7 @@ object DailyLesson {
 		) {
 
 			Text(
-				text = "${Data.LESSON_TIME_TEXT[0][0][count]}\n${Data.LESSON_TIME_TEXT[0][1][count + 1]}",
+				text = "${LessonTableView.LESSON_TIME1[0][count]}\n${LessonTableView.LESSON_TIME1[1][count + 1]}",
 				color = colorSecondaryText,
 				modifier = Modifier.padding(8.dp)
 			)

@@ -9,5 +9,5 @@ package com.qust.helper.data.lesson
 data class LessonTableQueryResult(
 	var error: String? = null,
 	var termText: String = "",
-	var lessonTable: LessonTable = LessonTable()
+	val lessonTable: LessonTable = LessonTable()
 )

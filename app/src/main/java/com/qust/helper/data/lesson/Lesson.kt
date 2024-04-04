@@ -28,7 +28,7 @@ data class Lesson(
 ){
 	companion object {
 
-		val EMPTY_LESSON = Lesson()
+		val EMPTY_LESSON = Lesson(type = 1)
 
 		/**
 		 * 从json中解析Lesson

@@ -54,7 +54,7 @@ dependencies {
 
 	implementation("androidx.core:core-ktx:1.12.0")
 	implementation("androidx.compose.runtime:runtime")
-	implementation("androidx.compose.foundation:foundation:1.7.0-alpha05")
+	implementation("androidx.compose.foundation:foundation:1.7.0-alpha04")
 	implementation("androidx.compose.foundation:foundation-layout")
 	implementation("androidx.compose.ui:ui-util")
 	implementation("androidx.compose.ui:ui-graphics")

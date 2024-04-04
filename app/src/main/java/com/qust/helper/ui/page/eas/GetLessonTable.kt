@@ -1,5 +1,6 @@
 package com.qust.helper.ui.page.eas
 
+import android.annotation.SuppressLint
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +48,6 @@ import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.LessonRender
 import com.qust.helper.ui.widget.LessonTableView
 import com.qust.helper.ui.widget.ListPicker
-import com.qust.helper.viewmodel.LessonTableViewModel
 import com.qust.helper.viewmodel.eas.GetLessonTableViewModel
 
 object GetLessonTable {
@@ -55,7 +55,6 @@ object GetLessonTable {
 	@Composable
 	fun GetLessonTable(activity: ComponentActivity) {
 		val viewModel: GetLessonTableViewModel by activity.viewModels()
-		val lessonTableViewModel: LessonTableViewModel by activity.viewModels()
 
 		GetLessonTableUI(
 			termText = viewModel.termText,
@@ -63,17 +62,18 @@ object GetLessonTable {
 			pickYear = viewModel.pickYear.value,
 			pickType = viewModel.pickType.value,
 			needSave = viewModel.needSave,
-			lessonRender = viewModel.lessonRender.value,
+			lessonRender = viewModel.lessonRender,
 			dialogText = viewModel.dialogText,
 			toastContent = viewModel.toastContent,
 			onYearPick = { viewModel.pickYear.value = it },
 			onTypePick = { viewModel.pickType.value = it },
-			doQuery = { viewModel.queryLesson(lessonTableViewModel) },
-			saveLessonTable = { viewModel.saveLessonTable(lessonTableViewModel) }
+			doQuery = { viewModel.queryLesson() },
+			saveLessonTable = { viewModel.saveLessonTable() }
 		)
 	}
 
 	@Composable
+	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 	fun GetLessonTableUI(
 		termText: String = "",
 		termTimeText: String = "",

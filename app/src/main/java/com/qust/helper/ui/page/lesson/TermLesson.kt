@@ -40,7 +40,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.widget.LessonTableView.LessonView
 import com.qust.helper.ui.widget.Picker
-import com.qust.helper.viewmodel.LessonTableViewModel
 import com.qust.helper.viewmodel.TermLessonUIEvent
 import com.qust.helper.viewmodel.TermLessonUIState
 import com.qust.helper.viewmodel.TermLessonViewModel
@@ -55,8 +54,7 @@ object TermLesson {
 				object : ViewModelProvider.Factory {
 					override fun <T : ViewModel> create(modelClass: Class<T>): T {
 						return TermLessonViewModel(
-							activity = activity,
-							lessonTableViewModel = activity.viewModels<LessonTableViewModel>().value
+							activity = activity
 						) as T
 					}
 				}

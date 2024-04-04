@@ -1,14 +1,30 @@
 package com.qust.helper.model
 
-import com.qust.helper.model.account.EASAccount
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Setting
 import com.qust.helper.data.api.QustApi
+import com.qust.helper.data.lesson.LessonGroup
+import com.qust.helper.data.lesson.LessonTable
 import com.qust.helper.data.lesson.LessonTableQueryResult
+import com.qust.helper.model.account.EASAccount
 import com.qust.helper.utils.CodeUtils
 import com.qust.helper.utils.DateUtils
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.json.encodeToStream
 import okhttp3.FormBody
 import org.json.JSONObject
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.text.ParseException
+import java.util.Calendar
 import java.util.Date
 import java.util.regex.Pattern
 
@@ -16,7 +32,7 @@ import java.util.regex.Pattern
 /**
  * 课表功能模块
  */
-object LessonTableModel {
+object LessonTableRepository {
 
 	/**
 	 * 匹配学年信息
@@ -33,6 +49,156 @@ object LessonTableModel {
 	private val BHID_MATCHER = Pattern.compile("<select name=\"bh_id\".*?</select>", Pattern.DOTALL)
 
 	private val OPTION_MATCHER = Pattern.compile("<option value=\"(.*?)\" selected=\"selected\">")
+
+	/**
+	 * 当前时间表
+	 */
+	var currentTimeTable by mutableIntStateOf(Setting.getInt(Keys.KEY_TIME_TABLE, 0)); private set
+	fun setTimeTableValue(value: Int) {
+		currentTimeTable = value
+		Setting.edit { it.putInt(Keys.KEY_TIME_TABLE, value) }
+	}
+
+	/**
+	 * 显示所有课程
+	 */
+	val _showAllLesson = mutableStateOf(Setting.getBoolean(Keys.KEY_SHOW_ALL_LESSON, true))
+	val showAllLesson by _showAllLesson
+	fun setShowAllLessonValue(value: Boolean) {
+		_showAllLesson.value = value
+		Setting.edit { it.putBoolean(Keys.KEY_SHOW_ALL_LESSON, value) }
+	}
+
+	/**
+	 * 隐藏已结课课程
+	 */
+	val _hideFinishLesson = mutableStateOf(Setting.getBoolean(Keys.KEY_HIDE_FINISH_LESSON, false))
+	val hideFinishLesson by _hideFinishLesson
+	fun setHideFinishLessonValue(value: Boolean) {
+		_hideFinishLesson.value = value
+		Setting.edit { it.putBoolean(Keys.KEY_HIDE_FINISH_LESSON, value) }
+	}
+
+	/**
+	 * 隐藏教师
+	 */
+	val _hideTeacher = mutableStateOf(Setting.getBoolean(Keys.KEY_HIDE_TEACHER, true))
+	val hideTeacher by _hideTeacher
+	fun setHideTeacherValue(value: Boolean) {
+		_hideTeacher.value = value
+		Setting.edit { it.putBoolean(Keys.KEY_HIDE_TEACHER, value) }
+	}
+
+	/**
+	 * 开学时间, 和LessonTable是同步更新的
+	 */
+	val _startDay = mutableStateOf(Date())
+	val startDay by _startDay
+	fun setStartDayValue(value: Date){
+		_startDay.value = value
+		lessonTable.startDay = value
+		saveLessonTable()
+	}
+
+	/**
+	 * 开学时间, 和LessonTable是同步更新的
+	 */
+	val _totalWeek = mutableIntStateOf(1)
+	val totalWeek by _totalWeek
+	fun setTotalWeekValue(value: Int){
+		_totalWeek.intValue = value
+		lessonTable.totalWeek = value
+		saveLessonTable()
+	}
+
+	/**
+	 * 当前周 (从1开始)
+	 */
+	var currentWeek = mutableIntStateOf(1)
+
+	/**
+	 * 当前星期 ( 0-6, 周一 —— 周日)
+	 */
+	var dayOfWeek = mutableIntStateOf(0)
+
+	val _lessonTable = mutableStateOf(LessonTable())
+	val lessonTable by _lessonTable
+
+	init {
+		loadLesson()
+		updateDate()
+	}
+
+	/**
+	 * 更新日期信息
+	 */
+	fun updateDate() {
+		val currentDay: Calendar = Calendar.getInstance().also { it.firstDayOfWeek = Calendar.MONDAY }
+		val startDay: Calendar = (currentDay.clone() as Calendar).also { it.time = startDay }
+
+		dayOfWeek.intValue = currentDay[Calendar.DAY_OF_WEEK].let { if(it == Calendar.SUNDAY) 6 else it - 2 }
+		currentWeek.intValue = (currentDay[Calendar.WEEK_OF_YEAR] - startDay[Calendar.WEEK_OF_YEAR] + 1).coerceAtLeast(1)
+	}
+
+	/**
+	 * 从本地文件初始化课表
+	 */
+	@OptIn(ExperimentalSerializationApi::class)
+	private fun loadLesson() {
+		if(Setting.lessonTableFolder.exists()) {
+			Setting.lessonTableFolder.listFiles()?.let{
+				for(file in it){
+					if(file?.exists() == true) {
+						try{
+							FileInputStream(file).use { stream ->
+								_lessonTable.value = Json.decodeFromStream<LessonTable>(stream)
+								_startDay.value = lessonTable.startDay
+								_totalWeek.intValue = lessonTable.totalWeek
+							}
+							break
+						}catch(_: Exception) { }
+					}
+				}
+			}
+		} else {
+			Setting.lessonTableFolder.mkdirs()
+		}
+	}
+
+	@OptIn(ExperimentalSerializationApi::class)
+	fun saveLessonTable(newLessonTable: LessonTable? = null): Boolean{
+		if(newLessonTable != null){
+			_lessonTable.value = newLessonTable
+		}
+
+		// 去除上课周数为0的课程
+		val lessonGroups: Array<Array<LessonGroup?>> = lessonTable.lessons
+		for(dailyLesson in lessonGroups) {
+			for(timeSlot in dailyLesson.indices) {
+				val group: LessonGroup = dailyLesson[timeSlot] ?: continue
+				if(group.lessons.isEmpty()){
+					dailyLesson[timeSlot] = null
+					continue
+				}
+				group.lessons = group.lessons.filter { it.week != 0L }.toTypedArray()
+			}
+		}
+
+		_startDay.value = lessonTable.startDay
+		_totalWeek.intValue = lessonTable.totalWeek
+
+		if(!Setting.lessonTableFolder.exists()) Setting.lessonTableFolder.mkdirs()
+		val file = File(Setting.lessonTableFolder, "lessonTable")
+		return try{
+			FileOutputStream(file).use { stream ->
+				Json.encodeToStream<LessonTable>(lessonTable, stream)
+			}
+			true
+		}catch(_: Exception) {
+			false
+		}
+	}
+
 
 	/**
 	 * 查询课表信息
@@ -83,7 +249,6 @@ object LessonTableModel {
 
 	/**
 	 * 查询课表信息备用方案
-	 * @param entranceTime 入学年份（年级，有备用方案可以从html里获取）
 	 * @param year 学年
 	 * @param term 学期
 	 */
@@ -124,6 +289,7 @@ object LessonTableModel {
 		}
 		return result
 	}
+
 
 	/**
 	 * 获取学年信息
@@ -177,6 +343,7 @@ object LessonTableModel {
 		}
 		return result
 	}
+
 
 	class CustomException(msg: String): RuntimeException(msg)
 }

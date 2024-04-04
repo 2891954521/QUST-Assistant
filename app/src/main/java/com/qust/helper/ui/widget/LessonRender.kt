@@ -3,6 +3,8 @@ package com.qust.helper.ui.widget
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,40 +12,23 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.qust.helper.data.Data
-import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.data.lesson.LessonTable
+import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.theme.BACKGROUND_COLORS
 import com.qust.helper.ui.theme.BACKGROUND_COLOR_SECOND
 import com.qust.helper.ui.theme.TEXT_COLORS
 import com.qust.helper.ui.theme.TEXT_COLOR_SECOND
-import com.qust.helper.utils.DateUtils
-import java.util.Calendar
+import java.util.Date
 
 /**
  * 总课表界面的渲染器
  */
-class LessonRender {
-	/**
-	 * 今天的日期
-	 */
-	private val currentDay: Calendar = Calendar.getInstance()
-
-	/**
-	 * 显示全部课程
-	 */
-	private val showAllLesson: Boolean = Setting.getBoolean(Keys.KEY_SHOW_ALL_LESSON)
-
-	/**
-	 * 隐藏已结课程
-	 */
-	private val hideFinishLesson: Boolean = Setting.getBoolean(Keys.KEY_HIDE_FINISH_LESSON)
-
-	/**
-	 * 隐藏教师
-	 */
-	private val hideTeacher: Boolean = Setting.getBoolean(Keys.KEY_HIDE_TEACHER)
+class LessonRender(
+	startDay: MutableState<Date> = LessonTableRepository._startDay,
+	totalWeek: MutableIntState = LessonTableRepository._totalWeek,
+	lessonTable: MutableState<LessonTable> = LessonTableRepository._lessonTable,
+) {
 
 	private var baseLine = 0
 	private var textHeight = 0
@@ -81,18 +66,23 @@ class LessonRender {
 		paintT.textAlign = Paint.Align.CENTER
 	}
 
-	private val timeText: Array<Array<String>> = Data.LESSON_TIME_TEXT[0]
+	private val hideTeacher by LessonTableRepository._hideTeacher
+	private val showAllLesson by LessonTableRepository._showAllLesson
+	private val hideFinishLesson by LessonTableRepository._hideFinishLesson
+
+	private var _startDay = startDay
+	val startDay: Date
+		get() = _startDay.value
+
+	private var _totalWeek = totalWeek
+	val totalWeek: Int
+		get() = _totalWeek.intValue
+
+	private var _lessonTable = lessonTable
+	val lessonTable: LessonTable
+		get() = _lessonTable.value
 
 	private var lessonRenderData by mutableStateOf(LessonRenderData(hideTeacher, paintT))
-
-	var lessonTable: LessonTable? = null
-		set(value) {
-			field = value
-			if(cellWidth != 0 && cellHeight != 0) {
-				lessonRenderData = LessonRenderData(hideTeacher, paintT, (cellWidth - (LESSON_PADDING shl 2)), lessonTable)
-				lessonRenderData.calcLessonData()
-			}
-		}
 
 	/**
 	 * 设置 View Measure 数据
@@ -101,19 +91,24 @@ class LessonRender {
 	fun setMeasureData(measuredWidth: Int, measuredHeight: Int, density: Density) {
 		if(measuredWidth == composeWidth && measuredHeight == composeHeight) return
 		with(density) {
-			timeWidth = 48.dp.toPx().toInt()
 			linePadding = 4.dp.toPx().toInt()
 			paintT.textSize = 12.sp.toPx()
 			baseLine = (paintT.textSize / 2 + (paintT.fontMetrics.descent - paintT.fontMetrics.ascent) / 2 - paintT.fontMetrics.descent).toInt()
 			textHeight = (paintT.textSize + 3).toInt()
-			dateHeight = 40 + textHeight * 2
 		}
 		composeWidth = measuredWidth
 		composeHeight = measuredHeight
-		cellWidth = (measuredWidth - timeWidth) / Data.WEEK_STRING.size
-		cellHeight = (measuredHeight - dateHeight) / timeText[0].size
+		cellWidth = (measuredWidth - timeWidth) / 7
+		cellHeight = (measuredHeight - dateHeight) / 10
 		lessonRenderData = LessonRenderData(hideTeacher, paintT, (cellWidth - (LESSON_PADDING shl 2)), lessonTable)
 		lessonRenderData.calcLessonData()
+	}
+
+	fun updateLessonTable() {
+		if(cellWidth != 0 && cellHeight != 0) {
+			lessonRenderData = LessonRenderData(hideTeacher, paintT, (cellWidth - (LESSON_PADDING shl 2)), lessonTable)
+			lessonRenderData.calcLessonData()
+		}
 	}
 
 	/**
@@ -169,63 +164,6 @@ class LessonRender {
 	 * @param week 绘制第几周，从0开始
 	 */
 	fun drawView(canvas: Canvas, week: Int) {
-		drawTime(canvas)
-		drawDate(canvas, week)
-		drawLessons(canvas, week)
-	}
-
-	/**
-	 * 绘制选中高亮框
-	 * @param week 星期几
-	 * @param count 第几节
-	 * @param len 课程长度
-	 */
-	fun drawHighlightBox(canvas: Canvas, week: Int, count: Int, len: Int) {
-		paint.style = Paint.Style.STROKE
-		paint.color = Color.rgb(0, 176, 255)
-		canvas.drawRoundRect(
-			(week * cellWidth + timeWidth + LESSON_PADDING).toFloat(),
-			(count * cellHeight + dateHeight + LESSON_PADDING).toFloat(),
-			(week * cellWidth + cellWidth + timeWidth - LESSON_PADDING).toFloat(),
-			(count * cellHeight + cellHeight * len + dateHeight - LESSON_PADDING).toFloat(),
-			16f,
-			16f,
-			paint
-		)
-		paint.style = Paint.Style.FILL
-	}
-
-	protected fun drawTime(canvas: Canvas) {
-		paintT.color = Color.GRAY
-		val x = timeWidth / 2
-		var y = dateHeight + baseLine + (cellHeight - textHeight * 2) / 2
-		for(i in lessonRenderData.lessons[0].indices) {
-			canvas.drawText(timeText[0][i], x.toFloat(), y.toFloat(), paintT)
-			canvas.drawText(timeText[1][i], x.toFloat(), (y + textHeight).toFloat(), paintT)
-			y += cellHeight
-		}
-	}
-
-	protected fun drawDate(canvas: Canvas, week: Int) {
-		val c = lessonRenderData.startDate.clone() as Calendar
-		c.add(Calendar.WEEK_OF_YEAR, week)
-		val dayOfWeek = c[Calendar.DAY_OF_WEEK] - 2
-		c.add(Calendar.DATE, -dayOfWeek)
-		val y = 20 + baseLine
-		for(i in Data.WEEK_STRING.indices) {
-			if(currentDay[Calendar.DATE] == c[Calendar.DATE] && currentDay[Calendar.MONTH] == c[Calendar.MONTH]) {
-				paintT.color = TEXT_COLORS[0]
-			} else {
-				paintT.color = Color.GRAY
-			}
-			val day: String = DateUtils.MD.format(c.time)
-			canvas.drawText(Data.WEEK_STRING[i], (timeWidth + cellWidth / 2 + i * cellWidth).toFloat(), y.toFloat(), paintT)
-			canvas.drawText(day, (timeWidth + cellWidth / 2 + i * cellWidth).toFloat(), (y + textHeight).toFloat(), paintT)
-			c.add(Calendar.DATE, 1)
-		}
-	}
-
-	protected fun drawLessons(canvas: Canvas, week: Int) {
 		var x = timeWidth
 		for(i in lessonRenderData.lessons.indices) {
 			var y = dateHeight
@@ -267,6 +205,27 @@ class LessonRender {
 			}
 			x += cellWidth
 		}
+	}
+
+	/**
+	 * 绘制选中高亮框
+	 * @param week 星期几
+	 * @param count 第几节
+	 * @param len 课程长度
+	 */
+	fun drawHighlightBox(canvas: Canvas, week: Int, count: Int, len: Int) {
+		paint.style = Paint.Style.STROKE
+		paint.color = Color.rgb(0, 176, 255)
+		canvas.drawRoundRect(
+			(week * cellWidth + timeWidth + LESSON_PADDING).toFloat(),
+			(count * cellHeight + dateHeight + LESSON_PADDING).toFloat(),
+			(week * cellWidth + cellWidth + timeWidth - LESSON_PADDING).toFloat(),
+			(count * cellHeight + cellHeight * len + dateHeight - LESSON_PADDING).toFloat(),
+			16f,
+			16f,
+			paint
+		)
+		paint.style = Paint.Style.FILL
 	}
 
 

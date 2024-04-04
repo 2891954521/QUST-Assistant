@@ -27,13 +27,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.qust.helper.data.api.QustApi
+import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.common.Dialogs
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.utils.DateUtils
-import com.qust.helper.viewmodel.LessonTableViewModel
 import com.qust.helper.viewmodel.SettingViewModel
 
 object SettingPage {
@@ -42,42 +40,32 @@ object SettingPage {
 
 	@Composable
 	fun SettingPage(activity: ComponentActivity) {
-		val viewModel by activity.viewModels<SettingViewModel>(
-			factoryProducer = {
-				object : ViewModelProvider.Factory {
-					override fun <T : ViewModel> create(modelClass: Class<T>): T {
-						return SettingViewModel(
-							lessonTableViewModel = activity.viewModels<LessonTableViewModel>().value
-						) as T
-					}
-				}
-			}
-		)
+		val viewModel by activity.viewModels<SettingViewModel>()
 
 		val scrollState = rememberScrollState()
 
-		var startDayStr by remember { mutableStateOf(DateUtils.YMD.format(viewModel.startDay)) }
+		var startDayStr by remember { mutableStateOf(DateUtils.YMD.format(LessonTableRepository.startDay)) }
 		var showTimePicker by remember { mutableStateOf(false) }
 
 		Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
 
 			SettingGroup("课表") {
 
-				SwitchItem("显示全部课程", "非本周课程会以灰色显示", "非本周课程不会显示", viewModel.showAllLesson) { viewModel.showAllLesson = it }
+				SwitchItem("显示全部课程", "非本周课程会以灰色显示", "非本周课程不会显示", LessonTableRepository.showAllLesson) { LessonTableRepository.setShowAllLessonValue(it) }
 
-				SwitchItem("隐藏已结课程", "已结课程不会出现在课表中", "已结课程会出现在课表中", viewModel.hideFinishLesson) { viewModel.hideFinishLesson = it }
+				SwitchItem("隐藏已结课程", "已结课程不会出现在课表中", "已结课程会出现在课表中", LessonTableRepository.hideFinishLesson) { LessonTableRepository.setHideFinishLessonValue(it) }
 
-				SwitchItem("隐藏教师", "每周课表不会显示教师信息", "每周课表会显示教师信息", viewModel.hideTeacher) { viewModel.hideTeacher = it }
+				SwitchItem("隐藏教师", "每周课表不会显示教师信息", "每周课表会显示教师信息", LessonTableRepository.hideTeacher) { LessonTableRepository.setHideTeacherValue(it) }
 
 				SwitchItem("锁定课表", "不允许编辑课表", "允许编辑课表", viewModel.lockLesson) { viewModel.lockLesson = it }
 
 				SettingItem("设置开学时间", startDayStr){ showTimePicker = true }
 
-				InputItem("设置总周数", viewModel.totalWeek,
+				InputItem("设置总周数", LessonTableRepository.totalWeek.toString(),
 					keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
-				){ week -> week.toIntOrNull()?.let{ viewModel.setTotalWeekValue(it) } }
+				){ week -> week.toIntOrNull()?.let{ LessonTableRepository.setTotalWeekValue(it) } }
 
-				ListItem("设置时间表", viewModel.timeTable, timeTableList){ _, it -> viewModel.setTimeTableValue(it) }
+				ListItem("设置时间表", LessonTableRepository.currentTimeTable, timeTableList){ _, it -> LessonTableRepository.setTimeTableValue(it) }
 
 				InputItem("设置入学年份", viewModel.entranceTime,
 					keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
@@ -104,8 +92,8 @@ object SettingPage {
 		}
 
 		if(showTimePicker){
-			Dialogs.DatePickerDialog(currentDate = viewModel.startDay, onDismissRequest = { showTimePicker = false }){
-				viewModel.startDay = it
+			Dialogs.DatePickerDialog(currentDate = LessonTableRepository.startDay, onDismissRequest = { showTimePicker = false }){
+				LessonTableRepository.setStartDayValue(it)
 				startDayStr = DateUtils.YMD.format(it)
 				showTimePicker = false
 			}

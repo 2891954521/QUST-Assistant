@@ -15,7 +15,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,53 +37,51 @@ fun MainApp(activity: ComponentActivity) {
 	val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 	val scope = rememberCoroutineScope()
 
-	Surface {
-		ModalNavigationDrawer(
-			drawerState = drawerState,
-			drawerContent = { ModalDrawerSheet() { MainAppDrawer(drawerState = drawerState, navController = navController) } },
+	ModalNavigationDrawer(
+		drawerState = drawerState,
+		drawerContent = { ModalDrawerSheet() { MainAppDrawer(drawerState = drawerState, navController = navController) } },
+	) {
+		NavHost(
+			navController = navController,
+			startDestination = "home"
 		) {
-			NavHost(
-				navController = navController,
-				startDestination = "home"
-			) {
-				composable(route = "home"){
+			composable(route = "home") {
+				Scaffold(
+					topBar = {
+						TopBar(title = stringResource(id = R.string.app_name), navigationIcon = Icons.Rounded.Menu) {
+							scope.launch { drawerState.open() }
+						}
+					},
+				) { padding ->
+					Box(modifier = Modifier.padding(padding)) {
+						HomePage.HomePage(activity)
+					}
+				}
+			}
+
+			for(page in Data.Pages.values) {
+				composable(
+					route = page.key,
+					enterTransition = {
+						slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween())
+					},
+					exitTransition = { ExitTransition.None },
+					popEnterTransition = { EnterTransition.None },
+					popExitTransition = {
+//							if(initialState.destination.route == page.key) {
+						slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween())
+//							}else null
+					}
+				) {
 					Scaffold(
 						topBar = {
-							TopBar(title = stringResource(id = R.string.app_name), navigationIcon = Icons.Rounded.Menu) {
-								scope.launch { drawerState.open() }
+							TopBar(title = page.name, navigationIcon = Icons.AutoMirrored.Filled.ArrowBack) {
+								navController.popBackStack()
 							}
 						},
 					) { padding ->
-						Box(modifier = Modifier.padding(padding)){
-							HomePage.HomePage(activity)
-						}
-					}
-				}
-
-				for(page in Data.Pages.values) {
-					composable(
-						route = page.key,
-						enterTransition = {
-							slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween())
-					    },
-						exitTransition = { ExitTransition.None },
-						popEnterTransition = { EnterTransition.None },
-						popExitTransition = {
-//							if(initialState.destination.route == page.key) {
-								slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween())
-//							}else null
-						}
-					) {
-						Scaffold(
-							topBar = {
-								TopBar(title = page.name, navigationIcon = Icons.AutoMirrored.Filled.ArrowBack){
-									navController.popBackStack()
-								}
-							},
-						) { padding ->
-							Box(modifier = Modifier.padding(padding)){
-								page.content(activity)
-							}
+						Box(modifier = Modifier.padding(padding)) {
+							page.content(activity)
 						}
 					}
 				}

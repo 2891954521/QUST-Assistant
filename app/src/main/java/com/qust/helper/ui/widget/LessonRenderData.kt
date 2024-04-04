@@ -5,7 +5,6 @@ import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.data.lesson.LessonTable
 import java.util.Arrays
-import java.util.Calendar
 
 /**
  * 课程渲染信息
@@ -20,11 +19,6 @@ class LessonRenderData(
 	val lessonTable: LessonTable? = null
 ) {
 
-	/**
-	 * 开学日期
-	 */
-	var startDate: Calendar = Calendar.getInstance()
-
 	var lessons: Array<Array<LessonHolder?>> = Array(7) { arrayOfNulls(10) }
 
 	/**
@@ -32,7 +26,6 @@ class LessonRenderData(
 	 */
 	fun calcLessonData() {
 		lessonTable?.let {
-			startDate.time = it.startDay
 			val lessonGroups = it.lessons
 			lessons = Array(lessonGroups.size) { arrayOfNulls(lessonGroups[0].size) }
 			for(dayOfWeek in lessonGroups.indices) {

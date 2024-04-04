@@ -87,20 +87,6 @@ val colorError = Color(0xFFCF6679)
 val icons = Color(0xFF212121)
 val divider = Color(0xFFBDBDBD)
 
-val bg1 = Color(0xFFE6F4FF)
-val bg2 = Color(0xFFFDEBDD)
-val bg3 = Color(0xFFDEFBF7)
-val bg4 = Color(0xFFEEEDFF)
-val bg5 = Color(0xFFFCEBCD)
-val bg6 = Color(0xFFFFEFF0)
-val bg7 = Color(0xFFEAF2FF)
-val bg8 = Color(0xFFFFEEF8)
-val bg9 = Color(0xFFE2F9F3)
-val bg10 = Color(0xFFFFF9C9)
-val bg11 = Color(0xFFFAEDFF)
-val bg12 = Color(0xFFF4F2FD)
-
-
 val BACKGROUND_COLORS = intArrayOf(
 	android.graphics.Color.argb(192, 230, 244, 255),
 	android.graphics.Color.argb(192, 253, 235, 221),
@@ -116,6 +102,7 @@ val BACKGROUND_COLORS = intArrayOf(
 	android.graphics.Color.argb(192, 250, 237, 255),
 	android.graphics.Color.argb(192, 244, 242, 253),
 )
+
 val LESSON_BACKGROUND_COLORS = arrayOf(
 	Color(0xFFE6F4FF),
 	Color(0xFFFDEBDD),
@@ -145,6 +132,22 @@ val TEXT_COLORS = intArrayOf(
 	android.graphics.Color.rgb(197, 167, 35),
 	android.graphics.Color.rgb(175, 112, 203),
 	android.graphics.Color.rgb(118, 138, 197),
+)
+
+val LESSON_TEXT_COLORS = arrayOf(
+	Color(0xFF1F9DD0),
+	Color(0xFFDA7762),
+	Color(0xFF54AEB9),
+	Color(0xFF817CCC),
+	Color(0xFFE39B2D),
+	Color(0xFFD8637D),
+
+	Color(0xFF6A8ED8),
+	Color(0xFFDD73B3),
+	Color(0xFF44AF9F),
+	Color(0xFFC5A723),
+	Color(0xFFAF70CB),
+	Color(0xFF768AC5),
 )
 
 val BACKGROUND_COLOR_SECOND = android.graphics.Color.argb(192, 245, 245, 245)
