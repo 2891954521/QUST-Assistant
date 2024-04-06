@@ -1,14 +1,13 @@
 package com.qust.helper.viewmodel
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.qust.helper.R
-import com.qust.helper.ui.common.ToastContent
+import com.qust.helper.ui.widget.ToastContent
 
 abstract class BaseViewModel: ViewModel() {
-	open var dialogText: MutableState<String> = mutableStateOf("")
-	open var toastContent: MutableState<ToastContent> = mutableStateOf(ToastContent())
+	open var dialogText = mutableStateOf("")
+	open var toastContent = mutableStateOf(ToastContent())
 
 	fun toastOK(message: String){
 		toastContent.value = ToastContent(R.drawable.tips_finish, message)

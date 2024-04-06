@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Data
 import com.qust.helper.data.eas.Academic
 import com.qust.helper.model.Logger
-import com.qust.helper.ui.common.toastError
-import com.qust.helper.ui.common.toastWarning
+import com.qust.helper.ui.widget.toastError
+import com.qust.helper.ui.widget.toastWarning
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

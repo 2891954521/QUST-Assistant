@@ -51,12 +51,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
-import com.qust.helper.ui.common.AppBar
-import com.qust.helper.ui.common.Inputs
-import com.qust.helper.ui.common.Texts
-import com.qust.helper.ui.common.ToastComponent
-import com.qust.helper.ui.common.ToastContent
 import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.Inputs
+import com.qust.helper.ui.widget.Texts
+import com.qust.helper.ui.widget.ToastComponent
+import com.qust.helper.ui.widget.ToastContent
 import com.qust.helper.utils.LinearBarCode
 import com.qust.helper.viewmodel.DrinkViewModel
 

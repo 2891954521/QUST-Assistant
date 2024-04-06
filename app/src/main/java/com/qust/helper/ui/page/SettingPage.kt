@@ -29,8 +29,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.qust.helper.data.api.QustApi
 import com.qust.helper.model.LessonTableRepository
-import com.qust.helper.ui.common.Dialogs
 import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.utils.DateUtils
 import com.qust.helper.viewmodel.SettingViewModel
 

@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.data.Data
-import com.qust.helper.ui.common.ToastContent
-import com.qust.helper.ui.common.AppBar.TopBar
+import com.qust.helper.ui.widget.AppBar.TopBar
+import com.qust.helper.ui.widget.ToastContent
 
 class ComposeActivity: BaseActivity() {
 

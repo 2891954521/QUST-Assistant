@@ -17,8 +17,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
-import com.qust.helper.ui.common.AppBar
-import com.qust.helper.ui.common.Inputs
+import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.Inputs
 import com.qust.helper.viewmodel.account.EasAccountViewModel
 import com.qust.helper.viewmodel.account.IPassAccountViewModel
 

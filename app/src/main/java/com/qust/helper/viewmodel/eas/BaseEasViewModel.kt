@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.qust.helper.model.account.EASAccount
-import com.qust.helper.ui.common.ToastContent
-import com.qust.helper.ui.common.toastWarning
+import com.qust.helper.ui.widget.ToastContent
+import com.qust.helper.ui.widget.toastWarning
 
 abstract class BaseEasViewModel(application: Application) : AndroidViewModel(application) {
 

@@ -1,4 +1,4 @@
-package com.qust.helper.ui.common
+package com.qust.helper.ui.widget
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column

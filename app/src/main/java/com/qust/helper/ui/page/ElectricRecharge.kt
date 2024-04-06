@@ -51,11 +51,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
 import com.qust.helper.data.Electricity
-import com.qust.helper.ui.common.AppBar
-import com.qust.helper.ui.common.Dialogs
-import com.qust.helper.ui.common.Texts
-import com.qust.helper.ui.common.ToastComponent
-import com.qust.helper.ui.common.ToastContent
+import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.Dialogs
+import com.qust.helper.ui.widget.Texts
+import com.qust.helper.ui.widget.ToastComponent
+import com.qust.helper.ui.widget.ToastContent
 import com.qust.helper.viewmodel.ElectricRechargeViewModel
 import kotlinx.coroutines.launch
 

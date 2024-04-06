@@ -2,7 +2,6 @@ package com.qust.helper.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
 import java.io.File
 
 object Setting {
@@ -12,7 +11,7 @@ object Setting {
 	lateinit var lessonTableFolder: File
 
 	fun init(context: Context) {
-		defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+		defaultSharedPreferences = context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
 
 		lessonTableFolder = File(context.filesDir, "lessonTables")
 	}

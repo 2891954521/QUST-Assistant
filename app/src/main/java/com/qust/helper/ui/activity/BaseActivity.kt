@@ -11,16 +11,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import com.qust.helper.ui.common.ToastComponent
-import com.qust.helper.ui.common.ToastContent
 import com.qust.helper.ui.theme.AppTheme
+import com.qust.helper.ui.widget.ToastAble
+import com.qust.helper.ui.widget.ToastContent
 
 
 abstract class BaseActivity: ComponentActivity() {
 
 	abstract var toastContent: MutableState<ToastContent>
+
+	private lateinit var toastAble: ToastAble
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -29,7 +32,9 @@ abstract class BaseActivity: ComponentActivity() {
 //		WindowCompat.setDecorFitsSystemWindows(window, false)
 
 		enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
-		
+
+		toastAble = ToastAble(this)
+
 		setContent {
 			AppTheme {
 				Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -41,8 +46,13 @@ abstract class BaseActivity: ComponentActivity() {
 
 	@Composable
 	protected fun BaseContent(){
+		LaunchedEffect(toastContent.value){
+			val v = toastContent.value
+			if(v.icon != 0 && v.message.isNotEmpty()){
+				toastAble.toast(v.icon, v.message)
+			}
+		}
 		Content()
-		ToastComponent(toastContent)
 	}
 
 	@Composable

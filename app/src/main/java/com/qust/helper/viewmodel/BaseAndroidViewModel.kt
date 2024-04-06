@@ -5,7 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.qust.helper.R
-import com.qust.helper.ui.common.ToastContent
+import com.qust.helper.ui.widget.ToastContent
 
 abstract class BaseAndroidViewModel(application: Application): AndroidViewModel(application) {
 	

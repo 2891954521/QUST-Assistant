@@ -25,8 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.qust.helper.R
 import com.qust.helper.data.Data
-import com.qust.helper.ui.common.AppBar.TopBar
-import com.qust.helper.ui.common.MainAppDrawer
+import com.qust.helper.ui.widget.AppBar.TopBar
+import com.qust.helper.ui.widget.MainAppDrawer
 import kotlinx.coroutines.launch
 
 @SuppressLint("RestrictedApi", "StateFlowValueCalledInComposition")

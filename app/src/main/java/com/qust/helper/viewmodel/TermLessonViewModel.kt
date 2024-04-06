@@ -7,11 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import com.qust.helper.R
 import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.model.LessonTableRepository
-import com.qust.helper.ui.common.ToastAble
 import com.qust.helper.ui.widget.LessonRender
+import com.qust.helper.ui.widget.ToastAble
 
 class TermLessonViewModel(activity: Activity): ViewModel() {
 
@@ -28,9 +27,9 @@ class TermLessonViewModel(activity: Activity): ViewModel() {
 		override fun pasteLesson() { this@TermLessonViewModel.pasteLesson() }
 		override fun deleteLesson() { this@TermLessonViewModel.deleteLesson() }
 		override fun saveLesson() { this@TermLessonViewModel.saveLesson() }
-		override fun toastOK(message: String){ toastAble.toast(R.drawable.tips_finish, message) }
-		override fun toastWarning(message: String) { toastAble.toast(R.drawable.tips_warning, message) }
-		override fun toastError(message: String) { toastAble.toast(R.drawable.tips_error, message) }
+		override fun toastOK(message: String){ toastAble.toastOK(message) }
+		override fun toastWarning(message: String) { toastAble.toastWarning(message) }
+		override fun toastError(message: String) { toastAble.toastError(message) }
 	}
 
 	private val toastAble = ToastAble(activity)

@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.qust.helper.data.eas.Exam
-import com.qust.helper.ui.common.Texts
+import com.qust.helper.ui.widget.Texts
 import com.qust.helper.viewmodel.eas.GetExamsViewModel
 
 object GetExams {

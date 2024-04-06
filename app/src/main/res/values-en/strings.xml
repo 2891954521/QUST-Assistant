@@ -11,4 +11,5 @@
 	<string name="text_query_term_start_time">Current start date: %s\nQueryed start date: %s</string>
 	<string name="text_save_lesson_table">Save Lesson Table</string>
 	<string name="text_login">Login</string>
+	<string name="text_term_lesson">Term Lesson</string>
 </resources>

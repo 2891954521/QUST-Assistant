@@ -1,12 +1,12 @@
-package com.qust.helper.ui.common
+package com.qust.helper.ui.widget
 
 import android.content.Context
 import android.graphics.PixelFormat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
-import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +44,8 @@ open class ToastAble(context: Context){
 
 	private var toastWindow = context.getSystemService(ComponentActivity.WINDOW_SERVICE) as WindowManager
 
-	private var toastLayout = LayoutInflater.from(context).inflate(R.layout.layout_tips, null) as FrameLayout
+//	private var toastLayout = ComposeView(context).also { it.setContent { ToastContent() } }
+	private var toastLayout = LayoutInflater.from(context).inflate(R.layout.layout_tips, null) as LinearLayout
 
 	private var toastIcon = toastLayout.findViewById<ImageView>(R.id.tips_icon)
 	private var toastMessage = toastLayout.findViewById<TextView>(R.id.tips_message)
@@ -58,14 +59,13 @@ open class ToastAble(context: Context){
 		it.windowAnimations = android.R.style.Animation_Toast
 	}
 
+//	private var text by mutableStateOf("")
+//	private var icon by mutableIntStateOf(R.drawable.tips_finish)
 	fun toast(icon: Int, message: String){
-		if(isShowToast){
-			toastIcon.setImageResource(icon)
-			toastMessage.text = message
-		}else{
+		toastIcon.setImageResource(icon)
+		toastMessage.text = message
+		if(!isShowToast){
 			isShowToast = true
-			toastIcon.setImageResource(icon)
-			toastMessage.text = message
 			toastWindow.addView(toastLayout, toastParams)
 			CoroutineScope(Dispatchers.Main).launch {
 				delay(4000)
@@ -80,6 +80,27 @@ open class ToastAble(context: Context){
 	fun toastWarning(message: String) { toast(R.drawable.tips_warning, message) }
 
 	fun toastError(message: String) { toast(R.drawable.tips_error, message) }
+
+//	@Composable
+//	fun ToastContent() {
+//		Card(
+//			colors = CardDefaults.cardColors(containerColor = Color(0x7A000000)),
+//			shape = RoundedCornerShape(16.dp),
+//			modifier = Modifier.wrapContentSize(),
+//		) {
+//			Column(
+//				modifier = Modifier.padding(16.dp, 8.dp).fillMaxWidth(),
+//				horizontalAlignment = Alignment.CenterHorizontally,
+//			) {
+//				Icon(
+//					modifier = Modifier.size(48.dp),
+//					painter = painterResource(icon),
+//					contentDescription = ""
+//				)
+//				Text(text = text, modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.bodyMedium)
+//			}
+//		}
+//	}
 }
 
 
@@ -95,7 +116,7 @@ fun toastError(message: String): ToastContent {
 	return ToastContent(R.drawable.tips_error, message)
 }
 
-data class ToastContent(
+class ToastContent(
 	var icon: Int = 0,
 	val message: String = "",
 )

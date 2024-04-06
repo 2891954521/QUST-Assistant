@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
 import com.qust.helper.data.Data.TermName
-import com.qust.helper.ui.common.AppBar
+import com.qust.helper.ui.widget.AppBar
 import com.qust.helper.ui.widget.ListPicker
 import com.qust.helper.viewmodel.eas.BaseEasViewModel
 

@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.eas.Notice
 import com.qust.helper.model.Logger
-import com.qust.helper.ui.common.toastError
+import com.qust.helper.ui.widget.toastError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.qust.helper.data.eas.Mark
-import com.qust.helper.ui.common.Texts.SingleLineText
+import com.qust.helper.ui.widget.Texts.SingleLineText
 import com.qust.helper.viewmodel.eas.GetMarksViewModel
 
 object GetMarks{

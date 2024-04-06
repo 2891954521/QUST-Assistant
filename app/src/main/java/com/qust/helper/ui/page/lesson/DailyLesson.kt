@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.dp
 import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.model.LessonTableRepository
-import com.qust.helper.ui.common.Texts
 import com.qust.helper.ui.theme.TEXT_COLORS
 import com.qust.helper.ui.theme.TEXT_COLOR_SECOND_COLOR
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.LessonTableView
+import com.qust.helper.ui.widget.Texts
 
 object DailyLesson {
 
@@ -123,7 +123,9 @@ object DailyLesson {
 		) {
 
 			Text(
-				text = "${LessonTableView.LESSON_TIME1[0][count]}\n${LessonTableView.LESSON_TIME1[1][count + 1]}",
+				text = if(LessonTableRepository.currentTimeTable == 0)
+					"${LessonTableView.LESSON_TIME1[0][count]}\n${LessonTableView.LESSON_TIME1[1][count + 1]}"
+				else "${LessonTableView.LESSON_TIME2[0][count]}\n${LessonTableView.LESSON_TIME2[1][count + 1]}",
 				color = colorSecondaryText,
 				modifier = Modifier.padding(8.dp)
 			)

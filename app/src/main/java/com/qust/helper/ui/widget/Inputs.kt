@@ -1,4 +1,4 @@
-package com.qust.helper.ui.common
+package com.qust.helper.ui.widget
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -61,8 +61,8 @@ object Inputs {
 					Icon(painterResource(if(passwordHidden) R.drawable.ic_visibility else R.drawable.ic_visibility_off), null)
 				}
 			},
-			visualTransformation = if(passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
-			keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+			visualTransformation = if(passwordHidden) PasswordVisualTransformation('*') else VisualTransformation.None,
+			keyboardOptions = KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
 			keyboardActions = KeyboardActions(onDone = { login() }),
 			maxLines = 1
 		)

@@ -38,11 +38,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
 import com.qust.helper.data.eas.Academic
-import com.qust.helper.ui.common.AppBar
-import com.qust.helper.ui.common.Texts
-import com.qust.helper.ui.common.toastOK
 import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.TripleProgressBar
+import com.qust.helper.ui.widget.toastOK
 import com.qust.helper.viewmodel.eas.GetAcademicViewModel
 
 object GetAcademic {

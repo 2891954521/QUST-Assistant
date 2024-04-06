@@ -12,10 +12,17 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 2
-		versionName = "v3.0.20240403 Beta"
+		versionCode = 3
+		versionName = "v3.0.20240406"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+		resourceConfigurations.clear()
+		resourceConfigurations += arrayOf("zh", "zh-rCN")
+
+		ndk {
+			abiFilters += listOf("armeabi","armeabi-v7a", "x86") // 'x86_64', 'mips', 'mips64'
+		}
 		vectorDrawables {
 			useSupportLibrary = true
 		}
@@ -23,7 +30,8 @@ android {
 
 	buildTypes {
 		release {
-			isMinifyEnabled = false
+			isMinifyEnabled = true
+			isShrinkResources = true
 			proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 		}
 	}
@@ -50,6 +58,7 @@ android {
 dependencies {
 
 	implementation("androidx.compose:compose-bom:2024.03.00")
+	implementation("androidx.glance:glance-appwidget:1.0.0")
 	androidTestImplementation("androidx.compose:compose-bom:2024.03.00")
 
 	implementation("androidx.core:core-ktx:1.12.0")
@@ -61,8 +70,8 @@ dependencies {
 	implementation("androidx.compose.ui:ui-tooling-preview")
 	implementation("androidx.compose.material:material:1.6.4")
 	implementation("androidx.compose.material3:material3:1.2.1")
-	implementation("androidx.preference:preference-ktx:1.2.1")
 
+	implementation("androidx.glance:glance:1.0.0")
 	implementation("androidx.appcompat:appcompat:1.6.1")
 
 	implementation("androidx.activity:activity-compose:1.8.2")
@@ -73,7 +82,7 @@ dependencies {
 
 	implementation("androidx.navigation:navigation-compose:2.7.7")
 
-	implementation("com.google.android.material:material:1.11.0")
+//	implementation("com.google.android.material:material:1.11.0")
 
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 

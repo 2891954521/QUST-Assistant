@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qust.helper.data.eas.Notice
-import com.qust.helper.ui.common.Texts
+import com.qust.helper.ui.widget.Texts
 import com.qust.helper.viewmodel.eas.GetNoticeViewModel
 
 object GetNotice {
