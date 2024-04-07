@@ -1,10 +1,9 @@
 package com.qust.helper.ui.page
 
-import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,11 +28,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -49,14 +48,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.data.Electricity
 import com.qust.helper.ui.widget.AppBar
 import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.ui.widget.Texts
-import com.qust.helper.ui.widget.ToastComponent
-import com.qust.helper.ui.widget.ToastContent
+import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.ElectricRechargeViewModel
+import com.qust.helper.viewmodel.ElectricUIEvent
+import com.qust.helper.viewmodel.ElectricUIState
 import kotlinx.coroutines.launch
 
 object ElectricRecharge {
@@ -64,44 +65,20 @@ object ElectricRecharge {
 	val TITLE = arrayOf("电控", "校区", "楼栋", "楼层", "宿舍")
 
 	@Composable
-	fun ElectricRecharge(activity: ComponentActivity) {
-		val viewModel: ElectricRechargeViewModel by activity.viewModels()
-
-		ElectricRechargeUI(
-			cardAccount = viewModel.account,
-			cardBalance = viewModel.balance,
-			rooms = viewModel.rooms,
-			dialogText = viewModel.dialogText.value,
-			toastContent = viewModel.toastContent,
-			refreshCard = { viewModel.refreshCard() },
-			checkIndex = { viewModel.checkIndex(it) },
-			checkNode = { viewModel.checkNode() },
-			getIndexName = { viewModel.getIndexName(it) },
-			chooseIndex = { index, choose -> viewModel.chooseNode(index, choose) },
-			addRoom = { viewModel.addRoom() },
-			refreshBalance = { viewModel.refreshBalance(it) },
-			recharge = { roomIndex, amount -> viewModel.recharge(roomIndex, amount) },
-			delete = { viewModel.deleteRoom(it) }
-		)
+	fun ElectricRecharge(padding: PaddingValues, viewModel: ElectricRechargeViewModel, toast: Toast, navController: NavController) {
+		LaunchedEffect(viewModel.uiState.needLogin){
+			if(viewModel.uiState.needLogin){
+				navController.navigate("vpnLogin")
+				viewModel.uiState.needLogin = false
+			}
+		}
+		ElectricRechargeUI(padding = padding, uiState = viewModel.uiState, uiEvent = viewModel.uiEvent)
+		AppBar.DialogBar(dialogText = viewModel.uiState.dialogText)
+		toast.ToastContent(viewModel.uiState.toastContent)
 	}
 
 	@Composable
-	fun ElectricRechargeUI(
-		cardAccount: String = "",
-		cardBalance: Float = Float.NaN,
-		rooms: MutableList<Electricity>,
-		dialogText: String = "",
-		toastContent: MutableState<ToastContent>,
-		checkIndex: (Int) -> Boolean = { true },
-		refreshCard: () -> Unit = { },
-		checkNode: () -> Unit = { },
-		getIndexName: (Int) -> Array<String> = { emptyArray() },
-		chooseIndex: (Int, Int) -> Unit = { _, _ -> },
-		addRoom: () -> Unit = { },
-		refreshBalance: (Int) -> Unit = { },
-		recharge: (Int, Int) -> Unit = { _, _ -> },
-		delete: (Int) -> Unit = { }
-	) {
+	fun ElectricRechargeUI(padding: PaddingValues, uiState: ElectricUIState, uiEvent: ElectricUIEvent) {
 		val showAddRoom = remember { mutableStateOf(false) }
 		var showRecharge by remember { mutableIntStateOf(-1) }
 		var askForDelete by remember { mutableIntStateOf(-1) }
@@ -110,79 +87,74 @@ object ElectricRecharge {
 		var selectContent by remember { mutableStateOf(Array(5) { "请选择" }) }
 		var selectRoomIndex by remember { mutableIntStateOf(0) }
 
-		Scaffold{ padding ->
-			Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-				Box(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp)) {
-					Text(text = "卡账户: $cardAccount\n卡余额: $cardBalance", modifier = Modifier.align(Alignment.CenterStart))
-					TextButton(
-						onClick = { refreshCard() },
-						modifier = Modifier.align(Alignment.CenterEnd)
-					) {
-						Icon(imageVector = Icons.Rounded.Refresh, contentDescription = null)
-						Text(text = "刷新卡信息")
-					}
+		Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+			Box(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp)) {
+				Text(text = "卡账户: ${uiState.account}\n卡余额: ${uiState.balance}", modifier = Modifier.align(Alignment.CenterStart))
+				TextButton(
+					onClick = { uiEvent.refreshCard() },
+					modifier = Modifier.align(Alignment.CenterEnd)
+				) {
+					Icon(imageVector = Icons.Rounded.Refresh, contentDescription = null)
+					Text(text = "刷新卡信息")
 				}
-				Spacer(Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
-				Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-					Text(text = "宿舍列表", style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.CenterStart))
-					TextButton(
-						onClick = { checkNode(); showAddRoom.value = true; },
-						modifier = Modifier.align(Alignment.CenterEnd)
-					) {
-						Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
-						Text(text = "添加宿舍")
-					}
-				}
-
-				LazyColumn{
-					itemsIndexed(rooms) { index, item ->
-						ElectricCard(index,
-							item,
-							refreshBalance = { refreshBalance(it) },
-							recharge = { showRecharge = it },
-							delete = { askForDelete = it }
-						)
-					}
+			}
+			Spacer(Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+			Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+				Text(text = "宿舍列表", style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.CenterStart))
+				TextButton(
+					onClick = { uiEvent.checkNode(); showAddRoom.value = true; },
+					modifier = Modifier.align(Alignment.CenterEnd)
+				) {
+					Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+					Text(text = "添加宿舍")
 				}
 			}
 
-			RoomChooseDialog(
-				isShow = showAddRoom,
-				contents = selectContent,
-				onClickItem = {
-					if(checkIndex(it)){
-						selectRoomIndex = it
-						selectRoom = true
-					}
-			  },
-				onConfirm = { addRoom() }
-			)
-
-			if(selectRoom){
-				Dialogs.ListDialog(TITLE[selectRoomIndex], getIndexName(selectRoomIndex), { selectRoom = false }) { items, index ->
-					val tmp = selectContent.clone()
-					tmp[selectRoomIndex] = items[index]
-					for(i in selectRoomIndex + 1 .. 4) tmp[i] = "请选择"
-					selectContent = tmp
-					chooseIndex(selectRoomIndex, index)
+			LazyColumn{
+				itemsIndexed(uiState.rooms) { index, item ->
+					ElectricCard(index,
+						item,
+						refreshBalance = { uiEvent.refreshBalance(it) },
+						recharge = { showRecharge = it },
+						delete = { askForDelete = it }
+					)
 				}
 			}
+		}
 
-			if(askForDelete != -1){
-				Dialogs.AskDialog("删除", "是否删除宿舍: ${rooms[askForDelete].roomName}", { askForDelete = -1 }){
-					delete(askForDelete)
-					askForDelete = -1
+		RoomChooseDialog(
+			isShow = showAddRoom,
+			contents = selectContent,
+			onClickItem = {
+				if(uiEvent.checkIndex(it)){
+					selectRoomIndex = it
+					selectRoom = true
 				}
-			}
+		  },
+			onConfirm = { uiEvent.addRoom() }
+		)
 
-			if(showRecharge != -1){
-				RechargeDialog(onDismiss = { showRecharge = -1 }){ amount ->
-					recharge(showRecharge, amount); showRecharge = -1
-				}
+		if(selectRoom){
+			Dialogs.ListDialog(TITLE[selectRoomIndex], uiEvent.getIndexName(selectRoomIndex), { selectRoom = false }) { items, index ->
+				val tmp = selectContent.clone()
+				tmp[selectRoomIndex] = items[index]
+				for(i in selectRoomIndex + 1 .. 4) tmp[i] = "请选择"
+				selectContent = tmp
+				uiEvent.chooseNode(selectRoomIndex, index)
 			}
+		}
 
-			AppBar.DialogBar(dialogText = dialogText)
-			ToastComponent(toastContent)
+		if(askForDelete != -1){
+			Dialogs.AskDialog("删除", "是否删除宿舍: ${uiState.rooms[askForDelete].roomName}", { askForDelete = -1 }){
+				uiEvent.deleteRoom(askForDelete)
+				askForDelete = -1
+			}
+		}
+
+		if(showRecharge != -1){
+			RechargeDialog(onDismiss = { showRecharge = -1 }){ amount ->
+				uiEvent.recharge(showRecharge, amount); showRecharge = -1
+			}
 		}
 	}
 

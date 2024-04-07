@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -231,8 +231,21 @@ object Dialogs {
 	}
 }
 
-@Preview
-@Composable
-fun Test() {
-	Dialogs.DatePickerDialog(Date(), {}, {})
+interface DialogAble {
+	val _dialogText: MutableState<String>
+	val dialogText: String
+	fun showDialog(message: String)
+	fun clearDialog()
+}
+
+class DialogAbleImpl(override val _dialogText: MutableState<String> = mutableStateOf("")): DialogAble{
+	override val dialogText: String
+		get() = _dialogText.value
+
+	override fun showDialog(message: String) {
+		_dialogText.value = message
+	}
+	override fun clearDialog() {
+		_dialogText.value = ""
+	}
 }

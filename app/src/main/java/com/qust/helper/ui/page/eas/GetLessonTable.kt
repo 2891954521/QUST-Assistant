@@ -1,10 +1,10 @@
 package com.qust.helper.ui.page.eas
 
 import android.annotation.SuppressLint
-import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -28,7 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.data.Data
 import com.qust.helper.ui.theme.colorSecondaryText
@@ -46,30 +47,35 @@ import com.qust.helper.ui.widget.LessonTableView
 import com.qust.helper.ui.widget.ListPicker
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.Texts.SingleLineText
-import com.qust.helper.ui.widget.ToastComponent
-import com.qust.helper.ui.widget.ToastContent
+import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.eas.GetLessonTableViewModel
 
 object GetLessonTable {
 
 	@Composable
-	fun GetLessonTable(activity: ComponentActivity) {
-		val viewModel: GetLessonTableViewModel by activity.viewModels()
-
-		GetLessonTableUI(
-			termText = viewModel.termText,
-			termTimeText = viewModel.termTimeText,
-			pickYear = viewModel.pickYear.value,
-			pickType = viewModel.pickType.intValue,
-			needSave = viewModel.needSave,
-			lessonRender = viewModel.lessonRender,
-			dialogText = viewModel.dialogText,
-			toastContent = viewModel.toastContent,
-			onYearPick = { viewModel.pickYear.value = it },
-			onTypePick = { viewModel.pickType.intValue = it },
-			doQuery = { viewModel.queryLesson() },
-			saveLessonTable = { viewModel.saveLessonTable() }
-		)
+	fun GetLessonTable(padding: PaddingValues, viewModel: GetLessonTableViewModel, toast: Toast, navController: NavController){
+		LaunchedEffect(viewModel.needLogin){
+			if(viewModel.needLogin){
+				navController.navigate("easLogin")
+				viewModel.needLogin = false
+			}
+		}
+		Box(modifier = Modifier.padding(padding)){
+			GetLessonTableUI(
+				termText = viewModel.termText,
+				termTimeText = viewModel.termTimeText,
+				pickYear = viewModel.pickYear.value,
+				pickType = viewModel.pickType.intValue,
+				needSave = viewModel.needSave,
+				lessonRender = viewModel.lessonRender,
+				onYearPick = { viewModel.pickYear.value = it },
+				onTypePick = { viewModel.pickType.intValue = it },
+				doQuery = { viewModel.queryLesson() },
+				saveLessonTable = { viewModel.saveLessonTable() }
+			)
+		}
+		AppBar.DialogBar(dialogText = viewModel.dialogText)
+		toast.ToastContent(viewModel.toastContent)
 	}
 
 	@Composable
@@ -81,8 +87,6 @@ object GetLessonTable {
 		pickType: Int = 0,
 		needSave: Boolean = false,
 		lessonRender: LessonRender,
-		dialogText: String = "",
-		toastContent: MutableState<ToastContent>,
 		onYearPick: (Int) -> Unit = { },
 		onTypePick: (Int) -> Unit = { },
 		doQuery: () -> Unit = { },
@@ -151,9 +155,6 @@ object GetLessonTable {
 					onConfirm = { askForSave = false; saveLessonTable() }
 				)
 			}
-
-			AppBar.DialogBar(dialogText = dialogText)
-			ToastComponent(toastContent)
 		}
 	}
 

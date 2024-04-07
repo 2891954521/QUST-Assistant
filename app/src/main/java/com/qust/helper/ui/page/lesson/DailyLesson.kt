@@ -1,9 +1,9 @@
 package com.qust.helper.ui.page.lesson
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -31,15 +31,8 @@ import com.qust.helper.ui.widget.Texts
 object DailyLesson {
 
 	@Composable
-	fun DailyLesson(activity: ComponentActivity){
-		DailyLessonUI(
-			lessonGroups = LessonTableRepository.lessonTable.lessons[LessonTableRepository.dayOfWeek.intValue],
-			currentWeek = LessonTableRepository.currentWeek.intValue
-		)
-	}
-
-	@Composable
 	fun DailyLessonUI(
+		padding: PaddingValues,
 		lessonGroups: Array<LessonGroup?>,
 		currentWeek: Int = 1
 	) {
@@ -48,7 +41,7 @@ object DailyLesson {
 //		}
 
 		Column(
-			modifier = Modifier.padding(8.dp)
+			modifier = Modifier.padding(padding)
 		) {
 			Texts.SingleLineText(text = "上午课程")
 

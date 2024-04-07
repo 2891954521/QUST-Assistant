@@ -21,7 +21,7 @@ class IPassAccountViewModel: AccountViewModel() {
 	override fun login(accountStr: String, passwordStr: String, block: ()-> Unit) {
 		viewModelScope.launch {
 			try{
-				dialogText.value = "登录中"
+				showDialog("登录中")
 
 				val result = withContext(Dispatchers.IO){
 					ipassAccount.login(accountStr, passwordStr, true)
@@ -36,7 +36,7 @@ class IPassAccountViewModel: AccountViewModel() {
 				Logger.e("LoginFail", e)
 				toastError("网络错误: " + e.message)
 			}finally{
-				dialogText.value = ""
+				clearDialog()
 			}
 		}
 	}

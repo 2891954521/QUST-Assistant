@@ -1,10 +1,10 @@
 package com.qust.helper.ui.page.eas
 
-import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +14,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,28 +22,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.qust.helper.data.eas.Mark
+import com.qust.helper.ui.widget.AppBar
 import com.qust.helper.ui.widget.Texts.SingleLineText
+import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.eas.GetMarksViewModel
 
 object GetMarks{
 
 	@Composable
-	fun GetMarks(activity: ComponentActivity) {
-		val viewModel: GetMarksViewModel by activity.viewModels()
-
-		val marks by viewModel.marks
-
-		EasQuery(
-			viewModel = viewModel,
-			items = marks,
-			itemView = { ExamItem(it) },
-			onYearPick = {
-				viewModel.marks.value = viewModel.marksData[it]
+	fun GetMarksUI(padding: PaddingValues, viewModel: GetMarksViewModel, toast: Toast, navController: NavController){
+		LaunchedEffect(viewModel.needLogin){
+			if(viewModel.needLogin){
+				navController.navigate("easLogin")
+				viewModel.needLogin = false
 			}
-		){
-			viewModel.queryMarks { }
 		}
+		val marks by viewModel.marks
+		Box(modifier = Modifier.padding(padding)){
+			EasQuery(
+				pickYear = viewModel.pickYear,
+				items = marks,
+				itemView = { ExamItem(it) },
+				onYearPick = { viewModel.marks.value = viewModel.marksData[it] },
+				doQuery = { viewModel.queryMarks() }
+			)
+		}
+		AppBar.DialogBar(dialogText = viewModel.dialogText)
+		toast.ToastContent(viewModel.toastContent)
 	}
 
 	@Composable

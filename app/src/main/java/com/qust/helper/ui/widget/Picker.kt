@@ -195,6 +195,9 @@ object Picker {
 		}
 	}
 
+	/**
+	 * 有动画的数字选择器
+	 */
 	@Composable
 	fun AnimNumberPicker(modifier: Modifier = Modifier, number: Int, onAdd: () -> Unit = { }, onSub: () -> Unit = { }) {
 		Row(

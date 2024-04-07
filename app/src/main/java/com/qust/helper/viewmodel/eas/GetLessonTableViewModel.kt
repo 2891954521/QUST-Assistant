@@ -12,8 +12,6 @@ import com.qust.helper.data.lesson.LessonTable
 import com.qust.helper.data.lesson.LessonTableQueryResult
 import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.widget.LessonRender
-import com.qust.helper.ui.widget.toastError
-import com.qust.helper.ui.widget.toastOK
 import com.qust.helper.utils.DateUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,36 +34,37 @@ class GetLessonTableViewModel(application: Application): BaseEasViewModel(applic
 
 	fun queryLesson(){
 		viewModelScope.launch {
-			dialogText = "查询中"
+			showDialog("查询中")
 			val pair = getYearAndTerm()
 			val result: LessonTableQueryResult
 
 			withContext(Dispatchers.IO){
-				easAccount.checkLogin()
-				result = if(pickType.intValue == 0) {
-					LessonTableRepository.queryLessonTable(easAccount = easAccount, pair.first, pair.second)
-				} else {
-					LessonTableRepository.queryClassLessonTable(easAccount = easAccount, pair.first, pair.second)
-				}
-				val error = result.error
-				if(error == null) {
-					termText = result.termText
-					termTimeText = getApplication<App>().getString(
-						R.string.text_query_term_start_time,
-						DateUtils.YMD.format(LessonTableRepository.startDay),
-						DateUtils.YMD.format(result.lessonTable.startDay)
-					)
-					needSave = true
-					toastContent.value = toastOK("获取课表成功！")
+				if(checkLogin()){
+					result = if(pickType.intValue == 0) {
+						LessonTableRepository.queryLessonTable(easAccount = easAccount, pair.first, pair.second)
+					} else {
+						LessonTableRepository.queryClassLessonTable(easAccount = easAccount, pair.first, pair.second)
+					}
+					val error = result.error
+					if(error == null) {
+						termText = result.termText
+						termTimeText = getApplication<App>().getString(
+							R.string.text_query_term_start_time,
+							DateUtils.YMD.format(LessonTableRepository.startDay),
+							DateUtils.YMD.format(result.lessonTable.startDay)
+						)
+						needSave = true
+						toastOK("获取课表成功！")
 
-					lessonTable.value = result.lessonTable
-					startDay.value = result.lessonTable.startDay
-					totalWeek.intValue = result.lessonTable.totalWeek
-				}else{
-					toastContent.value = toastError(error)
+						lessonTable.value = result.lessonTable
+						startDay.value = result.lessonTable.startDay
+						totalWeek.intValue = result.lessonTable.totalWeek
+					}else{
+						toastError(error)
+					}
 				}
-				dialogText = ""
 			}
+			clearDialog()
 		}
 	}
 

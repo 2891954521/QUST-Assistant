@@ -2,17 +2,24 @@ package com.qust.helper.viewmodel
 
 import android.app.Application
 import android.os.Build
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Electricity
 import com.qust.helper.model.Logger
 import com.qust.helper.model.account.NeedLoginException
 import com.qust.helper.model.account.VpnAccount
 import com.qust.helper.ui.page.ElectricRecharge.TITLE
+import com.qust.helper.ui.widget.DialogAble
+import com.qust.helper.ui.widget.DialogAbleImpl
+import com.qust.helper.ui.widget.ToastAble
+import com.qust.helper.ui.widget.ToastAbleImpl
+import com.qust.helper.ui.widget.ToastContent
 import com.qust.helper.utils.CodeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,7 +42,9 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 @OptIn(ExperimentalSerializationApi::class)
-class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(application) {
+class ElectricRechargeViewModel(application: Application): AndroidViewModel(application),
+	ToastAble by ToastAbleImpl(),
+	DialogAble by DialogAbleImpl() {
 
 	private val PARAMS = arrayOf(
 		arrayOf("query_applist",        "applist",      "aid",      "",         "aid"),
@@ -44,7 +53,6 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 		arrayOf("query_elec_floor",     "floortab",     "floor",    "floor",    "floorid"),
 		arrayOf("query_elec_room",      "roomtab",      "room",     "room",     "roomid")
 	)
-
 	private val FUN_NAME = arrayOf(
 		"synjones.onecard.query.applist",
 		"synjones.onecard.query.elec.area",
@@ -53,41 +61,49 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 		"synjones.onecard.query.elec.room"
 	)
 
-	/*
-		POST /User/GetCardInfoByAccountNoParm HTTP/1.1
-		Host: 211.87.155.92:8080
-		json=true
-	 */
-
-	private val SSO_TICKET_ID_PATTERN = Pattern.compile("id=\"ssoticketid\" value=\"([\\da-zA-Z]+)\"")
-
 	private val TICKET_PATTERN = Pattern.compile("\\?ticket=([\\da-zA-Z]+)")
+	private val SSO_TICKET_ID_PATTERN = Pattern.compile("id=\"ssoticketid\" value=\"([\\da-zA-Z]+)\"")
 
 	private val TSM = "/web/Common/Tsm.html"
 	private val APP_LIST = "/web/NetWork/AppList.html"
 
 	private val vpnAccount = VpnAccount("df.qust.edu.cn", "http")
 
-	val rooms = mutableStateListOf<Electricity>()
+	val uiState = ElectricUIState(
+		dialogText = dialogText,
+		toastContent = toastContent
+	)
 
-	var account by mutableStateOf("")
-	var balance by mutableFloatStateOf(0F)
+	val uiEvent = object : ElectricUIEvent{
+		override fun refreshCard() { this@ElectricRechargeViewModel.refreshCard() }
 
-	private val nodes: Node = Node()
+		override fun checkIndex(index: Int): Boolean { return this@ElectricRechargeViewModel.checkIndex(index) }
+		override fun getIndexName(index: Int): Array<String> { return this@ElectricRechargeViewModel.getIndexName(index) }
 
-	private val selectList: ArrayList<Int> = ArrayList()
+		override fun checkNode() { this@ElectricRechargeViewModel.checkNode() }
+		override fun chooseNode(index: Int, choose: Int) { this@ElectricRechargeViewModel.chooseNode(index, choose) }
+
+		override fun refreshBalance(roomIndex: Int) { this@ElectricRechargeViewModel.refreshBalance(roomIndex) }
+		override fun recharge(roomIndex: Int, amount: Int) { this@ElectricRechargeViewModel.recharge(roomIndex, amount) }
+
+		override fun addRoom() { this@ElectricRechargeViewModel.addRoom() }
+		override fun deleteRoom(roomIndex: Int) { this@ElectricRechargeViewModel.deleteRoom(roomIndex) }
+	}
 
 	private val dataPath: File
 
 	private var hasLogin = false
 	private var isSSOLogin = false
 
+	private val nodes: Node = Node()
+	private val selectList: ArrayList<Int> = ArrayList()
+	
 	init{
 		dataPath = File(application.filesDir, "electric")
 		if(dataPath.exists()) {
 			try {
 				FileInputStream(dataPath).use {
-					rooms.addAll(Json.decodeFromStream<Array<Electricity>>(it))
+					uiState.rooms.addAll(Json.decodeFromStream<Array<Electricity>>(it))
 				}
 			}catch(_: Exception){ }
 		}
@@ -136,7 +152,6 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 		}
 	}
 
-
 	fun addRoom(){
 		if(selectList.size < 5) {
 			toastWarning("请选择所有选项")
@@ -154,13 +169,13 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 				name = id.toTypedArray(),
 				roomName = node.name
 			)
-			rooms.add(room)
+			uiState.rooms.add(room)
 			saveData()
 		}
 	}
 
 	fun deleteRoom(index: Int){
-		rooms.removeAt(index)
+		uiState.rooms.removeAt(index)
 		saveData()
 	}
 
@@ -210,14 +225,14 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 			withContext(Dispatchers.IO) {
 				if(!hasLogin && !getCardInfo()) return@withContext
 				try {
-					val room = rooms[index]
-					val query: JSONObject = JSONObject().put("account", account).put("aid", room.id[0]).put("extdata", "info1=")
+					val room = uiState.rooms[index]
+					val query: JSONObject = JSONObject().put("account", uiState.account).put("aid", room.id[0]).put("extdata", "info1=")
 					for(i in 1 until room.id.size) query.put(PARAMS[i][2], JSONObject().put(PARAMS[i][3], room.name[i]).put(PARAMS[i][4], room.id[i]))
 					post(TSM, JSONObject().put("query_elec_roominfo", query).toString(), "synjones.onecard.query.elec.roominfo").use {
 						val js: JSONObject = JSONObject(it.body!!.string()).getJSONObject("query_elec_roominfo")
 						val matcher: Matcher = "[0-9\\\\.]+".toPattern().matcher(js.getString("errmsg"))
 						if(matcher.find()){
-							rooms[index] = room.copy(balance = matcher.group().toFloat())
+							uiState.rooms[index] = room.copy(balance = matcher.group().toFloat())
 							saveData()
 						} else{
 							toastError("查询失败")
@@ -235,7 +250,7 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 		if(amount == 0){
 			toastWarning("请输入充值金额")
 		}
-		val room = rooms[roomIndex]
+		val room = uiState.rooms[roomIndex]
 		viewModelScope.launch {
 			showDialog("正在充值")
 			withContext(Dispatchers.IO) {
@@ -270,7 +285,7 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 					vpnAccount.postNoCheck("/web/Elec/PayElecGdc.html", FormBody.Builder()
 							.add("acctype", "###").add("json", "true")
 							.add("paytype", "1").add("qpwd", "")
-							.add("account", account).add("tran", amount.toString())
+							.add("account", uiState.account).add("tran", amount.toString())
 							.add("aid", room.id[0])
 							.add("roomid", room.id[4]).add("room", room.name[4])
 							.build()
@@ -288,7 +303,7 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 
 	private fun saveData(){
 		try {
-			FileOutputStream(dataPath).use { Json.encodeToStream(rooms.toTypedArray(), it) }
+			FileOutputStream(dataPath).use { Json.encodeToStream(uiState.rooms.toTypedArray(), it) }
 		} catch(e: IOException) {
 			Logger.e(e)
 		}
@@ -304,7 +319,7 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 				if(!hasLogin && !getCardInfo()) return@withContext
 				try {
 					var node: Node = nodes.child[selectList[0]]
-					val query: JSONObject = JSONObject().put("account", account).put("aid", node.nodeId)
+					val query: JSONObject = JSONObject().put("account", uiState.account).put("aid", node.nodeId)
 					val index = selectList.size
 					for(i in 1 until index) {
 						node = node.child[selectList[i]]
@@ -338,6 +353,7 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 			vpnAccount.checkLogin()
 		}catch(e: NeedLoginException){
 			toastWarning("请先登录")
+			uiState.needLogin = true
 			return false
 		}catch(_: Exception){
 			toastError("网络错误")
@@ -355,7 +371,7 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 					toastWarning("用户有多张卡，默认使用第一张")
 				}
 				js = cards.getJSONObject(0)
-				if(js.has("account")) account = js.getString("account")
+				if(js.has("account")) uiState.account = js.getString("account")
 			} catch(e: Exception) {
 				toastError("获取卡信息失败")
 				return false
@@ -368,7 +384,7 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 			"/tp_up/up/subgroup/queryCardBalance",
 			"{}".toRequestBody("application/json".toMediaType())
 		).use { resp ->
-			balance = resp.body!!.string().toFloatOrNull() ?: Float.NaN
+			uiState.balance = resp.body!!.string().toFloatOrNull() ?: Float.NaN
 		}
 
 		hasLogin = true
@@ -382,12 +398,39 @@ class ElectricRechargeViewModel(application: Application): BaseAndroidViewModel(
 			.add("funname", funName).build()
 		)
 	}
+}
 
-	@Serializable
-	class Node(
-		val nodeId: String = "",
-		val name: String = "",
-		var child: Array<Node> = emptyArray()
-	)
+@Serializable
+class Node(
+	val nodeId: String = "",
+	val name: String = "",
+	var child: Array<Node> = emptyArray()
+)
 
+class ElectricUIState(
+	var dialogText: String = "",
+	var toastContent: MutableState<ToastContent> = mutableStateOf(ToastContent.EMPTY_TOAST)
+) {
+	var needLogin by mutableStateOf(false)
+
+	val rooms = mutableStateListOf<Electricity>()
+
+	var account by mutableStateOf("")
+	var balance by mutableFloatStateOf(0F)
+}
+
+interface ElectricUIEvent{
+	fun refreshCard(){ }
+
+	fun checkIndex(index: Int): Boolean
+	fun getIndexName(index: Int): Array<String>
+
+	fun checkNode(){ }
+	fun chooseNode(index: Int, choose: Int){ }
+
+	fun refreshBalance(roomIndex: Int){ }
+	fun recharge(roomIndex: Int, amount: Int){ }
+
+	fun addRoom(){ }
+	fun deleteRoom(roomIndex: Int){ }
 }

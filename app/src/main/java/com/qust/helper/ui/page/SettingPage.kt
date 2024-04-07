@@ -1,10 +1,9 @@
 package com.qust.helper.ui.page
 
-import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,15 +38,13 @@ object SettingPage {
 	private val timeTableList = arrayOf("冬季 (13:30上课)", "夏季 (14:00上课)" )
 
 	@Composable
-	fun SettingPage(activity: ComponentActivity) {
-		val viewModel by activity.viewModels<SettingViewModel>()
-
+	fun SettingPage(padding: PaddingValues, viewModel: SettingViewModel) {
 		val scrollState = rememberScrollState()
 
 		var startDayStr by remember { mutableStateOf(DateUtils.YMD.format(LessonTableRepository.startDay)) }
 		var showTimePicker by remember { mutableStateOf(false) }
 
-		Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
+		Column(modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(scrollState)) {
 
 			SettingGroup("课表") {
 
@@ -190,13 +187,3 @@ object SettingPage {
 		}
 	}
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun P() {
-//	Setting.init(LocalContext.current)
-//	AppTheme {
-//		SettingPage.SettingPage()
-//	}
-//}

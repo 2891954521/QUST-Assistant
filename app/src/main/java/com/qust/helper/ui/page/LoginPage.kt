@@ -1,8 +1,8 @@
 package com.qust.helper.ui.page
 
-import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -19,32 +19,44 @@ import androidx.compose.ui.unit.dp
 import com.qust.helper.R
 import com.qust.helper.ui.widget.AppBar
 import com.qust.helper.ui.widget.Inputs
+import com.qust.helper.ui.widget.Toast
+import com.qust.helper.viewmodel.account.AccountViewModel
 import com.qust.helper.viewmodel.account.EasAccountViewModel
 import com.qust.helper.viewmodel.account.IPassAccountViewModel
 
 object LoginPage {
 
 	@Composable
-	fun EASLoginPage(activity: ComponentActivity){
-		val viewModel: EasAccountViewModel by activity.viewModels()
-		EASLoginView(viewModel = viewModel, accountStr = viewModel.easName.value, passwordStr = viewModel.easPassword.value) {
-			activity.onBackPressedDispatcher.onBackPressed()
+	fun EASLoginPage(padding: PaddingValues, viewModel: EasAccountViewModel, toast: Toast, onSuccess: () -> Unit = { }){
+		Box(modifier = Modifier.padding(padding)){
+			EASLoginView(
+				viewModel = viewModel,
+				accountStr = viewModel.easName.value,
+				passwordStr = viewModel.easPassword.value,
+				loginSuccess = onSuccess
+			)
 		}
-		AppBar.DialogAndToast(dialogText = viewModel.dialogText.value, toastContent = viewModel.toastContent)
+		AppBar.DialogBar(viewModel.dialogText)
+		toast.ToastContent(viewModel.toastContent)
 	}
 
 	@Composable
-	fun IPassLoginPage(activity: ComponentActivity){
-		val viewModel: IPassAccountViewModel by activity.viewModels()
-		IPassLoginView(viewModel = viewModel, accountStr = viewModel.ipassName.value, passwordStr = viewModel.ipassPassword.value) {
-			activity.onBackPressedDispatcher.onBackPressed()
+	fun IPassLoginPage(padding: PaddingValues, viewModel: IPassAccountViewModel, toast: Toast, onSuccess: () -> Unit = { }){
+		Box(modifier = Modifier.padding(padding)) {
+			IPassLoginView(
+				viewModel = viewModel,
+				accountStr = viewModel.ipassName.value,
+				passwordStr = viewModel.ipassPassword.value,
+				loginSuccess = onSuccess
+			)
 		}
-		AppBar.DialogAndToast(dialogText = viewModel.dialogText.value, toastContent = viewModel.toastContent)
+		AppBar.DialogBar(viewModel.dialogText)
+		toast.ToastContent(viewModel.toastContent)
 	}
 
 	@Composable
 	fun EASLoginView(
-		viewModel: EasAccountViewModel,
+		viewModel: AccountViewModel,
 		accountStr: String = "",
 		passwordStr: String = "",
 		loginSuccess: () -> Unit

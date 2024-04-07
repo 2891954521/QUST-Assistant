@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,26 +25,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import com.qust.helper.R
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
+import com.qust.helper.data.lesson.LessonTableQueryResult
+import com.qust.helper.model.LessonTableRepository
+import com.qust.helper.model.Logger
+import com.qust.helper.model.account.EASAccount
 import com.qust.helper.ui.page.LoginPage
-import com.qust.helper.ui.theme.AppTheme
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.Dialogs
-import com.qust.helper.ui.widget.ToastContent
-import com.qust.helper.viewmodel.account.EasAccountViewModel
+import com.qust.helper.viewmodel.account.AccountViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.util.Calendar
 
 class GuideActivity : BaseActivity() {
 
-	private val viewModel: EasAccountViewModel by viewModels()
-
-	override var toastContent: MutableState<ToastContent>
-		get() = viewModel.toastContent
-		set(_) {}
+	private val viewModel by viewModels<GuideViewModel>()
 
 	@Composable
 	override fun Content() {
@@ -97,7 +99,9 @@ class GuideActivity : BaseActivity() {
 			}
 		}
 
-		if(viewModel.dialogText.value.isNotEmpty()) Dialogs.IndeterminateProgressDialog(viewModel.dialogText.value)
+		if(viewModel.dialogText.isNotEmpty()) Dialogs.IndeterminateProgressDialog(viewModel.dialogText)
+
+		toast.ToastContent(viewModel.toastContent)
 	}
 
 	private fun btnSkip() {
@@ -105,36 +109,65 @@ class GuideActivity : BaseActivity() {
 		finish()
 	}
 
-	private fun loginSuccess(){
+	private fun loginSuccess() {
 		Setting.edit { it.putBoolean(Keys.IS_FIRST_USE, false) }
 		onBackPressedDispatcher.onBackPressed()
 	}
 
+	class GuideViewModel: AccountViewModel(){
 
-//		open fun getLessonTable() {
-//			SettingUtil.edit().putInt(getString(R.string.KEY_ENTRANCE_TIME), entranceTime).apply()
-//			handler.sendMessage(handler.obtainMessage(HandlerCode.UPDATE_DIALOG, "正在查询课表"))
-//			val index: Int = LessonTableModel.getCurrentYear(entranceTime)
-//			try {
-//				val result: QueryLessonResult = LessonTableModel.queryLessonTable(eaViewModel, (index / 2 + entranceTime).toString(), if(entranceTime % 2 == 0) "3" else "12")
-//				LessonTableViewModel.getInstance(this).saveLessonData(result.lessonTable)
-//			} catch(ignored: NeedLoginException) {
-//			}
-//			runOnUiThread {
-//				SettingUtil.edit().putBoolean(getString(R.string.isFirstUse), false).apply()
-//				dialog.dismiss()
-//				toastOK("初始化完成")
-//				startActivity(Intent(this@GuideActivity, MainActivity::class.java))
-//				finish()
-//			}
-//		}
-//	}
+		private val easAccount = EASAccount.getInstance()
 
-	@Preview(showBackground = true)
-	@Composable
-	fun GuideContentPreview() {
-		AppTheme {
-			Content()
+		override fun login(accountStr: String, passwordStr: String, block: () -> Unit) {
+			viewModelScope.launch {
+				try{
+					showDialog("登录中")
+					val result = withContext(Dispatchers.IO){
+						easAccount.login(accountStr, passwordStr, true)
+					}
+
+					if(result){
+						val year = Calendar.getInstance()[Calendar.YEAR].toString()
+						val entranceTime = (year.substring(0, year.length - 2) + accountStr.substring(0, 2)).toInt()
+						easAccount.entranceTime = entranceTime
+						queryLesson(entranceTime, easAccount.getCurrentGrade())
+						block()
+					}else{
+						toastError("用户名或密码错误")
+					}
+				}catch(e: IOException){
+					Logger.e("LoginFail", e)
+					toastError("网络错误: " + e.message)
+				}finally{
+					clearDialog()
+				}
+			}
+		}
+
+		suspend fun queryLesson(entranceTime: Int, index: Int){
+			val calendar = Calendar.getInstance()
+			val y = calendar[Calendar.YEAR]
+
+			showDialog("正在查询课表")
+
+			val result: LessonTableQueryResult
+			withContext(Dispatchers.IO){
+				easAccount.checkLogin()
+				result = LessonTableRepository.queryLessonTable(easAccount = easAccount, (index / 2 + entranceTime).toString(), if(index % 2 == 0) "3" else "12")
+				val error = result.error
+				if(error == null) {
+					if(!LessonTableRepository.saveLessonTable(result.lessonTable)){
+						toastError("保存课表失败")
+						clearDialog()
+						delay(4000)
+					}
+				}else{
+					toastError(error)
+					clearDialog()
+					delay(4000)
+				}
+			}
+			clearDialog()
 		}
 	}
 }

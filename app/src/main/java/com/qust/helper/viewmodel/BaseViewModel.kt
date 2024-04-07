@@ -1,31 +1,13 @@
 package com.qust.helper.viewmodel
 
-import androidx.compose.runtime.mutableStateOf
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import com.qust.helper.R
-import com.qust.helper.ui.widget.ToastContent
+import com.qust.helper.ui.widget.DialogAble
+import com.qust.helper.ui.widget.DialogAbleImpl
+import com.qust.helper.ui.widget.ToastAble
+import com.qust.helper.ui.widget.ToastAbleImpl
 
-abstract class BaseViewModel: ViewModel() {
-	open var dialogText = mutableStateOf("")
-	open var toastContent = mutableStateOf(ToastContent())
+abstract class BaseViewModel: ViewModel(), ToastAble by ToastAbleImpl(), DialogAble by DialogAbleImpl()
 
-	fun toastOK(message: String){
-		toastContent.value = ToastContent(R.drawable.tips_finish, message)
-	}
-
-	fun toastWarning(message: String) {
-		toastContent.value = ToastContent(R.drawable.tips_warning, message)
-	}
-
-	fun toastError(message: String) {
-		toastContent.value = ToastContent(R.drawable.tips_error, message)
-	}
-
-	fun showDialog(message: String){
-		dialogText.value = message
-	}
-
-	fun clearDialog(){
-		dialogText.value = ""
-	}
-}
+abstract class BaseAndroidViewModel(application: Application): AndroidViewModel(application), ToastAble by ToastAbleImpl(), DialogAble by DialogAbleImpl()

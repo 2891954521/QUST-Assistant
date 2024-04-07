@@ -6,9 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Data
 import com.qust.helper.data.eas.Academic
-import com.qust.helper.model.Logger
-import com.qust.helper.ui.widget.toastError
-import com.qust.helper.ui.widget.toastWarning
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -86,11 +83,9 @@ class GetAcademicViewModel(application: Application): BaseEasViewModel(applicati
 	fun sortByCredit(index: Int){
 		choose = index
 		val group = showModeGroup[showMode][index]
-		Logger.i("before sort: ${group.lessonIndex.joinToString(", ")}")
 		group.lessonIndex = group.lessonIndex.sortedWith { a, b ->
 			-lessonInfo[a].credit.compareTo(lessonInfo[b].credit)
 		}.toIntArray()
-		Logger.i("sorted: ${group.lessonIndex.joinToString(", ")}")
 		lessonGroups.value = showModeGroup[showMode].clone()
 	}
 
@@ -104,7 +99,7 @@ class GetAcademicViewModel(application: Application): BaseEasViewModel(applicati
 
 		var entranceTime: Int = easAccount.entranceTime
 		if(entranceTime == -1) {
-			toastContent.value = toastWarning("未设置入学年份")
+			toastWarning("未设置入学年份")
 			entranceTime = 0
 		}
 
@@ -123,12 +118,11 @@ class GetAcademicViewModel(application: Application): BaseEasViewModel(applicati
 	}
 
 
-	fun queryData(block: () -> Unit) {
+	fun queryData() {
 		viewModelScope.launch {
-			try{
-				dialogText = "查询中"
-				withContext(Dispatchers.IO){
-					easAccount.checkLogin()
+			showDialog("查询中")
+			withContext(Dispatchers.IO){
+				if(checkLogin()){
 					val pair = easAccount.getAcademic()
 					showModeGroup[0] = pair.first
 					showModeGroup[1] = emptyArray()
@@ -145,14 +139,10 @@ class GetAcademicViewModel(application: Application): BaseEasViewModel(applicati
 					showMode = 0
 					lessonInfo = pair.second
 					lessonGroups.value = showModeGroup[0]
+					toastOK("查询完成")
 				}
-				block()
-			}catch(e: IOException){
-				Logger.e("网络错误", e)
-				toastContent.value = toastError("网络错误: " + e.message)
-			}finally{
-				dialogText = ""
 			}
+			clearDialog()
 		}
 	}
 }

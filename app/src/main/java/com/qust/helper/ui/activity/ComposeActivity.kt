@@ -1,19 +1,15 @@
 package com.qust.helper.ui.activity
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.navigation.compose.rememberNavController
 import com.qust.helper.data.Data
 import com.qust.helper.ui.widget.AppBar.TopBar
-import com.qust.helper.ui.widget.ToastContent
 
 class ComposeActivity: BaseActivity() {
-
-	override var toastContent: MutableState<ToastContent> = mutableStateOf(ToastContent())
 
 	@Composable
 	override fun Content() {
@@ -24,14 +20,15 @@ class ComposeActivity: BaseActivity() {
 			return
 		}
 
-		Column {
-			TopBar(
-				title = page.name,
-				navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-			){
-				onBackPressedDispatcher.onBackPressed()
+		val navController = rememberNavController()
+		Scaffold(
+			topBar = {
+				TopBar(title = page.name, navigationIcon = Icons.AutoMirrored.Filled.ArrowBack){
+					onBackPressedDispatcher.onBackPressed()
+				}
 			}
-			page.content(this@ComposeActivity)
+		) { contentPadding ->
+			page.content(this@ComposeActivity, contentPadding, navController)
 		}
 	}
 	

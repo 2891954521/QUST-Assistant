@@ -2,11 +2,12 @@ package com.qust.helper.viewmodel.eas
 
 import android.app.Application
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.eas.Notice
 import com.qust.helper.model.Logger
-import com.qust.helper.ui.widget.toastError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,6 +27,9 @@ class GetNoticeViewModel(application: Application) : BaseEasViewModel(applicatio
 
 	var notices: MutableState<Array<Notice>>
 
+	var hasRefresh by mutableStateOf(false)
+	var refreshing by mutableStateOf(false)
+
 	init{
 		dataPath = File(application.filesDir, "notice")
 		if(dataPath.exists()) {
@@ -41,12 +45,12 @@ class GetNoticeViewModel(application: Application) : BaseEasViewModel(applicatio
 		}
 	}
 
-	fun queryNotice(block: () -> Unit) {
+	fun queryNotice() {
 		viewModelScope.launch {
-			try{
-				dialogText = "查询中"
-				withContext(Dispatchers.IO){
-					easAccount.checkLogin()
+			hasRefresh = true
+			refreshing = true
+			withContext(Dispatchers.IO){
+				if(checkLogin()){
 					notices.value = easAccount.queryNotice(1, 20)
 					try {
 						FileOutputStream(dataPath).use {
@@ -56,13 +60,8 @@ class GetNoticeViewModel(application: Application) : BaseEasViewModel(applicatio
 						Logger.e(e)
 					}
 				}
-				block()
-			}catch(e: IOException){
-				Logger.e("网络错误", e)
-				toastContent.value = toastError("网络错误: " + e.message)
-			}finally{
-				dialogText = ""
 			}
+			refreshing = false
 		}
 	}
 }

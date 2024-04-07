@@ -1,11 +1,15 @@
 package com.qust.helper.data
 
-import androidx.activity.ComponentActivity
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
 import com.qust.helper.R
+import com.qust.helper.model.LessonTableRepository
+import com.qust.helper.ui.activity.BaseActivity
 import com.qust.helper.ui.page.DrinkPage
 import com.qust.helper.ui.page.ElectricRecharge
 import com.qust.helper.ui.page.LoginPage
@@ -17,29 +21,84 @@ import com.qust.helper.ui.page.eas.GetMarks
 import com.qust.helper.ui.page.eas.GetNotice
 import com.qust.helper.ui.page.lesson.DailyLesson
 import com.qust.helper.ui.page.lesson.TermLesson
+import com.qust.helper.viewmodel.DrinkViewModel
+import com.qust.helper.viewmodel.ElectricRechargeViewModel
+import com.qust.helper.viewmodel.SettingViewModel
+import com.qust.helper.viewmodel.TermLessonViewModel
+import com.qust.helper.viewmodel.account.EasAccountViewModel
+import com.qust.helper.viewmodel.account.IPassAccountViewModel
+import com.qust.helper.viewmodel.eas.GetAcademicViewModel
+import com.qust.helper.viewmodel.eas.GetExamsViewModel
+import com.qust.helper.viewmodel.eas.GetLessonTableViewModel
+import com.qust.helper.viewmodel.eas.GetMarksViewModel
+import com.qust.helper.viewmodel.eas.GetNoticeViewModel
 
 object Data {
 
 	val Pages = mapOf(
-		"dailyLesson"   to Page("dailyLesson",  "当日课表",     iconRes = R.drawable.ic_school)     { DailyLesson.DailyLesson(activity = it) },
+		"dailyLesson" to Page("dailyLesson", "当日课表", iconRes = R.drawable.ic_school) { _, padding, _ ->
+			DailyLesson.DailyLessonUI(
+				padding = padding,
+				lessonGroups = LessonTableRepository.lessonTable.lessons[LessonTableRepository.dayOfWeek.intValue],
+				currentWeek = LessonTableRepository.currentWeek.intValue
+			)
+		},
 
-		"termLesson"    to Page("termLesson",   "学期课表",     iconRes = R.drawable.ic_school)     { TermLesson.TermLesson(activity = it) },
+		"termLesson" to Page("termLesson", "学期课表", iconRes = R.drawable.ic_school) { activity, padding, _ ->
+			val viewModel by activity.viewModels<TermLessonViewModel>()
+			TermLesson.TermLessonUI(padding = padding, uiState = viewModel.uiState, uiEvent = viewModel.uiEvent, toast = activity.toast)
+		},
 
-		"easLogin"      to Page("easLogin",     "教务登陆",     iconRes = R.drawable.ic_login)      { LoginPage.EASLoginPage(activity = it) },
-		"vpnLogin"      to Page("vpnLogin",     "智慧青科大登陆", iconRes = R.drawable.ic_login)    { LoginPage.IPassLoginPage(activity = it) },
+		"easLogin" to Page("easLogin", "教务登陆", iconRes = R.drawable.ic_login) { activity, padding, _ ->
+			val viewModel by activity.viewModels<EasAccountViewModel>()
+			LoginPage.EASLoginPage(padding, viewModel, activity.toast){
+				activity.onBackPressedDispatcher.onBackPressed()
+			}
+		},
 
-		"easNotice"     to Page("easNotice",    "教务通知",     iconRes = R.drawable.ic_notification) { GetNotice.GetNotice(activity = it) },
+		"vpnLogin" to Page("vpnLogin", "智慧青科大登陆", iconRes = R.drawable.ic_login) { activity, padding, _ ->
+			val viewModel by activity.viewModels<IPassAccountViewModel>()
+			LoginPage.IPassLoginPage(padding, viewModel, activity.toast){
+				activity.onBackPressedDispatcher.onBackPressed()
+			}
+		},
 
-		"getLesson"     to Page("getLesson",    "课表查询",     iconRes = R.drawable.ic_school)     { GetLessonTable.GetLessonTable(activity = it) },
-		"getMarks"      to Page("getMarks",     "成绩查询",     iconRes = R.drawable.ic_school)     { GetMarks.GetMarks(activity = it) },
-		"getAcademic"   to Page("getAcademic",  "学业查询",     iconRes = R.drawable.ic_school)     { GetAcademic.GetAcademic(activity = it) },
-		"getExams"      to Page("getExams",     "考试查询",     iconRes = R.drawable.ic_school)     { GetExams.GetExams(activity = it) },
+		"easNotice" to Page("easNotice", "教务通知", iconRes = R.drawable.ic_notification) { activity, padding, navController ->
+			val viewModel by activity.viewModels<GetNoticeViewModel>()
+			GetNotice.GetNotice(padding, viewModel, activity.toast, navController)
+		},
 
-		"drinkCode"     to Page("drinkCode",    "饮水码",       iconRes = R.drawable.ic_water)      { DrinkPage.DrinkPage(activity = it) },
+		"getLesson" to Page("getLesson", "课表查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+			val viewModel by activity.viewModels<GetLessonTableViewModel>()
+			GetLessonTable.GetLessonTable(padding, viewModel, activity.toast, navController)
+		},
+		"getMarks" to Page("getMarks", "成绩查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+			val viewModel by activity.viewModels<GetMarksViewModel>()
+			GetMarks.GetMarksUI(padding, viewModel, activity.toast, navController)
+		},
+		"getAcademic" to Page("getAcademic", "学业查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+			val viewModel by activity.viewModels<GetAcademicViewModel>()
+			GetAcademic.GetAcademic(padding, viewModel, activity.toast, navController)
+		},
+		"getExams" to Page("getExams", "考试查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+			val viewModel by activity.viewModels<GetExamsViewModel>()
+			GetExams.GetExamsUI(padding, viewModel, activity.toast, navController)
+		},
 
-		"electricRecharge"  to Page("electricRecharge", "电费充值", iconRes = R.drawable.ic_electric) { ElectricRecharge.ElectricRecharge(activity = it) },
+		"drinkCode" to Page("drinkCode", "饮水码", iconRes = R.drawable.ic_water) { activity, padding, _ ->
+			val viewModel by activity.viewModels<DrinkViewModel>()
+			DrinkPage.DrinkPage(padding, viewModel, activity)
+		},
 
-		"setting"       to Page("setting",      "设置",         image = Icons.Rounded.Settings)     { SettingPage.SettingPage(activity = it) },
+		"electricRecharge" to Page("electricRecharge", "电费充值", iconRes = R.drawable.ic_electric) { activity, padding, navController ->
+			val viewModel by activity.viewModels<ElectricRechargeViewModel>()
+			ElectricRecharge.ElectricRecharge(padding, viewModel, activity.toast, navController)
+		},
+
+		"setting" to Page("setting", "设置", image = Icons.Rounded.Settings) { activity, padding, _ ->
+			val viewModel by activity.viewModels<SettingViewModel>()
+			SettingPage.SettingPage(padding, viewModel)
+		},
 	)
 
 	val TermName = arrayOf(
@@ -65,7 +124,7 @@ object Data {
 		val name: String,
 		val iconRes: Int = 0,
 		val image: ImageVector? = null,
-		val content: @Composable (ComponentActivity) -> Unit = { }
+		val content: @Composable (BaseActivity, PaddingValues, NavController) -> Unit = { _, _, _ -> }
 	)
 }
 

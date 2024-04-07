@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Data.TermName
 import com.qust.helper.data.eas.Mark
 import com.qust.helper.model.Logger
-import com.qust.helper.ui.widget.toastError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,16 +44,14 @@ class GetMarksViewModel(application: Application) : BaseEasViewModel(application
 		marks = mutableStateOf(marksData[pickYear.value])
 	}
 
-	fun queryMarks( block: ()-> Unit) {
-
+	fun queryMarks() {
 		viewModelScope.launch {
-			try{
-				dialogText = "查询中"
-				withContext(Dispatchers.IO){
-					easAccount.checkLogin()
+			showDialog("查询中")
+			withContext(Dispatchers.IO){
+				if(checkLogin()){
 					val pair = getYearAndTerm()
-					marksData[pickYear.value] = easAccount.queryMark(pair.first, pair.second)
-					marks.value = marksData[pickYear.value]
+					marksData[pickYear.intValue] = easAccount.queryMark(pair.first, pair.second)
+					marks.value = marksData[pickYear.intValue]
 					try {
 						FileOutputStream(markDataPath).use {
 							Json.encodeToStream(marksData, it)
@@ -63,13 +60,8 @@ class GetMarksViewModel(application: Application) : BaseEasViewModel(application
 						Logger.e(e)
 					}
 				}
-				block()
-			}catch(e: IOException){
-				Logger.e("网络错误", e)
-				toastContent.value = toastError("网络错误: " + e.message)
-			}finally{
-				dialogText = ""
 			}
+			clearDialog()
 		}
 	}
 }

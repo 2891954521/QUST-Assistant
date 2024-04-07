@@ -1,18 +1,18 @@
 package com.qust.helper.viewmodel
 
-import android.app.Activity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import com.qust.helper.R
 import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.widget.LessonRender
-import com.qust.helper.ui.widget.ToastAble
+import com.qust.helper.ui.widget.ToastContent
 
-class TermLessonViewModel(activity: Activity): ViewModel() {
+class TermLessonViewModel: ViewModel() {
 
 	val uiState = TermLessonUIState(totalWeek = LessonTableRepository.lessonTable.totalWeek)
 
@@ -27,12 +27,10 @@ class TermLessonViewModel(activity: Activity): ViewModel() {
 		override fun pasteLesson() { this@TermLessonViewModel.pasteLesson() }
 		override fun deleteLesson() { this@TermLessonViewModel.deleteLesson() }
 		override fun saveLesson() { this@TermLessonViewModel.saveLesson() }
-		override fun toastOK(message: String){ toastAble.toastOK(message) }
-		override fun toastWarning(message: String) { toastAble.toastWarning(message) }
-		override fun toastError(message: String) { toastAble.toastError(message) }
+		override fun toastOK(message: String){ uiState.toastContent.value = ToastContent(R.drawable.tips_finish, message) }
+		override fun toastWarning(message: String) { uiState.toastContent.value = ToastContent(R.drawable.tips_warning, message) }
+		override fun toastError(message: String) { uiState.toastContent.value = ToastContent(R.drawable.tips_error, message) }
 	}
-
-	private val toastAble = ToastAble(activity)
 
 	private var currentDayOfWeek = 0
 	private var currentTimeSlot = 0
@@ -183,6 +181,8 @@ class TermLessonViewModel(activity: Activity): ViewModel() {
 
 class TermLessonUIState(totalWeek: Int = 1) {
 	val lessonRender = LessonRender()
+
+	var toastContent = mutableStateOf(ToastContent.EMPTY_TOAST)
 
 	var totalWeek by mutableIntStateOf(totalWeek)
 

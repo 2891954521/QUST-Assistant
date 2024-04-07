@@ -1,11 +1,10 @@
 package com.qust.helper.ui.page.lesson
 
-import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,40 +34,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.widget.LessonTableView.LessonView
 import com.qust.helper.ui.widget.Picker
+import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.TermLessonUIEvent
 import com.qust.helper.viewmodel.TermLessonUIState
-import com.qust.helper.viewmodel.TermLessonViewModel
 import kotlinx.coroutines.launch
 
 object TermLesson {
 
 	@Composable
-	fun TermLesson(activity: ComponentActivity) {
-		val viewModel by activity.viewModels<TermLessonViewModel>(
-			factoryProducer = {
-				object : ViewModelProvider.Factory {
-					override fun <T : ViewModel> create(modelClass: Class<T>): T {
-						return TermLessonViewModel(
-							activity = activity
-						) as T
-					}
-				}
-			}
-		)
-
-		TermLessonUI(uiState = viewModel.uiState, uiEvent = viewModel.uiEvent)
-	}
-
-	@Composable
-	fun TermLessonUI(uiState: TermLessonUIState, uiEvent: TermLessonUIEvent){
+	fun TermLessonUI(padding: PaddingValues, uiState: TermLessonUIState, uiEvent: TermLessonUIEvent, toast: Toast){
 		var popupLocation by remember { mutableStateOf(Pair(0, 0)) }
 
-		Box(modifier = Modifier){
+		Box(modifier = Modifier.padding(padding)){
 			LessonView(uiState.lessonRender, { uiEvent.clickLesson(it) }, { selectLesson, week, x, y ->
 				popupLocation = Pair(x, y)
 				uiEvent.longClickLesson(selectLesson, week)
@@ -78,6 +58,8 @@ object TermLesson {
 		if(uiState.isShowPopup){
 			PopMenu(uiState, uiEvent, popupLocation, onDismiss = { uiState.isShowPopup = false })
 		}
+
+		toast.ToastContent(uiState.toastContent)
 
 		EditLessonDialog(uiState = uiState, uiEvent = uiEvent)
 	}

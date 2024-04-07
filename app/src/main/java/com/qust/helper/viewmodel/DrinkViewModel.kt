@@ -1,6 +1,8 @@
 package com.qust.helper.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
@@ -14,22 +16,24 @@ class DrinkViewModel: BaseViewModel() {
 
 	private val drinkAccount: DrinkAccount = DrinkAccount.getInstance()
 
-	var needLogin = mutableStateOf(false)
+	val uiState = DrinkUIState(drinkAccount = drinkAccount)
 
-	val drinkAccountStr = mutableStateOf(Setting.getString(key = Keys.DRINK_ACCOUNT))
-	val drinkPasswordStr = mutableStateOf(Setting.getString(key = Keys.DRINK_PASSWORD))
+	val uiEvent = object : DrinkUIEvent{
+		override fun login(account: String, password: String){ this@DrinkViewModel.login(account, password) }
+		override fun getDrinkCode(){ this@DrinkViewModel.getDrinkCode() }
+	}
 
-	val drinkCode = mutableStateOf(drinkAccount.drinkCode)
-
-	fun login(){
+	fun login(account: String, password: String){
 		viewModelScope.launch {
 			try {
 				showDialog("登录中")
 				val result = withContext(Dispatchers.IO){
-					drinkAccount.login(drinkAccountStr.value, drinkPasswordStr.value, true)
+					drinkAccount.login(account, password, true)
 				}
 				if(result){
 					getCode()
+					uiState.account = account
+					uiState.password = password
 				}else{
 					toastError("用户名或密码错误")
 				}
@@ -51,14 +55,14 @@ class DrinkViewModel: BaseViewModel() {
 			withContext(Dispatchers.IO) {
 				if(drinkAccount.checkLogin()){
 					drinkAccount.getDrinkCode()
-					drinkCode.value = drinkAccount.drinkCode
+					uiState.drinkCode = drinkAccount.drinkCode
 				}else{
 					throw NeedLoginException()
 				}
 			}
 		}catch(e: NeedLoginException){
 			toastWarning("请先登录")
-			needLogin.value = true
+			uiState.needLogin = true
 
 		}catch(e: Exception) {
 			toastError("刷新失败: ${e.message}")
@@ -67,4 +71,16 @@ class DrinkViewModel: BaseViewModel() {
 			clearDialog()
 		}
 	}
+}
+
+class DrinkUIState(drinkAccount: DrinkAccount) {
+	var drinkCode by mutableStateOf(drinkAccount.drinkCode)
+	var account by mutableStateOf(Setting.getString(key = Keys.DRINK_ACCOUNT))
+	var password by mutableStateOf(Setting.getString(key = Keys.DRINK_PASSWORD))
+	var needLogin by mutableStateOf(false)
+}
+
+interface DrinkUIEvent{
+	fun login(account: String, password: String){ }
+	fun getDrinkCode(){ }
 }

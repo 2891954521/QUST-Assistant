@@ -1,13 +1,10 @@
 package com.qust.helper.ui.page
 
 import android.annotation.SuppressLint
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
@@ -18,20 +15,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.qust.helper.R
 import com.qust.helper.data.Data
+import com.qust.helper.ui.activity.BaseActivity
 import com.qust.helper.ui.widget.AppBar.TopBar
 import com.qust.helper.ui.widget.MainAppDrawer
 import kotlinx.coroutines.launch
 
 @SuppressLint("RestrictedApi", "StateFlowValueCalledInComposition")
 @Composable
-fun MainApp(activity: ComponentActivity) {
+fun MainApp(activity: BaseActivity) {
 
 	val navController = rememberNavController()
 	val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -39,7 +36,7 @@ fun MainApp(activity: ComponentActivity) {
 
 	ModalNavigationDrawer(
 		drawerState = drawerState,
-		drawerContent = { ModalDrawerSheet() { MainAppDrawer(drawerState = drawerState, navController = navController) } },
+		drawerContent = { ModalDrawerSheet { MainAppDrawer(drawerState = drawerState, navController = navController) } },
 	) {
 		NavHost(
 			navController = navController,
@@ -53,9 +50,7 @@ fun MainApp(activity: ComponentActivity) {
 						}
 					},
 				) { padding ->
-					Box(modifier = Modifier.padding(padding)) {
-						HomePage.HomePage(activity)
-					}
+					HomePage.HomePage(activity, padding)
 				}
 			}
 
@@ -67,11 +62,7 @@ fun MainApp(activity: ComponentActivity) {
 					},
 					exitTransition = { ExitTransition.None },
 					popEnterTransition = { EnterTransition.None },
-					popExitTransition = {
-//							if(initialState.destination.route == page.key) {
-						slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween())
-//							}else null
-					}
+					popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween()) }
 				) {
 					Scaffold(
 						topBar = {
@@ -80,9 +71,7 @@ fun MainApp(activity: ComponentActivity) {
 							}
 						},
 					) { padding ->
-						Box(modifier = Modifier.padding(padding)) {
-							page.content(activity)
-						}
+						page.content(activity, padding, navController)
 					}
 				}
 			}

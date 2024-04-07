@@ -1,9 +1,8 @@
 package com.qust.helper.ui.page.eas
 
-import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,42 +16,46 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.qust.helper.data.eas.Notice
 import com.qust.helper.ui.widget.Texts
+import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.eas.GetNoticeViewModel
 
 object GetNotice {
 
 	@Composable
-	fun GetNotice(activity: ComponentActivity){
-		val viewModel: GetNoticeViewModel by activity.viewModels()
-		GetNoticeUI(notices = viewModel.notices.value) { refreshing ->
-			refreshing.value = true
-			viewModel.queryNotice {
-				refreshing.value = false
+	fun GetNotice(padding: PaddingValues, viewModel: GetNoticeViewModel, toast: Toast, navController: NavController){
+		LaunchedEffect(viewModel.needLogin){
+			if(viewModel.needLogin){
+				navController.navigate("easLogin")
+				viewModel.needLogin = false
 			}
 		}
-
+		Box(modifier = Modifier.padding(padding)){
+			GetNoticeUI(
+				hasRefresh = viewModel.hasRefresh,
+				refreshing = viewModel.refreshing,
+				notices = viewModel.notices.value,
+				query = { viewModel.queryNotice() }
+			)
+		}
+		toast.ToastContent(viewModel.toastContent)
 	}
 
 	@Composable
 	@OptIn(ExperimentalMaterialApi::class)
-	fun GetNoticeUI(notices: Array<Notice>, query: (MutableState<Boolean>) -> Unit){
-		val refreshing = remember { mutableStateOf(false) }
-		var hasRefresh by remember { mutableStateOf(false) }
+	fun GetNoticeUI(hasRefresh: Boolean, refreshing: Boolean, notices: Array<Notice>, query: () -> Unit){
+		val state = rememberPullRefreshState(refreshing = refreshing, onRefresh = { query() })
 
-		val state = rememberPullRefreshState(refreshing = refreshing.value, onRefresh = { query(refreshing) })
-
-		if(notices.isEmpty() && !hasRefresh){ hasRefresh = true; query(refreshing) }
+		LaunchedEffect(hasRefresh){
+			if(notices.isEmpty() && !hasRefresh && !refreshing){ query() }
+		}
 
 		Box(modifier = Modifier.fillMaxSize().pullRefresh(state)){
 			LazyColumn(Modifier.fillMaxSize()){
@@ -60,7 +63,7 @@ object GetNotice {
 					NoticeItem(notices[index])
 				}
 			}
-			PullRefreshIndicator(refreshing.value, state, Modifier.align(Alignment.TopCenter))
+			PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
 		}
 	}
 
