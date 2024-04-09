@@ -70,7 +70,7 @@ class ElectricRechargeViewModel(application: Application): AndroidViewModel(appl
 	private val vpnAccount = VpnAccount("df.qust.edu.cn", "http")
 
 	val uiState = ElectricUIState(
-		dialogText = dialogText,
+		dialogText = _dialogText,
 		toastContent = toastContent
 	)
 
@@ -408,8 +408,8 @@ class Node(
 )
 
 class ElectricUIState(
-	var dialogText: String = "",
-	var toastContent: MutableState<ToastContent> = mutableStateOf(ToastContent.EMPTY_TOAST)
+	var dialogText: MutableState<String>,
+	var toastContent: MutableState<ToastContent>
 ) {
 	var needLogin by mutableStateOf(false)
 

@@ -73,7 +73,7 @@ object ElectricRecharge {
 			}
 		}
 		ElectricRechargeUI(padding = padding, uiState = viewModel.uiState, uiEvent = viewModel.uiEvent)
-		AppBar.DialogBar(dialogText = viewModel.uiState.dialogText)
+		AppBar.DialogBar(dialogText = viewModel.uiState.dialogText.value)
 		toast.ToastContent(viewModel.uiState.toastContent)
 	}
 
