@@ -2,5 +2,6 @@
 <resources>
 	<color name="colorPrimaryText">#212121</color>
 	<color name="colorSecondaryText">#757575</color>
+	<color name="onBackground">#1A1C1E</color>
 	<color name="surfaceVariant">#FFFFFF</color>
 </resources>

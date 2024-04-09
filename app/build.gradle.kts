@@ -12,8 +12,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 3
-		versionName = "v3.0.20240406"
+		versionCode = 4
+		versionName = "v3.0.20240409"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -57,9 +57,8 @@ android {
 
 dependencies {
 
-	implementation("androidx.compose:compose-bom:2024.03.00")
-	implementation("androidx.glance:glance-appwidget:1.0.0")
-	androidTestImplementation("androidx.compose:compose-bom:2024.03.00")
+	implementation("androidx.compose:compose-bom:2024.04.00")
+	androidTestImplementation("androidx.compose:compose-bom:2024.04.00")
 
 	implementation("androidx.core:core-ktx:1.12.0")
 	implementation("androidx.compose.runtime:runtime")
@@ -72,6 +71,8 @@ dependencies {
 	implementation("androidx.compose.material3:material3:1.2.1")
 
 	implementation("androidx.glance:glance:1.0.0")
+	implementation("androidx.glance:glance-appwidget:1.0.0")
+
 	implementation("androidx.appcompat:appcompat:1.6.1")
 
 	implementation("androidx.activity:activity-compose:1.8.2")

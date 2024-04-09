@@ -1,5 +1,7 @@
 package com.qust.helper.model.account
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
 import okhttp3.Headers
@@ -22,11 +24,12 @@ class DrinkAccount private constructor(): Account(
 			Setting.edit { it.putString("drinkToken", value) }
 		}
 
-	var drinkCode = Setting.getString("drinkCode")
-		set(value) {
-			field = value
-			Setting.edit { it.putString("drinkCode", value) }
-		}
+	val _drinkCode = mutableStateOf(Setting.getString("drinkCode"))
+	val drinkCode by _drinkCode
+	fun setDrinkCodeValue(value: String) {
+		_drinkCode.value = value
+		Setting.edit { it.putString("drinkCode", value) }
+	}
 
 	companion object {
 		fun getInstance(): DrinkAccount {
@@ -98,6 +101,6 @@ class DrinkAccount private constructor(): Account(
 		}
 
 		val data: String = js.getString("data")
-		drinkCode = data.substring(0, data.length - 1) + "3"
+		setDrinkCodeValue(data.substring(0, data.length - 1) + "3")
 	}
 }

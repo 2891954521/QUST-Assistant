@@ -27,5 +27,6 @@
 	<string name="text_save_lesson_table">保存课表</string>
 	<string name="text_login">登录</string>
 	<string name="text_term_lesson">学期课表</string>
+	<string name="text_drink_code">饮水码</string>
 
 </resources>

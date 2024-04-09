@@ -54,7 +54,7 @@
         <receiver
             android:name=".ui.appwidget.TermLessonReceiver"
             android:label="@string/text_term_lesson"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -62,6 +62,19 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/term_lesson" />
+        </receiver>
+        
+        
+        <receiver
+            android:name=".ui.appwidget.DrinkCodeReceiver"
+            android:label="@string/text_drink_code"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/drink_code" />
         </receiver>
         
     </application>

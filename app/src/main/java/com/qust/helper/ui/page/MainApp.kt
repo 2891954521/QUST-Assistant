@@ -57,9 +57,7 @@ fun MainApp(activity: BaseActivity) {
 			for(page in Data.Pages.values) {
 				composable(
 					route = page.key,
-					enterTransition = {
-						slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween())
-					},
+					enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween()) },
 					exitTransition = { ExitTransition.None },
 					popEnterTransition = { EnterTransition.None },
 					popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween()) }

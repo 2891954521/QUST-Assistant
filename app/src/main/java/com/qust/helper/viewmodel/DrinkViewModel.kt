@@ -25,23 +25,19 @@ class DrinkViewModel: BaseViewModel() {
 
 	fun login(account: String, password: String){
 		viewModelScope.launch {
+			showDialog("登录中")
+			uiState.account = account
+			uiState.password = password
 			try {
-				showDialog("登录中")
 				val result = withContext(Dispatchers.IO){
 					drinkAccount.login(account, password, true)
 				}
-				if(result){
-					getCode()
-					uiState.account = account
-					uiState.password = password
-				}else{
-					toastError("用户名或密码错误")
-				}
+				if(result) getCode()
+				else toastError("用户名或密码错误")
 			}catch(e: Exception) {
 				toastError("网络错误: ${e.message}")
-			}finally {
-				clearDialog()
 			}
+			clearDialog()
 		}
 	}
 
@@ -55,7 +51,6 @@ class DrinkViewModel: BaseViewModel() {
 			withContext(Dispatchers.IO) {
 				if(drinkAccount.checkLogin()){
 					drinkAccount.getDrinkCode()
-					uiState.drinkCode = drinkAccount.drinkCode
 				}else{
 					throw NeedLoginException()
 				}
@@ -74,7 +69,7 @@ class DrinkViewModel: BaseViewModel() {
 }
 
 class DrinkUIState(drinkAccount: DrinkAccount) {
-	var drinkCode by mutableStateOf(drinkAccount.drinkCode)
+	var drinkCode by drinkAccount._drinkCode
 	var account by mutableStateOf(Setting.getString(key = Keys.DRINK_ACCOUNT))
 	var password by mutableStateOf(Setting.getString(key = Keys.DRINK_PASSWORD))
 	var needLogin by mutableStateOf(false)
