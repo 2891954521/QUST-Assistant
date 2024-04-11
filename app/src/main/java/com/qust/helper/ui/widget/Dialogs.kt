@@ -1,5 +1,6 @@
 package com.qust.helper.ui.widget
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +21,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -66,7 +69,8 @@ object Dialogs {
 				TextButton(onClick = { onDismiss() }) {
 					Text(stringResource(id = R.string.text_cancel))
 				}
-			}
+			},
+			properties = DialogProperties(dismissOnClickOutside = false)
 		)
 	}
 
@@ -134,6 +138,55 @@ object Dialogs {
 						modifier = Modifier.padding(8.dp, 0.dp, 0.dp, 0.dp),
 					)
 				}
+			}
+		}
+	}
+
+	@Composable
+	fun ProgressDialog(
+		title: String = "",
+		progress: Float = 0F,
+		progressText: String = "",
+		onDismissRequest: () -> Unit = { }
+	) {
+		Dialog(onDismissRequest = { onDismissRequest() }){
+			Card(
+				modifier = Modifier.fillMaxWidth(),
+				shape = RoundedCornerShape(16.dp),
+				elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+			) {
+
+				val animatedProgress by animateFloatAsState(
+					label = "",
+					targetValue = progress,
+					animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+				)
+
+				Column(
+					modifier = Modifier.fillMaxWidth().padding(16.dp)
+				) {
+					Text(text = title)
+
+					Row(
+						horizontalArrangement = Arrangement.Center,
+						verticalAlignment = Alignment.CenterVertically,
+					) {
+
+						LinearProgressIndicator(
+							progress = { animatedProgress },
+							modifier = Modifier.weight(1F),
+							color = MaterialTheme.colorScheme.secondary,
+							trackColor = MaterialTheme.colorScheme.surfaceVariant,
+						)
+
+						Text(
+							text = progressText,
+							modifier = Modifier.padding(start = 8.dp),
+							maxLines = 1
+						)
+					}
+				}
+
 			}
 		}
 	}

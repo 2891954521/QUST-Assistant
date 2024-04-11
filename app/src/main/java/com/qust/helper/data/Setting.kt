@@ -59,6 +59,10 @@ object Setting {
 		return defaultSharedPreferences.getBoolean(key, defaultVal)
 	}
 
+	fun getLong(key: String, defaultVal: Long = 0L): Long {
+		return defaultSharedPreferences.getLong(key, defaultVal)
+	}
+
 	fun edit(block: (SharedPreferences.Editor) -> Unit){
 		val editor = defaultSharedPreferences.edit()
 		block(editor)

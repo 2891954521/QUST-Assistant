@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools" >
     
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     
     <application
@@ -35,17 +36,24 @@
             android:name=".ui.activity.ComposeActivity"
             android:exported="false" />
         
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.qust.helper"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_apk" />
+        </provider>
         
         <!-- 桌面小部件 -->
         <receiver
             android:name=".ui.appwidget.DailyLesson"
             android:label="当日课表"
             android:exported="true">
-            
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/daily_lesson" />
@@ -58,12 +66,10 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/term_lesson" />
         </receiver>
-        
         
         <receiver
             android:name=".ui.appwidget.DrinkCodeReceiver"

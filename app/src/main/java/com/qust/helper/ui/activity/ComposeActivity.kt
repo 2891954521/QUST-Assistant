@@ -1,5 +1,7 @@
 package com.qust.helper.ui.activity
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Scaffold
@@ -10,6 +12,12 @@ import com.qust.helper.data.Data
 import com.qust.helper.ui.widget.AppBar.TopBar
 
 class ComposeActivity: BaseActivity() {
+
+	companion object{
+		fun startActivity(context: Context, page: String){
+			context.startActivity(Intent(context, ComposeActivity::class.java).putExtra("page", page))
+		}
+	}
 
 	@Composable
 	override fun Content() {

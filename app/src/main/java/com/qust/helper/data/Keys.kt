@@ -42,6 +42,33 @@ object Keys {
 	 */
 	const val KEY_LOCK_LESSON = "key_lock_lesson"
 
+
+	/**
+	 * 主题跟随系统
+	 */
+	const val KEY_THEME_FOLLOW_SYSTEM = "key_theme_follow_system"
+	/**
+	 * 暗色模式
+	 */
+	const val KEY_THEME_DARK = "key_theme_dark"
+
+
+	/**
+	 * 自动检查更新
+	 */
+	const val KEY_AUTO_UPDATE = "key_auto_update"
+
+	/**
+	 * 上次检查更新的时间
+	 */
+	const val LAST_UPDATE_TIME = "last_update_time"
+
+	/**
+	 * 上次检查更新的时间
+	 */
+	const val LAST_AUTO_CHECK_TIME = "last_auto_check_time"
+
+
 	const val EAS_ACCOUNT = "eas_account"
 	const val EAS_PASSWORD = "eas_password"
 

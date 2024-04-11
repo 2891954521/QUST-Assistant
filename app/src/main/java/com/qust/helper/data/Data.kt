@@ -13,7 +13,8 @@ import com.qust.helper.ui.activity.BaseActivity
 import com.qust.helper.ui.page.DrinkPage
 import com.qust.helper.ui.page.ElectricRecharge
 import com.qust.helper.ui.page.LoginPage
-import com.qust.helper.ui.page.SettingPage
+import com.qust.helper.ui.page.app.SettingPage
+import com.qust.helper.ui.page.app.UpdatePage
 import com.qust.helper.ui.page.eas.GetAcademic
 import com.qust.helper.ui.page.eas.GetExams
 import com.qust.helper.ui.page.eas.GetLessonTable
@@ -99,6 +100,11 @@ object Data {
 			val viewModel by activity.viewModels<SettingViewModel>()
 			SettingPage.SettingPage(padding, viewModel)
 		},
+
+		"update" to Page("update", "检查更新", hasEntrance = false) { activity, padding, _ ->
+			val viewModel by activity.viewModels<UpdatePage.UpdateViewModel>()
+			UpdatePage.UpdatePageUI(padding, viewModel, activity.toast)
+		},
 	)
 
 	val TermName = arrayOf(
@@ -124,6 +130,7 @@ object Data {
 		val name: String,
 		val iconRes: Int = 0,
 		val image: ImageVector? = null,
+		val hasEntrance: Boolean = true,
 		val content: @Composable (BaseActivity, PaddingValues, NavController) -> Unit = { _, _, _ -> }
 	)
 }

@@ -185,7 +185,7 @@ class DailyLesson : AppWidgetProvider() {
 	override fun onReceive(context: Context, intent: Intent) {
 		super.onReceive(context, intent)
 		if(intent.action == "DAILY_LESSON"){
-			context.startActivity(Intent(context, ComposeActivity::class.java).putExtra("page", "dailyLesson"))
+			ComposeActivity.startActivity(context, "dailyLesson")
 		}
 	}
 

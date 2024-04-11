@@ -58,7 +58,7 @@ object LessonTableView{
 	@Composable
 	fun LessonView(lessonRender: LessonRender, onLessonClick: (LessonRender.SelectLesson) -> Unit = {}, onLessonLongClick: (LessonRender.SelectLesson, Int, Int, Int) -> Unit = { _, _, _, _ -> }){
 		val density = LocalDensity.current
-		val pagerState = rememberPagerState(pageCount = { lessonRender.totalWeek })
+		val pagerState = rememberPagerState(initialPage = LessonTableRepository.currentWeek.intValue - 1, pageCount = { lessonRender.totalWeek })
 		var selectLesson by remember { mutableStateOf(LessonRender.SelectLesson(-1, -1, null)) }
 
 		LaunchedEffect(lessonRender.lessonTable){

@@ -1,4 +1,4 @@
-package com.qust.helper.ui.page
+package com.qust.helper.ui.page.app
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,6 +21,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.qust.helper.data.api.QustApi
 import com.qust.helper.model.LessonTableRepository
+import com.qust.helper.ui.activity.ComposeActivity
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.utils.DateUtils
@@ -39,6 +42,8 @@ object SettingPage {
 
 	@Composable
 	fun SettingPage(padding: PaddingValues, viewModel: SettingViewModel) {
+		val context = LocalContext.current
+
 		val scrollState = rememberScrollState()
 
 		var startDayStr by remember { mutableStateOf(DateUtils.YMD.format(LessonTableRepository.startDay)) }
@@ -74,17 +79,35 @@ object SettingPage {
 			}
 
 			SettingGroup("界面") {
-				SwitchItem("暗色模式", "暗色模式已开启", "暗色模式已关闭")
-				SwitchItem("主题跟随系统", "主题跟随系统", "主题跟随系统")
+				SwitchItem("主题跟随系统", "主题跟随系统", "主题跟随系统", viewModel.themeFollowSystem){ viewModel.setThemeFollowSystemValue(it) }
+				if(viewModel.themeFollowSystem){
+					Box(modifier = Modifier.fillMaxWidth()) {
+						Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+							Column(modifier = Modifier.weight(1F)) {
+								Text(text = "暗色模式", style = MaterialTheme.typography.titleMedium, color = colorSecondaryText)
+								Text(text = if(viewModel.themeDark) "暗色模式已开启" else "暗色模式已关闭", color = colorSecondaryText)
+							}
+							Switch(checked = viewModel.themeDark, enabled = false, onCheckedChange = { })
+						}
+					}
+				}else{
+					SwitchItem("暗色模式", "暗色模式已开启", "暗色模式已关闭", viewModel.themeDark){ viewModel.setThemeDarkValue(it) }
+				}
 			}
 
 			SettingGroup("更新") {
-				SwitchItem("自动检查更新", "3天检查一次更新", "不检查更新")
-				SettingItem("检查更新")
+				SwitchItem("自动检查更新", "3天检查一次更新", "不检查更新", viewModel.autoUpdate){ viewModel.setAutoUpdateValue(it) }
+				SettingItem("检查更新"){ ComposeActivity.startActivity(context, "update") }
 			}
 
 			SettingGroup("其他") {
-				SettingItem("关于")
+				SettingItem("应用版本", viewModel.appVersion)
+				SettingItem("构建时间", viewModel.buildTime)
+
+				val uriHandler = LocalUriHandler.current
+				SettingItem("源代码", "GitHub"){
+					uriHandler.openUri("https://github.com/2891954521/QUST-Assistant")
+				}
 			}
 		}
 

@@ -11,7 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.qust.helper.ui.theme.AppTheme
+import com.qust.helper.ui.theme.Theme
 import com.qust.helper.ui.widget.Toast
 
 
@@ -24,7 +24,7 @@ abstract class BaseActivity: ComponentActivity() {
 		enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
 
 		setContent {
-			AppTheme {
+			Theme.AppTheme {
 				Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 					BaseContent()
 				}

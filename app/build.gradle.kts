@@ -1,3 +1,7 @@
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 plugins {
 	id("com.android.application")
 	id("org.jetbrains.kotlin.android")
@@ -12,8 +16,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 4
-		versionName = "v3.0.20240409"
+		versionCode = 5
+		versionName = "v3.1.20240411"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -26,6 +30,8 @@ android {
 		vectorDrawables {
 			useSupportLibrary = true
 		}
+
+		buildConfigField("String", "PACKAGE_TIME", "\"${SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(Date())}\"")
 	}
 
 	buildTypes {
@@ -44,6 +50,7 @@ android {
 	}
 	buildFeatures {
 		compose = true
+		buildConfig = true
 	}
 	composeOptions {
 		kotlinCompilerExtensionVersion = "1.5.1"
@@ -83,7 +90,7 @@ dependencies {
 
 	implementation("androidx.navigation:navigation-compose:2.7.7")
 
-//	implementation("com.google.android.material:material:1.11.0")
+	implementation("androidx.work:work-runtime-ktx:2.9.0")
 
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
