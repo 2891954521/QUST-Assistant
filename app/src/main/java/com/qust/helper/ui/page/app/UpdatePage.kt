@@ -31,7 +31,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastRoundToInt
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.R
@@ -49,6 +48,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.math.roundToInt
 
 object UpdatePage {
 
@@ -103,7 +103,7 @@ object UpdatePage {
 		AppBar.DialogBar(dialogText = viewModel.dialogText)
 
 		if(viewModel.progress >= 0F){
-			Dialogs.ProgressDialog("正在下载", viewModel.progress, "${(viewModel.progress * 100).fastRoundToInt()}/100")
+			Dialogs.ProgressDialog("正在下载", viewModel.progress, "${(viewModel.progress * 100).roundToInt()}/100")
 		}
 
 		toast.ToastContent(toastContent = viewModel.toastContent)

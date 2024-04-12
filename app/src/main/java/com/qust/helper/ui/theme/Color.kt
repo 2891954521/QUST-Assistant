@@ -28,9 +28,9 @@ val light_onSecondaryContainer = Color(0xFF001E2F)
 val dark_secondaryContainer  = Color(0xFF004C6E)
 val dark_onSecondaryContainer = Color(0xFFC9E6FF)
 
-val light_tertiaryContainer  = Color(0xFFD4E3FF)
-val light_onTertiaryContainer = Color(0xFF001C39)
-val dark_tertiaryContainer   = Color(0xFF004884)
+val light_tertiaryContainer  = Color(0xFF01579B)
+val light_onTertiaryContainer = Color(0xFFD4E3FF)
+val dark_tertiaryContainer   = Color(0xFF0D47A1)
 val dark_onTertiaryContainer = Color(0xFFD4E3FF)
 
 val light_background         = Color(0xFFF5F5F5)

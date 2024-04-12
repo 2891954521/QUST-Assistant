@@ -2,66 +2,113 @@ package com.qust.helper.viewmodel.eas
 
 import android.app.Application
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Data.TermName
-import com.qust.helper.data.eas.Mark
-import com.qust.helper.model.Logger
+import com.qust.helper.data.room.LessonDatabase
+import com.qust.helper.data.room.Mark
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
-import kotlinx.serialization.json.encodeToStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
 
-@OptIn(ExperimentalSerializationApi::class)
 class GetMarksViewModel(application: Application) : BaseEasViewModel(application){
 
-	private val markDataPath: File
+	private val lessonData = LessonDatabase.getInstance(application)
 
-	var marksData: Array<Array<Mark>>
+	val hasQuerySql: Array<Boolean> = Array(TermName.size) { false }
+	val marksData: Array<Array<Mark>> = Array(TermName.size) { emptyArray() }
 
-	var marks: MutableState<Array<Mark>>
+	var marks: MutableState<Array<Mark>> = mutableStateOf(emptyArray())
 
-	init{
-		markDataPath = File(application.filesDir, "mark")
-		if(markDataPath.exists()) {
-			try {
-				FileInputStream(markDataPath).use {
-					marksData = Json.decodeFromStream<Array<Array<Mark>>>(it)
-				}
-			}catch(_: Exception){
-				marksData = Array(TermName.size) { Array(0){ Mark() } }
-			}
-		}else{
-			marksData = Array(TermName.size) { Array(0){ Mark() } }
-		}
-		marks = mutableStateOf(marksData[pickYear.value])
-	}
+	var update by mutableStateOf(false)
+
+	private var sortBy: Int = 0
+
+	private var sortType: Int = 1
 
 	fun queryMarks() {
 		viewModelScope.launch {
 			showDialog("查询中")
 			withContext(Dispatchers.IO){
 				if(checkLogin()){
+					val index = pickYear.intValue
 					val pair = getYearAndTerm()
-					marksData[pickYear.intValue] = easAccount.queryMark(pair.first, pair.second)
-					marks.value = marksData[pickYear.intValue]
+					val result = sort(easAccount.queryMark(index, pair.first, pair.second))
 					try {
-						FileOutputStream(markDataPath).use {
-							Json.encodeToStream(marksData, it)
+						if(!hasQuerySql[index]){
+							marksData[index] = lessonData.markDao().selectByIndex(index).toTypedArray()
+							hasQuerySql[index] = true
 						}
-					} catch(e: IOException) {
-						Logger.e(e)
+						val origData = marksData[index]
+						if(origData.isEmpty()){
+							lessonData.markDao().insertAll(result)
+							setMark(index, result.toTypedArray())
+						}else{
+							val difference = result.subtract(origData.toSet())
+							if(difference.isNotEmpty()) {
+								lessonData.markDao().insertAll(difference.toList())
+								setMark(index, (difference + origData).toTypedArray())
+							}
+						}
+					}catch(e: Exception){
+						e.printStackTrace()
 					}
 				}
 			}
 			clearDialog()
+		}
+	}
+
+	fun selectData(index: Int){
+		if(hasQuerySql[index]){
+			marks.value = marksData[index]
+		}else{
+			viewModelScope.launch {
+				withContext(Dispatchers.IO) {
+					setMark(index, sort(lessonData.markDao().selectByIndex(index)).toTypedArray())
+					hasQuerySql[index] = true
+				}
+			}
+		}
+	}
+
+	fun setSortBy(index: Int){
+		sortBy = index
+		setMark(pickYear.intValue, sort(marksData[pickYear.intValue].toList()).toTypedArray())
+	}
+
+	fun setSortType(index: Int){
+		sortType = index
+		setMark(pickYear.intValue, sort(marksData[pickYear.intValue].toList()).toTypedArray())
+	}
+
+	fun clearNew(index: Int) {
+		marksData[pickYear.intValue][index] = marksData[pickYear.intValue][index].copy(isNew = 0)
+		viewModelScope.launch {
+			withContext(Dispatchers.IO) {
+				lessonData.markDao().setRead(marks.value[index].id)
+			}
+		}
+		update = !update
+	}
+
+	private fun setMark(index: Int, array: Array<Mark>){
+		marksData[index] = array
+		marks.value = array
+	}
+
+	private fun sort(array: List<Mark>): List<Mark>{
+		return when(sortBy){
+			0 -> array.sortedWith { a, b ->
+				val v = a.type.compareTo(b.type) * sortType
+				if(v == 0) a.mark.compareTo(b.mark) * sortType
+				else v
+			}
+			1 -> array.sortedWith { a, b -> a.mark.compareTo(b.mark) * sortType }
+			2 -> array.sortedWith { a, b -> a.time.time.compareTo(b.time.time) * sortType }
+			else -> array
 		}
 	}
 }

@@ -8,8 +8,8 @@ import com.qust.helper.data.Setting
 import com.qust.helper.data.api.QustApi
 import com.qust.helper.data.eas.Academic
 import com.qust.helper.data.eas.Exam
-import com.qust.helper.data.eas.Mark
 import com.qust.helper.data.eas.Notice
+import com.qust.helper.data.room.Mark
 import com.qust.helper.model.Logger
 import com.qust.helper.utils.CodeUtils
 import okhttp3.FormBody
@@ -156,7 +156,7 @@ open class EASAccount protected constructor(): Account(
 	 * @param xnm  学年代码 20xx
 	 * @param xqm  学期代码 12 | 3
 	 */
-	suspend fun queryMark(xnm: String, xqm: String): Array<Mark> {
+	suspend fun queryMark(index: Int, xnm: String, xqm: String): List<Mark> {
 		var json: String
 		try {
 			postNoCheck(QustApi.GET_MARK, FormBody.Builder()
@@ -164,10 +164,10 @@ open class EASAccount protected constructor(): Account(
 					.add("queryModel.showCount", "999").build()
 			).use { json = it.body!!.string() }
 		} catch(_: Exception) {
-			return emptyArray()
+			return emptyList()
 		}
 
-		val markMap = HashMap<String, Mark>(8)
+		val markMap = HashMap<String, Mark.Builder>(32)
 		try {
 			val item: JSONArray = JSONObject(json).getJSONArray("items")
 			for(i in 0 until item.length()) {
@@ -200,7 +200,7 @@ open class EASAccount protected constructor(): Account(
 		} catch(e: Exception) {
 			Logger.e("url=${QustApi.GET_MARK_DETAIL}, body=${json}", e)
 		}
-		return markMap.values.toTypedArray()
+		return markMap.values.map { it.build(index, true) }
 	}
 
 	/**

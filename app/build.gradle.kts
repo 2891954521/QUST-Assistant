@@ -6,6 +6,7 @@ plugins {
 	id("com.android.application")
 	id("org.jetbrains.kotlin.android")
 	kotlin("plugin.serialization") version "1.9.10"
+	kotlin("kapt")
 }
 
 android {
@@ -16,8 +17,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 5
-		versionName = "v3.1.20240411"
+		versionCode = 6
+		versionName = "v3.1.20240412"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -69,12 +70,12 @@ dependencies {
 
 	implementation("androidx.core:core-ktx:1.12.0")
 	implementation("androidx.compose.runtime:runtime")
-	implementation("androidx.compose.foundation:foundation:1.7.0-alpha04")
+	implementation("androidx.compose.foundation:foundation:1.6.5")
 	implementation("androidx.compose.foundation:foundation-layout")
 	implementation("androidx.compose.ui:ui-util")
 	implementation("androidx.compose.ui:ui-graphics")
 	implementation("androidx.compose.ui:ui-tooling-preview")
-	implementation("androidx.compose.material:material:1.6.4")
+	implementation("androidx.compose.material:material:1.6.5")
 	implementation("androidx.compose.material3:material3:1.2.1")
 
 	implementation("androidx.glance:glance:1.0.0")
@@ -91,6 +92,9 @@ dependencies {
 	implementation("androidx.navigation:navigation-compose:2.7.7")
 
 	implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+	implementation("androidx.room:room-runtime:2.6.1")
+	kapt("androidx.room:room-compiler:2.6.1")
 
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 

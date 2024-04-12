@@ -1,6 +1,7 @@
 package com.qust.helper.ui.widget
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +57,7 @@ object LessonTableView{
 	)
 
 	@Composable
+	@OptIn(ExperimentalFoundationApi::class)
 	fun LessonView(lessonRender: LessonRender, onLessonClick: (LessonRender.SelectLesson) -> Unit = {}, onLessonLongClick: (LessonRender.SelectLesson, Int, Int, Int) -> Unit = { _, _, _, _ -> }){
 		val density = LocalDensity.current
 		val pagerState = rememberPagerState(initialPage = LessonTableRepository.currentWeek.intValue - 1, pageCount = { lessonRender.totalWeek })
@@ -76,8 +78,7 @@ object LessonTableView{
 				modifier = Modifier.fillMaxSize()
 			) { page ->
 				Tab(timeBar = {
-					if(LessonTableRepository.currentTimeTable == 0) LessonTimeBar1()
-					else LessonTimeBar2()
+					LessonTimeBar(if(LessonTableRepository.currentTimeTable == 0) LESSON_TIME1 else LESSON_TIME2)
 				}, dateBar = {
 					LessonDate(lessonRender.startDay, page)
 				}) {
@@ -177,34 +178,17 @@ object LessonTableView{
 	}
 
 	@Composable
-	fun LessonTimeBar1() {
+	fun LessonTimeBar(time: Array<Array<String>>) {
 		Column(modifier = Modifier.fillMaxHeight()) {
 			repeat(LESSON_TIME1[0].size){
 				Column(
-					modifier = Modifier.weight(1F).padding(4.dp),
+					modifier = Modifier.weight(1F).padding(horizontal = 4.dp),
 					verticalArrangement = Arrangement.Center,
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {
 					Text(text = (it + 1).toString(), style = MaterialTheme.typography.labelMedium)
 					Text(text = LESSON_TIME1[0][it], style = MaterialTheme.typography.bodySmall, color = Color.Gray)
 					Text(text = LESSON_TIME1[1][it], style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-				}
-			}
-		}
-	}
-
-	@Composable
-	fun LessonTimeBar2() {
-		Column(modifier = Modifier.fillMaxHeight()) {
-			repeat(LESSON_TIME2[0].size){
-				Column(
-					modifier = Modifier.weight(1F).padding(4.dp),
-					verticalArrangement = Arrangement.Center,
-					horizontalAlignment = Alignment.CenterHorizontally
-				) {
-					Text(text = it.toString(), style = MaterialTheme.typography.labelMedium)
-					Text(text = LESSON_TIME2[0][it], style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-					Text(text = LESSON_TIME2[1][it], style = MaterialTheme.typography.bodySmall, color = Color.Gray)
 				}
 			}
 		}
