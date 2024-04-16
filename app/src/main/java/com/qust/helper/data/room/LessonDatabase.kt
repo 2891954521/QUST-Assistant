@@ -6,10 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 
-@Database(entities = [Mark::class], version = 1, exportSchema = false)
+@Database(entities = [Mark::class, LessonInfo::class, LessonInfoGroup::class], version = 1, exportSchema = false)
 abstract class LessonDatabase : RoomDatabase() {
 
 	abstract fun markDao(): MarkDao
+
+	abstract fun lessonInfoDao(): LessonInfoDao
 
 	companion object {
 		@Volatile

@@ -3,6 +3,7 @@ package com.qust.helper.ui.page.eas
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,31 +24,41 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.qust.helper.R
-import com.qust.helper.data.eas.Academic
+import com.qust.helper.data.room.LessonInfo
+import com.qust.helper.data.room.Mark
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppBar
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.ui.widget.TripleProgressBar
+import com.qust.helper.utils.DateUtils
+import com.qust.helper.viewmodel.eas.AcademicGroup
+import com.qust.helper.viewmodel.eas.AcademicUIEvent
 import com.qust.helper.viewmodel.eas.GetAcademicViewModel
 
 object GetAcademic {
 
+	val LESSON_TYPE = arrayOf(
+		"", "在修", "未过", "未修", "已修",
+		"校内被替代课程",
+		"校内课程替代",
+		"校内课程替代节点",
+		"校外课程替换节点/校外认定课程",
+		"校内被认定课程",
+		"学业预警不审核课程"
+	)
 
 	@Composable
 	fun GetAcademic(padding: PaddingValues, viewModel: GetAcademicViewModel, toast: Toast, navController: NavController){
@@ -55,19 +66,12 @@ object GetAcademic {
 			if(viewModel.needLogin){
 				navController.navigate("easLogin")
 				viewModel.needLogin = false
+			}else{
+				viewModel.loadData()
 			}
 		}
 		Box(modifier = Modifier.padding(padding)){
-			GetAcademicUI(
-				index = viewModel.choose,
-				groups = viewModel.lessonGroups.value,
-				lessons = viewModel.lessonInfo,
-				queryData = { viewModel.queryData() },
-				changeGroup = { viewModel.changeGroupMode() },
-				sortByMark = { viewModel.sortByMark(it) },
-				sortByCredit = { viewModel.sortByCredit(it) },
-				sortByStatus = {}
-			)
+			GetAcademicUI(showMode = viewModel.uiState.showMode, groups = viewModel.uiState.lessonGroups, uiEvent = viewModel.uiEvent)
 		}
 		AppBar.DialogBar(dialogText = viewModel.dialogText)
 		toast.ToastContent(viewModel.toastContent)
@@ -75,66 +79,51 @@ object GetAcademic {
 
 	@Composable
 	@OptIn(ExperimentalFoundationApi::class)
-	fun GetAcademicUI(
-		index: Int = -1,
-		groups: Array<Academic.LessonInfoGroup>,
-		lessons: Array<Academic.LessonInfo>,
-		queryData: () -> Unit = { },
-		changeGroup: () -> Unit = { },
-		sortByMark: (Int) -> Unit = { },
-		sortByCredit: (Int) -> Unit = { },
-		sortByStatus: (Int) -> Unit = { }
-	) {
-		val groupExpandState = remember(groups) {
-			lessons.mapIndexed { i, _ -> i == index }.toMutableStateList()
-		}
-		val expandState = remember(lessons) { lessons.map { false }.toMutableStateList() }
-
+	fun GetAcademicUI(showMode: Int, groups: List<AcademicGroup>, uiEvent: AcademicUIEvent) {
 		Column {
-			Row {
-				TextButton(onClick = { queryData() }) {
-					Icon(imageVector = Icons.Rounded.Refresh, contentDescription = null)
-					Text(text = "刷新")
+			Row(modifier = Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+
+				Text(text = "展示方式", modifier = Modifier.padding(8.dp))
+
+				Row(modifier = Modifier.clickable { uiEvent.changeGroup() }, verticalAlignment = Alignment.CenterVertically){
+					Text(text = if(showMode == 0) "课程类型" else "学期", modifier = Modifier.padding(8.dp), color = colorSecondaryText)
+					Icon(imageVector = Icons.Rounded.ArrowDropDown, contentDescription = null, tint = colorSecondaryText)
 				}
-				TextButton(onClick = { changeGroup() }) {
-					Icon(painter = painterResource(id = R.drawable.ic_view_list), contentDescription = null)
-					Text(text = "切换视图")
+
+				Spacer(modifier = Modifier.fillMaxWidth().weight(1F))
+
+				Row(modifier = Modifier.clickable { uiEvent.queryData() }, verticalAlignment = Alignment.CenterVertically){
+					Text(text = "重新查询", modifier = Modifier.padding(8.dp), color = colorSecondaryText)
+					Icon(imageVector = Icons.Rounded.Refresh, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
 				}
 			}
 
 			LazyColumn {
 				groups.forEachIndexed { i, dataItem ->
-					val isExpand = groupExpandState[i]
 					stickyHeader {
-						GroupUI(dataItem, isExpand,
-							onClick = { groupExpandState[i] = !isExpand },
-							sortByMark = { sortByMark(i) },
-							sortByCredit = { sortByCredit(i) },
-							sortByStatus = { sortByStatus(i) }
+						GroupUI(dataItem,
+							onClick = { uiEvent.clickGroup(i) },
+							sortBy = { uiEvent.sortBy(i, it) },
+							sortType = { uiEvent.sortType(i) }
 						)
 					}
-					if(isExpand) {
-						items(dataItem.lessonIndex.size) { row ->
-							val index1 =  dataItem.lessonIndex[row]
-							ItemUI(lessonInfo = lessons[index1], expandState[index1]){ expandState[index1] = !expandState[index1]}
+					if(dataItem.isExpand) {
+						items(dataItem.lessons.size) { row ->
+							ItemUI(
+								dataItem.lessons[row],
+								dataItem.lessonMarks[row],
+								dataItem.isLessonExpand[row]
+							) { uiEvent.clickLesson(i, row) }
 						}
 					}
 				}
 			}
 		}
-
 	}
 
-
 	@Composable
-	fun GroupUI(
-		lessonGroup: Academic.LessonInfoGroup,
-		isExpand: Boolean = false,
-		onClick: () -> Unit = { },
-		sortByMark: () -> Unit = { },
-		sortByCredit: () -> Unit = { },
-		sortByStatus: () -> Unit = { }
-	){
+	fun GroupUI(group: AcademicGroup, onClick: () -> Unit = { }, sortBy: (Int) -> Unit = { }, sortType: () -> Unit = { }){
+		val lessonGroup = group.groupInfo
 		var showPop by remember { mutableStateOf(false) }
 
 		Card(
@@ -144,21 +133,16 @@ object GetAcademic {
 		) {
 			Box(Modifier.clickable { onClick() }) {
 				Column(Modifier.padding(8.dp)) {
-					Box(Modifier.fillMaxWidth()) {
-						Texts.SingleLineTextNoPadding(
-							text = lessonGroup.groupName,
-							style = MaterialTheme.typography.titleMedium,
-							modifier = Modifier.align(Alignment.Center)
-						)
-						Texts.SingleLineTextNoPadding(
-							text = "共 ${lessonGroup.lessonIndex.size} 门，通过 ${lessonGroup.passedCounts} 门",
+
+					Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+						Text(text = lessonGroup.type, style = MaterialTheme.typography.titleMedium, modifier = Modifier)
+
+						Text(
+							text = "共 ${lessonGroup.totalCounts} 门，通过 ${lessonGroup.passedCounts} 门，要求学分 ${lessonGroup.requireCredits}，已修 ${lessonGroup.obtainedCredits}",
 							style = MaterialTheme.typography.bodySmall,
-							modifier = Modifier.align(Alignment.CenterStart)
-						)
-						Texts.SingleLineTextNoPadding(
-							text = "学分: ${lessonGroup.obtainedCredits} / ${lessonGroup.requireCredits}",
-							style = MaterialTheme.typography.bodySmall,
-							modifier = Modifier.align(Alignment.CenterEnd)
+							color = colorSecondaryText,
+							modifier = Modifier.fillMaxWidth(),
+							textAlign = TextAlign.End
 						)
 					}
 
@@ -170,32 +154,36 @@ object GetAcademic {
 						height = 5.dp
 					)
 
-					if(isExpand){
-						Spacer(modifier = Modifier.height(8.dp))
-						Row(Modifier.padding(8.dp, 0.dp)){
-							Row(
-								modifier = Modifier.clickable { showPop = true },
-								verticalAlignment = Alignment.CenterVertically,
-							){
-								Texts.SingleLineTextNoPadding(
-									text = "排序方式",
-									style = MaterialTheme.typography.bodySmall,
-									color = colorSecondaryText,
+					if(group.isExpand){
+						Row(modifier = Modifier.padding(start = 8.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+							Text(text = "排序方式", style = MaterialTheme.typography.bodySmall)
+
+							Box{
+								Texts.IconText(
+									text = when(group.sortBy){ 0 -> "成绩排序"; 1 -> "学分排序"; 2 -> "修读状态"; else -> "" },
+									icon = Icons.Rounded.ArrowDropDown,
+									modifier = Modifier.padding(start = 8.dp).clickable { showPop = true }
 								)
-								Icon(imageVector = Icons.Rounded.ArrowDropDown, contentDescription = null, tint = colorSecondaryText)
+
+								DropdownMenu(expanded = showPop, onDismissRequest = { showPop = false }) {
+									Box(Modifier.clickable{ showPop = false; sortBy(0) }){
+										Text(text = "成绩排序", modifier = Modifier.padding(16.dp, 8.dp))
+									}
+									Box(Modifier.clickable{ showPop = false; sortBy(1) }){
+										Text(text = "学分排序", modifier = Modifier.padding(16.dp, 8.dp))
+									}
+									Box(Modifier.clickable{ showPop = false; sortBy(2) }){
+										Text(text = "修读状态", modifier = Modifier.padding(16.dp, 8.dp))
+									}
+								}
 							}
 
-							DropdownMenu(expanded = showPop, onDismissRequest = { showPop = false }) {
-								Box(Modifier.clickable{ showPop = false; sortByMark() }){
-									Text(text = "成绩降序", modifier = Modifier.padding(16.dp, 8.dp))
-								}
-								Box(Modifier.clickable{ showPop = false; sortByCredit() }){
-									Text(text = "学分降序", modifier = Modifier.padding(16.dp, 8.dp))
-								}
-								Box(Modifier.clickable{ showPop = false; sortByStatus() }){
-									Text(text = "修读状态", modifier = Modifier.padding(16.dp, 8.dp))
-								}
-							}
+							Texts.IconText(
+								text = if(group.sortType == 1) "升序" else "降序",
+								icon = Icons.Rounded.ArrowDropDown,
+								modifier = Modifier.padding(start = 8.dp).clickable { sortType() },
+								iconModifier = Modifier.rotate(if(group.sortType == 1) 0F else 180F)
+							)
 						}
 					}
 				}
@@ -204,17 +192,18 @@ object GetAcademic {
 	}
 
 	@Composable
-	fun ItemUI(lessonInfo: Academic.LessonInfo, isExpanded: Boolean, onClick: () -> Unit){
+	fun ItemUI(lessonInfo: LessonInfo, lessonMark: Mark, isExpanded: Boolean, onClick: () -> Unit){
 		Card(
-			modifier = Modifier.fillMaxWidth().padding(32.dp, 8.dp, 32.dp, 8.dp),
+			modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp).clickable { onClick() },
 			colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
 			elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
 		) {
 			Column(
-				modifier = Modifier.fillMaxWidth().clickable { onClick() },
+				modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+				verticalArrangement = Arrangement.spacedBy(4.dp)
 			) {
 
-				Row(Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp).height(IntrinsicSize.Min)){
+				Row(Modifier.height(IntrinsicSize.Min)){
 					Text(
 						text = lessonInfo.name,
 						modifier = Modifier.weight(1F),
@@ -222,30 +211,38 @@ object GetAcademic {
 						textAlign = TextAlign.Start
 					)
 					Texts.SingleLineTextNoPadding(
-						text = if(lessonInfo.status == 4) "成绩: ${lessonInfo.mark}"  else Academic.LESSON_TYPE[lessonInfo.status],
+						text = if(lessonInfo.status == 4) "成绩: ${lessonInfo.mark}" else LESSON_TYPE[lessonInfo.status],
 						modifier = Modifier.fillMaxHeight(),
 						textAlign = TextAlign.Center
 					)
 				}
 
-				Box(modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp, 16.dp, 8.dp)) {
-					Texts.SingleLineTextNoPadding(
-						text = lessonInfo.content,
+				Row {
+					Text(
+						text = "${lessonInfo.category} | ${lessonInfo.content}",
 						style = MaterialTheme.typography.bodySmall,
 						color = colorSecondaryText,
 					)
-					Texts.SingleLineTextNoPadding(
+
+					Spacer(modifier = Modifier.fillMaxWidth().weight(1F))
+
+					Text(
 						text = "学分: ${lessonInfo.credit}",
-						modifier = Modifier.align(Alignment.CenterEnd),
 						style = MaterialTheme.typography.bodySmall,
 						color = colorSecondaryText,
 					)
 				}
 
 				AnimatedVisibility(visible = isExpanded){
-					Row(modifier = Modifier.fillMaxWidth().padding(8.dp, 0.dp, 8.dp, 8.dp)) {
-						Texts.SingleLineTextNoPadding(text = "成绩: ${lessonInfo.mark}", modifier = Modifier.weight(1F))
-						Texts.SingleLineTextNoPadding(text = "绩点: ${lessonInfo.gpa}", modifier = Modifier.weight(1F))
+					GetMarks.MarkItems(mark = lessonMark){
+						if(lessonMark !== Mark.EMPTY_MARK){
+							Text(
+								text = "发布时间: ${DateUtils.YMD_HMS.format(lessonMark.time)}",
+								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+								style = MaterialTheme.typography.bodySmall,
+								color = colorSecondaryText
+							)
+						}
 					}
 				}
 			}

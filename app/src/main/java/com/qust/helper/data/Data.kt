@@ -1,11 +1,19 @@
 package com.qust.helper.data
 
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.model.LessonTableRepository
@@ -104,6 +112,10 @@ object Data {
 		"update" to Page("update", "检查更新", hasEntrance = false) { activity, padding, _ ->
 			val viewModel by activity.viewModels<UpdatePage.UpdateViewModel>()
 			UpdatePage.UpdatePageUI(padding, viewModel, activity.toast)
+		},
+
+		"userAgreement" to Page("userAgreement", "用户协议", hasEntrance = false) { _, padding, _ ->
+			Box(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())){ Text(modifier = Modifier.padding(8.dp), text = stringResource(id = R.string.text_user_agreement)) }
 		},
 	)
 

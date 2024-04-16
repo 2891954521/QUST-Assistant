@@ -64,10 +64,9 @@ object Keys {
 	const val LAST_UPDATE_TIME = "last_update_time"
 
 	/**
-	 * 上次检查更新的时间
+	 * 上一个教务公告的ID
 	 */
-	const val LAST_AUTO_CHECK_TIME = "last_auto_check_time"
-
+	const val LAST_NOTICE_ID = "last_notice_id"
 
 	const val EAS_ACCOUNT = "eas_account"
 	const val EAS_PASSWORD = "eas_password"

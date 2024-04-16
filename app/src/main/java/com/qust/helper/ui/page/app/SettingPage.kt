@@ -108,6 +108,9 @@ object SettingPage {
 				SettingItem("源代码", "GitHub"){
 					uriHandler.openUri("https://github.com/2891954521/QUST-Assistant")
 				}
+				SettingItem("用户许可协议", ""){
+					ComposeActivity.startActivity(context, "userAgreement")
+				}
 			}
 		}
 

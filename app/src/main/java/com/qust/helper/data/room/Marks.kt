@@ -37,21 +37,35 @@ import java.util.Locale
 data class Mark(
 	@PrimaryKey(autoGenerate = true) val id: Int = 0,
 
-	@ColumnInfo(name = "kchId") val kchId: String,
-	@ColumnInfo(name = "name") val name: String,
-	@ColumnInfo(name = "type") val type: String,
+	@ColumnInfo val kchId: String,
+	@ColumnInfo val name: String,
+	@ColumnInfo val type: String,
 
-	@ColumnInfo(name = "credit") val credit: String,
-	@ColumnInfo(name = "gpa") val gpa: String,
-	@ColumnInfo(name = "mark") val mark: Float,
+	@ColumnInfo val credit: String,
+	@ColumnInfo val gpa: String,
+	@ColumnInfo val mark: Float,
 
-	@ColumnInfo(name = "items") val items: Array<Item> = emptyArray(),
+	@ColumnInfo val items: Array<Item> = emptyArray(),
 
-	@ColumnInfo(name = "index") val index: Int,
-	@ColumnInfo(name = "time") val time: Date,
-	@ColumnInfo(name = "isNew") val isNew: Int,
+	@ColumnInfo val index: Int,
+	@ColumnInfo val time: Date,
+	@ColumnInfo val isNew: Int,
 ){
 	companion object {
+
+		val EMPTY_MARK = Mark(
+			kchId = "",
+			name = "",
+			type = "",
+			credit = "",
+			gpa = "",
+			mark = 0F,
+			items = arrayOf(Item("成绩未公布或未查询过", "无")),
+			index = 0,
+			time = Date(),
+			isNew = 0
+		)
+
 		/**
 		 * 解析 js 为 mark 对象
 		 */
@@ -160,11 +174,17 @@ data class Mark(
 @Dao
 interface MarkDao {
 
-	@Query("SELECT * FROM marks WHERE `index` LIKE :index")
+	@Query("SELECT * FROM marks WHERE `kchId` = :id")
+	fun selectByKchId(id: String): List<Mark>
+
+	@Query("SELECT * FROM marks WHERE `index` = :index")
 	fun selectByIndex(index: Int): List<Mark>
 
 	@Query("UPDATE marks SET isNew = 0 WHERE id = :id")
 	fun setRead(id: Int)
+
+	@Query("SELECT COUNT(1) FROM marks WHERE `index` = :index")
+	fun countByIndex(index: Int): Int
 
 	@Insert
 	fun insert(lesson: Mark)
@@ -174,7 +194,6 @@ interface MarkDao {
 
 	@Update
 	fun update(lesson: Mark)
-
 
 	@Delete
 	fun delete(lesson: Mark)

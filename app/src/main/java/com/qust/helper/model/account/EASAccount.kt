@@ -6,9 +6,10 @@ import com.qust.helper.data.Data
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
 import com.qust.helper.data.api.QustApi
-import com.qust.helper.data.eas.Academic
 import com.qust.helper.data.eas.Exam
 import com.qust.helper.data.eas.Notice
+import com.qust.helper.data.room.LessonInfo
+import com.qust.helper.data.room.LessonInfoGroup
 import com.qust.helper.data.room.Mark
 import com.qust.helper.model.Logger
 import com.qust.helper.utils.CodeUtils
@@ -272,13 +273,11 @@ open class EASAccount protected constructor(): Account(
 	/**
 	 * 查询学业情况
 	 */
-	suspend fun getAcademic(): Pair< Array<Academic.LessonInfoGroup>, Array<Academic.LessonInfo>> {
-
+	suspend fun getAcademic(): Pair<List<LessonInfoGroup>, Array<LessonInfo>> {
 		// 查询到的所有课程
-		val lessonInfo = ArrayList<Academic.LessonInfo>(64)
-
+		val lessonInfo = ArrayList<LessonInfo>(64)
 		// 储存所有课程的分组
-		val xfyqjd = HashMap<String, Academic.LessonInfoGroup.Builder>()
+		val lessonGroups = LinkedHashMap<String, LessonInfoGroup.Builder>()
 
 		try{
 			var html: String
@@ -287,54 +286,46 @@ open class EASAccount protected constructor(): Account(
 			var matcher = xfyqjd_id.matcher(html)
 			while(matcher.find()){
 				val id = matcher.group(1)!!
-				if(!xfyqjd.containsKey(id)) xfyqjd[id] = Academic.LessonInfoGroup.Builder()
+				if(!lessonGroups.containsKey(id)) lessonGroups[id] = LessonInfoGroup.Builder()
 			}
 
 			matcher = xfyqjd_id_yxxf_yqzdxf.matcher(html)
 			while(matcher.find()){
 				val id = matcher.group(1)!!
-				if(xfyqjd.containsKey(id)){
-					val group = xfyqjd[id]!!
+				if(lessonGroups.containsKey(id)){
+					val group = lessonGroups[id]!!
 					group.obtainedCredits = matcher.group(2)?.toFloatOrNull() ?: 0F
 					group.requireCredits = matcher.group(3)?.toFloatOrNull() ?: 0F
 				}
 			}
 
-			for(param in xfyqjd.keys) {
-				postNoCheck(QustApi.ACADEMIC_INFO, FormBody.Builder()
-					.add("xfyqjd_id", param)
-					.add("xh_id", accountName).build()
-				).use { html = it.body!!.string() }
-
+			val entranceTime = this@EASAccount.entranceTime
+			lessonGroups.keys.forEachIndexed { index, key ->
+				postNoCheck(QustApi.ACADEMIC_INFO, FormBody.Builder().add("xfyqjd_id", key).add("xh_id", accountName).build()).use { html = it.body!!.string() }
 				val array = JSONArray(html)
-				if(array.length() == 0) continue
-
-				val group = xfyqjd[param]!!
-				for(i in 0 until array.length()) {
-					val info = Academic.LessonInfo.createFromJson(array.getJSONObject(i))
-					when(info.status){
-						// 统计未过课程的学分
-						2 -> { group.creditNotEarned += info.credit.toFloatOrNull() ?: 0F }
-						// 统计已修门数
-						4 -> { group.passedCounts++ }
+				if(array.length() > 0){
+					val group = lessonGroups[key]!!
+					group.group = index
+					for(i in 0 ..< array.length()) {
+						val info = LessonInfo.createFromJson(array.getJSONObject(i), entranceTime, index)
+						if(info.status == 2) {
+							// 统计未过课程的学分
+							group.creditNotEarned += info.credit
+						}else if(info.status == 4){
+							// 统计已修门数
+							group.passedCounts++
+						}
+						group.totalCounts++
+						lessonInfo.add(info)
 					}
-					// 指向课程的索引
-					group.addLesson(lessonInfo.size)
-					lessonInfo.add(info)
+					group.type = lessonInfo[lessonInfo.size - 1].type
 				}
-				group.groupName = lessonInfo[lessonInfo.size - 1].category
 			}
-
-			val array = ArrayList<Academic.LessonInfoGroup>(xfyqjd.size)
-			xfyqjd.values.forEach{
-				if(it.hasLesson()) array.add(it.build())
-			}
-
-			return Pair(array.toTypedArray(), lessonInfo.toTypedArray())
+			return Pair(lessonGroups.values.filter{ it.totalCounts > 0 }.map{ it.build() }.also { println(it) }, lessonInfo.toTypedArray())
 		}catch(e: Exception){
 			Logger.e(e)
 		}
 
-		return Pair(emptyArray(), emptyArray())
+		return Pair(emptyList(), emptyArray())
 	}
 }

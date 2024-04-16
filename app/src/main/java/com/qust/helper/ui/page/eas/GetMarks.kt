@@ -188,32 +188,13 @@ object GetMarks{
 					}
 
 					AnimatedVisibility(visible = isExpanded){
-						Column(
-							modifier = Modifier.fillMaxWidth().padding(0.dp, 8.dp, 0.dp, 0.dp),
-							horizontalAlignment = Alignment.CenterHorizontally,
-						) {
-							HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
-
-							Row {
-								SingleLineText(text = "项目", modifier = Modifier.weight(2F))
-								SingleLineText(text = "成绩", modifier = Modifier.weight(1F))
-							}
-
-							for(i in 0 until mark.items.size){
-								HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
-								Row {
-									SingleLineText(text = mark.items[i].name, modifier = Modifier.weight(2F))
-									SingleLineText(text = mark.items[i].mark, modifier = Modifier.weight(1F))
-								}
-							}
-
+						MarkItems(mark = mark){
 							Text(
 								text = "发布时间: ${DateUtils.YMD_HMS.format(mark.time)}",
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
 								style = MaterialTheme.typography.bodySmall,
 								color = colorSecondaryText
 							)
-
 						}
 					}
 				}
@@ -227,6 +208,30 @@ object GetMarks{
 					Text(text = "new")
 				}
 			}
+		}
+	}
+
+	@Composable
+	fun MarkItems(mark: Mark, content: @Composable () -> Unit = { }) {
+		Column(
+			modifier = Modifier.fillMaxWidth().padding(0.dp, 8.dp, 0.dp, 0.dp),
+			horizontalAlignment = Alignment.CenterHorizontally,
+		) {
+			HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
+
+			Row {
+				SingleLineText(text = "项目", modifier = Modifier.weight(2F))
+				SingleLineText(text = "成绩", modifier = Modifier.weight(1F))
+			}
+
+			for(i in 0 until mark.items.size){
+				HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
+				Row {
+					SingleLineText(text = mark.items[i].name, modifier = Modifier.weight(2F))
+					SingleLineText(text = mark.items[i].mark, modifier = Modifier.weight(1F))
+				}
+			}
+			content()
 		}
 	}
 }

@@ -12,12 +12,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -95,7 +97,7 @@ class MainActivity : BaseActivity() {
 		ModalNavigationDrawer(
 			drawerState = drawerState,
 			drawerContent = {
-				ModalDrawerSheet(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp * 0.75F)) {
+				ModalDrawerSheet(modifier = Modifier.requiredWidth((LocalConfiguration.current.screenWidthDp.dp * 0.75F).coerceAtMost(DrawerDefaults.MaximumDrawerWidth))) {
 					MainAppDrawer(scope, drawerState, navController)
 				}
 			},

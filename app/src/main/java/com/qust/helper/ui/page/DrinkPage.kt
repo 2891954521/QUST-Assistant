@@ -44,15 +44,14 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
 import com.qust.helper.ui.activity.BaseActivity
+import com.qust.helper.ui.theme.Drawables
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppBar
-import com.qust.helper.ui.widget.Inputs
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.utils.LinearBarCode
 import com.qust.helper.viewmodel.DrinkUIEvent
@@ -140,7 +139,7 @@ object DrinkPage {
 					verticalAlignment = Alignment.CenterVertically
 				) {
 					Icon(
-						painter = painterResource(id = R.drawable.ic_brightness),
+						imageVector = Drawables.Brightness,
 						contentDescription = "",
 						modifier = Modifier.padding(8.dp),
 						tint = Color(200, 200, 200)
@@ -184,14 +183,14 @@ object DrinkPage {
 		val newAccount = remember { mutableStateOf(account) }
 		val newPassword = remember { mutableStateOf(password) }
 		ModalBottomSheet(onDismissRequest = { onDismiss() }) {
-			Column(horizontalAlignment = Alignment.CenterHorizontally) {
-				Inputs.AccountInput(
+			Column(Modifier.padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+				LoginPage.AccountInput(
 					account = newAccount,
 					password = newPassword,
 					labelAccount = "手机号",
 					login = { login(newAccount.value, newAccount. value); onDismiss() }
 				)
-				TextButton( onClick = { login(newAccount.value, newPassword.value); onDismiss() }, modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+				TextButton(onClick = { login(newAccount.value, newPassword.value); onDismiss() }, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
 					Text(text = stringResource(id = R.string.text_login))
 				}
 				Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))

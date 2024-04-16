@@ -4,22 +4,6 @@
 	<string name="text_skip">跳过</string>
 	<string name="text_ok">确定</string>
 	<string name="text_cancel">取消</string>
-	
-	<string-array name="tasks">
-		<item>Buy milk</item>
-		<item>Choose curtain</item>
-		<item>Plant rosemary</item>
-		<item>Finish the essay</item>
-		<item>Receive new packages</item>
-		<item>Take a photo</item>
-	</string-array>
-
-	<string-array name="topics">
-		<item>2 new packages arrived</item>
-		<item>DIY project recommendation</item>
-		<item>Festival next month</item>
-		<item>New flower seeds available</item>
-	</string-array>
 	<string name="text_term">学期</string>
 	<string name="text_query">查询</string>
 	<string name="text_week">第 %s 周</string>
@@ -30,4 +14,30 @@
 	<string name="text_drink_code">饮水码</string>
 	<string name="text_checking_version">正在检查更新</string>
 
+	<string name="text_user_agreement">欢迎使用青科助手！\n\n
+为使用本软件及服务，请您务必认真阅读并遵守以下《软件许可协议》。请您仔细阅读本协议各条款，特别是免除或限制责任的条款，以及针对特定服务的单独协议，并做出您是否接受的选择。若您不同意本协议中的任何条款，请勿下载、安装或使用本软件。\n\n
+一、协议概述\n
+本协议旨在明确您与青科助手软件之间关于下载、安装、使用、复制本软件及其相关服务的权利和义务。\n\n
+二、软件获取与使用\n
+1. 您可以从我们授权的第三方渠道或官方渠道获取本软件。\n
+2. 若您从非授权渠道获取软件，我们无法保证其正常功能，并对因此产生的任何损失不承担责任。\n
+3. 您有权根据需要自行卸载本软件。\n\n
+三、软件更新与维护\n
+1. 为提升用户体验及服务质量，我们将持续对本软件进行更新与优化。更新可能包括软件替换、功能修改、性能提升或版本升级等形式。\n
+2. 我们有权在不另行通知的情况下对软件进行更新，或对部分功能进行调整、限制。\n
+3. 新版本发布后，旧版本可能不再支持或存在安全隐患，建议您及时下载并安装最新版本。\n\n
+四、隐私保护与信息安全\n
+1. 用户数据主要包括您在使用本软件时提供的个人信息，以及软件自动收集的设备信息、使用记录等。\n
+2. 我们承诺所有用户数据将严格保存在您的本地设备上，未经您的同意，我们不会上传、存储或共享您的个人信息至任何其他平台。\n
+3. 我们将采取必要的技术手段和管理措施保护您的信息安全，防止数据泄露、滥用或非法获取。但在不可抗力、技术漏洞、黑客攻击等情况下，可能发生的信息泄露风险，我们将尽力避免并承担相应责任。\n\n
+五、免责声明与限制\n
+1. 本软件专为个人非商业用途设计。您在使用本软件时，应遵守相关法律法规，不得进行任何违法活动。\n
+2. 我们对因不可抗力、第三方因素或用户自身操作不当导致的任何损失不承担责任。\n
+3. 由于互联网环境及目标网站内容的动态变化，我们无法保证本软件所获取信息的准确性和完整性。您应自行承担使用本软件可能带来的风险。\n
+4. 我们为用户提供信息爬取功能，旨在提供便利。您在使用此功能时，应遵守目标网站的服务条款和隐私政策，不得对目标网站的正常运行造成干扰。\n
+5. 我们保留对本软件进行更新、升级或修改的权利，以适应技术进步和用户需求的变化。对于更新后的软件功能、性能或稳定性，我们将尽力保证，但不作任何形式的保证。\n\n
+六、协议修改与终止\n
+我们有权在必要时对本协议进行修改。协议修改后，我们会通过适当的方式通知您。若您不接受修改后的协议，请停止使用本软件。\n
+您使用本软件即表示您已充分理解并同意接受本协议的所有条款。感谢您的支持与信任，我们将竭诚为您提供优质的服务。
+	</string>
 </resources>
