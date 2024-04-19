@@ -321,7 +321,7 @@ open class EASAccount protected constructor(): Account(
 					group.type = lessonInfo[lessonInfo.size - 1].type
 				}
 			}
-			return Pair(lessonGroups.values.filter{ it.totalCounts > 0 }.map{ it.build() }.also { println(it) }, lessonInfo.toTypedArray())
+			return Pair(lessonGroups.values.filter{ it.totalCounts > 0 }.map{ it.build() }, lessonInfo.toTypedArray())
 		}catch(e: Exception){
 			Logger.e(e)
 		}

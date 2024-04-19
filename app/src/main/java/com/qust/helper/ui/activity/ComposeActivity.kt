@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
 import com.qust.helper.data.Data
-import com.qust.helper.ui.widget.AppBar.TopBar
+import com.qust.helper.ui.widget.AppWidgets.TopBar
 
 class ComposeActivity: BaseActivity() {
 

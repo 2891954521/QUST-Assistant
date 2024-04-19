@@ -19,3 +19,16 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class com.umeng.** { *; }
+
+-keep class com.uc.** { *; }
+
+-keep class com.efs.** { *; }
+
+-keepclassmembers class *{
+     public<init>(org.json.JSONObject);
+}
+-keepclassmembers enum *{
+      publicstatic**[] values();
+      publicstatic** valueOf(java.lang.String);
+}

@@ -43,7 +43,7 @@ import com.qust.helper.data.Data.TermName
 import com.qust.helper.data.room.Mark
 import com.qust.helper.ui.theme.colorError
 import com.qust.helper.ui.theme.colorSecondaryText
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.ListPicker
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.Texts.SingleLineText
@@ -140,7 +140,7 @@ object GetMarks{
 			LazyColumn { items(marks.size) { index -> ExamItem(marks[index]) { viewModel.clearNew(index) } } }
 		}
 
-		AppBar.DialogBar(dialogText = viewModel.dialogText)
+		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
 		toast.ToastContent(viewModel.toastContent)
 	}
 

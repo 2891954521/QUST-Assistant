@@ -111,6 +111,9 @@ object SettingPage {
 				SettingItem("用户许可协议", ""){
 					ComposeActivity.startActivity(context, "userAgreement")
 				}
+				SettingItem("隐私政策", ""){
+					ComposeActivity.startActivity(context, "policy")
+				}
 			}
 		}
 

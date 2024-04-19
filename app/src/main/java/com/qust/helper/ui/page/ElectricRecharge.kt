@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.data.Electricity
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.Toast
@@ -73,7 +73,7 @@ object ElectricRecharge {
 			}
 		}
 		ElectricRechargeUI(padding = padding, uiState = viewModel.uiState, uiEvent = viewModel.uiEvent)
-		AppBar.DialogBar(dialogText = viewModel.uiState.dialogText.value)
+		AppWidgets.DialogBar(dialogText = viewModel.uiState.dialogText.value)
 		toast.ToastContent(viewModel.uiState.toastContent)
 	}
 

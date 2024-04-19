@@ -46,7 +46,7 @@ import com.qust.helper.model.Logger
 import com.qust.helper.model.account.EASAccount
 import com.qust.helper.ui.page.LoginPage
 import com.qust.helper.ui.theme.colorSecondaryText
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.viewmodel.account.AccountViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -88,7 +88,7 @@ class GuideActivity : BaseActivity() {
 					color = MaterialTheme.colorScheme.primary,
 					textAlign = TextAlign.Start,
 				)
-				TextButton(onClick = { btnSkip() }) {
+				TextButton(onClick = { btnSkip(viewModel.checkBox) }) {
 					Text(
 						text = stringResource(id = R.string.text_skip),
 						style = MaterialTheme.typography.bodySmall,
@@ -120,13 +120,20 @@ class GuideActivity : BaseActivity() {
 				Checkbox(checked = viewModel.checkBox, onCheckedChange = { viewModel.checkBox = it })
 				val str = buildAnnotatedString {
 					append("我已阅读并同意 ")
-					pushStringAnnotation(tag = "userAgreement", annotation = "用户协议")
-					withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)) { append("用户协议") }
+					pushStringAnnotation(tag = "userAgreement", annotation = "《用户协议》")
+					withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)) { append("《用户协议》") }
+					pop()
+					append(" 和 ")
+					pushStringAnnotation(tag = "policy", annotation = "《隐私政策》")
+					withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)) { append("《隐私政策》") }
 					pop()
 				}
 				ClickableText(text = str, onClick = { offset ->
 					str.getStringAnnotations(tag = "userAgreement", start = offset, end = offset).firstOrNull()?.let {
 						ComposeActivity.startActivity(context, "userAgreement")
+					}
+					str.getStringAnnotations(tag = "policy", start = offset, end = offset).firstOrNull()?.let {
+						ComposeActivity.startActivity(context, "policy")
 					}
 				})
 			}
@@ -136,11 +143,15 @@ class GuideActivity : BaseActivity() {
 			}
 		}
 
-		AppBar.DialogBar(dialogText = viewModel.dialogText)
+		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
 		toast.ToastContent(viewModel.toastContent)
 	}
 
-	private fun btnSkip() {
+	private fun btnSkip(boolean: Boolean) {
+		if(!boolean){
+			toast.toastWarning("请先阅读并同意《用户许可协议》")
+			return
+		}
 		Setting.edit { it.putBoolean(Keys.IS_FIRST_USE, false) }
 		finish()
 	}

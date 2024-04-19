@@ -172,12 +172,15 @@ interface IAccount {
  * 自动处理账号信息的类
  */
 abstract class Account(
-	protected var host: String,
+	host: String,
 	var accountName: String,
 	var passwordName: String,
 	cookieName: String,
-	protected val scheme: String = "http"
+	val scheme: String = "http"
 ): IAccount {
+
+	var host: String = host
+		protected set
 
 	override var isLogin: Boolean = false
 

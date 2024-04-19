@@ -3,10 +3,6 @@ package com.qust.helper.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,7 +41,6 @@ import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.qust.helper.R
@@ -56,7 +51,7 @@ import com.qust.helper.model.AutoQueryRepository
 import com.qust.helper.model.UpdateRepository
 import com.qust.helper.ui.page.lesson.TermLesson
 import com.qust.helper.ui.theme.TEXT_COLORS
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.viewmodel.TermLessonViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +62,8 @@ import kotlinx.coroutines.withContext
 class MainActivity : BaseActivity() {
 
 	private var updateMessage by mutableStateOf("")
+
+	private var mainDrawerEnable by mutableStateOf(true)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -96,29 +93,22 @@ class MainActivity : BaseActivity() {
 
 		ModalNavigationDrawer(
 			drawerState = drawerState,
+			gesturesEnabled = mainDrawerEnable,
 			drawerContent = {
 				ModalDrawerSheet(modifier = Modifier.requiredWidth((LocalConfiguration.current.screenWidthDp.dp * 0.75F).coerceAtMost(DrawerDefaults.MaximumDrawerWidth))) {
 					MainAppDrawer(scope, drawerState, navController)
 				}
-			},
+			}
 		) {
-			NavHost(
-				navController = navController,
-				startDestination = "home"
-			) {
+			AppWidgets.NavigationHost(navController = navController, startDestination = "home"){
 				composable(route = "home") { HomePage(scope, drawerState, navController) }
 
 				for(page in Data.Pages.values) {
-					composable(
-						route = page.key,
-						enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween()) },
-						exitTransition = { ExitTransition.None },
-						popEnterTransition = { EnterTransition.None },
-						popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween()) }
-					) {
+					composable(route = page.key) {
+						setDrawerEnable(page.enableDrawer)
 						Scaffold(
 							topBar = {
-								AppBar.TopBar(title = page.name, navigationIcon = Icons.AutoMirrored.Filled.ArrowBack) {
+								AppWidgets.TopBar(title = page.name, navigationIcon = Icons.AutoMirrored.Filled.ArrowBack) {
 									navController.popBackStack()
 								}
 							},
@@ -136,7 +126,7 @@ class MainActivity : BaseActivity() {
 		val viewModel by viewModels<TermLessonViewModel>()
 		Scaffold(
 			topBar = {
-				AppBar.TopBar(title = stringResource(id = R.string.app_name), navigationIcon = Icons.Rounded.Menu) {
+				AppWidgets.TopBar(title = stringResource(id = R.string.app_name), navigationIcon = Icons.Rounded.Menu) {
 					scope.launch { drawerState.open() }
 				}
 			},
@@ -199,6 +189,10 @@ class MainActivity : BaseActivity() {
 				}
 			}
 		}
+	}
+
+	fun setDrawerEnable(boolean: Boolean){
+		mainDrawerEnable = boolean
 	}
 }
 

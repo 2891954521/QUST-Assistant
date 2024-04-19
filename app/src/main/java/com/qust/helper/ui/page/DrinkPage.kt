@@ -51,7 +51,7 @@ import com.qust.helper.R
 import com.qust.helper.ui.activity.BaseActivity
 import com.qust.helper.ui.theme.Drawables
 import com.qust.helper.ui.theme.colorSecondaryText
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.utils.LinearBarCode
 import com.qust.helper.viewmodel.DrinkUIEvent
@@ -76,7 +76,7 @@ object DrinkPage {
 			uiState = viewModel.uiState,
 			uiEvent = viewModel.uiEvent,
 		)
-		AppBar.DialogBar(dialogText = viewModel.dialogText)
+		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
 		activity.toast.ToastContent(toastContent = viewModel.toastContent)
 	}
 

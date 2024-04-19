@@ -28,7 +28,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.account.AccountViewModel
 import com.qust.helper.viewmodel.account.EasAccountViewModel
@@ -46,7 +46,7 @@ object LoginPage {
 				loginSuccess = onSuccess
 			)
 		}
-		AppBar.DialogBar(viewModel.dialogText)
+		AppWidgets.DialogBar(viewModel.dialogText)
 		toast.ToastContent(viewModel.toastContent)
 	}
 
@@ -60,7 +60,7 @@ object LoginPage {
 				loginSuccess = onSuccess
 			)
 		}
-		AppBar.DialogBar(viewModel.dialogText)
+		AppWidgets.DialogBar(viewModel.dialogText)
 		toast.ToastContent(viewModel.toastContent)
 	}
 

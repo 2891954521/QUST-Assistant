@@ -1,3 +1,4 @@
+import groovy.json.JsonSlurper
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -17,8 +18,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 7
-		versionName = "v3.2.20240416"
+		versionCode = 8
+		versionName = "v3.3.20240419"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -33,6 +34,15 @@ android {
 		}
 
 		buildConfigField("String", "PACKAGE_TIME", "\"${SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(Date())}\"")
+
+		val file = File("${rootProject.projectDir.path}/config.json")
+		if(file.exists()){
+			val configString = file.readText()
+			val jsonArray = JsonSlurper().parseText(configString) as Map<String, Any>
+			buildConfigField("String", "UMENG_APP_KEY", "\"${jsonArray["umeng_app_key"].toString()}\"")
+		}else{
+			buildConfigField("String", "UMENG_APP_KEY", "\"\"")
+		}
 	}
 
 	buildTypes {
@@ -40,6 +50,10 @@ android {
 			isMinifyEnabled = true
 			isShrinkResources = true
 			proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+			buildConfigField("String", "UMENG_APP_CHANNEL", "\"Release\"")
+		}
+		debug {
+			buildConfigField("String", "UMENG_APP_CHANNEL", "\"Test\"")
 		}
 	}
 	compileOptions {
@@ -99,6 +113,9 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
 	implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+	implementation("com.umeng.umsdk:common:9.6.8")
+	implementation("com.umeng.umsdk:asms:1.8.2")
 
 	testImplementation("junit:junit:4.13.2")
 

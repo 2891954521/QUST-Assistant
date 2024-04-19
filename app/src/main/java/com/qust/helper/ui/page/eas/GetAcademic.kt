@@ -39,7 +39,7 @@ import androidx.navigation.NavController
 import com.qust.helper.data.room.LessonInfo
 import com.qust.helper.data.room.Mark
 import com.qust.helper.ui.theme.colorSecondaryText
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.ui.widget.TripleProgressBar
@@ -73,7 +73,7 @@ object GetAcademic {
 		Box(modifier = Modifier.padding(padding)){
 			GetAcademicUI(showMode = viewModel.uiState.showMode, groups = viewModel.uiState.lessonGroups, uiEvent = viewModel.uiEvent)
 		}
-		AppBar.DialogBar(dialogText = viewModel.dialogText)
+		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
 		toast.ToastContent(viewModel.toastContent)
 	}
 

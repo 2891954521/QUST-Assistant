@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.qust.helper.data.eas.Exam
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.eas.GetExamsViewModel
@@ -43,7 +43,7 @@ object GetExams {
 				doQuery = { viewModel.queryExams() }
 			)
 		}
-		AppBar.DialogBar(dialogText = viewModel.dialogText)
+		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
 		toast.ToastContent(viewModel.toastContent)
 	}
 

@@ -1,22 +1,25 @@
 package com.qust.helper.data
 
+import android.graphics.Color
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.model.LessonTableRepository
+import com.qust.helper.model.account.EASAccount
 import com.qust.helper.ui.activity.BaseActivity
 import com.qust.helper.ui.page.DrinkPage
 import com.qust.helper.ui.page.ElectricRecharge
@@ -30,6 +33,7 @@ import com.qust.helper.ui.page.eas.GetMarks
 import com.qust.helper.ui.page.eas.GetNotice
 import com.qust.helper.ui.page.lesson.DailyLesson
 import com.qust.helper.ui.page.lesson.TermLesson
+import com.qust.helper.ui.page.web.WebPage
 import com.qust.helper.viewmodel.DrinkViewModel
 import com.qust.helper.viewmodel.ElectricRechargeViewModel
 import com.qust.helper.viewmodel.SettingViewModel
@@ -45,7 +49,7 @@ import com.qust.helper.viewmodel.eas.GetNoticeViewModel
 object Data {
 
 	val Pages = mapOf(
-		"dailyLesson" to Page("dailyLesson", "当日课表", iconRes = R.drawable.ic_school) { _, padding, _ ->
+		"dailyLesson" to Page("dailyLesson", "当日课表", iconRes = R.drawable.ic_article) { _, padding, _ ->
 			DailyLesson.DailyLessonUI(
 				padding = padding,
 				lessonGroups = LessonTableRepository.lessonTable.lessons[LessonTableRepository.dayOfWeek.intValue],
@@ -53,7 +57,7 @@ object Data {
 			)
 		},
 
-		"termLesson" to Page("termLesson", "学期课表", iconRes = R.drawable.ic_school) { activity, padding, _ ->
+		"termLesson" to Page("termLesson", "学期课表", iconRes = R.drawable.ic_grid_view) { activity, padding, _ ->
 			val viewModel by activity.viewModels<TermLessonViewModel>()
 			TermLesson.TermLessonUI(padding = padding, uiState = viewModel.uiState, uiEvent = viewModel.uiEvent, toast = activity.toast)
 		},
@@ -62,6 +66,22 @@ object Data {
 			val viewModel by activity.viewModels<EasAccountViewModel>()
 			LoginPage.EASLoginPage(padding, viewModel, activity.toast){
 				activity.onBackPressedDispatcher.onBackPressed()
+			}
+		},
+
+		"easWebPage" to Page("easWebPage", "教务系统", iconRes = R.drawable.ic_school, enableDrawer = false) { activity, padding, navController ->
+			val viewModel by activity.viewModels<WebPage.WebPageViewModel>(factoryProducer = {
+				object : ViewModelProvider.Factory {
+					override fun <T : ViewModel> create(modelClass: Class<T>): T {
+						return if (modelClass.isAssignableFrom(WebPage.WebPageViewModel::class.java)) {
+							val account = EASAccount.getInstance()
+							WebPage.WebPageViewModel(activity.application, account, "${account.scheme}://${account.host}/jwglxt/xtgl/index_initMenu.html") as T
+						} else throw IllegalArgumentException("Unknown ViewModel class")
+					}
+				}
+			})
+			Box(modifier = Modifier.padding(padding)){
+				WebPage.WebScreen(viewModel = viewModel, mainController = navController, toast = activity.toast)
 			}
 		},
 
@@ -77,11 +97,11 @@ object Data {
 			GetNotice.GetNotice(padding, viewModel, activity.toast, navController)
 		},
 
-		"getLesson" to Page("getLesson", "课表查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+		"getLesson" to Page("getLesson", "课表查询", iconRes = R.drawable.ic_grid_view) { activity, padding, navController ->
 			val viewModel by activity.viewModels<GetLessonTableViewModel>()
 			GetLessonTable.GetLessonTable(padding, viewModel, activity.toast, navController)
 		},
-		"getMarks" to Page("getMarks", "成绩查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+		"getMarks" to Page("getMarks", "成绩查询", iconRes = R.drawable.ic_article) { activity, padding, navController ->
 			val viewModel by activity.viewModels<GetMarksViewModel>()
 			GetMarks.GetMarksUI(padding, viewModel, activity.toast, navController)
 		},
@@ -89,7 +109,7 @@ object Data {
 			val viewModel by activity.viewModels<GetAcademicViewModel>()
 			GetAcademic.GetAcademic(padding, viewModel, activity.toast, navController)
 		},
-		"getExams" to Page("getExams", "考试查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+		"getExams" to Page("getExams", "考试查询", iconRes = R.drawable.ic_insert_invitation) { activity, padding, navController ->
 			val viewModel by activity.viewModels<GetExamsViewModel>()
 			GetExams.GetExamsUI(padding, viewModel, activity.toast, navController)
 		},
@@ -115,7 +135,45 @@ object Data {
 		},
 
 		"userAgreement" to Page("userAgreement", "用户协议", hasEntrance = false) { _, padding, _ ->
-			Box(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())){ Text(modifier = Modifier.padding(8.dp), text = stringResource(id = R.string.text_user_agreement)) }
+			Box(modifier = Modifier.padding(padding)){
+				AndroidView(
+					factory = { context ->
+						val webView = WebView(context)
+						webView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+						webView.setBackgroundColor(Color.TRANSPARENT)
+						webView.isVerticalScrollBarEnabled = true
+						webView.settings.also { webSettings ->
+							webSettings.allowFileAccess = false
+							webSettings.loadWithOverviewMode = true
+							webSettings.setSupportZoom(true)
+							webSettings.displayZoomControls = true
+						}
+						webView.loadUrl("file:///android_asset/userAgreement.html")
+						webView
+					}
+				)
+			}
+		},
+
+		"policy" to Page("policy", "隐私政策", hasEntrance = false) { _, padding, _ ->
+			Box(modifier = Modifier.padding(padding)){
+				AndroidView(
+					factory = { context ->
+						val webView = WebView(context)
+						webView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+						webView.setBackgroundColor(Color.TRANSPARENT)
+						webView.isVerticalScrollBarEnabled = true
+						webView.settings.also { webSettings ->
+							webSettings.allowFileAccess = false
+							webSettings.loadWithOverviewMode = true
+							webSettings.setSupportZoom(true)
+							webSettings.displayZoomControls = true
+						}
+						webView.loadUrl("file:///android_asset/policy.html")
+						webView
+					}
+				)
+			}
 		},
 	)
 
@@ -143,6 +201,7 @@ object Data {
 		val iconRes: Int = 0,
 		val image: ImageVector? = null,
 		val hasEntrance: Boolean = true,
+		val enableDrawer: Boolean = true,
 		val content: @Composable (BaseActivity, PaddingValues, NavController) -> Unit = { _, _, _ -> }
 	)
 }

@@ -35,7 +35,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.R
 import com.qust.helper.model.UpdateRepository
-import com.qust.helper.ui.widget.AppBar
+import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.ui.widget.ListPicker
 import com.qust.helper.ui.widget.Toast
@@ -100,7 +100,7 @@ object UpdatePage {
 			Text(text = "更新日志: \n${viewModel.versionCode}\n${viewModel.updateInfo}", modifier = Modifier.fillMaxWidth().padding(16.dp))
 		}
 
-		AppBar.DialogBar(dialogText = viewModel.dialogText)
+		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
 
 		if(viewModel.progress >= 0F){
 			Dialogs.ProgressDialog("正在下载", viewModel.progress, "${(viewModel.progress * 100).roundToInt()}/100")
@@ -183,7 +183,6 @@ object UpdatePage {
 										pass += 2048
 										progress = pass / len
 									}
-									println("downloadSuccess")
 									downloadSuccess = true
 								}
 							}

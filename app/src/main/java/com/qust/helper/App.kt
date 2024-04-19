@@ -3,8 +3,10 @@ package com.qust.helper
 import android.app.Application
 import android.os.Looper
 import android.widget.Toast
+import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
 import com.qust.helper.model.Logger
+import com.umeng.commonsdk.UMConfigure
 
 class App: Application() {
 
@@ -12,12 +14,18 @@ class App: Application() {
 		super.onCreate()
 
 		Setting.init(this)
+
+		if(BuildConfig.UMENG_APP_KEY.isNotEmpty()){
+			UMConfigure.setLogEnabled(false)
+			UMConfigure.preInit(this, BuildConfig.UMENG_APP_KEY, BuildConfig.UMENG_APP_CHANNEL)
+			if(!Setting.getBoolean(Keys.IS_FIRST_USE, true)) {
+				UMConfigure.init(this, BuildConfig.UMENG_APP_KEY, BuildConfig.UMENG_APP_CHANNEL, UMConfigure.DEVICE_TYPE_PHONE, "")
+			}
+		}
+
 		Logger.init(this)
 
 		Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler(this, Thread.getDefaultUncaughtExceptionHandler()))
-
-		// 初始化滑动返回框架
-		// SmartSwipeBack.activitySlidingBack(this, activitySwipeBackFilter, 0, -0x80000000, 0, 0, 0.5f, SwipeConsumer.DIRECTION_LEFT)
 	}
 
 	fun toast(message: String) {
@@ -29,15 +37,9 @@ class App: Application() {
 			}
 		}.start()
 	}
-
-	// private val activitySwipeBackFilter: SmartSwipeBack.ActivitySwipeBackFilter = SmartSwipeBack.ActivitySwipeBackFilter { activity -> !(activity is MainActivity || activity is GuideActivity) }
 }
 
-private class ExceptionHandler(
-	val app: App,
-	val handler: Thread.UncaughtExceptionHandler?
-) : Thread.UncaughtExceptionHandler {
-
+private class ExceptionHandler(val app: App, val handler: Thread.UncaughtExceptionHandler?) : Thread.UncaughtExceptionHandler {
 	override fun uncaughtException(thread: Thread, throwable: Throwable) {
 		app.toast("应用发生错误，错误类型：" + throwable.javaClass)
 //		LogUtil.Log("-------应用异常退出-------", throwable)

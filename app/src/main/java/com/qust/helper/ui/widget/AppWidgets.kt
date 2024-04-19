@@ -1,5 +1,7 @@
 package com.qust.helper.ui.widget
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -14,8 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 
-object AppBar{
+object AppWidgets{
 
 	@OptIn(ExperimentalMaterial3Api::class)
 	@Composable
@@ -64,5 +69,19 @@ object AppBar{
 	@Composable
 	fun DialogBar(dialogText: String){
 		if(dialogText.isNotEmpty()) Dialogs.IndeterminateProgressDialog(dialogText)
+	}
+
+	@Composable
+	fun NavigationHost(navController: NavHostController, startDestination: String, modifier: Modifier = Modifier, content: NavGraphBuilder.() -> Unit) {
+		NavHost(
+			navController = navController,
+			startDestination = startDestination,
+			modifier = modifier,
+			enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween()) },
+			exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween()) },
+			popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween()) },
+			popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween()) },
+			builder = { content() }
+		)
 	}
 }
