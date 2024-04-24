@@ -20,59 +20,6 @@ class WrongAccountException: RuntimeException("用户名或密码错误")
 class WrongLogicException(msg: String) : RuntimeException("逻辑错误: $msg")
 
 /**
- * 自动持久化处理Cookie
- * @param host 网站host
- * @param scheme 协议类型 http / https
- * @param name SharedPreferences存储的字段名
- */
-class AccountCookieJar(
-	host: String,
-	scheme: String = "http",
-	val name: String
-) : CookieJar {
-
-	/**
-	 * 储存Cookie
-	 */
-	private val cookieStore: HashMap<String, Cookie>
-
-	private var cookiesList = ArrayList<Cookie>()
-
-	init {
-
-		val url: HttpUrl = HttpUrl.Builder().host(host).scheme(scheme).build()
-		for(cookieString in Setting.getStringSet(name, HashSet())) {
-			val cookie = Cookie.parse(url, cookieString)
-			if(cookie != null) cookiesList.add(cookie)
-		}
-
-		cookieStore = HashMap(cookiesList.size)
-		for(newCookie in cookiesList) cookieStore[newCookie.name] = newCookie
-	}
-
-	/**
-	 * 清空所有Cookie
-	 */
-	fun clearCookies() {
-		cookieStore.clear()
-		cookiesList.clear()
-	}
-
-	override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-		for(newCookie in cookies) cookieStore[newCookie.name] = newCookie
-		cookiesList = ArrayList(cookieStore.values)
-		val encodedCookies: HashSet<String> = HashSet()
-		for(cookie in cookies) encodedCookies.add(cookie.toString())
-		Setting.edit{ it.putStringSet(name, encodedCookies) }
-	}
-
-	override fun loadForRequest(url: HttpUrl): List<Cookie> {
-		return cookiesList
-	}
-}
-
-
-/**
  * 请求结果
  */
 class RequestResult(
@@ -93,6 +40,47 @@ enum class ResultCode(code: Int) {
 	LogicError(4),
 
 	Done(200)
+}
+
+
+
+/**
+ * 自动持久化处理Cookie
+ * @param host 网站host
+ * @param scheme 协议类型 http / https
+ */
+class AccountCookieJar(val scheme: String = "http", val host: String, val cookieName: String) : CookieJar {
+	var cookiesList = emptyList<Cookie>()
+
+	init {
+		loadCookie(scheme, host)
+	}
+
+	fun loadCookie(scheme: String, host: String){
+		val tmp = ArrayList<Cookie>()
+		val url: HttpUrl = HttpUrl.Builder().host(host).scheme(scheme).build()
+		for(cookieString in Setting.getStringSet(cookieName, HashSet())) {
+			val cookie = Cookie.parse(url, cookieString)
+			if(cookie != null) tmp.add(cookie)
+		}
+		cookiesList = tmp
+	}
+
+	/**
+	 * 清空所有Cookie
+	 */
+	fun clearCookies() {
+		cookiesList = emptyList()
+	}
+
+	override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+		cookiesList += cookies
+		Setting.edit { it.putStringSet(cookieName, cookies.map { cookie: Cookie -> cookie.toString() }.toHashSet()) }
+	}
+
+	override fun loadForRequest(url: HttpUrl): List<Cookie> {
+		return cookiesList
+	}
 }
 
 
@@ -166,32 +154,33 @@ interface IAccount {
 	 * 获取账号
 	 */
 	fun getAccount(): String?
+
+	/**
+	 * 获取Cookie
+	 */
+	fun getCookie(): List<Cookie>
+
 }
 
 /**
  * 自动处理账号信息的类
  */
-abstract class Account(
-	host: String,
-	var accountName: String,
-	var passwordName: String,
-	cookieName: String,
-	val scheme: String = "http"
-): IAccount {
+abstract class Account(host: String, var accountName: String, var passwordName: String, val scheme: String = "http", val cookieName: String): IAccount {
 
 	var host: String = host
-		protected set
+		protected set(value){
+			cookieJar.loadCookie(scheme, value)
+			field = value
+		}
 
 	override var isLogin: Boolean = false
 
-	protected val cookieJar: AccountCookieJar = AccountCookieJar(host, scheme, cookieName)
+	protected val cookieJar: AccountCookieJar = AccountCookieJar(scheme, host, cookieName)
 
 	/**
 	 * HTTP请求对象
 	 */
-	private val client: OkHttpClient = OkHttpClient.Builder()
-		.cookieJar(cookieJar)
-		.build()
+	private val client: OkHttpClient = OkHttpClient.Builder().cookieJar(cookieJar).build()
 
 	/**
 	 * HTTP请求对象，不跟随重定向
@@ -311,6 +300,9 @@ abstract class Account(
 		return Setting.getString(accountName, "")
 	}
 
+	override fun getCookie(): List<Cookie> {
+		return cookieJar.cookiesList
+	}
 
 	@Throws(IOException::class)
 	protected abstract suspend fun absCheckLogin(): Boolean

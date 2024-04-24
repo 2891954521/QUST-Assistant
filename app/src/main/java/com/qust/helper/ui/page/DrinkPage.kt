@@ -1,6 +1,7 @@
 package com.qust.helper.ui.page
 
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -48,6 +49,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.ui.activity.BaseActivity
 import com.qust.helper.ui.theme.Drawables
 import com.qust.helper.ui.theme.colorSecondaryText
@@ -62,6 +65,11 @@ import com.qust.helper.viewmodel.DrinkViewModel
  * 饮水码
  */
 object DrinkPage {
+
+	val DrinkPage = Page(Keys.Page.DrinkPage, "饮水码", iconRes = R.drawable.ic_water) { activity, padding, _ ->
+		val viewModel by activity.viewModels<DrinkViewModel>()
+		DrinkPage(padding, viewModel, activity)
+	}
 
 	@Composable
 	fun DrinkPage(padding: PaddingValues, viewModel: DrinkViewModel, activity: BaseActivity){

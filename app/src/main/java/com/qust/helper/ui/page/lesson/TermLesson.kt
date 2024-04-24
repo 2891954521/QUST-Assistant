@@ -1,5 +1,6 @@
 package com.qust.helper.ui.page.lesson
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,15 +35,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import com.qust.helper.R
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.widget.LessonTableView.LessonView
 import com.qust.helper.ui.widget.Picker
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.TermLessonUIEvent
 import com.qust.helper.viewmodel.TermLessonUIState
+import com.qust.helper.viewmodel.TermLessonViewModel
 import kotlinx.coroutines.launch
 
 object TermLesson {
+
+	val TermLessonPage = Page(Keys.Page.TermLessonPage, "学期课表", iconRes = R.drawable.ic_grid_view) { activity, padding, _ ->
+		val viewModel by activity.viewModels<TermLessonViewModel>()
+		TermLessonUI(padding = padding, uiState = viewModel.uiState, uiEvent = viewModel.uiEvent, toast = activity.toast)
+	}
 
 	@Composable
 	fun TermLessonUI(padding: PaddingValues, uiState: TermLessonUIState, uiEvent: TermLessonUIEvent, toast: Toast){

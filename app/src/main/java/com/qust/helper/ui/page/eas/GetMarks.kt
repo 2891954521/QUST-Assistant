@@ -1,5 +1,6 @@
 package com.qust.helper.ui.page.eas
 
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.data.Data.TermName
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.data.room.Mark
 import com.qust.helper.ui.theme.colorError
 import com.qust.helper.ui.theme.colorSecondaryText
@@ -53,14 +55,14 @@ import com.qust.helper.viewmodel.eas.GetMarksViewModel
 
 object GetMarks{
 
+	val GetMarksPage = Page(Keys.Page.GetMarksPage, "成绩查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+		val viewModel by activity.viewModels<GetMarksViewModel>()
+		GetMarksUI(padding, viewModel, activity.toast, navController)
+	}
+
 	@Composable
 	fun GetMarksUI(padding: PaddingValues, viewModel: GetMarksViewModel, toast: Toast, navController: NavController){
-		LaunchedEffect(viewModel.needLogin){
-			if(viewModel.needLogin){
-				navController.navigate("easLogin")
-				viewModel.needLogin = false
-			}
-		}
+		AppWidgets.CheckEasLogin(viewModel = viewModel, navController = navController)
 
 		var pick by viewModel.pickYear
 		var desc by remember { mutableStateOf(false) }

@@ -1,6 +1,7 @@
 package com.qust.helper.ui.page.eas
 
 import android.annotation.SuppressLint
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +29,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.data.Data
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.LessonRender
@@ -52,14 +54,15 @@ import com.qust.helper.viewmodel.eas.GetLessonTableViewModel
 
 object GetLessonTable {
 
+	val GetLessonPage = Page(Keys.Page.GetLessonPage, "课表查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+		val viewModel by activity.viewModels<GetLessonTableViewModel>()
+		GetLessonTable(padding, viewModel, activity.toast, navController)
+	}
+
 	@Composable
 	fun GetLessonTable(padding: PaddingValues, viewModel: GetLessonTableViewModel, toast: Toast, navController: NavController){
-		LaunchedEffect(viewModel.needLogin){
-			if(viewModel.needLogin){
-				navController.navigate("easLogin")
-				viewModel.needLogin = false
-			}
-		}
+		AppWidgets.CheckEasLogin(viewModel = viewModel, navController = navController)
+
 		Box(modifier = Modifier.padding(padding)){
 			GetLessonTableUI(
 				termText = viewModel.termText,

@@ -1,5 +1,6 @@
 package com.qust.helper.ui.page
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.qust.helper.R
 import com.qust.helper.data.Electricity
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.ui.widget.Texts
@@ -61,6 +64,11 @@ import com.qust.helper.viewmodel.ElectricUIState
 import kotlinx.coroutines.launch
 
 object ElectricRecharge {
+
+	val ElectricPage = Page(Keys.Page.ElectricPage, "电费充值", iconRes = R.drawable.ic_electric) { activity, padding, navController ->
+		val viewModel by activity.viewModels<ElectricRechargeViewModel>()
+		ElectricRecharge(padding, viewModel, activity.toast, navController)
+	}
 
 	val TITLE = arrayOf("电控", "校区", "楼栋", "楼层", "宿舍")
 

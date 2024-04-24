@@ -32,3 +32,6 @@
       publicstatic**[] values();
       publicstatic** valueOf(java.lang.String);
 }
+-keep public class com.qust.helper.R$*{
+public static final int *;
+}

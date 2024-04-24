@@ -1,5 +1,6 @@
 package com.qust.helper.ui.page.app
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -28,6 +31,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.data.api.QustApi
 import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.activity.ComposeActivity
@@ -37,6 +42,11 @@ import com.qust.helper.utils.DateUtils
 import com.qust.helper.viewmodel.SettingViewModel
 
 object SettingPage {
+
+	val SettingPage = Page(Keys.Page.SettingPage, "设置", image = Icons.Rounded.Settings) { activity, padding, _ ->
+		val viewModel by activity.viewModels<SettingViewModel>()
+		SettingPage(padding, viewModel)
+	}
 
 	private val timeTableList = arrayOf("冬季 (13:30上课)", "夏季 (14:00上课)" )
 

@@ -19,6 +19,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.qust.helper.R
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.model.LessonTableRepository
@@ -30,16 +33,20 @@ import com.qust.helper.ui.widget.Texts
 
 object DailyLesson {
 
+	val DailyLessonPage = Page(Keys.Page.DailyLessonPage, "当日课表", iconRes = R.drawable.ic_article) { _, padding, _ ->
+		DailyLessonUI(
+			padding = padding,
+			lessonGroups = LessonTableRepository.lessonTable.lessons[LessonTableRepository.dayOfWeek.intValue],
+			currentWeek = LessonTableRepository.currentWeek.intValue
+		)
+	}
+
 	@Composable
 	fun DailyLessonUI(
 		padding: PaddingValues,
 		lessonGroups: Array<LessonGroup?>,
 		currentWeek: Int = 1
 	) {
-//		var minute = Calendar.getInstance().let{
-//			(it[Calendar.HOUR_OF_DAY] - 8) * 60 + it[Calendar.MINUTE]
-//		}
-
 		Column(
 			modifier = Modifier.padding(padding)
 		) {

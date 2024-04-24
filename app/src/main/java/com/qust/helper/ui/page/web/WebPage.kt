@@ -19,7 +19,9 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -58,35 +60,52 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.qust.helper.data.Setting
+import com.qust.helper.R
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.model.account.Account
+import com.qust.helper.model.account.EASAccount
+import com.qust.helper.model.account.IPassAccount
 import com.qust.helper.model.account.NeedLoginException
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Toast
-import com.qust.helper.viewmodel.BaseAndroidViewModel
+import com.qust.helper.viewmodel.eas.BaseEasViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 object WebPage {
 
+	val EasWebPage = Page(Keys.Page.EasWebPage, "教务系统", iconRes = R.drawable.ic_school, enableDrawer = false) { activity, padding, navController ->
+		val viewModel by activity.viewModels<EasWebViewModel>()
+		AppWidgets.CheckEasLogin(viewModel = viewModel, navController = navController)
+
+		Box(modifier = Modifier.padding(padding)){
+			WebScreen(viewModel = viewModel, mainController = navController, toast = activity.toast)
+		}
+	}
+
+	val IpassWebPage = Page(Keys.Page.IpassWebPage, "智慧青科大", iconRes = R.drawable.ic_school, enableDrawer = false) { activity, padding, navController ->
+		val viewModel by activity.viewModels<IpassWebViewModel>()
+		LaunchedEffect(viewModel.needLogin){
+			if(viewModel.needLogin) {
+				navController.navigate(Keys.Page.VpnLoginPage)
+				viewModel.needLogin = false
+			}
+		}
+		Box(modifier = Modifier.padding(padding)){
+			WebScreen(viewModel = viewModel, mainController = navController, toast = activity.toast)
+		}
+	}
+
 	const val WEB_VIEW_ROUTE = "web_view_route"
 
 	@Composable
 	fun WebScreen(viewModel: WebPageViewModel, mainController: NavController, toast: Toast, onBack: () -> Unit = { mainController.popBackStack() }) {
-		LaunchedEffect(viewModel.needLogin){
-			if(viewModel.needLogin) {
-				mainController.navigate("easLogin")
-				viewModel.needLogin = false
-			}
-		}
-
 		val navController = rememberNavController()
 
-		LaunchedEffect(viewModel.isLogin) {
-			if(!viewModel.isLogin){
-				viewModel.checkLogin()
-			}
+		LaunchedEffect(viewModel.hasCheck){
+			if(!viewModel.hasCheck) viewModel.checkAccountLogin()
 		}
 
 		var isNewPage by remember { mutableStateOf(true) }
@@ -96,7 +115,7 @@ object WebPage {
 			back = {
 				if(webViews.size > 0){
 					val webView = webViews.removeLast()
-					if(webView.parent != null) { (webView.parent as ViewGroup).removeView(webView) }
+					if(webView.parent != null) (webView.parent as ViewGroup).removeView(webView)
 					webView.removeAllViews()
 					webView.destroy()
 
@@ -109,11 +128,9 @@ object WebPage {
 				}else{
 					onBack()
 				}
-			}, forward = {
-
-			}, reload = {
+			}, forward = { }, reload = {
 				if(!viewModel.isLogin){
-					viewModel.checkLogin()
+					viewModel.checkAccountLogin()
 				}else{
 					if(webViews.size > 0) webViews.last().reload()
 				}
@@ -189,12 +206,20 @@ object WebPage {
 		override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) { handler?.proceed() }
 	}
 
-	class WebPageViewModel(application: Application, val account: Account, var startUrl: String): BaseAndroidViewModel(application){
+	class EasWebViewModel : WebPageViewModel{
+		constructor(application: Application) : this(application, EASAccount.getInstance())
+		private constructor(application: Application, account: Account) : super(application, account, "${account.scheme}://${account.host}/jwglxt/xtgl/index_initMenu.html")
+	}
+
+	class IpassWebViewModel : WebPageViewModel{
+		constructor(application: Application) : this(application, IPassAccount.getInstance())
+		private constructor(application: Application, account: Account) : super(application, account, "${account.scheme}://${account.host}/https/77726476706e69737468656265737421f9b95089342426557a1dc7af96/tp_up/view?m=up#act=portal/viewhome")
+	}
+
+	open class WebPageViewModel(application: Application, val account: Account, var startUrl: String): BaseEasViewModel(application){
 
 		var isLogin by mutableStateOf(false)
-
-		var needLogin by mutableStateOf(false)
-
+		var hasCheck by mutableStateOf(false)
 		var progress: Float by mutableFloatStateOf(0f)
 
 		val webChromeClient = object : WebChromeClient() {
@@ -204,7 +229,8 @@ object WebPage {
 			}
 		}
 
-		fun checkLogin(){
+		fun checkAccountLogin(){
+			hasCheck = true
 			viewModelScope.launch {
 				showDialog("正在登录")
 				withContext(Dispatchers.IO){
@@ -213,8 +239,8 @@ object WebPage {
 						val cookieManager = CookieManager.getInstance()
 						cookieManager.removeAllCookies(null)
 						cookieManager.setAcceptCookie(true)
-						for(cookieString in Setting.getStringSet("eaCookie", HashSet())) {
-							cookieManager.setCookie("${account.scheme}://${account.host}", cookieString)
+						for(cookieString in account.getCookie()) {
+							cookieManager.setCookie("${account.scheme}://${account.host}", cookieString.toString())
 						}
 						cookieManager.flush()
 						isLogin = true
@@ -230,14 +256,13 @@ object WebPage {
 			}
 		}
 
-
 		fun createWebView(context: Context, webViewClient: WebViewClient): WebView{
 			val webView = WebView(context)
 			webView.setBackgroundColor(Color.TRANSPARENT)
 			webView.isVerticalScrollBarEnabled = true
 			webView.settings.also { webSettings ->
 				webSettings.allowFileAccess = true
-				webSettings.cacheMode = WebSettings.LOAD_DEFAULT
+				webSettings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
 				webSettings.domStorageEnabled = true
 				webSettings.javaScriptEnabled = true
 				webSettings.loadWithOverviewMode = true

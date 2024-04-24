@@ -14,8 +14,8 @@ class IPassAccount private constructor() : Account(
 	QustApi.VPN_HOST,
 	Keys.IPASS_ACCOUNT,
 	Keys.IPASS_PASSWORD,
+	"https",
 	"ipassCookie",
-	"https"
 ){
 
 	companion object {

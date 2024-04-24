@@ -12,13 +12,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.qust.helper.data.Keys
+import com.qust.helper.viewmodel.eas.BaseEasViewModel
 
 object AppWidgets{
 
@@ -69,6 +73,16 @@ object AppWidgets{
 	@Composable
 	fun DialogBar(dialogText: String){
 		if(dialogText.isNotEmpty()) Dialogs.IndeterminateProgressDialog(dialogText)
+	}
+
+	@Composable
+	fun CheckEasLogin(viewModel: BaseEasViewModel, navController: NavController){
+		LaunchedEffect(viewModel.needLogin){
+			if(viewModel.needLogin) {
+				navController.navigate(Keys.Page.EasLogin)
+				viewModel.needLogin = false
+			}
+		}
 	}
 
 	@Composable

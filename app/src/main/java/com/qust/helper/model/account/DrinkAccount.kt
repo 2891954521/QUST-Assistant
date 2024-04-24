@@ -14,8 +14,8 @@ class DrinkAccount private constructor(): Account(
 	host = "dcxy-customer-app.dcrym.com",
 	accountName = Keys.DRINK_ACCOUNT,
 	passwordName = Keys.DRINK_PASSWORD,
-	cookieName = "drinkCookie",
-	scheme = "https"
+	scheme = "https",
+	cookieName = "drinkCookie"
 ) {
 
 	private var userToken = Setting.getString("drinkToken")

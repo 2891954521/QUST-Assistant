@@ -1,5 +1,6 @@
 package com.qust.helper.ui.page
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,6 +29,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.qust.helper.R
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.account.AccountViewModel
@@ -35,6 +38,20 @@ import com.qust.helper.viewmodel.account.EasAccountViewModel
 import com.qust.helper.viewmodel.account.IPassAccountViewModel
 
 object LoginPage {
+
+	val EasLoginPage = Page(Keys.Page.EasLogin, "教务登陆", iconRes = R.drawable.ic_login) { activity, padding, navController ->
+		val viewModel by activity.viewModels<EasAccountViewModel>()
+		EASLoginPage(padding, viewModel, activity.toast){
+			navController.popBackStack()
+		}
+	}
+
+	val VpnLoginPage = Page(Keys.Page.VpnLoginPage, "智慧青科大登陆", iconRes = R.drawable.ic_login) { activity, padding, navController ->
+		val viewModel by activity.viewModels<IPassAccountViewModel>()
+		IPassLoginPage(padding, viewModel, activity.toast){
+			navController.popBackStack()
+		}
+	}
 
 	@Composable
 	fun EASLoginPage(padding: PaddingValues, viewModel: EasAccountViewModel, toast: Toast, onSuccess: () -> Unit = { }){

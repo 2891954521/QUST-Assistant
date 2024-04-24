@@ -18,8 +18,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 8
-		versionName = "v3.3.20240419"
+		versionCode = 9
+		versionName = "v3.3.20240424"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -116,6 +116,7 @@ dependencies {
 
 	implementation("com.umeng.umsdk:common:9.6.8")
 	implementation("com.umeng.umsdk:asms:1.8.2")
+	implementation("com.umeng.umsdk:apm:1.2.0")
 
 	testImplementation("junit:junit:4.13.2")
 

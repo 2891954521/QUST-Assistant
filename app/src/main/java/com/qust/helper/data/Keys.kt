@@ -77,5 +77,30 @@ object Keys {
 	const val DRINK_ACCOUNT = "drink_account"
 	const val DRINK_PASSWORD = "drink_password"
 
+	object Page {
+		const val DailyLessonPage = "dailyLessonPage"
+		const val TermLessonPage = "termLessonPage"
 
+		const val GetLessonPage = "getLessonPage"
+		const val GetMarksPage = "getMarksPage"
+		const val GetNoticePage = "getNoticePage"
+		const val GetAcademicPage = "getAcademicPage"
+		const val GetExamsPage = "getExamsPage"
+
+		const val ElectricPage = "electricPage"
+
+		const val DrinkPage = "drinkPage"
+
+		const val SettingPage = "setting"
+		const val UpdatePage = "updatePage"
+
+		const val UserAgreementPage = "userAgreementPage"
+		const val PolicyPage = "policyPage"
+
+		const val EasLogin = "easLogin"
+		const val EasWebPage = "easWebPage"
+
+		const val VpnLoginPage = "vpnLoginPage"
+		const val IpassWebPage = "ipassWebPage"
+	}
 }

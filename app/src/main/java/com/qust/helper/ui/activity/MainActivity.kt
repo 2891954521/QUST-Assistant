@@ -3,16 +3,21 @@ package com.qust.helper.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
@@ -32,6 +37,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalConfiguration
@@ -45,14 +52,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.qust.helper.R
 import com.qust.helper.data.Data
+import com.qust.helper.data.DrawerPageGroup
 import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.data.Setting
 import com.qust.helper.model.AutoQueryRepository
 import com.qust.helper.model.UpdateRepository
 import com.qust.helper.ui.page.lesson.TermLesson
 import com.qust.helper.ui.theme.TEXT_COLORS
+import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Dialogs
+import com.qust.helper.utils.UmengUtils
 import com.qust.helper.viewmodel.TermLessonViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +100,11 @@ class MainActivity : BaseActivity() {
 	override fun Content() {
 		val scope = rememberCoroutineScope()
 		val drawerState = rememberDrawerState(DrawerValue.Closed)
-		val navController = rememberNavController()
+		val navController = rememberNavController().also {
+			it.addOnDestinationChangedListener { _, destination, _ ->
+				UmengUtils.route(this.applicationContext, destination.route)
+			}
+		}
 
 		ModalNavigationDrawer(
 			drawerState = drawerState,
@@ -161,34 +176,62 @@ class MainActivity : BaseActivity() {
 					modifier = Modifier.padding(16.dp)
 				)
 			}
+			
+			fun clickItem(key: String){
+				scope.launch { drawerState.apply { if(isOpen) close() } }
+				if(navController.currentDestination?.route != key){
+					navController.navigate(key){
+						popUpTo(key) { inclusive = true }
+						launchSingleTop = true
+					}
+				}
+			}
 
 			Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-				var index = 0
-				for(page in Data.Pages.values){
-					if(!page.hasEntrance) continue
-					NavigationDrawerItem(
-						label = { Text(text = page.name) },
-						selected = false,
-						icon = {
-							Icon(
-								painter = if(page.image != null) rememberVectorPainter(page.image) else painterResource(id = page.iconRes),
-								contentDescription = page.name,
-								tint = Color(TEXT_COLORS[index++ % (TEXT_COLORS.size - 1) + 1])
-							)
-						},
-						onClick = {
-							scope.launch { drawerState.apply { if(isOpen) close() } }
-							if(navController.currentDestination?.route != page.key){
-								navController.navigate(page.key){
-									popUpTo(page.key) { inclusive = true }
-									launchSingleTop = true
+				Data.pageGroups.forEachIndexed { index, item ->
+					when(item){
+						is DrawerPageGroup.Page -> {
+							DrawerItem(page = Data.Pages[item.name]!!, color = Color(TEXT_COLORS[index % (TEXT_COLORS.size - 1) + 1]), onClick = { clickItem(it) })
+						}
+
+						is DrawerPageGroup.PageGroup -> {
+							Box(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(50)).clickable { item.expand.value = !item.expand.value }){
+								Row(modifier = Modifier.padding(16.dp)) {
+									Icon(painter = if(item.image != null) rememberVectorPainter(item.image) else painterResource(id = item.iconRes), contentDescription = item.name, tint = Color(TEXT_COLORS[index % (TEXT_COLORS.size - 1) + 1]))
+									Text(text = item.name, modifier = Modifier.padding(start = 16.dp).weight(1F))
+									Icon(imageVector = Icons.Rounded.ArrowDropDown, contentDescription = null, tint = colorSecondaryText, modifier = Modifier.rotate( if(item.expand.value) 180F else 0F ))
+								}
+							}
+
+							AnimatedVisibility(visible = item.expand.value) {
+								Column {
+									item.pages.forEachIndexed { index, page ->
+										DrawerItem(modifier = Modifier.padding(start = 16.dp), page = Data.Pages[page]!!, color = Color(TEXT_COLORS[index % (TEXT_COLORS.size - 1) + 1]), onClick = { clickItem(it) })
+									}
 								}
 							}
 						}
-					)
+					}
 				}
 			}
 		}
+	}
+
+	@Composable
+	fun DrawerItem(modifier: Modifier = Modifier, page: Page, color: Color, onClick: (String) -> Unit) {
+		NavigationDrawerItem(
+			label = { Text(text = page.name) },
+			selected = false,
+			icon = {
+				Icon(
+					painter = if(page.image != null) rememberVectorPainter(page.image) else painterResource(id = page.iconRes),
+					contentDescription = page.name,
+					tint = color
+				)
+			},
+			onClick = { onClick(page.key) },
+			modifier = modifier
+		)
 	}
 
 	fun setDrawerEnable(boolean: Boolean){

@@ -3,10 +3,10 @@ package com.qust.helper
 import android.app.Application
 import android.os.Looper
 import android.widget.Toast
-import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
 import com.qust.helper.model.Logger
-import com.umeng.commonsdk.UMConfigure
+import com.qust.helper.utils.UmengUtils
+
 
 class App: Application() {
 
@@ -14,16 +14,9 @@ class App: Application() {
 		super.onCreate()
 
 		Setting.init(this)
-
-		if(BuildConfig.UMENG_APP_KEY.isNotEmpty()){
-			UMConfigure.setLogEnabled(false)
-			UMConfigure.preInit(this, BuildConfig.UMENG_APP_KEY, BuildConfig.UMENG_APP_CHANNEL)
-			if(!Setting.getBoolean(Keys.IS_FIRST_USE, true)) {
-				UMConfigure.init(this, BuildConfig.UMENG_APP_KEY, BuildConfig.UMENG_APP_CHANNEL, UMConfigure.DEVICE_TYPE_PHONE, "")
-			}
-		}
-
 		Logger.init(this)
+
+		if(!BuildConfig.DEBUG) UmengUtils.init(this)
 
 		Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler(this, Thread.getDefaultUncaughtExceptionHandler()))
 	}

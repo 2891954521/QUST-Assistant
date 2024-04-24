@@ -1,5 +1,6 @@
 package com.qust.helper.ui.page.eas
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,12 +12,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.qust.helper.R
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.data.eas.Exam
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Texts
@@ -25,14 +28,15 @@ import com.qust.helper.viewmodel.eas.GetExamsViewModel
 
 object GetExams {
 
+	val GetExamsPage = Page(Keys.Page.GetExamsPage, "考试查询", iconRes = R.drawable.ic_insert_invitation) { activity, padding, navController ->
+		val viewModel by activity.viewModels<GetExamsViewModel>()
+		GetExamsUI(padding, viewModel, activity.toast, navController)
+	}
+
 	@Composable
 	fun GetExamsUI(padding: PaddingValues, viewModel: GetExamsViewModel, toast: Toast, navController: NavController){
-		LaunchedEffect(viewModel.needLogin){
-			if(viewModel.needLogin){
-				navController.navigate("easLogin")
-				viewModel.needLogin = false
-			}
-		}
+		AppWidgets.CheckEasLogin(viewModel = viewModel, navController = navController)
+
 		val exams by viewModel.exams
 		Box(modifier = Modifier.padding(padding)){
 			EasQuery(

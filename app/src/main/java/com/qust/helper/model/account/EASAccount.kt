@@ -31,8 +31,8 @@ open class EASAccount protected constructor(): Account(
 	QustApi.EA_HOSTS[Setting.getInt(Keys.EA_HOST, 0)],
 	Keys.EAS_ACCOUNT,
 	Keys.EAS_PASSWORD,
-	"eaCookie",
-	"https"
+	scheme = "https",
+	cookieName = "eaCookie"
 ) {
 
 	companion object {

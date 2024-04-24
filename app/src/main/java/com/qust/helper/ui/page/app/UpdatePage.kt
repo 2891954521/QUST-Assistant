@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.R
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.model.UpdateRepository
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Dialogs
@@ -51,6 +54,11 @@ import java.net.URL
 import kotlin.math.roundToInt
 
 object UpdatePage {
+	
+	val UpdatePage = Page(Keys.Page.UpdatePage, "检查更新") { activity, padding, _ ->
+		val viewModel by activity.viewModels<UpdateViewModel>()
+		UpdatePageUI(padding, viewModel, activity.toast)
+	}
 
 	val updateChannel = listOf("Gitee", "GitHub")
 

@@ -1,6 +1,7 @@
 package com.qust.helper.model.account
 
 import com.qust.helper.utils.VpnEncodeUtils
+import okhttp3.Cookie
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
@@ -17,6 +18,10 @@ class VpnAccount(
 
 	override fun getAccount(): String {
 		return ipass.getAccount()
+	}
+
+	override fun getCookie(): List<Cookie> {
+		return ipass.getCookie()
 	}
 
 	@Throws(IOException::class, NeedLoginException::class)

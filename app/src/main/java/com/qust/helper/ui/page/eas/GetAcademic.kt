@@ -1,5 +1,6 @@
 package com.qust.helper.ui.page.eas
 
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -36,6 +37,9 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.qust.helper.R
+import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
 import com.qust.helper.data.room.LessonInfo
 import com.qust.helper.data.room.Mark
 import com.qust.helper.ui.theme.colorSecondaryText
@@ -49,6 +53,11 @@ import com.qust.helper.viewmodel.eas.AcademicUIEvent
 import com.qust.helper.viewmodel.eas.GetAcademicViewModel
 
 object GetAcademic {
+
+	val GetAcademicPage = Page(Keys.Page.GetAcademicPage, "学业查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+		val viewModel by activity.viewModels<GetAcademicViewModel>()
+		GetAcademic(padding, viewModel, activity.toast, navController)
+	}
 
 	val LESSON_TYPE = arrayOf(
 		"", "在修", "未过", "未修", "已修",
