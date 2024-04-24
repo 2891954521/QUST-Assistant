@@ -107,7 +107,7 @@ object SettingPage {
 
 			SettingGroup("更新") {
 				SwitchItem("自动检查更新", "3天检查一次更新", "不检查更新", viewModel.autoUpdate){ viewModel.setAutoUpdateValue(it) }
-				SettingItem("检查更新"){ ComposeActivity.startActivity(context, "update") }
+				SettingItem("检查更新"){ ComposeActivity.startActivity(context, Keys.Page.UpdatePage) }
 			}
 
 			SettingGroup("其他") {
