@@ -151,7 +151,7 @@ class MainActivity : BaseActivity() {
 			// 显示检查到更新Dialog
 			if(updateMessage.isNotEmpty()){
 				Dialogs.AskDialog(title = "更新", "检查到新版本，是否更新？\n$updateMessage", onConfirm = {
-					navController.navigate("update"); updateMessage = ""
+					navController.navigate(Keys.Page.UpdatePage); updateMessage = ""
 				}, onDismiss = { updateMessage = "" })
 			}
 		}

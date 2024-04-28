@@ -73,7 +73,7 @@ object GetAcademic {
 	fun GetAcademic(padding: PaddingValues, viewModel: GetAcademicViewModel, toast: Toast, navController: NavController){
 		LaunchedEffect(viewModel.needLogin){
 			if(viewModel.needLogin){
-				navController.navigate("easLogin")
+				navController.navigate(Keys.Page.EasLogin)
 				viewModel.needLogin = false
 			}else{
 				viewModel.loadData()

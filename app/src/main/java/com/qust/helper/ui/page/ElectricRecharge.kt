@@ -76,7 +76,7 @@ object ElectricRecharge {
 	fun ElectricRecharge(padding: PaddingValues, viewModel: ElectricRechargeViewModel, toast: Toast, navController: NavController) {
 		LaunchedEffect(viewModel.uiState.needLogin){
 			if(viewModel.uiState.needLogin){
-				navController.navigate("vpnLogin")
+				navController.navigate(Keys.Page.VpnLoginPage)
 				viewModel.uiState.needLogin = false
 			}
 		}

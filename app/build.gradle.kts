@@ -18,8 +18,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 9
-		versionName = "v3.3.20240424"
+		versionCode = 10
+		versionName = "v3.3.20240428"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
