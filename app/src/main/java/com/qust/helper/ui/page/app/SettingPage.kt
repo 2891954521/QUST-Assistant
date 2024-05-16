@@ -157,7 +157,7 @@ object SettingPage {
 				year -> year.toIntOrNull()?.let{ viewModel.setEntranceTimeValue(it) }
 			}
 
-			SwitchItemUI("使用VPN访问教务系统", "使用智慧青科大提供的VPN访问教务系统，这可以解决校外无法访问教务的问题。会减慢查询速度，请仅在需要时打开", value = viewModel.eaUseVpn) {
+			SwitchItemUI("使用VPN访问教务系统", "使用智慧青科大的VPN访问教务系统，可以解决校外访问教务失败的问题。会减慢查询速度，请仅在需要时打开。重启应用生效", value = viewModel.eaUseVpn) {
 				viewModel.setEaUseVpnValue(it)
 			}
 		}

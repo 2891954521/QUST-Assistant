@@ -13,6 +13,8 @@ open class VpnAccount(
 	private val ipass: IPassAccount = IPassAccount.getInstance()
 ): IAccount{
 
+	var needLogin = true
+
 	override var isLogin: Boolean
 		get() = ipass.isLogin
 		set(_) {}
@@ -29,9 +31,21 @@ open class VpnAccount(
 	override suspend fun checkLogin(): Boolean {
 		ipass.getNoRedirect("").use {
 			val code: Int = it.code
-			return if(code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP){
-				!it.header("Location")?.contains("login")!! || login()
-			}else true
+			if(code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP){
+				if(!it.header("Location")?.contains("login")!!){
+					if(needLogin) {
+						return afterLogin()
+					}else{
+						return true
+					}
+				} else{
+					return login()
+				}
+			}else if(needLogin){
+				return afterLogin()
+			} else {
+				return true
+			}
 		}
 	}
 
@@ -40,11 +54,25 @@ open class VpnAccount(
 	}
 
 	override suspend fun login(): Boolean {
-		return ipass.login() && afterLogin()
+		ipass.login()
+		if(!isLogin){
+			needLogin = true
+			throw NeedLoginException()
+		}else{
+			needLogin = false
+		}
+		return afterLogin()
 	}
 
 	override suspend fun login(account: String?, password: String?, saveData: Boolean): Boolean {
-		return ipass.login(account, password, saveData) && afterLogin()
+		ipass.login(account, password, saveData)
+		if(!isLogin){
+			needLogin = true
+			throw NeedLoginException()
+		}else{
+			needLogin = false
+		}
+		return afterLogin()
 	}
 
 	@Throws(IOException::class, NeedLoginException::class)

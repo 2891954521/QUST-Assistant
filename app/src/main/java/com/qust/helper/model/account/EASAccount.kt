@@ -43,7 +43,7 @@ open class EASAccount protected constructor(): Account(
 		}
 	}
 
-	private object Instance {
+	object Instance {
 		val INSTANCE = EASAccount()
 	}
 
