@@ -76,7 +76,7 @@ import kotlinx.coroutines.withContext
 
 object WebPage {
 
-	val EasWebPage = Page(Keys.Page.EasWebPage, "教务系统", iconRes = R.drawable.ic_school, enableDrawer = false) { activity, padding, navController ->
+	val EasWebPage = Page(Keys.Page.EasWebPage, "教务系统", iconRes = R.drawable.ic_school, enableDrawer = false) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<EasWebViewModel>()
 		AppWidgets.CheckEasLogin(viewModel = viewModel, navController = navController)
 
@@ -85,7 +85,7 @@ object WebPage {
 		}
 	}
 
-	val IpassWebPage = Page(Keys.Page.IpassWebPage, "智慧青科大", iconRes = R.drawable.ic_school, enableDrawer = false) { activity, padding, navController ->
+	val IpassWebPage = Page(Keys.Page.IpassWebPage, "智慧青科大", iconRes = R.drawable.ic_school, enableDrawer = false) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<IpassWebViewModel>()
 		LaunchedEffect(viewModel.needLogin){
 			if(viewModel.needLogin) {

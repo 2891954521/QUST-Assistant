@@ -13,6 +13,11 @@ object Keys {
 	const val EA_HOST = "eaHost"
 
 	/**
+	 * 使用VPN访问教务
+	 */
+	const val EA_USE_VPN = "eaUseVpn"
+
+	/**
 	 * 入学时间
 	 */
 	const val ENTRANCE_TIME = "key_entrance_time"
@@ -78,6 +83,9 @@ object Keys {
 	const val DRINK_PASSWORD = "drink_password"
 
 	object Page {
+
+		const val MyPage = "myPage"
+
 		const val DailyLessonPage = "dailyLessonPage"
 		const val TermLessonPage = "termLessonPage"
 
@@ -91,16 +99,19 @@ object Keys {
 
 		const val DrinkPage = "drinkPage"
 
+		const val EasWebPage = "easWebPage"
+		const val IpassWebPage = "ipassWebPage"
+
+		const val AccountManager = "accountManager"
+
+		const val EasLogin = "easLogin"
+		const val VpnLoginPage = "vpnLoginPage"
+
 		const val SettingPage = "setting"
 		const val UpdatePage = "updatePage"
 
 		const val UserAgreementPage = "userAgreementPage"
 		const val PolicyPage = "policyPage"
 
-		const val EasLogin = "easLogin"
-		const val EasWebPage = "easWebPage"
-
-		const val VpnLoginPage = "vpnLoginPage"
-		const val IpassWebPage = "ipassWebPage"
 	}
 }

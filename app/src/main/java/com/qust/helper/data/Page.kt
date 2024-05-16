@@ -1,9 +1,11 @@
 package com.qust.helper.data
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
 import com.qust.helper.ui.activity.BaseActivity
 
@@ -21,8 +23,21 @@ open class Page(
 	val iconRes: Int = 0,
 	val image: ImageVector? = null,
 	val enableDrawer: Boolean = true,
-	val content: @Composable (BaseActivity, PaddingValues, NavController) -> Unit = { _, _, _ -> }
-)
+	val arguments: List<NamedNavArgument> = emptyList(),
+	val content: @Composable (BaseActivity, PaddingValues, NavController, Bundle?) -> Unit = { _, _, _, _ -> }
+){
+	companion object{
+		fun navigate(navController: NavController, key: String) {
+			if(navController.currentDestination?.route != key) {
+				navController.navigate(key) {
+					popUpTo(key) { inclusive = true }
+					launchSingleTop = true
+				}
+			}
+		}
+	}
+
+}
 
 sealed interface DrawerPageGroup {
 

@@ -55,7 +55,7 @@ import kotlin.math.roundToInt
 
 object UpdatePage {
 	
-	val UpdatePage = Page(Keys.Page.UpdatePage, "检查更新") { activity, padding, _ ->
+	val UpdatePage = Page(Keys.Page.UpdatePage, "检查更新") { activity, padding, _, _ ->
 		val viewModel by activity.viewModels<UpdateViewModel>()
 		UpdatePageUI(padding, viewModel, activity.toast)
 	}

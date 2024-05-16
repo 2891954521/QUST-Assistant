@@ -160,6 +160,11 @@ interface IAccount {
 	 */
 	fun getCookie(): List<Cookie>
 
+	/**
+	 * 退出登录
+	 */
+	fun logout()
+
 }
 
 /**
@@ -304,8 +309,14 @@ abstract class Account(host: String, var accountName: String, var passwordName: 
 		return cookieJar.cookiesList
 	}
 
+	override fun logout() {
+		cookieJar.clearCookies()
+		Setting.edit { it.remove(accountName).remove(passwordName) }
+		isLogin = false
+	}
+
 	@Throws(IOException::class)
-	protected abstract suspend fun absCheckLogin(): Boolean
+	abstract suspend fun absCheckLogin(): Boolean
 
 	@Throws(IOException::class)
 	protected abstract suspend fun absLogin(account: String, password: String): Boolean

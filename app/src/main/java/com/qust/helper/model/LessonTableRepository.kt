@@ -3,7 +3,6 @@ package com.qust.helper.model
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Setting
 import com.qust.helper.data.api.QustApi
@@ -19,11 +18,12 @@ import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import okhttp3.FormBody
 import org.json.JSONObject
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.text.ParseException
 import java.util.Calendar
 import java.util.Date
 import java.util.regex.Pattern
@@ -34,16 +34,6 @@ import java.util.regex.Pattern
  */
 object LessonTableRepository {
 
-	/**
-	 * 匹配学年信息
-	 */
-	private val TIME_MATCHER = Pattern.compile("([0-9]{4}-[0-9]{4})学年([0-9])学期\\((\\d{4}-\\d{2}-\\d{2})至(\\d{4}-\\d{2}-\\d{2})\\)")
-
-	private val WEEK_TABLE_MATCHER = Pattern.compile("<tr class=\"tab-th-2\">(.*?)</tr>", Pattern.DOTALL)
-	private val WEEK_MATCHER = Pattern.compile("<th style=\"text-align: center\">(\\d+)</th>")
-	private val DAY_MATCHER = Pattern.compile("<tbody>\\s+<tr>(.*?)</tr>", Pattern.DOTALL)
-	private val DATE_MATCHER = Pattern.compile("<td id='(\\d{4}-\\d{2}-\\d{2})")
-
 	private val XQHID_MATCHER = Pattern.compile("<select name=\"xqh_id\".*?</select>", Pattern.DOTALL)
 	private val ZYHID_MATCHER = Pattern.compile("<select name=\"zyh_id\".*?</select>", Pattern.DOTALL)
 	private val BHID_MATCHER = Pattern.compile("<select name=\"bh_id\".*?</select>", Pattern.DOTALL)
@@ -53,9 +43,10 @@ object LessonTableRepository {
 	/**
 	 * 当前时间表
 	 */
-	var currentTimeTable by mutableIntStateOf(Setting.getInt(Keys.KEY_TIME_TABLE, 0)); private set
+	val _currentTimeTable = mutableIntStateOf(Setting.getInt(Keys.KEY_TIME_TABLE, 0))
+	val currentTimeTable by mutableIntStateOf(Setting.getInt(Keys.KEY_TIME_TABLE, 0))
 	fun setTimeTableValue(value: Int) {
-		currentTimeTable = value
+		_currentTimeTable.value = value
 		Setting.edit { it.putInt(Keys.KEY_TIME_TABLE, value) }
 	}
 
@@ -87,6 +78,16 @@ object LessonTableRepository {
 	fun setHideTeacherValue(value: Boolean) {
 		_hideTeacher.value = value
 		Setting.edit { it.putBoolean(Keys.KEY_HIDE_TEACHER, value) }
+	}
+
+	/**
+	 * 锁定课表
+	 */
+	var _lockLesson = mutableStateOf(Setting.getBoolean(Keys.KEY_LOCK_LESSON, false))
+	val lockLesson by _lockLesson
+	fun setLockLessonValue(value: Boolean) {
+		_lockLesson.value = value
+		Setting.edit { it.putBoolean(Keys.KEY_LOCK_LESSON, value) }
 	}
 
 	/**
@@ -292,51 +293,49 @@ object LessonTableRepository {
 
 
 	/**
+	 * 匹配学年信息
+	 */
+	private val TIME_MATCHER = Pattern.compile("([0-9]{4}-[0-9]{4})学年([0-9])学期\\((\\d{4}-\\d{2}-\\d{2})至(\\d{4}-\\d{2}-\\d{2})\\)")
+
+	/**
 	 * 获取学年信息
 	 */
-	private suspend fun getSchoolYearData(
-		account: EASAccount,
-		result: LessonTableQueryResult = LessonTableQueryResult()
-	): LessonTableQueryResult {
+	private suspend fun getSchoolYearData(account: EASAccount, result: LessonTableQueryResult = LessonTableQueryResult()): LessonTableQueryResult {
 		try {
 			// 从教务获取本学年信息
 			val response = account.getNoCheck(QustApi.EA_YEAR_DATA).use { it.body!!.string() }
 
 			// 学年信息
-			var matcher = TIME_MATCHER.matcher(response)
+			val matcher = TIME_MATCHER.matcher(response)
 			if(matcher.find()) {
+				val startDay = try { DateUtils.YMD.parse(matcher.group(3)!!)!! } catch(_: Exception) { Date() }
+				val endDay = try { DateUtils.YMD.parse(matcher.group(4)!!)!! } catch(_: Exception){ Date() }
 				result.termText = matcher.group()
-
-				result.lessonTable.startDay = try {
-					DateUtils.YMD.parse(matcher.group(3)!!)!!
-				} catch(_: Exception) { Date() }
-
-				result.lessonTable.totalWeek = try {
-					DateUtils.calcWeekOffset(result.lessonTable.startDay, DateUtils.YMD.parse(matcher.group(4)!!)!!)
-				} catch(_: ParseException) { 1 }
+				result.lessonTable.startDay = startDay
+				result.lessonTable.totalWeek = DateUtils.calcWeekOffset(startDay, endDay).coerceAtLeast(1)
 			}
 
-			// 根据校历查找开学日期
-			matcher = WEEK_TABLE_MATCHER.matcher(response)
-			if(matcher.find()) {
-				val w = WEEK_MATCHER.matcher(matcher.group())
-				if(!w.find()) return result
-				var count = 0
-				do {
-					if("1" == w.group(1)) break
-					count++
-				} while(w.find())
-				val m = DAY_MATCHER.matcher(response)
-				if(m.find()) {
-					var c = 0
-					val d = DATE_MATCHER.matcher(m.group(1)!!)
-					while(d.find()) {
-						if(c++ == count) {
-							result.lessonTable.startDay = DateUtils.YMD.parse(d.group(1)!!)!!
-							break
-						}
+			val doc: Document = Jsoup.parse(response)
+
+			// 从thead里找出第1周是第几列
+			var count = 0
+			doc.getElementsByClass("tab-th-2").first().children().find {
+				if(it.text() == "1") return@find true
+				count++
+				return@find false
+			}
+
+			// 从tbody的第一个tr标签（就是第一行）找到第n个td，其id就是需要的日期
+			var find = 0
+			doc.getElementsByTag("tbody").first().child(0).children().find{
+				if(it.tagName() == "td"){
+					if(find == count){
+						result.lessonTable.startDay = DateUtils.YMD.parse(it.attr("id"))!!
+						return@find true
 					}
+					find++
 				}
+				return@find false
 			}
 		} catch(e: Exception) {
 			Logger.e(e)

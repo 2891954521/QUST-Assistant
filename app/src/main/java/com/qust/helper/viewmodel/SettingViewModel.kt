@@ -13,29 +13,24 @@ import com.qust.helper.ui.theme.Theme
 
 class SettingViewModel: ViewModel() {
 
-	var lockLesson: Boolean = Setting.getBoolean(Keys.KEY_LOCK_LESSON, false)
-		set(value) {
-			Setting.edit { it.putBoolean(Keys.KEY_LOCK_LESSON, value) }
-//			lessonTableViewModel.
-			field = value
-		}
-
-	var entranceTime by mutableStateOf(EASAccount.getInstance().entranceTime.toString())
-		private set
-
+	var entranceTime by mutableStateOf(EASAccount.getInstance().entranceTime.toString()); private set
 	fun setEntranceTimeValue(value: Int) {
 		EASAccount.getInstance().entranceTime = value
 		entranceTime = value.toString()
 	}
 
-	var eaHost by mutableIntStateOf(Setting.getInt(Keys.EA_HOST, 0))
-		private set
-
+	var eaHost by mutableIntStateOf(Setting.getInt(Keys.EA_HOST, 0)); private set
 	fun setEaHostValue(value: Int){
 		EASAccount.getInstance().changeHost(value)
 		eaHost = value
 	}
 
+	var eaUseVpn by mutableStateOf(Setting.getBoolean(Keys.EA_USE_VPN, false)); private set
+	fun setEaUseVpnValue(value: Boolean){
+		EASAccount.useVpn = value
+		Setting.edit { it.putBoolean(Keys.EA_USE_VPN, value) }
+		eaUseVpn = value
+	}
 
 	var themeFollowSystem by Theme.themeFollowSystem; private set
 	fun setThemeFollowSystemValue(value: Boolean){

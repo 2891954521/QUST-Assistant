@@ -29,7 +29,7 @@ class IPassAccount private constructor() : Account(
 	}
 	
 	override suspend fun absCheckLogin(): Boolean {
-		getNoRedirect(QustApi.VPN_LOGIN).use {
+		getNoRedirect("").use {
 			val code: Int = it.code
 			return if(code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP){
 				!it.header("Location")?.contains("login")!! || login()
@@ -43,7 +43,7 @@ class IPassAccount private constructor() : Account(
 		var lt: String
 		var loginUrl: HttpUrl
 
-		getNoCheck(QustApi.VPN_LOGIN).use {
+		getNoCheck("").use {
 			val html: String = it.body?.string() ?: throw IOException("无法获取lt")
 			lt = CodeUtils.matcher(VpnEncodeUtils.LT_PATTERN, html) ?: throw IOException("无法获取lt")
 			loginUrl = it.request.url

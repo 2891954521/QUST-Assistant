@@ -55,7 +55,7 @@ import com.qust.helper.viewmodel.eas.GetMarksViewModel
 
 object GetMarks{
 
-	val GetMarksPage = Page(Keys.Page.GetMarksPage, "成绩查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+	val GetMarksPage = Page(Keys.Page.GetMarksPage, "成绩查询", iconRes = R.drawable.ic_school) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<GetMarksViewModel>()
 		GetMarksUI(padding, viewModel, activity.toast, navController)
 	}

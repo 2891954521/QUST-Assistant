@@ -84,6 +84,8 @@ class LessonRender(
 
 	private var lessonRenderData by mutableStateOf(LessonRenderData(hideTeacher, paintT))
 
+	val lockLesson by LessonTableRepository._lockLesson
+
 	/**
 	 * 设置 View Measure 数据
 	 * 必须调用，不然无法显示

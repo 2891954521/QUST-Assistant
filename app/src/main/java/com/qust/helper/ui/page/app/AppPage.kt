@@ -13,7 +13,7 @@ import com.qust.helper.data.Page
 
 object AppPage {
 
-	val UserAgreementPage = Page(Keys.Page.UserAgreementPage, "用户协议") { _, padding, _ ->
+	val UserAgreementPage = Page(Keys.Page.UserAgreementPage, "用户协议") { _, padding, _, _ ->
 		Box(modifier = Modifier.padding(padding)){
 			AndroidView(
 				factory = { context ->
@@ -34,7 +34,7 @@ object AppPage {
 		}
 	}
 
-	val PolicyPage = Page(Keys.Page.PolicyPage,"隐私政策") { _, padding, _ ->
+	val PolicyPage = Page(Keys.Page.PolicyPage,"隐私政策") { _, padding, _, _ ->
 		Box(modifier = Modifier.padding(padding)){
 			AndroidView(
 				factory = { context ->

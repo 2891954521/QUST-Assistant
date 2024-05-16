@@ -94,7 +94,7 @@ object LessonTableView{
 									selectLesson = LessonRender.SelectLesson(select.dayOfWeek, select.timeSlot, lessonRender.nextLesson(page, select.dayOfWeek, select.timeSlot))
 									return@detectTapGestures
 								}else if(selectLesson.dayOfWeek == select.dayOfWeek && selectLesson.timeSlot == select.timeSlot) {
-									onLessonClick(selectLesson)
+									if(!lessonRender.lockLesson) onLessonClick(selectLesson)
 								}
 								selectLesson = select
 							},

@@ -5,8 +5,9 @@ import okhttp3.Cookie
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
+import java.net.HttpURLConnection
 
-class VpnAccount(
+open class VpnAccount(
 	private val host: String,
 	private val scheme: String = "https",
 	private val ipass: IPassAccount = IPassAccount.getInstance()
@@ -26,15 +27,24 @@ class VpnAccount(
 
 	@Throws(IOException::class, NeedLoginException::class)
 	override suspend fun checkLogin(): Boolean {
-		return ipass.checkLogin()
+		ipass.getNoRedirect("").use {
+			val code: Int = it.code
+			return if(code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP){
+				!it.header("Location")?.contains("login")!! || login()
+			}else true
+		}
+	}
+
+	open suspend fun afterLogin(): Boolean{
+		return true
 	}
 
 	override suspend fun login(): Boolean {
-		return ipass.login()
+		return ipass.login() && afterLogin()
 	}
 
 	override suspend fun login(account: String?, password: String?, saveData: Boolean): Boolean {
-		return ipass.login(account, password, saveData)
+		return ipass.login(account, password, saveData) && afterLogin()
 	}
 
 	@Throws(IOException::class, NeedLoginException::class)
@@ -96,5 +106,9 @@ class VpnAccount(
 	@Throws(IOException::class)
 	override suspend fun postNoRedirect(url: String, requestBody: RequestBody): Response {
 		return ipass.postNoRedirect(VpnEncodeUtils.encryptUrl(scheme, host, url), requestBody)
+	}
+
+	override fun logout() {
+		ipass.logout()
 	}
 }

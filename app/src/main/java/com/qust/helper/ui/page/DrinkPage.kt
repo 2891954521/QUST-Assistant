@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -52,6 +53,7 @@ import com.qust.helper.R
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Page
 import com.qust.helper.ui.activity.BaseActivity
+import com.qust.helper.ui.page.account.LoginPage
 import com.qust.helper.ui.theme.Drawables
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
@@ -66,7 +68,7 @@ import com.qust.helper.viewmodel.DrinkViewModel
  */
 object DrinkPage {
 
-	val DrinkPage = Page(Keys.Page.DrinkPage, "饮水码", iconRes = R.drawable.ic_water) { activity, padding, _ ->
+	val DrinkPage = Page(Keys.Page.DrinkPage, "饮水码", iconRes = R.drawable.ic_water) { activity, padding, _, _ ->
 		val viewModel by activity.viewModels<DrinkViewModel>()
 		DrinkPage(padding, viewModel, activity)
 	}
@@ -111,10 +113,10 @@ object DrinkPage {
 			) {
 				if(uiState.drinkCode.isNotEmpty()){
 					Image(
-						bitmap = LinearBarCode.createCode128Barcode(uiState.drinkCode, 1000, 50).asImageBitmap(),
+						bitmap = LinearBarCode.createCode128Barcode(uiState.drinkCode, 50).asImageBitmap(),
 						contentDescription = "",
 						contentScale = ContentScale.FillBounds,
-						modifier = Modifier.fillMaxWidth().height(barSize)
+						modifier = Modifier.fillMaxWidth().height(barSize).padding(horizontal = 16.dp).clip(RoundedCornerShape(8.dp))
 					)
 					Card(
 						shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),

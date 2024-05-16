@@ -54,7 +54,7 @@ import com.qust.helper.viewmodel.eas.GetLessonTableViewModel
 
 object GetLessonTable {
 
-	val GetLessonPage = Page(Keys.Page.GetLessonPage, "课表查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+	val GetLessonPage = Page(Keys.Page.GetLessonPage, "课表查询", iconRes = R.drawable.ic_school) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<GetLessonTableViewModel>()
 		GetLessonTable(padding, viewModel, activity.toast, navController)
 	}

@@ -18,8 +18,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 10
-		versionName = "v3.3.20240428"
+		versionCode = 11
+		versionName = "v3.4.20240516"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -113,6 +113,7 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
 	implementation("com.squareup.okhttp3:okhttp:4.12.0")
+	implementation("org.jsoup:jsoup:1.12.1")
 
 	implementation("com.umeng.umsdk:common:9.6.8")
 	implementation("com.umeng.umsdk:asms:1.8.2")

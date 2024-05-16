@@ -54,7 +54,7 @@ import com.qust.helper.viewmodel.eas.GetAcademicViewModel
 
 object GetAcademic {
 
-	val GetAcademicPage = Page(Keys.Page.GetAcademicPage, "学业查询", iconRes = R.drawable.ic_school) { activity, padding, navController ->
+	val GetAcademicPage = Page(Keys.Page.GetAcademicPage, "学业查询", iconRes = R.drawable.ic_school) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<GetAcademicViewModel>()
 		GetAcademic(padding, viewModel, activity.toast, navController)
 	}

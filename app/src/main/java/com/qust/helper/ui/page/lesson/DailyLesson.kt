@@ -33,7 +33,7 @@ import com.qust.helper.ui.widget.Texts
 
 object DailyLesson {
 
-	val DailyLessonPage = Page(Keys.Page.DailyLessonPage, "当日课表", iconRes = R.drawable.ic_article) { _, padding, _ ->
+	val DailyLessonPage = Page(Keys.Page.DailyLessonPage, "当日课表", iconRes = R.drawable.ic_article) { _, padding, _, _ ->
 		DailyLessonUI(
 			padding = padding,
 			lessonGroups = LessonTableRepository.lessonTable.lessons[LessonTableRepository.dayOfWeek.intValue],

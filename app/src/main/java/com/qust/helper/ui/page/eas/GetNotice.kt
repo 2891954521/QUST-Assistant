@@ -34,7 +34,7 @@ import com.qust.helper.viewmodel.eas.GetNoticeViewModel
 
 object GetNotice {
 
-	val GetNoticePage = Page(Keys.Page.GetNoticePage, "教务通知", iconRes = R.drawable.ic_notification) { activity, padding, navController ->
+	val GetNoticePage = Page(Keys.Page.GetNoticePage, "教务通知", iconRes = R.drawable.ic_notification) { activity, padding, navController, _v ->
 		val viewModel by activity.viewModels<GetNoticeViewModel>()
 		GetNotice(padding, viewModel, activity.toast, navController)
 	}

@@ -9,19 +9,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.qust.helper.data.Keys
+import com.qust.helper.data.Page
+import com.qust.helper.model.account.EASAccount
 import com.qust.helper.viewmodel.eas.BaseEasViewModel
 
 object AppWidgets{
@@ -79,7 +85,11 @@ object AppWidgets{
 	fun CheckEasLogin(viewModel: BaseEasViewModel, navController: NavController){
 		LaunchedEffect(viewModel.needLogin){
 			if(viewModel.needLogin) {
-				navController.navigate(Keys.Page.EasLogin)
+				if(EASAccount.useVpn){
+					navController.navigate(Keys.Page.VpnLoginPage)
+				}else{
+					navController.navigate(Keys.Page.EasLogin)
+				}
 				viewModel.needLogin = false
 			}
 		}
@@ -96,6 +106,23 @@ object AppWidgets{
 			popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween()) },
 			popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween()) },
 			builder = { content() }
+		)
+	}
+
+	@Composable
+	fun DrawerItem(modifier: Modifier = Modifier, page: Page, color: Color, onClick: (String) -> Unit) {
+		NavigationDrawerItem(
+			selected = false,
+			label = { Text(text = page.name) },
+			icon = {
+				Icon(
+					painter = if(page.image != null) rememberVectorPainter(page.image) else painterResource(id = page.iconRes),
+					contentDescription = page.name,
+					tint = color
+				)
+			},
+			onClick = { onClick(page.key) },
+			modifier = modifier
 		)
 	}
 }

@@ -44,7 +44,7 @@ import com.qust.helper.data.lesson.LessonTableQueryResult
 import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.model.Logger
 import com.qust.helper.model.account.EASAccount
-import com.qust.helper.ui.page.LoginPage
+import com.qust.helper.ui.page.account.LoginPage
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.viewmodel.account.AccountViewModel

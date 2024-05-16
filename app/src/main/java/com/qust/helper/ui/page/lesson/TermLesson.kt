@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 
 object TermLesson {
 
-	val TermLessonPage = Page(Keys.Page.TermLessonPage, "学期课表", iconRes = R.drawable.ic_grid_view) { activity, padding, _ ->
+	val TermLessonPage = Page(Keys.Page.TermLessonPage, "学期课表", iconRes = R.drawable.ic_grid_view) { activity, padding, _, _ ->
 		val viewModel by activity.viewModels<TermLessonViewModel>()
 		TermLessonUI(padding = padding, uiState = viewModel.uiState, uiEvent = viewModel.uiEvent, toast = activity.toast)
 	}

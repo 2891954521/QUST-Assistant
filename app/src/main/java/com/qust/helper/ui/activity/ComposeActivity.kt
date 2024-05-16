@@ -2,6 +2,7 @@ package com.qust.helper.ui.activity
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Scaffold
@@ -36,7 +37,7 @@ class ComposeActivity: BaseActivity() {
 				}
 			}
 		) { contentPadding ->
-			page.content(this@ComposeActivity, contentPadding, navController)
+			page.content(this@ComposeActivity, contentPadding, navController, Bundle.EMPTY)
 		}
 	}
 	

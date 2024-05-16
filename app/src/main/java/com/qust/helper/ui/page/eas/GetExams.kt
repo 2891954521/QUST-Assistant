@@ -28,7 +28,7 @@ import com.qust.helper.viewmodel.eas.GetExamsViewModel
 
 object GetExams {
 
-	val GetExamsPage = Page(Keys.Page.GetExamsPage, "考试查询", iconRes = R.drawable.ic_insert_invitation) { activity, padding, navController ->
+	val GetExamsPage = Page(Keys.Page.GetExamsPage, "考试查询", iconRes = R.drawable.ic_insert_invitation) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<GetExamsViewModel>()
 		GetExamsUI(padding, viewModel, activity.toast, navController)
 	}

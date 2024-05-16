@@ -1,4 +1,4 @@
-package com.qust.helper.ui.page
+package com.qust.helper.ui.page.account
 
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
@@ -39,14 +39,14 @@ import com.qust.helper.viewmodel.account.IPassAccountViewModel
 
 object LoginPage {
 
-	val EasLoginPage = Page(Keys.Page.EasLogin, "教务登陆", iconRes = R.drawable.ic_login) { activity, padding, navController ->
+	val EasLoginPage = Page(Keys.Page.EasLogin, "教务登陆", iconRes = R.drawable.ic_login) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<EasAccountViewModel>()
 		EASLoginPage(padding, viewModel, activity.toast){
 			navController.popBackStack()
 		}
 	}
 
-	val VpnLoginPage = Page(Keys.Page.VpnLoginPage, "智慧青科大登陆", iconRes = R.drawable.ic_login) { activity, padding, navController ->
+	val VpnLoginPage = Page(Keys.Page.VpnLoginPage, "智慧青科大登陆", iconRes = R.drawable.ic_login) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<IPassAccountViewModel>()
 		IPassLoginPage(padding, viewModel, activity.toast){
 			navController.popBackStack()

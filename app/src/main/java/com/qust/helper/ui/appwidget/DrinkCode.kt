@@ -55,7 +55,7 @@ class DrinkCode : GlanceAppWidget() {
 		){
 			if(drinkCode.isNotEmpty()){
 				Image(
-					provider = ImageProvider(LinearBarCode.createCode128Barcode(drinkCode, 1000, 50)),
+					provider = ImageProvider(LinearBarCode.createCode128Barcode(drinkCode, 50)),
 					contentDescription = null,
 					contentScale = ContentScale.FillBounds,
 					modifier = GlanceModifier.fillMaxSize().padding(8.dp)

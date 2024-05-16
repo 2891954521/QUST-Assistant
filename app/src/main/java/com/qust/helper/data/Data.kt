@@ -3,7 +3,9 @@ package com.qust.helper.data
 import com.qust.helper.R
 import com.qust.helper.ui.page.DrinkPage
 import com.qust.helper.ui.page.ElectricRecharge
-import com.qust.helper.ui.page.LoginPage
+import com.qust.helper.ui.page.MyPage
+import com.qust.helper.ui.page.account.AccountManagerPage
+import com.qust.helper.ui.page.account.LoginPage
 import com.qust.helper.ui.page.app.AppPage
 import com.qust.helper.ui.page.app.SettingPage
 import com.qust.helper.ui.page.app.UpdatePage
@@ -46,14 +48,11 @@ object Data {
 	)
 
 	val Pages = mapOf(
+		Keys.Page.MyPage to MyPage.MyPage,
+
 		Keys.Page.DailyLessonPage to DailyLesson.DailyLessonPage,
 		Keys.Page.TermLessonPage to TermLesson.TermLessonPage,
 
-		Keys.Page.EasLogin to LoginPage.EasLoginPage,
-		Keys.Page.EasWebPage to WebPage.EasWebPage,
-
-		Keys.Page.VpnLoginPage to LoginPage.VpnLoginPage,
-		Keys.Page.IpassWebPage to WebPage.IpassWebPage,
 
 		Keys.Page.GetNoticePage to GetNotice.GetNoticePage,
 		Keys.Page.GetLessonPage to GetLessonTable.GetLessonPage,
@@ -65,11 +64,23 @@ object Data {
 
 		Keys.Page.DrinkPage to DrinkPage.DrinkPage,
 
+		Keys.Page.EasWebPage to WebPage.EasWebPage,
+		Keys.Page.IpassWebPage to WebPage.IpassWebPage,
+
+		Keys.Page.AccountManager to AccountManagerPage.AccountManagerPage,
+		Keys.Page.EasLogin to LoginPage.EasLoginPage,
+		Keys.Page.VpnLoginPage to LoginPage.VpnLoginPage,
+
 		Keys.Page.SettingPage to SettingPage.SettingPage,
 		Keys.Page.UpdatePage to UpdatePage.UpdatePage,
 
 		Keys.Page.UserAgreementPage to AppPage.UserAgreementPage,
 		Keys.Page.PolicyPage to AppPage.PolicyPage,
+	)
+
+	val bottomPage = arrayOf(
+		TermLesson.TermLessonPage,
+		MyPage.MyPage,
 	)
 
 	val TermName = arrayOf(

@@ -36,8 +36,10 @@ open class EASAccount protected constructor(): Account(
 ) {
 
 	companion object {
+		var useVpn = Setting.getBoolean(Keys.EA_USE_VPN, false)
+
 		fun getInstance(): EASAccount {
-			return Instance.INSTANCE
+			return if(useVpn) VpnEASAccount.getInstance() else Instance.INSTANCE
 		}
 	}
 

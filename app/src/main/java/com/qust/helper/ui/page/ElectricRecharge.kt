@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 
 object ElectricRecharge {
 
-	val ElectricPage = Page(Keys.Page.ElectricPage, "电费充值", iconRes = R.drawable.ic_electric) { activity, padding, navController ->
+	val ElectricPage = Page(Keys.Page.ElectricPage, "电费充值", iconRes = R.drawable.ic_electric) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<ElectricRechargeViewModel>()
 		ElectricRecharge(padding, viewModel, activity.toast, navController)
 	}

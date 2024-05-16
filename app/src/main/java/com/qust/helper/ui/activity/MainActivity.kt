@@ -2,7 +2,6 @@ package com.qust.helper.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowDropDown
-import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -58,13 +56,12 @@ import com.qust.helper.data.Page
 import com.qust.helper.data.Setting
 import com.qust.helper.model.AutoQueryRepository
 import com.qust.helper.model.UpdateRepository
-import com.qust.helper.ui.page.lesson.TermLesson
+import com.qust.helper.ui.page.HomePage
 import com.qust.helper.ui.theme.TEXT_COLORS
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.utils.UmengUtils
-import com.qust.helper.viewmodel.TermLessonViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -116,10 +113,24 @@ class MainActivity : BaseActivity() {
 			}
 		) {
 			AppWidgets.NavigationHost(navController = navController, startDestination = "home"){
-				composable(route = "home") { HomePage(scope, drawerState, navController) }
+				composable(route = "home") {
+					HomePage.HomePage(this@MainActivity, scope, drawerState, navController)
+
+					// 显示检查到更新Dialog
+					if(updateMessage.isNotEmpty()){
+						Dialogs.AskDialog(title = "更新", "检查到新版本，是否更新？\n$updateMessage", onConfirm = {
+							navController.navigate(Keys.Page.UpdatePage); updateMessage = ""
+						}, onDismiss = { updateMessage = "" })
+					}
+				}
 
 				for(page in Data.Pages.values) {
-					composable(route = page.key) {
+					val route = if(page.arguments.isEmpty()){
+						page.key
+					}else{
+						"${page.key}?" + page.arguments.joinToString("&") { "${it.name}={${it.name}}" }
+					}
+					composable(route = route, arguments = page.arguments) { backStackEntry ->
 						setDrawerEnable(page.enableDrawer)
 						Scaffold(
 							topBar = {
@@ -128,31 +139,10 @@ class MainActivity : BaseActivity() {
 								}
 							},
 						) { padding ->
-							page.content(this@MainActivity, padding, navController)
+							page.content(this@MainActivity, padding, navController, backStackEntry.arguments)
 						}
 					}
 				}
-			}
-		}
-	}
-
-	@Composable
-	fun HomePage(scope: CoroutineScope, drawerState: DrawerState, navController: NavController) {
-		val viewModel by viewModels<TermLessonViewModel>()
-		Scaffold(
-			topBar = {
-				AppWidgets.TopBar(title = stringResource(id = R.string.app_name), navigationIcon = Icons.Rounded.Menu) {
-					scope.launch { drawerState.open() }
-				}
-			},
-		) { padding ->
-			TermLesson.TermLessonUI(padding = padding, uiState = viewModel.uiState, uiEvent = viewModel.uiEvent, toast = toast)
-
-			// 显示检查到更新Dialog
-			if(updateMessage.isNotEmpty()){
-				Dialogs.AskDialog(title = "更新", "检查到新版本，是否更新？\n$updateMessage", onConfirm = {
-					navController.navigate(Keys.Page.UpdatePage); updateMessage = ""
-				}, onDismiss = { updateMessage = "" })
 			}
 		}
 	}
@@ -206,7 +196,7 @@ class MainActivity : BaseActivity() {
 							AnimatedVisibility(visible = item.expand.value) {
 								Column {
 									item.pages.forEachIndexed { index, page ->
-										DrawerItem(modifier = Modifier.padding(start = 16.dp), page = Data.Pages[page]!!, color = Color(TEXT_COLORS[index % (TEXT_COLORS.size - 1) + 1]), onClick = { clickItem(it) })
+										DrawerItem(modifier = Modifier.padding(start = 32.dp), page = Data.Pages[page]!!, color = Color(TEXT_COLORS[index % (TEXT_COLORS.size - 1) + 1]), onClick = { clickItem(it) })
 									}
 								}
 							}

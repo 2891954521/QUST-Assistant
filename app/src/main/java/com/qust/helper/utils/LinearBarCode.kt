@@ -33,15 +33,11 @@ object LinearBarCode {
 	 * 创建Code128格式的条形码
 	 * @return
 	 */
-	fun createCode128Barcode(data: String, width: Int, height: Int): Bitmap {
+	fun createCode128Barcode(data: String, height: Int): Bitmap {
 		val code = encode(data)
 		val inputWidth = code.size
-		// Add quiet zone on both sides.
-		val fullWidth = inputWidth + 10
-		val outputWidth = Math.max(width, fullWidth)
-		val outputHeight = Math.max(1, height)
-		val multiple = outputWidth / fullWidth
-		val leftPadding = (outputWidth - inputWidth * multiple) / 2
+		val outputWidth = inputWidth * 10 + 50
+		val outputHeight = 1.coerceAtLeast(height)
 		val bitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888)
 		val canvas = Canvas(bitmap)
 		val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -50,13 +46,13 @@ object LinearBarCode {
 		canvas.drawRect(Rect(0, 0, outputWidth, outputHeight), paint)
 		paint.color = Color.BLACK
 		var i = 0
-		var outputX = leftPadding
+		var outputX = 25
 		while(i < inputWidth) {
 			if(code[i]) {
-				canvas.drawRect(outputX.toFloat(), 0f, (outputX + multiple).toFloat(), outputHeight.toFloat(), paint)
+				canvas.drawRect(outputX.toFloat(), 0f, (outputX + 10).toFloat(), outputHeight.toFloat(), paint)
 			}
 			i++
-			outputX += multiple
+			outputX += 10
 		}
 		return bitmap
 	}
