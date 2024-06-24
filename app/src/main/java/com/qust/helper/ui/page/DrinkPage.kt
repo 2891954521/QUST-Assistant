@@ -33,10 +33,10 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -178,29 +178,27 @@ object DrinkPage {
 		}
 
 		if(uiState.needLogin){
-			LoginDialog(uiState.account, uiState.password, { uiState.needLogin = false }, { a, b -> uiEvent.login(a, b) })
+			LoginDialog(uiState.account, uiState.password, { uiState.needLogin = false }, { uiEvent.login() })
 		}
 	}
 
 	@Composable
 	@OptIn(ExperimentalMaterial3Api::class)
 	fun LoginDialog(
-		account: String,
-		password: String,
+		account: MutableState<String>,
+		password: MutableState<String>,
 		onDismiss: () -> Unit = { },
-		login: (String, String) -> Unit = { _, _ -> }
+		login: () -> Unit = { }
 	) {
-		val newAccount = remember { mutableStateOf(account) }
-		val newPassword = remember { mutableStateOf(password) }
 		ModalBottomSheet(onDismissRequest = { onDismiss() }) {
 			Column(Modifier.padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 				LoginPage.AccountInput(
-					account = newAccount,
-					password = newPassword,
+					account = account,
+					password = password,
 					labelAccount = "手机号",
-					login = { login(newAccount.value, newAccount. value); onDismiss() }
+					login = { login(); onDismiss() }
 				)
-				TextButton(onClick = { login(newAccount.value, newPassword.value); onDismiss() }, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+				TextButton(onClick = { login(); onDismiss() }, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
 					Text(text = stringResource(id = R.string.text_login))
 				}
 				Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))

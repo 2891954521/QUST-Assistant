@@ -11,6 +11,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
+import java.net.HttpURLConnection
 
 
 class NeedLoginException : RuntimeException("需要登录")
@@ -221,14 +222,19 @@ abstract class Account(host: String, var accountName: String, var passwordName: 
 
 	@Throws(IOException::class, NeedLoginException::class)
 	override suspend fun get(url: String): Response{
-		return if(isLogin || checkLogin()) {
-			client.newCall(Request.Builder()
-				.url("${scheme}://${host}/${url}".toHttpUrl())
-				.build()
-			).execute()
-		}else{
-			throw NeedLoginException()
+		if(!isLogin) throw NeedLoginException()
+
+		val request = Request.Builder().url("${scheme}://${host}/${url}".toHttpUrl()).build()
+		val result = client.newCall(request).execute()
+		val code = result.code
+		if(code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP){
+			if(result.header("Location")?.contains("login")!!){
+				isLogin = login()
+				if(!isLogin) throw NeedLoginException()
+				return client.newCall(request).execute()
+			}
 		}
+		return result
 	}
 
 	@Throws(IOException::class, NeedLoginException::class)

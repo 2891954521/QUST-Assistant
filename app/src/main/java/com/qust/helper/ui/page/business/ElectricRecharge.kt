@@ -1,4 +1,4 @@
-package com.qust.helper.ui.page
+package com.qust.helper.ui.page.business
 
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable

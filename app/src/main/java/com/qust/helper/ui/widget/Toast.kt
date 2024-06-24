@@ -1,6 +1,6 @@
 package com.qust.helper.ui.widget
 
-import android.content.Context
+import android.app.Activity
 import android.graphics.PixelFormat
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -20,17 +20,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class Toast(context: Context){
+class Toast(private val activity: Activity){
 	private var isShowToast = false
 
-	private var toastWindow = context.getSystemService(ComponentActivity.WINDOW_SERVICE) as WindowManager
+	private val toastWindow = activity.getSystemService(ComponentActivity.WINDOW_SERVICE) as WindowManager
 
-	private var toastLayout = LayoutInflater.from(context).inflate(R.layout.layout_tips, null) as LinearLayout
+	private val toastLayout = LayoutInflater.from(activity).inflate(R.layout.layout_tips, null) as LinearLayout
 
-	private var toastIcon = toastLayout.findViewById<ImageView>(R.id.tips_icon)
-	private var toastMessage = toastLayout.findViewById<TextView>(R.id.tips_message)
+	private val toastIcon = toastLayout.findViewById<ImageView>(R.id.tips_icon)
+	private val toastMessage = toastLayout.findViewById<TextView>(R.id.tips_message)
 
-	private var toastParams = WindowManager.LayoutParams().also {
+	private val toastParams = WindowManager.LayoutParams().also {
 		it.gravity = Gravity.CENTER
 		it.format = PixelFormat.TRANSLUCENT
 		it.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
@@ -47,7 +47,9 @@ class Toast(context: Context){
 			toastWindow.addView(toastLayout, toastParams)
 			CoroutineScope(Dispatchers.Main).launch {
 				delay(3000)
-				toastWindow.removeView(toastLayout)
+				if(!activity.isFinishing){
+					toastWindow.removeView(toastLayout)
+				}
 				isShowToast = false
 			}
 		}

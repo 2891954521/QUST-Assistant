@@ -3,7 +3,6 @@ package com.qust.helper.model
 import android.content.Context
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
@@ -24,7 +23,7 @@ object AutoQueryRepository {
 			PeriodicWorkRequestBuilder<AutoQueryWorker>(12, TimeUnit.HOURS)
 				.setConstraints(
 					Constraints.Builder()
-					.setRequiredNetworkType(NetworkType.UNMETERED)
+//					.setRequiredNetworkType(NetworkType.UNMETERED)
 					.setRequiresBatteryNotLow(true)
 					.build()
 			).build()

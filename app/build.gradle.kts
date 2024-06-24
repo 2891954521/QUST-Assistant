@@ -18,8 +18,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 11
-		versionName = "v3.4.20240516"
+		versionCode = 12
+		versionName = "v3.5.0624"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -43,6 +43,13 @@ android {
 		}else{
 			buildConfigField("String", "UMENG_APP_KEY", "\"\"")
 		}
+
+		// 指定room.schemaLocation生成的文件路径
+//		javaCompileOptions {
+//			annotationProcessorOptions {
+//				arguments["room.schemaLocation"] = "${rootProject.projectDir.path}/app/build/schemas"
+//			}
+//		}
 	}
 
 	buildTypes {

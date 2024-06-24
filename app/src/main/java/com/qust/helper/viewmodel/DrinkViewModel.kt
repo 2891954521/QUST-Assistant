@@ -19,18 +19,16 @@ class DrinkViewModel: BaseViewModel() {
 	val uiState = DrinkUIState(drinkAccount = drinkAccount)
 
 	val uiEvent = object : DrinkUIEvent{
-		override fun login(account: String, password: String){ this@DrinkViewModel.login(account, password) }
+		override fun login(){ this@DrinkViewModel.login() }
 		override fun getDrinkCode(){ this@DrinkViewModel.getDrinkCode() }
 	}
 
-	fun login(account: String, password: String){
+	fun login(){
 		viewModelScope.launch {
 			showDialog("登录中")
-			uiState.account = account
-			uiState.password = password
 			try {
 				val result = withContext(Dispatchers.IO){
-					drinkAccount.login(account, password, true)
+					drinkAccount.login(uiState.account.value, uiState.password.value, true)
 				}
 				if(result) getCode()
 				else toastError("用户名或密码错误")
@@ -70,12 +68,12 @@ class DrinkViewModel: BaseViewModel() {
 
 class DrinkUIState(drinkAccount: DrinkAccount) {
 	var drinkCode by drinkAccount._drinkCode
-	var account by mutableStateOf(Setting.getString(key = Keys.DRINK_ACCOUNT))
-	var password by mutableStateOf(Setting.getString(key = Keys.DRINK_PASSWORD))
+	var account = mutableStateOf(Setting.getString(key = Keys.DRINK_ACCOUNT))
+	var password = mutableStateOf(Setting.getString(key = Keys.DRINK_PASSWORD))
 	var needLogin by mutableStateOf(false)
 }
 
 interface DrinkUIEvent{
-	fun login(account: String, password: String){ }
+	fun login(){ }
 	fun getDrinkCode(){ }
 }

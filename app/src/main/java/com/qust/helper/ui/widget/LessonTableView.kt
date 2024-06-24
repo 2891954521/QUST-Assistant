@@ -99,8 +99,10 @@ object LessonTableView{
 								selectLesson = select
 							},
 							onLongPress = { offset ->
-								selectLesson = lessonRender.getClickLesson(page, offset.x.toInt(), offset.y.toInt())
-								onLessonLongClick(selectLesson, page, offset.x.toInt(), offset.y.toInt())
+								val x = offset.x.toInt()
+								val y = offset.y.toInt()
+								selectLesson = lessonRender.getClickLesson(page, x, y)
+								onLessonLongClick(selectLesson, page, x, y)
 							}
 						)
 					}){

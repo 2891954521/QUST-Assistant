@@ -14,7 +14,7 @@ import com.qust.helper.data.Electricity
 import com.qust.helper.model.Logger
 import com.qust.helper.model.account.NeedLoginException
 import com.qust.helper.model.account.VpnAccount
-import com.qust.helper.ui.page.ElectricRecharge.TITLE
+import com.qust.helper.ui.page.business.ElectricRecharge.TITLE
 import com.qust.helper.ui.widget.DialogAble
 import com.qust.helper.ui.widget.DialogAbleImpl
 import com.qust.helper.ui.widget.ToastAble

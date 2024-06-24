@@ -96,6 +96,7 @@ object Keys {
 		const val GetExamsPage = "getExamsPage"
 
 		const val ElectricPage = "electricPage"
+		const val SportTestPage = "SportTestPage"
 
 		const val DrinkPage = "drinkPage"
 

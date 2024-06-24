@@ -63,10 +63,10 @@ object TermLesson {
 				popupLocation = Pair(x, y)
 				uiEvent.longClickLesson(selectLesson, week)
 			})
-		}
 
-		if(uiState.isShowPopup){
-			PopMenu(uiState, uiEvent, popupLocation, onDismiss = { uiState.isShowPopup = false })
+			if(uiState.isShowPopup){
+				PopMenu(uiState, uiEvent, popupLocation, onDismiss = { uiState.isShowPopup = false })
+			}
 		}
 
 		toast.ToastContent(uiState.toastContent)

@@ -53,8 +53,8 @@ import kotlinx.coroutines.launch
  */
 object Picker {
 
-	private val aBack = Color(0xFF8ACEFF)
-	private val aText = Color(0xFF00344D)
+	private val aBack = Color(0xFFE6F4FF)
+	private val aText = Color(0xFF1F9DD0)
 
 	private val bBack = Color(0xFFF5F5F5)
 	private val bText = Color(0xFF909090)
