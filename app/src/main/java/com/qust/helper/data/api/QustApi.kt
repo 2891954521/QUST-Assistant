@@ -77,6 +77,11 @@ object QustApi {
 	const val EA_LOGIN_PUBLIC_KEY = "jwglxt/xtgl/login_getPublicKey.html"
 
 	/**
+	 *
+	 */
+	const val EA_MAIN_MENU = "jwglxt/xtgl/index_initMenu.html"
+
+	/**
 	 * 教务系统消息查询
 	 *
 	 * Post:

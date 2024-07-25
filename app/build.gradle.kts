@@ -18,8 +18,8 @@ android {
 		applicationId = "com.qust.helper"
 		minSdk = 21
 		targetSdk = 34
-		versionCode = 12
-		versionName = "v3.5.0624"
+		versionCode = 13
+		versionName = "v3.5.0725"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -63,6 +63,16 @@ android {
 			buildConfigField("String", "UMENG_APP_CHANNEL", "\"Test\"")
 		}
 	}
+
+	android.applicationVariants.all {
+		val buildType = this.buildType.name
+		outputs.all {
+			if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
+				this.outputFileName = "QustHelper_${defaultConfig.versionName}.apk"
+			}
+		}
+	}
+
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8

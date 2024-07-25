@@ -34,9 +34,9 @@ import java.util.regex.Pattern
  */
 object LessonTableRepository {
 
-	private val XQHID_MATCHER = Pattern.compile("<select name=\"xqh_id\".*?</select>", Pattern.DOTALL)
-	private val ZYHID_MATCHER = Pattern.compile("<select name=\"zyh_id\".*?</select>", Pattern.DOTALL)
-	private val BHID_MATCHER = Pattern.compile("<select name=\"bh_id\".*?</select>", Pattern.DOTALL)
+	private val XQHID_MATCHER = Pattern.compile("<select name=\"xqh_id\"(.*?)</select>", Pattern.DOTALL)
+	private val ZYHID_MATCHER = Pattern.compile("<select name=\"zyh_id\"(.*?)</select>", Pattern.DOTALL)
+	private val BHID_MATCHER = Pattern.compile("<select name=\"bh_id\"(.*?)</select>", Pattern.DOTALL)
 
 	private val OPTION_MATCHER = Pattern.compile("<option value=\"(.*?)\" selected=\"selected\">")
 
@@ -258,11 +258,25 @@ object LessonTableRepository {
 		val result: LessonTableQueryResult = getSchoolYearData(easAccount)
 
 		try {
-			easAccount.getNoCheck(QustApi.RECOMMENDED_LESSON_TABLE_PRINTING).use { response ->
+			var response: String
+			easAccount.getNoRedirect(QustApi.EA_MAIN_MENU).use { response = it.body!!.string() }
+
+			// 从教务主页面获取跳转的URL和参数
+			var gnmkdm = "0"
+			var url = QustApi.RECOMMENDED_LESSON_TABLE_PRINTING
+			val matcher = "\\('([A-Za-z0-9]+)','([A-Za-z0-9/._]*?)','班级课表查询".toRegex().find(response)
+			if(matcher != null){
+				matcher.groups[1]?.value?.let{ gnmkdm = it }
+				matcher.groups[2]?.value?.let{ url = it }
+			}
+
+			easAccount.getNoCheck("jwglxt/$url?gnmkdm=$gnmkdm&layout=default").use { response ->
 				val html: String = response.body!!.string()
 
 				// 从HTML里获取校区ID，专业号ID，班级ID
-				val xqh_id = CodeUtils.matcher(XQHID_MATCHER, html)?.let{ CodeUtils.matcher(OPTION_MATCHER, it) } ?: throw CustomException("获取查询参数失败")
+				val xqh_id = CodeUtils.matcher(XQHID_MATCHER, html)?.let{
+					CodeUtils.matcher(OPTION_MATCHER, it) }
+					?: throw CustomException("获取查询参数失败")
 				val zyh_id = CodeUtils.matcher(ZYHID_MATCHER, html)?.let{ CodeUtils.matcher(OPTION_MATCHER, it) } ?: throw CustomException("获取查询参数失败")
 				val bh_id = CodeUtils.matcher(BHID_MATCHER, html)?.let{ CodeUtils.matcher(OPTION_MATCHER, it) } ?: throw CustomException("获取查询参数失败")
 
@@ -286,6 +300,7 @@ object LessonTableRepository {
 		}catch (e: CustomException){
 			result.error = e.message
 		} catch(e: Exception) {
+			Logger.e(e)
 			result.error = "获取课表失败"
 		}
 		return result

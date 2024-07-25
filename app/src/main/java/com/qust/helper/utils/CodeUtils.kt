@@ -16,6 +16,6 @@ object CodeUtils {
 
 	fun matcher(pattern: Pattern, string: String, index: Int = 1): String?{
 		val matcher = pattern.matcher(string)
-		return if(matcher.find()) matcher.group(1) else null
+		return if(matcher.find()) matcher.group(index) else null
 	}
 }
