@@ -26,9 +26,9 @@ android {
 		resourceConfigurations.clear()
 		resourceConfigurations += arrayOf("zh", "zh-rCN")
 
-		ndk {
-			abiFilters += listOf("armeabi","armeabi-v7a", "x86") // 'x86_64', 'mips', 'mips64'
-		}
+		//ndk {
+		//	abiFilters += listOf("arm64-v8a","x86","x64") // 'x86_64', 'mips', 'mips64'
+		//}
 		vectorDrawables {
 			useSupportLibrary = true
 		}
@@ -92,11 +92,13 @@ android {
 			excludes += "/META-INF/{AL2.0,LGPL2.1}"
 		}
 	}
+	buildToolsVersion = "34.0.0"
 }
 
 dependencies {
 
 	implementation("androidx.compose:compose-bom:2024.04.00")
+	implementation("com.android.support:support-annotations:28.0.0")
 	androidTestImplementation("androidx.compose:compose-bom:2024.04.00")
 
 	implementation("androidx.core:core-ktx:1.12.0")
