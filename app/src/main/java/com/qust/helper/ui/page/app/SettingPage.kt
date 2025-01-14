@@ -132,7 +132,7 @@ object SettingPage {
 				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
 			){ week -> week.toIntOrNull()?.let{ LessonTableRepository.setTotalWeekValue(it) } }
 
-			ListItemUI("设置时间表", LessonTableRepository.currentTimeTable, timeTableList){ _, it -> LessonTableRepository.setTimeTableValue(it) }
+			ListItemUI("设置时间表\n（重启app生效）", LessonTableRepository.currentTimeTable, timeTableList){ _, it -> LessonTableRepository.setTimeTableValue(it) }
 		}
 
 		if(showTimePicker){
