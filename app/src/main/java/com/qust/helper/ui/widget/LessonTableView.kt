@@ -47,13 +47,13 @@ object LessonTableView{
 	 * 课程时间表
 	 */
 	val LESSON_TIME1 = arrayOf(
-		arrayOf("08:00", "09:00", "10:10", "11:10", "13:30", "14:30", "15:40", "16:40", "18:00", "19:00"),
-		arrayOf("08:50", "09:50", "11:00", "12:00", "14:20", "15:20", "16:30", "17:30", "18:50", "19:50")
+		arrayOf("08:00", "09:00", "10:10", "11:10", "13:30", "14:30", "15:40", "16:40", "18:30", "19:30"),
+		arrayOf("08:50", "09:50", "11:00", "12:00", "14:20", "15:20", "16:30", "17:30", "19:20", "20:20")
 	)
 
 	val LESSON_TIME2 = arrayOf(
-		arrayOf("08:00", "09:00", "10:10", "11:10", "14:00", "15:00", "16:10", "17:10", "18:30", "19:30"),
-		arrayOf("08:50", "09:50", "11:00", "12:00", "14:50", "15:50", "17:00", "18:00", "19:20", "20:20")
+		arrayOf("08:00", "09:00", "10:10", "11:10", "14:00", "15:00", "16:10", "17:10", "19:00", "20:00"),
+		arrayOf("08:50", "09:50", "11:00", "12:00", "14:50", "15:50", "17:00", "18:00", "19:50", "20:50")
 	)
 
 	@Composable
@@ -182,7 +182,8 @@ object LessonTableView{
 	@Composable
 	fun LessonTimeBar(time: Array<Array<String>>) {
 		Column(modifier = Modifier.fillMaxHeight()) {
-			repeat(LESSON_TIME1[0].size){
+			if(LessonTableRepository.currentTimeTable == 0)
+				repeat(LESSON_TIME1[0].size){
 				Column(
 					modifier = Modifier.weight(1F).padding(horizontal = 4.dp),
 					verticalArrangement = Arrangement.Center,
@@ -191,6 +192,18 @@ object LessonTableView{
 					Text(text = (it + 1).toString(), style = MaterialTheme.typography.labelMedium)
 					Text(text = LESSON_TIME1[0][it], style = MaterialTheme.typography.bodySmall, color = Color.Gray)
 					Text(text = LESSON_TIME1[1][it], style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+				}
+			}
+			else
+				repeat(LESSON_TIME2[0].size){
+				Column(
+					modifier = Modifier.weight(1F).padding(horizontal = 4.dp),
+					verticalArrangement = Arrangement.Center,
+					horizontalAlignment = Alignment.CenterHorizontally
+				) {
+					Text(text = (it + 1).toString(), style = MaterialTheme.typography.labelMedium)
+					Text(text = LESSON_TIME2[0][it], style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+					Text(text = LESSON_TIME2[1][it], style = MaterialTheme.typography.bodySmall, color = Color.Gray)
 				}
 			}
 		}
