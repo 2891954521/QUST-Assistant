@@ -19,16 +19,16 @@ android {
 		minSdk = 21
 		targetSdk = 34
 		versionCode = 15
-		versionName = "250127"
+		versionName = "v3.6.0127"
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 		resourceConfigurations.clear()
 		resourceConfigurations += arrayOf("zh", "zh-rCN")
 
-		//ndk {
-		//	abiFilters += listOf("arm64-v8a","x86","x64") // 'x86_64', 'mips', 'mips64'
-		//}
+		ndk {
+			abiFilters += listOf("arm64-v8a", "armeabi", "armeabi-v7a", "x86_64")
+		}
 		vectorDrawables {
 			useSupportLibrary = true
 		}
@@ -74,11 +74,11 @@ android {
 	}
 
 	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_17
-		targetCompatibility = JavaVersion.VERSION_17
+		sourceCompatibility = JavaVersion.VERSION_1_8
+		targetCompatibility = JavaVersion.VERSION_1_8
 	}
 	kotlinOptions {
-		jvmTarget = "17"
+		jvmTarget = "1.8"
 	}
 	buildFeatures {
 		compose = true
@@ -92,13 +92,11 @@ android {
 			excludes += "/META-INF/{AL2.0,LGPL2.1}"
 		}
 	}
-	buildToolsVersion = "34.0.0"
 }
 
 dependencies {
 
 	implementation("androidx.compose:compose-bom:2024.04.00")
-	implementation("com.android.support:support-annotations:28.0.0")
 	androidTestImplementation("androidx.compose:compose-bom:2024.04.00")
 
 	implementation("androidx.core:core-ktx:1.12.0")

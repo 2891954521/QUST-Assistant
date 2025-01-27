@@ -6,12 +6,17 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.qust.helper.model.Logger
 import com.qust.helper.model.account.EASAccount
 import com.qust.helper.model.account.NeedLoginException
 import com.qust.helper.ui.widget.DialogAble
 import com.qust.helper.ui.widget.DialogAbleImpl
 import com.qust.helper.ui.widget.ToastAble
 import com.qust.helper.ui.widget.ToastAbleImpl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 abstract class BaseEasViewModel(application: Application) : AndroidViewModel(application), ToastAble by ToastAbleImpl(), DialogAble by DialogAbleImpl() {
 
@@ -34,21 +39,29 @@ abstract class BaseEasViewModel(application: Application) : AndroidViewModel(app
 		)
 	}
 
-	protected suspend fun checkLogin(): Boolean{
-		try {
-			easAccount.checkLogin()
-		}catch(e: NeedLoginException){
-			toastWarning("请先登录")
-			needLogin = true
-			return false
-		}catch(_: Exception){
-			toastError("网络错误")
-			return false
+	fun request(
+		block: suspend EASAccount.() -> Unit,
+		final: () -> Unit = { },
+		onError: (Exception) -> Unit = {
+			toastError("网络错误: ${it.message}")
 		}
-		return true
+	) {
+		viewModelScope.launch {
+			withContext(Dispatchers.IO) {
+				try {
+					block(easAccount)
+				}catch(e: NeedLoginException){
+					toastWarning("请先登录")
+					needLogin = true
+				}catch(e: Exception){
+					Logger.e(e)
+					onError(e)
+				}finally {
+					final()
+				}
+			}
+		}
 	}
-
-
 }
 
 

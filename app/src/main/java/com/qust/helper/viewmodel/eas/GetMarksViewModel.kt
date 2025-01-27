@@ -28,17 +28,7 @@ class GetMarksViewModel(application: Application) : BaseEasViewModel(application
 
 	private var sortType: Int = 1
 
-	fun clearMarks(){
-		val index = pickYear.intValue
-		viewModelScope.launch {
-			showDialog("正在删除")
-			withContext(Dispatchers.IO){
-				lessonData.markDao().clear(index)
-				toastOK("删完了")
-			}
-			clearDialog()
-		}
-	}
+
 	fun getTerm():String{
 		val index = pickYear.intValue
 		return TermName[index]
@@ -48,30 +38,28 @@ class GetMarksViewModel(application: Application) : BaseEasViewModel(application
 		viewModelScope.launch {
 			showDialog("查询中")
 			withContext(Dispatchers.IO){
-				if(checkLogin()){
-					val index = pickYear.intValue
-					val pair = getYearAndTerm()
-					val result = sort(easAccount.queryMark(index, pair.first, pair.second))
-					try {
-						if(!hasQuerySql[index]){
-							marksData[index] = lessonData.markDao().selectByIndex(index).toTypedArray()
-							hasQuerySql[index] = true
-						}
-						val origData = marksData[index]
-						if(origData.isEmpty()){
-							lessonData.markDao().insertAll(result)
-							setMark(index, result.toTypedArray())
-							toastOK("查询完成")
-						}else{
-							val difference = result.subtract(origData.toSet())
-							if(difference.isNotEmpty()) {
-								lessonData.markDao().insertAll(difference.toList())
-								setMark(index, (difference + origData).toTypedArray())
-							}
-						}
-					}catch(e: Exception){
-						e.printStackTrace()
+				val index = pickYear.intValue
+				val pair = getYearAndTerm()
+				val result = sort(easAccount.queryMark(index, pair.first, pair.second))
+				try {
+					if(!hasQuerySql[index]){
+						marksData[index] = lessonData.markDao().selectByIndex(index).toTypedArray()
+						hasQuerySql[index] = true
 					}
+					val origData = marksData[index]
+					if(origData.isEmpty()){
+						lessonData.markDao().insertAll(result)
+						setMark(index, result.toTypedArray())
+							toastOK("查询完成")
+					}else{
+						val difference = result.subtract(origData.toSet())
+						if(difference.isNotEmpty()) {
+							lessonData.markDao().insertAll(difference.toList())
+							setMark(index, (difference + origData).toTypedArray())
+						}
+					}
+				}catch(e: Exception){
+					e.printStackTrace()
 				}
 			}
 			clearDialog()
@@ -87,6 +75,17 @@ class GetMarksViewModel(application: Application) : BaseEasViewModel(application
 					setMark(index, sort(lessonData.markDao().selectByIndex(index)).toTypedArray())
 					hasQuerySql[index] = true
 				}
+			}
+		}
+	}
+
+	fun clearMarks(){
+		val index = pickYear.intValue
+		viewModelScope.launch {
+			withContext(Dispatchers.IO){
+				lessonData.markDao().clear(index)
+				setMark(index, emptyArray())
+				toastOK("清空完成")
 			}
 		}
 	}

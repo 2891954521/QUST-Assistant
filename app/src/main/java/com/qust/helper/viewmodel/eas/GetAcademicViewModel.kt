@@ -108,26 +108,23 @@ class GetAcademicViewModel(application: Application): BaseEasViewModel(applicati
 	}
 
 	fun queryData() {
-		viewModelScope.launch {
-			showDialog("查询中")
-			withContext(Dispatchers.IO){
-				if(checkLogin()){
-					val pair = easAccount.getAcademic()
-					try {
-						lessonData.lessonInfoDao().clear()
-						lessonData.lessonInfoDao().clearGroups()
-						lessonData.lessonInfoDao().insertAllGroups(pair.first)
-						lessonData.lessonInfoDao().insertAll(pair.second.toList())
-					} catch(_: IOException) { }
-					uiState.showMode = 0
-					showModeGroup[0] = pair.first.map { AcademicGroup(it) }
-					showModeGroup[1] = emptyList()
-					uiState.lessonGroups = showModeGroup[0]
-					toastOK("查询完成")
-				}
-			}
+		showDialog("查询中")
+		request({
+			val pair = easAccount.getAcademic()
+			try {
+				lessonData.lessonInfoDao().clear()
+				lessonData.lessonInfoDao().clearGroups()
+				lessonData.lessonInfoDao().insertAllGroups(pair.first)
+				lessonData.lessonInfoDao().insertAll(pair.second.toList())
+			} catch(_: IOException) { }
+			uiState.showMode = 0
+			showModeGroup[0] = pair.first.map { AcademicGroup(it) }
+			showModeGroup[1] = emptyList()
+			uiState.lessonGroups = showModeGroup[0]
+		}, {
 			clearDialog()
-		}
+			toastOK("查询完成")
+		})
 	}
 
 	private fun sort(group: AcademicGroup){

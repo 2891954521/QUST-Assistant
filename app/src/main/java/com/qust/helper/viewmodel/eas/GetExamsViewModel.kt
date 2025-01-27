@@ -3,13 +3,9 @@ package com.qust.helper.viewmodel.eas
 import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Data.TermName
 import com.qust.helper.data.eas.Exam
 import com.qust.helper.model.Logger
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -45,24 +41,19 @@ class GetExamsViewModel(application: Application) : BaseEasViewModel(application
 	}
 
 	fun queryExams() {
-		viewModelScope.launch {
+		request({
 			showDialog("查询中")
-			withContext(Dispatchers.IO){
-				if(checkLogin()){
-					val pair = getYearAndTerm()
-					examData[pickYear.intValue] = easAccount.queryExam(pair.first, pair.second)
-					exams.value = examData[pickYear.intValue]
-					try {
-						FileOutputStream(markDataPath).use {
-							Json.encodeToStream(examData, it)
-						}
-					} catch(e: IOException) {
-						Logger.e(e)
-					}
+			val pair = getYearAndTerm()
+			examData[pickYear.intValue] = easAccount.queryExam(pair.first, pair.second)
+			exams.value = examData[pickYear.intValue]
+			try {
+				FileOutputStream(markDataPath).use {
+					Json.encodeToStream(examData, it)
 				}
+			} catch(e: IOException) {
+				Logger.e(e)
 			}
-			clearDialog()
-		}
+		}, { clearDialog() })
 	}
 }
 

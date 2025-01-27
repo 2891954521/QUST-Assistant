@@ -39,29 +39,27 @@ class GetLessonTableViewModel(application: Application): BaseEasViewModel(applic
 			val result: LessonTableQueryResult
 
 			withContext(Dispatchers.IO){
-				if(checkLogin()){
-					result = if(pickType.intValue == 0) {
-						LessonTableRepository.queryLessonTable(easAccount = easAccount, pair.first, pair.second)
-					} else {
-						LessonTableRepository.queryClassLessonTable(easAccount = easAccount, pair.first, pair.second)
-					}
-					val error = result.error
-					if(error == null) {
-						termText = result.termText
-						termTimeText = getApplication<App>().getString(
-							R.string.text_query_term_start_time,
-							DateUtils.YMD.format(LessonTableRepository.startDay),
-							DateUtils.YMD.format(result.lessonTable.startDay)
-						)
-						needSave = true
-						toastOK("获取课表成功！")
+				result = if(pickType.intValue == 0) {
+					LessonTableRepository.queryLessonTable(easAccount = easAccount, pair.first, pair.second)
+				} else {
+					LessonTableRepository.queryClassLessonTable(easAccount = easAccount, pair.first, pair.second)
+				}
+				val error = result.error
+				if(error == null) {
+					termText = result.termText
+					termTimeText = getApplication<App>().getString(
+						R.string.text_query_term_start_time,
+						DateUtils.YMD.format(LessonTableRepository.startDay),
+						DateUtils.YMD.format(result.lessonTable.startDay)
+					)
+					needSave = true
+					toastOK("获取课表成功！")
 
-						lessonTable.value = result.lessonTable
-						startDay.value = result.lessonTable.startDay
-						totalWeek.intValue = result.lessonTable.totalWeek
-					}else{
-						toastError(error)
-					}
+					lessonTable.value = result.lessonTable
+					startDay.value = result.lessonTable.startDay
+					totalWeek.intValue = result.lessonTable.totalWeek
+				}else{
+					toastError(error)
 				}
 			}
 			clearDialog()

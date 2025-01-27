@@ -8,14 +8,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -25,8 +26,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +49,7 @@ import com.qust.helper.data.room.Mark
 import com.qust.helper.ui.theme.colorError
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
+import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.ui.widget.ListPicker
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.Texts.SingleLineText
@@ -55,15 +57,15 @@ import com.qust.helper.ui.widget.Toast
 import com.qust.helper.utils.DateUtils
 import com.qust.helper.viewmodel.eas.GetMarksViewModel
 
-object GetMarks{
+object GetMarks {
 
 	val GetMarksPage = Page(Keys.Page.GetMarksPage, "成绩查询", iconRes = R.drawable.ic_school) { activity, padding, navController, _ ->
 		val viewModel by activity.viewModels<GetMarksViewModel>()
 		GetMarksUI(padding, viewModel, activity.toast, navController)
 	}
-	private var openDeleteDialog = mutableStateOf(false)
+
 	@Composable
-	fun GetMarksUI(padding: PaddingValues, viewModel: GetMarksViewModel, toast: Toast, navController: NavController){
+	fun GetMarksUI(padding: PaddingValues, viewModel: GetMarksViewModel, toast: Toast, navController: NavController) {
 		AppWidgets.CheckEasLogin(viewModel = viewModel, navController = navController)
 
 		var pick by viewModel.pickYear
@@ -71,12 +73,10 @@ object GetMarks{
 		var sortBy by remember { mutableIntStateOf(0) }
 		var showPop by remember { mutableStateOf(false) }
 
+		val openDeleteDialog = remember { mutableStateOf(false) }
+
 		// 触发Compose更新
 		val marks = if(viewModel.update) viewModel.marks.value else viewModel.marks.value
-
-		if(openDeleteDialog.value){
-			OpenDeleteMarksDialog(viewModel)
-		}
 
 		Column(modifier = Modifier.fillMaxSize().padding(padding)) {
 			Row(
@@ -99,38 +99,41 @@ object GetMarks{
 						horizontalPadding = 8.dp
 					)
 				}
-				Column{
-					Button(onClick = { openDeleteDialog.value = true }) {
-						Text(text = stringResource(id = R.string.text_delete),color= Color.Red)
-					}
-					Button(onClick = { viewModel.queryMarks() }) {
-						Text(text = stringResource(id = R.string.text_query))
-					}
+				Button(onClick = { viewModel.queryMarks() }) {
+					Text(text = stringResource(id = R.string.text_query))
+				}
+
+				Spacer(modifier = Modifier.width(16.dp))
+
+				Button(onClick = { openDeleteDialog.value = true }) {
+					Text(text = "清空")
 				}
 			}
 
-			Row(Modifier.padding(start = 16.dp), verticalAlignment = Alignment.CenterVertically){
+			Row(Modifier.padding(start = 16.dp), verticalAlignment = Alignment.CenterVertically) {
 				Text(text = "排序方式", style = MaterialTheme.typography.bodySmall)
 
 				Row(
 					modifier = Modifier.padding(8.dp).clickable { showPop = true },
 					verticalAlignment = Alignment.CenterVertically,
-				){
+				) {
 					Texts.SingleLineTextNoPadding(
-						text = when(sortBy){ 0 -> "考试类型"; 1 -> "考试成绩"; 2 -> "发布时间"; else -> "" },
+						text = when(sortBy) {
+							0 -> "考试类型"; 1 -> "考试成绩"; 2 -> "发布时间"; else -> ""
+						},
 						style = MaterialTheme.typography.bodySmall,
 						color = colorSecondaryText,
 					)
 					Icon(imageVector = Icons.Rounded.ArrowDropDown, contentDescription = null, tint = colorSecondaryText)
 
 					DropdownMenu(expanded = showPop, onDismissRequest = { showPop = false }) {
-						Box(Modifier.clickable{ showPop = false; sortBy = 0; viewModel.setSortBy(0) }){
+						Box(Modifier.clickable { showPop = false; sortBy = 0; viewModel.setSortBy(0) }) {
 							Text(text = "考试类型", modifier = Modifier.padding(16.dp, 8.dp))
 						}
-						Box(Modifier.clickable{ showPop = false; sortBy = 1; viewModel.setSortBy(1) }){
+						Box(Modifier.clickable { showPop = false; sortBy = 1; viewModel.setSortBy(1) }) {
 							Text(text = "考试成绩", modifier = Modifier.padding(16.dp, 8.dp))
 						}
-						Box(Modifier.clickable{ showPop = false; sortBy = 2; viewModel.setSortBy(2) }){
+						Box(Modifier.clickable { showPop = false; sortBy = 2; viewModel.setSortBy(2) }) {
 							Text(text = "发布时间", modifier = Modifier.padding(16.dp, 8.dp))
 						}
 					}
@@ -139,7 +142,7 @@ object GetMarks{
 				Row(
 					modifier = Modifier.padding(8.dp).clickable { desc = !desc; viewModel.setSortType(if(desc) -1 else 1) },
 					verticalAlignment = Alignment.CenterVertically,
-				){
+				) {
 					Texts.SingleLineTextNoPadding(
 						text = if(desc) "降序" else "升序",
 						style = MaterialTheme.typography.bodySmall,
@@ -152,15 +155,17 @@ object GetMarks{
 			LazyColumn { items(marks.size) { index -> ExamItem(marks[index]) { viewModel.clearNew(index) } } }
 		}
 
+		if(openDeleteDialog.value) OpenDeleteMarksDialog(viewModel, openDeleteDialog)
+
 		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
 		toast.ToastContent(viewModel.toastContent)
 	}
 
 	@Composable
-	fun ExamItem(mark: Mark, onClick: () -> Unit = {}){
+	fun ExamItem(mark: Mark, onClick: () -> Unit = {}) {
 		var isExpanded by remember { mutableStateOf(false) }
 
-		Box{
+		Box {
 			Card(
 				modifier = Modifier.fillMaxWidth().padding(16.dp, 8.dp, 16.dp, 8.dp),
 				shape = RoundedCornerShape(8.dp),
@@ -199,8 +204,8 @@ object GetMarks{
 						SingleLineText(text = "学分: ${mark.credit}", modifier = Modifier.weight(1F))
 					}
 
-					AnimatedVisibility(visible = isExpanded){
-						MarkItems(mark = mark){
+					AnimatedVisibility(visible = isExpanded) {
+						MarkItems(mark = mark) {
 							Text(
 								text = "发布时间: ${DateUtils.YMD_HMS.format(mark.time)}",
 								modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -212,11 +217,11 @@ object GetMarks{
 				}
 			}
 
-			if(mark.isNew == 1){
+			if(mark.isNew == 1) {
 				Badge(
 					modifier = Modifier.align(Alignment.TopEnd).padding(12.dp, 4.dp),
 					containerColor = MaterialTheme.colorScheme.tertiaryContainer
-				){
+				) {
 					Text(text = "new")
 				}
 			}
@@ -236,7 +241,7 @@ object GetMarks{
 				SingleLineText(text = "成绩", modifier = Modifier.weight(1F))
 			}
 
-			for(i in 0 until mark.items.size){
+			for(i in 0 until mark.items.size) {
 				HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
 				Row {
 					SingleLineText(text = mark.items[i].name, modifier = Modifier.weight(2F))
@@ -248,59 +253,12 @@ object GetMarks{
 	}
 
 	@Composable
-	fun DeleteMarksDialog(
-		onDismissRequest: () -> Unit,
-		onConfirmation: () -> Unit,
-		dialogTitle: String,
-		dialogText: String,
-		viewModel:GetMarksViewModel
-	) {
-		AlertDialog(
-			title = {
-				Text(text = dialogTitle)
-			},
-			text = {
-				Text(text = dialogText)
-			},
-			onDismissRequest = {
-				onDismissRequest()
-			},
-			confirmButton = {
-				TextButton(
-					onClick = {
-						onConfirmation()
-						viewModel.clearMarks()
-					}
-				) {
-					Text(text = stringResource(id = R.string.text_ok),color= Color.Red)
-				}
-			},
-			dismissButton = {
-				TextButton(
-					onClick = {
-						onDismissRequest()
-					}
-				) {
-					Text(text = stringResource(id = R.string.text_cancel))
-				}
-			}
-		)
-	}
-	@Composable
-	fun OpenDeleteMarksDialog(viewModel:GetMarksViewModel){
-		val term = viewModel.getTerm()
-		when {
-			openDeleteDialog.value -> {
-				DeleteMarksDialog(
-					onDismissRequest = { openDeleteDialog.value = false },
-					onConfirmation = {
-						openDeleteDialog.value = false
-					},
-					dialogTitle = "确认删除？",
-					dialogText = "这将删除${term}成绩\n（重启app生效）",
-					viewModel
-				)
-			}
+	fun OpenDeleteMarksDialog(viewModel: GetMarksViewModel, openDeleteDialog: MutableState<Boolean>) {
+		Dialogs.AskDialog(title = "确认清空", content = "这将清空 ${viewModel.getTerm()} 的成绩查询结果，你可以重新查询新的成绩", onDismiss = {
+			openDeleteDialog.value = false
+		}) {
+			viewModel.clearMarks()
+			openDeleteDialog.value = false
 		}
 	}
 }
