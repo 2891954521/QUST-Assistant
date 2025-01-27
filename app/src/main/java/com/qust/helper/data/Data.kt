@@ -1,6 +1,7 @@
 package com.qust.helper.data
 
 import com.qust.helper.R
+import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.page.DrinkPage
 import com.qust.helper.ui.page.MyPage
 import com.qust.helper.ui.page.account.AccountManagerPage
@@ -97,9 +98,14 @@ object Data {
 	/**
 	 * 课程时间差 (单位：分钟)
 	 */
-	val LESSON_TIME = arrayOf(
-		intArrayOf(0, 60, 70, 60, 140, 60, 70, 60, 110, 60),
-		intArrayOf(0, 60, 70, 60, 170, 60, 70, 60, 110, 60)
-	)
+	val LESSON_TIME = if(LessonTableRepository.gaomiTimeTable)
+		arrayOf(
+		intArrayOf(0, 50, 65, 50, 135, 50, 65, 50, 105, 50),
+		intArrayOf(0, 50, 65, 50, 165, 50, 65, 50, 105, 50)
+	)else
+		arrayOf(
+			intArrayOf(0, 60, 70, 60, 140, 60, 70, 60, 110, 60),
+			intArrayOf(0, 60, 70, 60, 170, 60, 70, 60, 110, 60)
+		)
 }
 

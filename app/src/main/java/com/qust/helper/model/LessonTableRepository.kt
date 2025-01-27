@@ -50,6 +50,14 @@ object LessonTableRepository {
 		Setting.edit { it.putInt(Keys.KEY_TIME_TABLE, value) }
 	}
 
+	//使用高密时间表
+	val _gaomiTimeTable = mutableStateOf(Setting.getBoolean(Keys.KEY_GAOMI_TIME_TABLE, false))
+	val gaomiTimeTable by _gaomiTimeTable
+	fun setGaomiTimeTable(value: Boolean) {
+		_gaomiTimeTable.value = value
+		Setting.edit { it.putBoolean(Keys.KEY_GAOMI_TIME_TABLE, value) }
+	}
+
 	/**
 	 * 显示所有课程
 	 */

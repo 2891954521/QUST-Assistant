@@ -43,6 +43,11 @@ object Keys {
 	const val KEY_TIME_TABLE = "key_time_table"
 
 	/**
+	 * 课表时间表 0：冬季， 1：夏季
+	 */
+	const val KEY_GAOMI_TIME_TABLE = "key_gaomi_time_table"
+
+	/**
 	 * 锁定课表
 	 */
 	const val KEY_LOCK_LESSON = "key_lock_lesson"
