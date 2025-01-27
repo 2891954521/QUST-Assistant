@@ -38,7 +38,7 @@ object Keys {
 	const val KEY_HIDE_TEACHER = "key_hide_teacher"
 
 	/**
-	 * 课表时间表 0：冬季， 1：夏季
+	 * 高密时间表
 	 */
 	const val KEY_TIME_TABLE = "key_time_table"
 
