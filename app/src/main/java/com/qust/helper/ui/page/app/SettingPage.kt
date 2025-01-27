@@ -132,6 +132,9 @@ object SettingPage {
 				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
 			){ week -> week.toIntOrNull()?.let{ LessonTableRepository.setTotalWeekValue(it) } }
 
+			SwitchItemUI("使用高密时间表（重启app生效）", "使用高密时间表", "使用默认时间表",value = LessonTableRepository.gaomiTimeTable) { LessonTableRepository.setGaomiTimeTable(it) }
+
+
 			ListItemUI("设置时间表\n（重启app生效）", LessonTableRepository.currentTimeTable, timeTableList){ _, it -> LessonTableRepository.setTimeTableValue(it) }
 		}
 

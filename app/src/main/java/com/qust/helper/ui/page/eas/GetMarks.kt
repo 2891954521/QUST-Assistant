@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -24,6 +25,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -59,7 +61,7 @@ object GetMarks{
 		val viewModel by activity.viewModels<GetMarksViewModel>()
 		GetMarksUI(padding, viewModel, activity.toast, navController)
 	}
-
+	private var openDeleteDialog = mutableStateOf(false)
 	@Composable
 	fun GetMarksUI(padding: PaddingValues, viewModel: GetMarksViewModel, toast: Toast, navController: NavController){
 		AppWidgets.CheckEasLogin(viewModel = viewModel, navController = navController)
@@ -71,6 +73,10 @@ object GetMarks{
 
 		// 触发Compose更新
 		val marks = if(viewModel.update) viewModel.marks.value else viewModel.marks.value
+
+		if(openDeleteDialog.value){
+			OpenDeleteMarksDialog(viewModel)
+		}
 
 		Column(modifier = Modifier.fillMaxSize().padding(padding)) {
 			Row(
@@ -93,9 +99,13 @@ object GetMarks{
 						horizontalPadding = 8.dp
 					)
 				}
-
-				Button(onClick = { viewModel.queryMarks() }) {
-					Text(text = stringResource(id = R.string.text_query))
+				Column{
+					Button(onClick = { openDeleteDialog.value = true }) {
+						Text(text = stringResource(id = R.string.text_delete),color= Color.Red)
+					}
+					Button(onClick = { viewModel.queryMarks() }) {
+						Text(text = stringResource(id = R.string.text_query))
+					}
 				}
 			}
 
@@ -234,6 +244,63 @@ object GetMarks{
 				}
 			}
 			content()
+		}
+	}
+
+	@Composable
+	fun DeleteMarksDialog(
+		onDismissRequest: () -> Unit,
+		onConfirmation: () -> Unit,
+		dialogTitle: String,
+		dialogText: String,
+		viewModel:GetMarksViewModel
+	) {
+		AlertDialog(
+			title = {
+				Text(text = dialogTitle)
+			},
+			text = {
+				Text(text = dialogText)
+			},
+			onDismissRequest = {
+				onDismissRequest()
+			},
+			confirmButton = {
+				TextButton(
+					onClick = {
+						onConfirmation()
+						viewModel.clearMarks()
+					}
+				) {
+					Text(text = stringResource(id = R.string.text_ok),color= Color.Red)
+				}
+			},
+			dismissButton = {
+				TextButton(
+					onClick = {
+						onDismissRequest()
+					}
+				) {
+					Text(text = stringResource(id = R.string.text_cancel))
+				}
+			}
+		)
+	}
+	@Composable
+	fun OpenDeleteMarksDialog(viewModel:GetMarksViewModel){
+		val term = viewModel.getTerm()
+		when {
+			openDeleteDialog.value -> {
+				DeleteMarksDialog(
+					onDismissRequest = { openDeleteDialog.value = false },
+					onConfirmation = {
+						openDeleteDialog.value = false
+					},
+					dialogTitle = "确认删除？",
+					dialogText = "这将删除${term}成绩\n（重启app生效）",
+					viewModel
+				)
+			}
 		}
 	}
 }

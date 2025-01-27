@@ -6,6 +6,7 @@
 	<string name="text_cancel">取消</string>
 	<string name="text_term">学期</string>
 	<string name="text_query">查询</string>
+	<string name="text_delete">删除</string>
 	<string name="text_week">第 %s 周</string>
 	<string name="text_query_term_start_time">当前开学日期: %s\n查询到的开学日期: %s</string>
 	<string name="text_save_lesson_table">保存课表</string>

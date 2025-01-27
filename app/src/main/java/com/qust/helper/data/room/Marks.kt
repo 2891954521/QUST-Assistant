@@ -2,7 +2,6 @@ package com.qust.helper.data.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
@@ -192,11 +191,14 @@ interface MarkDao {
 	@Insert
 	fun insertAll(lessons: List<Mark>)
 
+	@Query("DELETE FROM marks WHERE `index` = :index")
+	fun clear(index: Int)
+
 	@Update
 	fun update(lesson: Mark)
 
-	@Delete
-	fun delete(lesson: Mark)
+	@Query("DELETE FROM marks")
+	fun delete()
 }
 
 
