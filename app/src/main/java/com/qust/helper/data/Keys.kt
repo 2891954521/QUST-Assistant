@@ -38,12 +38,12 @@ object Keys {
 	const val KEY_HIDE_TEACHER = "key_hide_teacher"
 
 	/**
-	 * 高密时间表
+	 * 课表时间表 0：冬季， 1：夏季
 	 */
 	const val KEY_TIME_TABLE = "key_time_table"
 
 	/**
-	 * 课表时间表 0：冬季， 1：夏季
+	 * 高密时间表
 	 */
 	const val KEY_GAOMI_TIME_TABLE = "key_gaomi_time_table"
 
