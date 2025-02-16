@@ -1,0 +1,17 @@
+<resources>
+	<string name="app_name">青科助手</string>
+	<string name="text_welcome">欢迎使用</string>
+	<string name="text_skip">跳过</string>
+	<string name="text_ok">确定</string>
+	<string name="text_cancel">取消</string>
+	<string name="text_term">学期</string>
+	<string name="text_query">查询</string>
+	<string name="text_delete">删除</string>
+	<string name="text_week">第 %s 周</string>
+	<string name="text_query_term_start_time">当前开学日期: %s\n查询到的开学日期: %s</string>
+	<string name="text_save_lesson_table">保存课表</string>
+	<string name="text_login">登录</string>
+	<string name="text_term_lesson">学期课表</string>
+	<string name="text_drink_code">饮水码</string>
+	<string name="text_checking_version">正在检查更新</string>
+</resources>
