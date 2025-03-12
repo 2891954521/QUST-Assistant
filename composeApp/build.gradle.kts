@@ -33,25 +33,25 @@ kotlin {
     
     jvm("desktop")
     
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "composeApp"
-        browser {
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
-        binaries.executable()
-    }
+//    @OptIn(ExperimentalWasmDsl::class)
+//    wasmJs {
+//        moduleName = "composeApp"
+//        browser {
+//            val rootDirPath = project.rootDir.path
+//            val projectDirPath = project.projectDir.path
+//            commonWebpackConfig {
+//                outputFileName = "composeApp.js"
+//                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+//                    static = (static ?: mutableListOf()).apply {
+//                        // Serve sources to debug inside browser
+//                        add(rootDirPath)
+//                        add(projectDirPath)
+//                    }
+//                }
+//            }
+//        }
+//        binaries.executable()
+//    }
     
     sourceSets {
         commonMain.dependencies {
@@ -68,6 +68,9 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
             implementation(libs.ktor.client.core)
+
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
             implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
         }
@@ -181,6 +184,12 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.qust.helper"
+    generateResClass = auto
 }
 
 compose.desktop {
