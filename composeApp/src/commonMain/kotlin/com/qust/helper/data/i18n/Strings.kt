@@ -8,6 +8,9 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 open class I18nStrings {
 
+	open val TEXT_OK = "确定"
+	open val TEXT_CANCEL = "取消"
+
 	open val MSG_NEED_LOGIN: String = "需要登录"
 
 	open val MSG_ERROR_ACCOUNT: String = "用户名或密码错误"
