@@ -2,8 +2,8 @@ package com.qust.helper.model
 
 import com.qust.helper.BuildConfig
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.utils.DateUtils
+import com.qust.helper.utils.SettingUtils
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,13 +22,13 @@ object UpdateRepository {
 	 * 异步检查更新
 	 */
 	suspend fun checkUpdate(): UpdateInfo? {
-		if(!Setting.getBoolean(Keys.KEY_AUTO_UPDATE, true)) return null
+		if(!SettingUtils.getBoolean(Keys.KEY_AUTO_UPDATE, true)) return null
 
 		val current = System.currentTimeMillis()
 		val frequency = 1000L * 60L * 60L * 24L * 3L
-		if((current - Setting.getLong(Keys.LAST_UPDATE_TIME)) < frequency) return null
+		if((current - SettingUtils.getLong(Keys.LAST_UPDATE_TIME)) < frequency) return null
 
-		Setting.edit { it.putLong(Keys.LAST_UPDATE_TIME, current) }
+		SettingUtils.putLong(Keys.LAST_UPDATE_TIME, current)
 
 		// 从 Gitee 上检查更新
 		var info = checkVersionFromGit(GITEE_UPDATE_URL)

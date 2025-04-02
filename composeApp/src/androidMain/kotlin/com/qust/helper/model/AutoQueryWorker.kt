@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.data.room.LessonDatabase
 import com.qust.helper.model.account.EASAccount
 import com.qust.helper.model.account.NeedLoginException
 import com.qust.helper.utils.NotificationUtils
+import com.qust.helper.utils.SettingUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -27,9 +27,9 @@ class AutoQueryWorker(context: Context, params: WorkerParameters) : CoroutineWor
 						val notices = easAccount.queryNotice(1, 1)
 						if(notices.isNotEmpty()){
 							val notice = notices.first()
-							val id = Setting[Keys.LAST_NOTICE_ID]
+							val id = SettingUtils[Keys.LAST_NOTICE_ID, ""]
 							if(id != notice.id){
-								Setting.edit { it.putString(Keys.LAST_NOTICE_ID, notice.id) }
+								SettingUtils.putString(Keys.LAST_NOTICE_ID, notice.id)
 								NotificationUtils.sendNotification(applicationContext, "教务通知", notices.first().content)
 							}
 						}

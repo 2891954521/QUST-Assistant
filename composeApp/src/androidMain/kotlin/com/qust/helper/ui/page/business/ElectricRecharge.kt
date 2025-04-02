@@ -55,7 +55,8 @@ import com.qust.helper.data.Electricity
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Page
 import com.qust.helper.ui.widget.AppWidgets
-import com.qust.helper.ui.widget.Dialogs
+import com.qust.helper.ui.widget.AskDialog
+import com.qust.helper.ui.widget.ListDialog
 import com.qust.helper.ui.widget.Texts
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.ElectricRechargeViewModel
@@ -143,7 +144,7 @@ object ElectricRecharge {
 		)
 
 		if(selectRoom){
-			Dialogs.ListDialog(TITLE[selectRoomIndex], uiEvent.getIndexName(selectRoomIndex), { selectRoom = false }) { items, index ->
+			ListDialog(TITLE[selectRoomIndex], uiEvent.getIndexName(selectRoomIndex), { selectRoom = false }) { items, index ->
 				val tmp = selectContent.clone()
 				tmp[selectRoomIndex] = items[index]
 				for(i in selectRoomIndex + 1 .. 4) tmp[i] = "请选择"
@@ -153,7 +154,7 @@ object ElectricRecharge {
 		}
 
 		if(askForDelete != -1){
-			Dialogs.AskDialog("删除", "是否删除宿舍: ${uiState.rooms[askForDelete].roomName}", { askForDelete = -1 }){
+			AskDialog("删除", "是否删除宿舍: ${uiState.rooms[askForDelete].roomName}", { askForDelete = -1 }){
 				uiEvent.deleteRoom(askForDelete)
 				askForDelete = -1
 			}

@@ -2,9 +2,9 @@ package com.qust.helper.model
 
 import android.util.Log
 import com.qust.helper.App
-import com.qust.helper.data.Setting
 import com.qust.helper.utils.DateUtils
 import com.qust.helper.utils.FileUtils
+import com.qust.helper.utils.SettingUtils
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -25,7 +25,7 @@ object Logger {
 	 * 初始化日志模块并处理日志上报
 	 */
 	fun init(app: App) {
-		DEBUG = Setting.getBoolean("key_debug")
+		DEBUG = SettingUtils.getBoolean("key_debug")
 		val f = app.getExternalFilesDir("log")
 		if(!f!!.exists()) f.mkdirs()
 		LogFile = f.toString()

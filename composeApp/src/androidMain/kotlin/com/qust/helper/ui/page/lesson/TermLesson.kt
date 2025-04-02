@@ -38,7 +38,7 @@ import androidx.compose.ui.window.Popup
 import com.qust.helper.R
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Page
-import com.qust.helper.ui.LESSON_BACKGROUND_COLORS
+import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.widget.LessonTableView.LessonView
 import com.qust.helper.ui.widget.Picker
 import com.qust.helper.ui.widget.Toast

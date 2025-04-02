@@ -53,14 +53,14 @@ import com.qust.helper.data.Data
 import com.qust.helper.data.DrawerPageGroup
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Page
-import com.qust.helper.data.Setting
 import com.qust.helper.model.AutoQueryRepository
 import com.qust.helper.model.UpdateRepository
 import com.qust.helper.ui.page.HomePage
-import com.qust.helper.ui.colorSecondaryText
 import com.qust.helper.ui.theme.TEXT_COLORS
+import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
-import com.qust.helper.ui.widget.Dialogs
+import com.qust.helper.ui.widget.AskDialog
+import com.qust.helper.utils.SettingUtils
 import com.qust.helper.utils.UmengUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -77,7 +77,7 @@ class MainActivity : BaseActivity() {
 		super.onCreate(savedInstanceState)
 
 		// 第一次使用跳转到引导页
-		if(Setting.getBoolean(Keys.IS_FIRST_USE, true)) {
+		if(SettingUtils.getBoolean(Keys.IS_FIRST_USE, true)) {
 			startActivity(Intent(this, GuideActivity::class.java))
 			return
 		}
@@ -118,7 +118,7 @@ class MainActivity : BaseActivity() {
 
 					// 显示检查到更新Dialog
 					if(updateMessage.isNotEmpty()){
-						Dialogs.AskDialog(title = "更新", "检查到新版本，是否更新？\n$updateMessage", onConfirm = {
+						AskDialog(title = "更新", "检查到新版本，是否更新？\n$updateMessage", onConfirm = {
 							navController.navigate(Keys.Page.UpdatePage); updateMessage = ""
 						}, onDismiss = { updateMessage = "" })
 					}

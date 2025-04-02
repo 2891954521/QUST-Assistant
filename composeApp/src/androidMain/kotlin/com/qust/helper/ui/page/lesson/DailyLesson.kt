@@ -26,8 +26,8 @@ import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.theme.TEXT_COLORS
-import com.qust.helper.ui.TEXT_COLOR_SECOND_COLOR
-import com.qust.helper.ui.colorSecondaryText
+import com.qust.helper.ui.theme.TEXT_COLOR_SECOND_COLOR
+import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.LessonTableView
 import com.qust.helper.ui.widget.Texts
 

@@ -5,9 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.model.account.DrinkAccount
 import com.qust.helper.model.account.NeedLoginException
+import com.qust.helper.utils.SettingUtils
+import com.qust.helper.viewmodel.extend.toastError
+import com.qust.helper.viewmodel.extend.toastWarning
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,8 +70,8 @@ class DrinkViewModel: BaseViewModel() {
 
 class DrinkUIState(drinkAccount: DrinkAccount) {
 	var drinkCode by drinkAccount._drinkCode
-	var account = mutableStateOf(Setting.getString(key = Keys.DRINK_ACCOUNT))
-	var password = mutableStateOf(Setting.getString(key = Keys.DRINK_PASSWORD))
+	var account = mutableStateOf(SettingUtils.getString(key = Keys.DRINK_ACCOUNT))
+	var password = mutableStateOf(SettingUtils.getString(key = Keys.DRINK_PASSWORD))
 	var needLogin by mutableStateOf(false)
 }
 

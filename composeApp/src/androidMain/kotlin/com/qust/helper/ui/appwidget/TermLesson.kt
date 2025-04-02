@@ -48,8 +48,8 @@ import com.qust.helper.data.Data
 import com.qust.helper.data.lesson.Lesson
 import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.model.LessonTableRepository
-import com.qust.helper.ui.LESSON_BACKGROUND_COLORS
-import com.qust.helper.ui.LESSON_TEXT_COLORS
+import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
+import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.ui.widget.LessonTableView
 import kotlinx.serialization.Serializable
 import java.util.Arrays

@@ -6,12 +6,14 @@ abstract class SettingUtilsImpl {
 	abstract fun getInt(key: String, defValue: Int): Int
 	abstract fun getBoolean(key: String, defValue: Boolean): Boolean
 	abstract fun getFloat(key: String, defValue: Float): Float
+	abstract fun getLong(key: String, defValue: Long): Long
 	abstract fun getStringSet(key: String, defValue: Set<String>): Set<String>?
 
 	abstract fun putString(key: String, value: String)
 	abstract fun putInt(key: String, value: Int)
 	abstract fun putBoolean(key: String, value: Boolean)
 	abstract fun putFloat(key: String, value: Float)
+	abstract fun putLong(key: String, value: Long)
 	abstract fun putStringSet(key: String, value: Set<String>)
 
 	abstract fun removeKey(key: String)

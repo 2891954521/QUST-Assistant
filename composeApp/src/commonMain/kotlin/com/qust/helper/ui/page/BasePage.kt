@@ -16,6 +16,7 @@ abstract class BasePage<T: BaseViewModel>(
 	val icon: ImageVector,
 ) {
 
+	@Composable
 	abstract fun getViewModel(): T
 
 	@Composable

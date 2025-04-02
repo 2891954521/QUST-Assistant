@@ -39,8 +39,8 @@ import com.qust.helper.data.Keys
 import com.qust.helper.data.Page
 import com.qust.helper.model.UpdateRepository
 import com.qust.helper.ui.widget.AppWidgets
-import com.qust.helper.ui.widget.Dialogs
 import com.qust.helper.ui.widget.ListPicker
+import com.qust.helper.ui.widget.ProgressDialog
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.BaseAndroidViewModel
 import kotlinx.coroutines.Dispatchers
@@ -111,7 +111,7 @@ object UpdatePage {
 		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
 
 		if(viewModel.progress >= 0F){
-			Dialogs.ProgressDialog("正在下载", viewModel.progress, "${(viewModel.progress * 100).roundToInt()}/100")
+			ProgressDialog("正在下载", viewModel.progress, "${(viewModel.progress * 100).roundToInt()}/100")
 		}
 
 		toast.ToastContent(toastContent = viewModel.toastContent)

@@ -3,7 +3,6 @@ package com.qust.helper.utils
 import android.content.Context
 import com.qust.helper.BuildConfig
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
 
@@ -18,7 +17,7 @@ object UmengUtils {
 		if(BuildConfig.UMENG_APP_KEY.isNotEmpty()){
 			UMConfigure.setLogEnabled(BuildConfig.DEBUG)
 			UMConfigure.preInit(context.applicationContext, BuildConfig.UMENG_APP_KEY, BuildConfig.UMENG_APP_CHANNEL)
-			if(!Setting.getBoolean(Keys.IS_FIRST_USE, true)) {
+			if(!SettingUtils.getBoolean(Keys.IS_FIRST_USE, true)) {
 				UMConfigure.init(context.applicationContext, BuildConfig.UMENG_APP_KEY, BuildConfig.UMENG_APP_CHANNEL, UMConfigure.DEVICE_TYPE_PHONE, "")
 				MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
 			}

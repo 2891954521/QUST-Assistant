@@ -38,8 +38,10 @@ import com.qust.helper.data.Page
 import com.qust.helper.data.QustApi
 import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.activity.ComposeActivity
-import com.qust.helper.ui.colorSecondaryText
-import com.qust.helper.ui.widget.Dialogs
+import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.ui.widget.DatePickerDialog
+import com.qust.helper.ui.widget.InputDialog
+import com.qust.helper.ui.widget.ListDialog
 import com.qust.helper.utils.DateUtils
 import com.qust.helper.viewmodel.SettingViewModel
 
@@ -140,7 +142,7 @@ object SettingPage {
 		}
 
 		if(showTimePicker){
-			Dialogs.DatePickerDialog(currentDate = LessonTableRepository.startDay, onDismissRequest = { showTimePicker = false }){
+			DatePickerDialog(currentDate = LessonTableRepository.startDay, onDismissRequest = { showTimePicker = false }){
 				LessonTableRepository.setStartDayValue(it)
 				startDayStr = DateUtils.YMD.format(it)
 				showTimePicker = false
@@ -218,7 +220,7 @@ object SettingPage {
 			}
 		}
 		if(showInput){
-			Dialogs.InputDialog(title = title, content = value, keyboardOptions = keyboardOptions, onDismiss = { showInput = false }){
+			InputDialog(title = title, content = value, keyboardOptions = keyboardOptions, onDismiss = { showInput = false }){
 				onInput(it)
 				showInput = false
 			}
@@ -235,7 +237,7 @@ object SettingPage {
 			}
 		}
 		if(showList){
-			Dialogs.ListDialog(title = title, items, onDismiss = { showList = false }){ item, it ->
+			ListDialog(title = title, items, onDismiss = { showList = false }){ item, it ->
 				onSelect(item, it)
 				showList = false
 			}

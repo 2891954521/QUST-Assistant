@@ -42,7 +42,7 @@ import com.qust.helper.R
 import com.qust.helper.data.Data
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Page
-import com.qust.helper.ui.colorSecondaryText
+import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.LessonRender
 import com.qust.helper.ui.widget.LessonTableView

@@ -32,7 +32,7 @@ import androidx.navigation.NavController
 import com.qust.helper.data.Data
 import com.qust.helper.ui.activity.MainActivity
 import com.qust.helper.ui.theme.TEXT_COLORS
-import com.qust.helper.ui.colorSecondaryText
+import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.AppWidgets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

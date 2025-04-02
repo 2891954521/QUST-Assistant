@@ -39,15 +39,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.R
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.data.lesson.LessonTableQueryResult
 import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.model.Logger
 import com.qust.helper.model.account.EASAccount
 import com.qust.helper.ui.page.account.LoginPage
-import com.qust.helper.ui.colorSecondaryText
-import com.qust.helper.ui.widget.AppWidgets
+import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.utils.SettingUtils
 import com.qust.helper.viewmodel.account.AccountViewModel
+import com.qust.helper.viewmodel.extend.toastError
+import com.qust.helper.viewmodel.extend.toastWarning
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -143,8 +144,8 @@ class GuideActivity : BaseActivity() {
 			}
 		}
 
-		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
-		toast.ToastContent(viewModel.toastContent)
+//		AppWidgets.DialogBar(dialogText = viewModel.dialogText)
+//		toast.ToastContent(viewModel.toastContent)
 	}
 
 	private fun btnSkip(boolean: Boolean) {
@@ -152,12 +153,12 @@ class GuideActivity : BaseActivity() {
 			toast.toastWarning("请先阅读并同意《用户许可协议》")
 			return
 		}
-		Setting.edit { it.putBoolean(Keys.IS_FIRST_USE, false) }
+		SettingUtils.putBoolean(Keys.IS_FIRST_USE, false)
 		finish()
 	}
 
 	private fun loginSuccess() {
-		Setting.edit { it.putBoolean(Keys.IS_FIRST_USE, false) }
+		SettingUtils.putBoolean(Keys.IS_FIRST_USE, false)
 		onBackPressedDispatcher.onBackPressed()
 	}
 

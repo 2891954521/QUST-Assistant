@@ -4,14 +4,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.data.QustApi
+import com.qust.helper.data.Settings
 import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.data.lesson.LessonTable
 import com.qust.helper.data.lesson.LessonTableQueryResult
 import com.qust.helper.model.account.EASAccount
 import com.qust.helper.utils.CodeUtils
 import com.qust.helper.utils.DateUtils
+import com.qust.helper.utils.SettingUtils
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -43,59 +44,59 @@ object LessonTableRepository {
 	/**
 	 * 当前时间表
 	 */
-	val _currentTimeTable = mutableIntStateOf(Setting.getInt(Keys.KEY_TIME_TABLE, 0))
-	val currentTimeTable by mutableIntStateOf(Setting.getInt(Keys.KEY_TIME_TABLE, 0))
+	val _currentTimeTable = mutableIntStateOf(SettingUtils.getInt(Keys.KEY_TIME_TABLE, 0))
+	val currentTimeTable by mutableIntStateOf(SettingUtils.getInt(Keys.KEY_TIME_TABLE, 0))
 	fun setTimeTableValue(value: Int) {
 		_currentTimeTable.value = value
-		Setting.edit { it.putInt(Keys.KEY_TIME_TABLE, value) }
+		SettingUtils.putInt(Keys.KEY_TIME_TABLE, value)
 	}
 
 	//使用高密时间表
-	val _gaomiTimeTable = mutableStateOf(Setting.getBoolean(Keys.KEY_GAOMI_TIME_TABLE, false))
+	val _gaomiTimeTable = mutableStateOf(SettingUtils.getBoolean(Keys.KEY_GAOMI_TIME_TABLE, false))
 	val gaomiTimeTable by _gaomiTimeTable
 	fun setGaomiTimeTable(value: Boolean) {
 		_gaomiTimeTable.value = value
-		Setting.edit { it.putBoolean(Keys.KEY_GAOMI_TIME_TABLE, value) }
+		SettingUtils.putBoolean(Keys.KEY_GAOMI_TIME_TABLE, value)
 	}
 
 	/**
 	 * 显示所有课程
 	 */
-	val _showAllLesson = mutableStateOf(Setting.getBoolean(Keys.KEY_SHOW_ALL_LESSON, true))
+	val _showAllLesson = mutableStateOf(SettingUtils.getBoolean(Keys.KEY_SHOW_ALL_LESSON, true))
 	val showAllLesson by _showAllLesson
 	fun setShowAllLessonValue(value: Boolean) {
 		_showAllLesson.value = value
-		Setting.edit { it.putBoolean(Keys.KEY_SHOW_ALL_LESSON, value) }
+		SettingUtils.putBoolean(Keys.KEY_SHOW_ALL_LESSON, value)
 	}
 
 	/**
 	 * 隐藏已结课课程
 	 */
-	val _hideFinishLesson = mutableStateOf(Setting.getBoolean(Keys.KEY_HIDE_FINISH_LESSON, false))
+	val _hideFinishLesson = mutableStateOf(SettingUtils.getBoolean(Keys.KEY_HIDE_FINISH_LESSON, false))
 	val hideFinishLesson by _hideFinishLesson
 	fun setHideFinishLessonValue(value: Boolean) {
 		_hideFinishLesson.value = value
-		Setting.edit { it.putBoolean(Keys.KEY_HIDE_FINISH_LESSON, value) }
+		SettingUtils.putBoolean(Keys.KEY_HIDE_FINISH_LESSON, value)
 	}
 
 	/**
 	 * 隐藏教师
 	 */
-	val _hideTeacher = mutableStateOf(Setting.getBoolean(Keys.KEY_HIDE_TEACHER, true))
+	val _hideTeacher = mutableStateOf(SettingUtils.getBoolean(Keys.KEY_HIDE_TEACHER, true))
 	val hideTeacher by _hideTeacher
 	fun setHideTeacherValue(value: Boolean) {
 		_hideTeacher.value = value
-		Setting.edit { it.putBoolean(Keys.KEY_HIDE_TEACHER, value) }
+		SettingUtils.putBoolean(Keys.KEY_HIDE_TEACHER, value)
 	}
 
 	/**
 	 * 锁定课表
 	 */
-	var _lockLesson = mutableStateOf(Setting.getBoolean(Keys.KEY_LOCK_LESSON, false))
+	var _lockLesson = mutableStateOf(SettingUtils.getBoolean(Keys.KEY_LOCK_LESSON, false))
 	val lockLesson by _lockLesson
 	fun setLockLessonValue(value: Boolean) {
 		_lockLesson.value = value
-		Setting.edit { it.putBoolean(Keys.KEY_LOCK_LESSON, value) }
+		SettingUtils.putBoolean(Keys.KEY_LOCK_LESSON, value)
 	}
 
 	/**
@@ -154,8 +155,8 @@ object LessonTableRepository {
 	 */
 	@OptIn(ExperimentalSerializationApi::class)
 	private fun loadLesson() {
-		if(Setting.lessonTableFolder.exists()) {
-			Setting.lessonTableFolder.listFiles()?.let{
+		if(Settings.lessonTableFolder.exists()) {
+			Settings.lessonTableFolder.listFiles()?.let{
 				for(file in it){
 					if(file?.exists() == true) {
 						try{
@@ -170,7 +171,7 @@ object LessonTableRepository {
 				}
 			}
 		} else {
-			Setting.lessonTableFolder.mkdirs()
+			Settings.lessonTableFolder.mkdirs()
 		}
 	}
 
@@ -196,8 +197,8 @@ object LessonTableRepository {
 		_startDay.value = lessonTable.startDay
 		_totalWeek.intValue = lessonTable.totalWeek
 
-		if(!Setting.lessonTableFolder.exists()) Setting.lessonTableFolder.mkdirs()
-		val file = File(Setting.lessonTableFolder, "lessonTable")
+		if(!Settings.lessonTableFolder.exists()) Settings.lessonTableFolder.mkdirs()
+		val file = File(Settings.lessonTableFolder, "lessonTable")
 		return try{
 			FileOutputStream(file).use { stream ->
 				Json.encodeToStream<LessonTable>(lessonTable, stream)

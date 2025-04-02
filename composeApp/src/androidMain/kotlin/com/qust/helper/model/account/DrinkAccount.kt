@@ -3,7 +3,7 @@ package com.qust.helper.model.account
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
+import com.qust.helper.utils.SettingUtils
 import okhttp3.Headers
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -18,17 +18,17 @@ class DrinkAccount private constructor(): Account(
 	cookieName = "drinkCookie"
 ) {
 
-	private var userToken = Setting.getString("drinkToken")
+	private var userToken = SettingUtils.getString("drinkToken")
 		set(value){
 			field = value
-			Setting.edit { it.putString("drinkToken", value) }
+			SettingUtils.putString("drinkToken", value)
 		}
 
-	val _drinkCode = mutableStateOf(Setting.getString("drinkCode"))
+	val _drinkCode = mutableStateOf(SettingUtils.getString("drinkCode"))
 	val drinkCode by _drinkCode
 	fun setDrinkCodeValue(value: String) {
 		_drinkCode.value = value
-		Setting.edit { it.putString("drinkCode", value) }
+		SettingUtils["drinkCode"] = value
 	}
 
 	companion object {

@@ -47,7 +47,7 @@ import com.qust.helper.ui.page.lesson.DailyLesson
 import com.qust.helper.ui.page.lesson.TermLesson
 import com.qust.helper.ui.page.web.WebPage
 import com.qust.helper.ui.theme.TEXT_COLORS
-import com.qust.helper.ui.colorSecondaryText
+import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.Toast
 
 object MyPage {

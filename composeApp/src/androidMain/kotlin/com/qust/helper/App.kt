@@ -3,9 +3,9 @@ package com.qust.helper
 import android.app.Application
 import android.os.Looper
 import android.widget.Toast
-import com.qust.helper.data.Setting
 import com.qust.helper.model.Logger
 import com.qust.helper.utils.UmengUtils
+import com.tencent.mmkv.MMKV
 
 
 class App: Application() {
@@ -13,7 +13,8 @@ class App: Application() {
 	override fun onCreate() {
 		super.onCreate()
 
-		Setting.init(this)
+		MMKV.initialize(this)
+
 		Logger.init(this)
 
 		if(!BuildConfig.DEBUG) UmengUtils.init(this)

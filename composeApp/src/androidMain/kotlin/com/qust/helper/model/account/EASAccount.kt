@@ -4,7 +4,6 @@ import android.util.Base64
 import androidx.lifecycle.MutableLiveData
 import com.qust.helper.data.Data
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.data.QustApi
 import com.qust.helper.data.eas.Exam
 import com.qust.helper.data.eas.Notice
@@ -13,6 +12,7 @@ import com.qust.helper.data.room.LessonInfoGroup
 import com.qust.helper.data.room.Mark
 import com.qust.helper.model.Logger
 import com.qust.helper.utils.CodeUtils
+import com.qust.helper.utils.SettingUtils
 import okhttp3.FormBody
 import org.json.JSONArray
 import org.json.JSONException
@@ -28,7 +28,7 @@ import java.util.regex.Pattern
 import javax.crypto.Cipher
 
 open class EASAccount protected constructor(): Account(
-	QustApi.EA_HOSTS[Setting.getInt(Keys.EA_HOST, 0)],
+	QustApi.EA_HOSTS[SettingUtils.getInt(Keys.EA_HOST, 0)],
 	Keys.EAS_ACCOUNT,
 	Keys.EAS_PASSWORD,
 	scheme = "https",
@@ -36,7 +36,7 @@ open class EASAccount protected constructor(): Account(
 ) {
 
 	companion object {
-		var useVpn = Setting.getBoolean(Keys.EA_USE_VPN, false)
+		var useVpn = SettingUtils.getBoolean(Keys.EA_USE_VPN, false)
 
 		fun getInstance(): EASAccount {
 			return if(useVpn) VpnEASAccount.getInstance() else Instance.INSTANCE
@@ -47,7 +47,7 @@ open class EASAccount protected constructor(): Account(
 		val INSTANCE = EASAccount()
 	}
 
-	private var entranceTimeData = MutableLiveData(Setting.getInt(Keys.ENTRANCE_TIME, -1))
+	private var entranceTimeData = MutableLiveData(SettingUtils.getInt(Keys.ENTRANCE_TIME, -1))
 
 	/**
 	 * 入学年份信息
@@ -58,7 +58,7 @@ open class EASAccount protected constructor(): Account(
 			return time ?: -1
 		}
 		set(entranceTime) {
-			Setting.edit { it.putInt(Keys.ENTRANCE_TIME, entranceTime) }
+			SettingUtils.putInt(Keys.ENTRANCE_TIME, entranceTime)
 			entranceTimeData.postValue(entranceTime)
 		}
 
@@ -67,7 +67,7 @@ open class EASAccount protected constructor(): Account(
 		isLogin = false
 		cookieJar.clearCookies()
 		host = QustApi.EA_HOSTS[index]
-		Setting.edit { it.putInt(Keys.EA_HOST, index) }
+		SettingUtils.putInt(Keys.EA_HOST, index)
 	}
 
 	override suspend fun absCheckLogin(): Boolean {

@@ -3,9 +3,11 @@ package com.qust.helper.viewmodel.account
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.model.Logger
 import com.qust.helper.model.account.EASAccount
+import com.qust.helper.utils.SettingUtils
+import com.qust.helper.viewmodel.extend.toastError
+import com.qust.helper.viewmodel.extend.toastWarning
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,8 +19,8 @@ class EasAccountViewModel: AccountViewModel(){
 
 	private val easAccount = EASAccount.Instance.INSTANCE
 
-	val easName = mutableStateOf(Setting.getString(key = Keys.EAS_ACCOUNT))
-	val easPassword = mutableStateOf(Setting.getString(key = Keys.EAS_PASSWORD))
+	val easName = mutableStateOf(SettingUtils.getString(key = Keys.EAS_ACCOUNT))
+	val easPassword = mutableStateOf(SettingUtils.getString(key = Keys.EAS_PASSWORD))
 
 	override fun login(accountStr: String, passwordStr: String, block: ()-> Unit) {
 		viewModelScope.launch {

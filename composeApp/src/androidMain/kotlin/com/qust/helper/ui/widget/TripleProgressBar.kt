@@ -12,7 +12,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.qust.helper.ui.colorSuccess
+import com.qust.helper.ui.theme.colorSuccess
 
 /**
  * 有三种颜色的ProgressBar

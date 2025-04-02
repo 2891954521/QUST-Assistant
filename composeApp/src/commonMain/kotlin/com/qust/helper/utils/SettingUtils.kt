@@ -36,6 +36,9 @@ object SettingUtils {
 	fun getInt(key: String, defValue: Int = 0): Int = impl.getInt(key, defValue)
 	fun putInt(key: String, value: Int) = impl.putInt(key, value)
 
+	fun getLong(key: String, defValue: Long = 0): Long = impl.getLong(key, defValue)
+	fun putLong(key: String, value: Long) = impl.putLong(key, value)
+
 	fun getBoolean(key: String, defValue: Boolean = false) = impl.getBoolean(key, defValue)
 	fun putBoolean(key: String, value: Boolean) = impl.putBoolean(key, value)
 

@@ -78,7 +78,7 @@ object AppWidgets{
 
 	@Composable
 	fun DialogBar(dialogText: String){
-		if(dialogText.isNotEmpty()) Dialogs.IndeterminateProgressDialog(dialogText)
+		if(dialogText.isNotEmpty()) IndeterminateProgressDialog(dialogText)
 	}
 
 	@Composable

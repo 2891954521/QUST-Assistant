@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import com.qust.helper.R
 import com.qust.helper.data.Keys
 import com.qust.helper.data.Page
-import com.qust.helper.ui.widget.AppWidgets
 import com.qust.helper.ui.widget.Toast
 import com.qust.helper.viewmodel.account.AccountViewModel
 import com.qust.helper.viewmodel.account.EasAccountViewModel
@@ -63,8 +62,8 @@ object LoginPage {
 				loginSuccess = onSuccess
 			)
 		}
-		AppWidgets.DialogBar(viewModel.dialogText)
-		toast.ToastContent(viewModel.toastContent)
+//		AppWidgets.DialogBar(viewModel.dialogText)
+//		toast.ToastContent(viewModel.toastContent)
 	}
 
 	@Composable
@@ -77,8 +76,8 @@ object LoginPage {
 				loginSuccess = onSuccess
 			)
 		}
-		AppWidgets.DialogBar(viewModel.dialogText)
-		toast.ToastContent(viewModel.toastContent)
+//		AppWidgets.DialogBar(viewModel.dialogText)
+//		toast.ToastContent(viewModel.toastContent)
 	}
 
 	@Composable

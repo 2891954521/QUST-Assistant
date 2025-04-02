@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.qust.helper.BuildConfig
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.model.account.EASAccount
+import com.qust.helper.utils.SettingUtils
 
 class SettingViewModel: ViewModel() {
 
@@ -18,33 +18,33 @@ class SettingViewModel: ViewModel() {
 		entranceTime = value.toString()
 	}
 
-	var eaHost by mutableIntStateOf(Setting.getInt(Keys.EA_HOST, 0)); private set
+	var eaHost by mutableIntStateOf(SettingUtils.getInt(Keys.EA_HOST, 0)); private set
 	fun setEaHostValue(value: Int){
 		EASAccount.getInstance().changeHost(value)
 		eaHost = value
 	}
 
-	var eaUseVpn by mutableStateOf(Setting.getBoolean(Keys.EA_USE_VPN, false)); private set
+	var eaUseVpn by mutableStateOf(SettingUtils.getBoolean(Keys.EA_USE_VPN, false)); private set
 	fun setEaUseVpnValue(value: Boolean){
 		EASAccount.useVpn = value
-		Setting.edit { it.putBoolean(Keys.EA_USE_VPN, value) }
+		SettingUtils.putBoolean(Keys.EA_USE_VPN, value)
 		eaUseVpn = value
 	}
 
-	var themeFollowSystem by com.qust.helper.ui.themeFollowSystem; private set
+	var themeFollowSystem by com.qust.helper.data.Settings.themeFollowSystem; private set
 	fun setThemeFollowSystemValue(value: Boolean){
-		Setting.edit { it.putBoolean(Keys.KEY_THEME_FOLLOW_SYSTEM, value) }
+		SettingUtils.putBoolean(Keys.KEY_THEME_FOLLOW_SYSTEM, value)
 		themeFollowSystem = value
 	}
-	var themeDark by com.qust.helper.ui.themeDark; private set
+	var themeDark by com.qust.helper.data.Settings.themeDark; private set
 	fun setThemeDarkValue(value: Boolean){
-		Setting.edit { it.putBoolean(Keys.KEY_THEME_DARK, value) }
+		SettingUtils.putBoolean(Keys.KEY_THEME_DARK, value)
 		themeDark = value
 	}
 
-	var autoUpdate by mutableStateOf(Setting.getBoolean(Keys.KEY_AUTO_UPDATE, true)); private set
+	var autoUpdate by mutableStateOf(SettingUtils.getBoolean(Keys.KEY_AUTO_UPDATE, true)); private set
 	fun setAutoUpdateValue(value: Boolean){
-		Setting.edit { it.putBoolean(Keys.KEY_AUTO_UPDATE, value) }
+		SettingUtils.putBoolean(Keys.KEY_AUTO_UPDATE, value)
 		autoUpdate = value
 	}
 

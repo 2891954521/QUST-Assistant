@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.qust.helper.R
 import com.qust.helper.data.Data
 import com.qust.helper.model.LessonTableRepository
-import com.qust.helper.ui.LESSON_TEXT_COLORS
+import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.ui.widget.Texts.SingleLineText
 import java.util.Calendar
 import java.util.Date

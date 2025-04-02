@@ -1,8 +1,8 @@
 package com.qust.helper.model.account
 
 import com.qust.helper.data.Keys
-import com.qust.helper.data.Setting
 import com.qust.helper.data.QustApi
+import com.qust.helper.utils.SettingUtils
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
@@ -35,7 +35,7 @@ class VpnEASAccount: EASAccount(){
 		if(index >= QustApi.EA_HOSTS.size) return
 		host = QustApi.EA_HOSTS[index]
 		vpnAccount = VpnEas(host, scheme)
-		Setting.edit { it.putInt(Keys.EA_HOST, index) }
+		SettingUtils.putInt(Keys.EA_HOST, index)
 	}
 
 	override fun getAccount(): String {

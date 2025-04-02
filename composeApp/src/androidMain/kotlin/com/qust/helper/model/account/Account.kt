@@ -1,6 +1,6 @@
 package com.qust.helper.model.account
 
-import com.qust.helper.data.Setting
+import com.qust.helper.utils.SettingUtils
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.Headers
@@ -60,7 +60,7 @@ class AccountCookieJar(val scheme: String = "http", val host: String, val cookie
 	fun loadCookie(scheme: String, host: String){
 		val tmp = ArrayList<Cookie>()
 		val url: HttpUrl = HttpUrl.Builder().host(host).scheme(scheme).build()
-		for(cookieString in Setting.getStringSet(cookieName, HashSet())) {
+		for(cookieString in SettingUtils.getStringSet(cookieName, HashSet())) {
 			val cookie = Cookie.parse(url, cookieString)
 			if(cookie != null) tmp.add(cookie)
 		}
@@ -76,7 +76,7 @@ class AccountCookieJar(val scheme: String = "http", val host: String, val cookie
 
 	override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
 		cookiesList += cookies
-		Setting.edit { it.putStringSet(cookieName, cookies.map { cookie: Cookie -> cookie.toString() }.toHashSet()) }
+		SettingUtils.putStringSet(cookieName, cookies.map { cookie: Cookie -> cookie.toString() }.toHashSet())
 	}
 
 	override fun loadForRequest(url: HttpUrl): List<Cookie> {
@@ -200,8 +200,8 @@ abstract class Account(host: String, var accountName: String, var passwordName: 
 	@Throws(IOException::class, NeedLoginException::class)
 	override suspend fun login(): Boolean {
 		return login(
-			Setting.getString(accountName),
-			Setting.getString(passwordName),
+			SettingUtils.getString(accountName),
+			SettingUtils.getString(passwordName),
 			saveData = false
 		)
 	}
@@ -209,7 +209,10 @@ abstract class Account(host: String, var accountName: String, var passwordName: 
 	@Throws(IOException::class)
 	override suspend fun login(account: String?, password: String?, saveData: Boolean): Boolean {
 		isLogin = if(account == null || password == null) false else absLogin(account, password)
-		if(saveData && isLogin) Setting.edit { it.putString(accountName, account).putString(passwordName, password) }
+		if(saveData && isLogin) {
+			SettingUtils.putString(accountName, account ?: "")
+			SettingUtils.putString(passwordName, password ?: "")
+		}
 		return isLogin
 	}
 
@@ -308,7 +311,7 @@ abstract class Account(host: String, var accountName: String, var passwordName: 
 	 * 获取账号
 	 */
 	override fun getAccount(): String {
-		return Setting.getString(accountName, "")
+		return SettingUtils.getString(accountName, "")
 	}
 
 	override fun getCookie(): List<Cookie> {
@@ -317,7 +320,8 @@ abstract class Account(host: String, var accountName: String, var passwordName: 
 
 	override fun logout() {
 		cookieJar.clearCookies()
-		Setting.edit { it.remove(accountName).remove(passwordName) }
+		SettingUtils.putString(accountName, "")
+		SettingUtils.putString(passwordName, "")
 		isLogin = false
 	}
 

@@ -24,8 +24,8 @@ import com.qust.helper.data.Keys
 import com.qust.helper.data.Page
 import com.qust.helper.model.account.EASAccount
 import com.qust.helper.model.account.IPassAccount
-import com.qust.helper.ui.colorSecondaryText
-import com.qust.helper.ui.widget.Dialogs
+import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.ui.widget.AskDialog
 
 
 object AccountManagerPage {
@@ -122,14 +122,14 @@ object AccountManagerPage {
 			}
 
 			if(askForLogoutEas){
-				Dialogs.AskDialog("退出登录", "是否确定退出登录，储存的账号登录信息会被删除", { askForLogoutEas = false }){
+				AskDialog("退出登录", "是否确定退出登录，储存的账号登录信息会被删除", { askForLogoutEas = false }){
 					easLogout()
 					askForLogoutEas = false
 				}
 			}
 
 			if(askForLogoutIpass){
-				Dialogs.AskDialog("退出登录", "是否确定退出登录，储存的账号登录信息会被删除", { askForLogoutIpass = false }){
+				AskDialog("退出登录", "是否确定退出登录，储存的账号登录信息会被删除", { askForLogoutIpass = false }){
 					ipassLogout()
 					askForLogoutIpass = false
 				}
