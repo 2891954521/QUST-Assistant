@@ -16,6 +16,8 @@ abstract class BasePage<T: BaseViewModel>(
 	val icon: ImageVector,
 ) {
 
+	val key: String = javaClass.name
+
 	@Composable
 	abstract fun getViewModel(): T
 

@@ -37,7 +37,6 @@ import com.qust.helper.model.account.EASAccount
 import com.qust.helper.model.account.IPassAccount
 import com.qust.helper.ui.page.app.SettingPage
 import com.qust.helper.ui.page.business.ElectricRecharge
-import com.qust.helper.ui.page.business.SportTest
 import com.qust.helper.ui.page.eas.GetAcademic
 import com.qust.helper.ui.page.eas.GetExams
 import com.qust.helper.ui.page.eas.GetLessonTable
@@ -69,7 +68,6 @@ object MyPage {
 
 	private val business = arrayOf(
 		ElectricRecharge.ElectricPage,
-		SportTest.SportTestPage
 	)
 
 	private val otherSystem = arrayOf(

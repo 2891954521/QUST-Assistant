@@ -1,18 +1,82 @@
 package com.qust.helper.ui.page
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.qust.helper.viewmodel.HomeViewmodel
+import com.qust.helper.ui.theme.LocalColor
+import com.qust.helper.ui.widget.layout.AppContent
+import com.qust.helper.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 
-object HomePage: BasePage<HomeViewmodel>("", Icons.Default.Home) {
+object HomePage: BasePage<HomeViewModel>("主页", Icons.Default.Home) {
 
 	@Composable
-	override fun Content(viewModel: HomeViewmodel) {
-		TODO("Not yet implemented")
+	override fun Content(viewModel: HomeViewModel) {
+		val scope = rememberCoroutineScope()
+		val pagerState = rememberPagerState(initialPage = 0, pageCount = { viewModel.pages.size })
+
+		AppContent(title = title) {
+			HorizontalPager(state = pagerState, modifier = Modifier.weight(1F)) { index ->
+				viewModel.pages[index].BaseContent(PaddingValues())
+			}
+
+			BottomBar(viewModel.pages, viewModel.currentPage){
+				scope.launch { pagerState.animateScrollToPage(it) }
+			}
+		}
 	}
 
 	@Composable
-	override fun getViewModel() = viewModel<HomeViewmodel>()
+	fun BottomBar(pages: List<BasePage<*>>, currentPage: Int, changePage: (Int) -> Unit) {
+		Column(Modifier.fillMaxWidth()) {
+			BottomNavigation(backgroundColor = LocalColor.current.surfaceVariant, elevation = 4.dp) {
+				pages.forEachIndexed { i, page ->
+					BottomNavigationItem(
+						selected = currentPage == i,
+						icon = {
+							Column(
+								modifier = Modifier.padding(top = 4.dp),
+								horizontalAlignment = Alignment.CenterHorizontally
+							) {
+								Icon(
+									painter = rememberVectorPainter(page.icon),
+									contentDescription = page.title
+								)
+								Text(
+									page.title,
+									color = LocalColor.current.onSurface,
+									modifier = Modifier.padding(top = 4.dp),
+								)
+							}
+						},
+						onClick = { changePage(i) },
+					)
+				}
+			}
+			Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+		}
+	}
+
+	@Composable override fun getViewModel() = viewModel<HomeViewModel>()
 }

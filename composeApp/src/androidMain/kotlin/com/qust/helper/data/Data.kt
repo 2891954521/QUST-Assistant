@@ -10,7 +10,6 @@ import com.qust.helper.ui.page.app.AppPage
 import com.qust.helper.ui.page.app.SettingPage
 import com.qust.helper.ui.page.app.UpdatePage
 import com.qust.helper.ui.page.business.ElectricRecharge
-import com.qust.helper.ui.page.business.SportTest
 import com.qust.helper.ui.page.eas.GetAcademic
 import com.qust.helper.ui.page.eas.GetExams
 import com.qust.helper.ui.page.eas.GetLessonTable
@@ -63,7 +62,6 @@ object Data {
 		Keys.Page.GetExamsPage to GetExams.GetExamsPage,
 
 		Keys.Page.ElectricPage to ElectricRecharge.ElectricPage,
-		Keys.Page.SportTestPage to SportTest.SportTestPage,
 
 		Keys.Page.DrinkPage to DrinkPage.DrinkPage,
 

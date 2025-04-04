@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qust.helper.viewmodel.BaseViewModel
 
-object EmptyPage: BasePage<BaseViewModel>("", Icons.Default.Home) {
+object EmptyPage: BasePage<BaseViewModel>("空白页", Icons.Default.Home) {
 
 	@Composable
 	override fun Content(viewModel: BaseViewModel) {
