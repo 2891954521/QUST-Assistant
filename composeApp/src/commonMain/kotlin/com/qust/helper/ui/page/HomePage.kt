@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.ui.theme.LocalColor
 import com.qust.helper.ui.widget.layout.AppContent
 import com.qust.helper.viewmodel.HomeViewModel
@@ -36,12 +36,12 @@ object HomePage: BasePage<HomeViewModel>("主页", Icons.Default.Home) {
 		val scope = rememberCoroutineScope()
 		val pagerState = rememberPagerState(initialPage = 0, pageCount = { viewModel.pages.size })
 
-		AppContent(title = title) {
+		AppContent(title = viewModel.pages[pagerState.currentPage].title) {
 			HorizontalPager(state = pagerState, modifier = Modifier.weight(1F)) { index ->
 				viewModel.pages[index].BaseContent(PaddingValues())
 			}
 
-			BottomBar(viewModel.pages, viewModel.currentPage){
+			BottomBar(viewModel.pages, pagerState.currentPage){
 				scope.launch { pagerState.animateScrollToPage(it) }
 			}
 		}
@@ -61,11 +61,12 @@ object HomePage: BasePage<HomeViewModel>("主页", Icons.Default.Home) {
 							) {
 								Icon(
 									painter = rememberVectorPainter(page.icon),
-									contentDescription = page.title
+									contentDescription = page.title,
+									tint = LESSON_TEXT_COLORS[i % LESSON_TEXT_COLORS.size]
 								)
 								Text(
 									page.title,
-									color = LocalColor.current.onSurface,
+									color = LESSON_TEXT_COLORS[i % LESSON_TEXT_COLORS.size],
 									modifier = Modifier.padding(top = 4.dp),
 								)
 							}

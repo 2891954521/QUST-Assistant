@@ -1,18 +1,103 @@
 package com.qust.helper.ui.page
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.qust.helper.Res
+import com.qust.helper.icon_no_login_user
+import com.qust.helper.ui.drawables.Drawables
+import com.qust.helper.ui.drawables.IconLogin
+import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
+import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.viewmodel.MyViewModel
+import org.jetbrains.compose.resources.painterResource
 
-object MyPage: BasePage<MyViewModel>("我的", Icons.Default.Settings) {
+object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
 
     @Composable
     override fun getViewModel() = viewModel<MyViewModel>()
 
     @Composable
     override fun Content(viewModel: MyViewModel) {
+        val scrollState = rememberScrollState()
+//        val pageController = rememberPageController()
 
+        Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
+            Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clickable {
+//                pageController.startPage(AccountManager)
+            }){
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(painter = painterResource(Res.drawable.icon_no_login_user), contentDescription = null, modifier = Modifier.size(84.dp))
+//                    Column(modifier = Modifier.padding(start = 8.dp)){
+//                        Text(text = account.ifEmpty { "未登录" }, style = MaterialTheme.typography.titleLarge)
+//                        Text(text = account.ifEmpty { "请先登录" }, style = MaterialTheme.typography.titleSmall, color = colorSecondaryText)
+//                    }
+                }
+                Icon(contentDescription = null, imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight, tint = colorSecondaryText, modifier = Modifier.align(Alignment.CenterEnd))
+            }
+
+//            ContentGridView("课表", lesson, clickItem = { Page.navigate(navController, it) })
+//            ContentGridView("教务系统", eas, clickItem = { Page.navigate(navController, it) })
+//            ContentGridView("业务系统", business, clickItem = { Page.navigate(navController, it) })
+//            ContentGridView("其他系统", otherSystem, clickItem = { Page.navigate(navController, it) })
+//            ContentGridView("网页入口", web, clickItem = { Page.navigate(navController, it) })
+//            ContentGridView("其他", other, clickItem = { Page.navigate(navController, it) })
+        }
+    }
+
+    @Composable
+    private fun ContentGridView(title: String, pages: Array<BasePage<*>>, clickItem: (String) -> Unit) {
+        Card(modifier = Modifier.padding(8.dp)) {
+            Text(text = title, fontWeight = FontWeight.W700, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 12.dp, bottom = 4.dp))
+
+            repeat((pages.size + 3) / 4){ row ->
+                Row(Modifier.fillMaxWidth()) {
+                    repeat(4){ col ->
+                        if(row * 4 + col < pages.size){
+                            val page = pages[row * 4 + col]
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.weight(1F).padding(8.dp).clickable { clickItem(page.key) }
+                            ) {
+                                Icon(
+                                    painter = rememberVectorPainter(page.icon),
+                                    contentDescription = page.title,
+                                    tint = LESSON_TEXT_COLORS[(row * 4 + col) % (LESSON_TEXT_COLORS.size - 1) + 1]
+                                )
+                                Text(text = page.title, style = MaterialTheme.typography.labelMedium)
+                            }
+                        }else{
+                            Spacer(modifier = Modifier.weight(1F))
+                        }
+                    }
+
+                }
+
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+        }
     }
 }

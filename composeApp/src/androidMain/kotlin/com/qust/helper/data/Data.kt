@@ -3,7 +3,6 @@ package com.qust.helper.data
 import com.qust.helper.R
 import com.qust.helper.model.LessonTableRepository
 import com.qust.helper.ui.page.DrinkPage
-import com.qust.helper.ui.page.MyPage
 import com.qust.helper.ui.page.account.AccountManagerPage
 import com.qust.helper.ui.page.account.LoginPage
 import com.qust.helper.ui.page.app.AppPage
@@ -49,7 +48,6 @@ object Data {
 	)
 
 	val Pages = mapOf(
-		Keys.Page.MyPage to MyPage.MyPage,
 
 		Keys.Page.DailyLessonPage to DailyLesson.DailyLessonPage,
 		Keys.Page.TermLessonPage to TermLesson.TermLessonPage,
@@ -77,11 +75,6 @@ object Data {
 
 		Keys.Page.UserAgreementPage to AppPage.UserAgreementPage,
 		Keys.Page.PolicyPage to AppPage.PolicyPage,
-	)
-
-	val bottomPage = arrayOf(
-		TermLesson.TermLessonPage,
-		MyPage.MyPage,
 	)
 
 	val TermName = arrayOf(

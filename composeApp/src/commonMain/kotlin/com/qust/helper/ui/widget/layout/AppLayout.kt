@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,8 +37,12 @@ fun AppContentWithBack(
                     )
                 }
             }
-
-            Text(text = title)
+            Text(
+                text = title,
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+            )
         }
 
         Column(Modifier.weight(1F), content = content)
@@ -50,10 +55,14 @@ fun AppContent(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
-        Row {
-            Text(text = title)
+        Row(modifier = Modifier.heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = title,
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+            )
         }
-
         Column(Modifier.weight(1F), content = content)
     }
 }

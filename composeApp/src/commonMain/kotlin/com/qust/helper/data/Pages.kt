@@ -15,7 +15,7 @@ object Pages {
 
     val defaultPages: List<BasePage<*>> = listOf(EmptyPage, MyPage)
 
-    operator fun get(key: String) = Pages[key]
+    operator fun get(key: String?) = Pages[key]
 }
 
 

@@ -1,8 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -141,7 +139,7 @@ android {
         resourceConfigurations += arrayOf("zh", "zh-rCN")
 
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi", "armeabi-v7a", "x86_64")
+            abiFilters += listOf("arm64-v8a", "armeabi", "armeabi-v7a", "x86", "x86_64")
         }
         vectorDrawables {
             useSupportLibrary = true
