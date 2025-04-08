@@ -37,13 +37,26 @@ import org.jetbrains.compose.resources.painterResource
 
 object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
 
+    private val lesson = arrayOf<BasePage<*>>(EmptyPage)
+
+    private val eas = arrayOf<BasePage<*>>(EmptyPage)
+
+    private val business = arrayOf<BasePage<*>>(EmptyPage)
+
+    private val otherSystem = arrayOf<BasePage<*>>(EmptyPage)
+
+    private val web = arrayOf<BasePage<*>>(EmptyPage)
+
+    private val other = arrayOf<BasePage<*>>(EmptyPage)
+
+
     @Composable
     override fun getViewModel() = viewModel<MyViewModel>()
 
     @Composable
     override fun Content(viewModel: MyViewModel) {
         val scrollState = rememberScrollState()
-//        val pageController = rememberPageController()
+        val pageController = rememberPageController()
 
         Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
             Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clickable {
@@ -51,25 +64,25 @@ object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
             }){
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(painter = painterResource(Res.drawable.icon_no_login_user), contentDescription = null, modifier = Modifier.size(84.dp))
-//                    Column(modifier = Modifier.padding(start = 8.dp)){
-//                        Text(text = account.ifEmpty { "未登录" }, style = MaterialTheme.typography.titleLarge)
-//                        Text(text = account.ifEmpty { "请先登录" }, style = MaterialTheme.typography.titleSmall, color = colorSecondaryText)
-//                    }
+                    Column(modifier = Modifier.padding(start = 8.dp)){
+                        Text(text = "未登录", style = MaterialTheme.typography.titleLarge)
+                        Text(text = "请先登录", style = MaterialTheme.typography.titleSmall, color = colorSecondaryText)
+                    }
                 }
                 Icon(contentDescription = null, imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight, tint = colorSecondaryText, modifier = Modifier.align(Alignment.CenterEnd))
             }
 
-//            ContentGridView("课表", lesson, clickItem = { Page.navigate(navController, it) })
-//            ContentGridView("教务系统", eas, clickItem = { Page.navigate(navController, it) })
-//            ContentGridView("业务系统", business, clickItem = { Page.navigate(navController, it) })
-//            ContentGridView("其他系统", otherSystem, clickItem = { Page.navigate(navController, it) })
-//            ContentGridView("网页入口", web, clickItem = { Page.navigate(navController, it) })
-//            ContentGridView("其他", other, clickItem = { Page.navigate(navController, it) })
+            ContentGridView("课表", lesson, pageController::startPage)
+            ContentGridView("教务系统", eas, pageController::startPage)
+            ContentGridView("业务系统", business, pageController::startPage)
+            ContentGridView("其他系统", otherSystem, pageController::startPage)
+            ContentGridView("网页入口", web, pageController::startPage)
+            ContentGridView("其他", other, pageController::startPage)
         }
     }
 
     @Composable
-    private fun ContentGridView(title: String, pages: Array<BasePage<*>>, clickItem: (String) -> Unit) {
+    private fun ContentGridView(title: String, pages: Array<BasePage<*>>, clickItem: (BasePage<*>) -> Unit) {
         Card(modifier = Modifier.padding(8.dp)) {
             Text(text = title, fontWeight = FontWeight.W700, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 12.dp, bottom = 4.dp))
 
@@ -80,7 +93,7 @@ object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
                             val page = pages[row * 4 + col]
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.weight(1F).padding(8.dp).clickable { clickItem(page.key) }
+                                modifier = Modifier.weight(1F).padding(8.dp).clickable { clickItem(page) }
                             ) {
                                 Icon(
                                     painter = rememberVectorPainter(page.icon),

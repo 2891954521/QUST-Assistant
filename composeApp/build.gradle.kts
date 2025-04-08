@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -16,7 +15,6 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_1_8)
         }
@@ -82,7 +80,6 @@ kotlin {
             implementation("androidx.compose.foundation:foundation-layout")
             implementation("androidx.compose.ui:ui-util")
             implementation("androidx.compose.ui:ui-graphics")
-            implementation("androidx.compose.ui:ui-tooling-preview")
 
             implementation("androidx.glance:glance:1.0.0")
             implementation("androidx.glance:glance-appwidget:1.0.0")

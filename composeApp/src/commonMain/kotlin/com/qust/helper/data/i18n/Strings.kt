@@ -17,6 +17,7 @@ open class I18nStrings {
 
 	open val MSG_ERROR_LOGIC: String = "逻辑错误"
 
+	open val ARRAY_WEEK_NAME = arrayOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
 
 }
 
