@@ -1,4 +1,4 @@
-package com.qust.helper.ui.widget.lessonTable
+package com.qust.helper.ui.widget.lesson.lessonTable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

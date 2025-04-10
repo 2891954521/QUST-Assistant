@@ -3,8 +3,8 @@ package com.qust.helper.data
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.page.EmptyPage
 import com.qust.helper.ui.page.HomePage
-import com.qust.helper.ui.page.LessonTable
 import com.qust.helper.ui.page.MyPage
+import com.qust.helper.ui.page.lesson.LessonTablePage
 
 object Pages {
 
@@ -13,10 +13,10 @@ object Pages {
 
         HomePage.key to HomePage,
 
-        LessonTable.key to LessonTable
+        LessonTablePage.key to LessonTablePage
     )
 
-    val defaultPages: List<BasePage<*>> = listOf(LessonTable, MyPage)
+    val defaultPages: List<BasePage<*>> = listOf(LessonTablePage, MyPage)
 
     operator fun get(key: String?) = Pages[key]
 }

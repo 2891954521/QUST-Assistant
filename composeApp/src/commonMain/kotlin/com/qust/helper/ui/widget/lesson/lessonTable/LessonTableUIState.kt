@@ -1,21 +1,20 @@
-package com.qust.helper.ui.widget.lessonTable
+package com.qust.helper.ui.widget.lesson.lessonTable
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qust.helper.entity.lesson.Lesson
-import com.qust.helper.entity.lesson.TimeTable
-import java.util.Date
+import com.qust.helper.model.lessonTable.LessonTableModel
 
 class LessonTableUIState {
 
-	val timeTable by mutableStateOf(TimeTable.DEFAULT)
+	val timeTable by LessonTableModel._timeTable
 
-	val startDay by mutableStateOf(Date())
+	val startDay by LessonTableModel._startDay
 
-	val currentWeek by mutableStateOf(0)
+	val currentWeek by LessonTableModel._currentWeek
 
-	val totalWeek by mutableStateOf(20)
+	val totalWeek by LessonTableModel._totalWeek
 
 	var lessonGroupRender by mutableStateOf(emptyList<LessonGroupRenderAble>())
 
@@ -23,21 +22,29 @@ class LessonTableUIState {
 		val diff = List(timeTable.count){ (timeTable.endMinute[it] - timeTable.startMinute[it]).toFloat() }
 		lessonGroupRender = lessons.map { lesson ->
 
+			// 找开始的时间是时间表里的第几个，以小数表示不足一个的时间
 			val st = lesson.startMinute
 			var startOffset = 0F
-			for(i in diff.indices){
-				if(st <= timeTable.startMinute[i]){
-					startOffset = i.toFloat()
+			var s = 0
+			while(s < diff.size){
+				if(st <= timeTable.startMinute[s]){
+					// 小于开始节点，即为第 s 个
+					startOffset = s.toFloat()
 					break
-				}else if(st < timeTable.endMinute[i]){
-					startOffset = (st - timeTable.startMinute[i]) / diff[i] + i
+				}else if(st < timeTable.endMinute[s]){
+					// 小于结束节点，即为第 s + 多出的部分 个
+					startOffset = s + (st - timeTable.startMinute[s]) / diff[s]
 					break
+				}else{
+					// 大于结束节点的情况下继续查找下一个节点
 				}
+				s++
 			}
 
+			// 结束时间同理，从开始时间的位置往后找，防止无效查找
 			val ed = lesson.endMinute
-			var endOffset = 0F
-			for(i in diff.indices){
+			var endOffset = timeTable.count.toFloat()
+			for(i in s ..< diff.size){
 				if(ed <= timeTable.startMinute[i]){
 					endOffset = i.toFloat()
 					break
