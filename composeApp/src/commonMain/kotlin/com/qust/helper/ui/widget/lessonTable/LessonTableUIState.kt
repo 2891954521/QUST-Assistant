@@ -2,6 +2,8 @@ package com.qust.helper.ui.widget.lessonTable
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.qust.helper.entity.lesson.Lesson
 import com.qust.helper.entity.lesson.TimeTable
 import java.util.Date
 
@@ -15,26 +17,64 @@ class LessonTableUIState {
 
 	val totalWeek by mutableStateOf(20)
 
-	val lessonTable = listOf<LessonGroupRenderAble>().toMutableList()
+	var lessonGroupRender by mutableStateOf(emptyList<LessonGroupRenderAble>())
 
+	fun setLessonTable(lessons: List<Lesson>){
+		val diff = List(timeTable.count){ (timeTable.endMinute[it] - timeTable.startMinute[it]).toFloat() }
+		lessonGroupRender = lessons.map { lesson ->
+
+			val st = lesson.startMinute
+			var startOffset = 0F
+			for(i in diff.indices){
+				if(st <= timeTable.startMinute[i]){
+					startOffset = i.toFloat()
+					break
+				}else if(st < timeTable.endMinute[i]){
+					startOffset = (st - timeTable.startMinute[i]) / diff[i] + i
+					break
+				}
+			}
+
+			val ed = lesson.endMinute
+			var endOffset = 0F
+			for(i in diff.indices){
+				if(ed <= timeTable.startMinute[i]){
+					endOffset = i.toFloat()
+					break
+				}else if(ed < timeTable.endMinute[i]){
+					endOffset = (ed - timeTable.startMinute[i]) / diff[i] + i
+					break
+				}
+			}
+
+			LessonGroupRenderAble(lesson.week, startOffset, endOffset, arrayOf(LessonRenderAble(
+				colorIndex = lesson.colorLabel,
+				name = lesson.name,
+				place = lesson.place,
+				teacher = lesson.teacher
+			)))
+		}
+
+		println(lessonGroupRender)
+	}
 }
 
+
 data class LessonRenderAble(
-	val name: String = "",
-	val place: String = "",
-	val teacher: String = "",
+	val colorIndex: Int,
+	val name: String,
+	val place: String,
+	val teacher: String,
 )
 
 /**
  * 一个时间的课程组
  * 表示一个时间点的N节不同的课程
  * @param week 星期几 1-7
- * @param startTime 上课时间
- * @param endTime 下课时间
  */
-class LessonGroupRenderAble(
+data class LessonGroupRenderAble(
 	val week: Int,
-	val startTime: Int,
-	val endTime: Int,
+	val startOffset: Float,
+	val endOffset: Float,
 	val lessons: Array<LessonRenderAble> = emptyArray()
 )

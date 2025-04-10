@@ -17,23 +17,53 @@ data class TimeTable(
 		)
 	}
 
+	/** 一天有几节课 */
+	val count: Int
+
+	/**
+	 * 字符串格式的时间
+	 */
 	val startTimeStr: List<String>
 	val endTimeStr: List<String>
+
+	/**
+	 * 从 0 点开始到当前时间点的分钟数
+	 */
+	val startMinute: List<Int>
+	val endMinute: List<Int>
 
 	init {
 		if(startTime.size != endTime.size) {
 			throw RuntimeException("LessonTable startTime length most equal endTime length")
 		}
-		startTimeStr = startTime.map {
-			val hour = it / 100
-			val minute = it % 100
-			"${if(hour < 10) "0${hour}" else hour}:${if(minute < 10) "0${minute}" else minute}"
-		}.toList()
-		endTimeStr = endTime.map {
-			val hour = it / 100
-			val minute = it % 100
-			"${if(hour < 10) "0${hour}" else hour}:${if(minute < 10) "0${minute}" else minute}"
-		}.toList()
+
+		count = startTime.size
+
+		val startMinute = mutableListOf<Int>()
+		val endMinute = mutableListOf<Int>()
+		val startTimeStr = mutableListOf<String>()
+		val endTimeStr = mutableListOf<String>()
+
+		for(i in startTime.indices){
+			val st = startTime[i]
+			val shour = st / 100
+			val sminute = st % 100
+
+			val ed = endTime[i]
+			val ehour = ed / 100
+			val eminute = ed % 100
+
+			startMinute.add(shour * 60 + sminute)
+			endMinute.add(ehour * 60 + eminute)
+
+			startTimeStr.add("${if(shour < 10) "0${shour}" else shour}:${if(sminute < 10) "0${sminute}" else sminute}")
+			endTimeStr.add("${if(ehour < 10) "0${ehour}" else ehour}:${if(eminute < 10) "0${eminute}" else eminute}")
+		}
+
+		this.startTimeStr = startTimeStr.toList()
+		this.endTimeStr = endTimeStr.toList()
+		this.startMinute = startMinute.toList()
+		this.endMinute = endMinute.toList()
 	}
 
 	override fun equals(other: Any?): Boolean {

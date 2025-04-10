@@ -1,5 +1,6 @@
 package com.qust.helper.ui.widget.lessonTable
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,17 +22,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.qust.helper.data.i18n.Strings
 import com.qust.helper.entity.lesson.TimeTable
+import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import java.util.Calendar
 import java.util.Date
 
 @Composable
-fun LessonView(uiState: LessonTableUIState){
+fun LessonTableUI(uiState: LessonTableUIState){
 	val density = LocalDensity.current
 	val pagerState = rememberPagerState(initialPage = 0, pageCount = { uiState.totalWeek })
 
@@ -49,7 +54,7 @@ fun LessonView(uiState: LessonTableUIState){
 			}, {
 				LessonDate(uiState.startDay, page)
 			}, {
-				LessonContent(uiState.lessonTable)
+				LessonContent(uiState.timeTable.count, uiState.lessonGroupRender)
 			})
 		}
 	}
@@ -111,18 +116,27 @@ fun LessonDate(startDay: Date, week: Int) {
  * 课表内容
  */
 @Composable
-fun LessonContent(lessonGroups: Collection<LessonGroupRenderAble>){
+fun LessonContent(count: Int, lessonGroups: List<LessonGroupRenderAble>){
 	Layout(content = {
 		lessonGroups.forEach {
 			LessonGroupItem(it)
 		}
 	}) { measurables, constraints ->
-		val placeables = measurables.map { measurable -> measurable.measure(constraints.copy(minWidth = 0, minHeight = 0)) }
-		var yPosition = 0
+		val maxWidth = constraints.maxWidth / 7
+		val ceilHeight = constraints.maxHeight / count
+
+		val ceilConstraint = Constraints(minWidth = maxWidth, maxWidth = maxWidth, minHeight = 0, maxHeight = constraints.maxHeight)
+
+		val placeables = measurables.mapIndexed { i, measurable ->
+			val lesson = lessonGroups[i]
+			val height = ((lesson.endOffset - lesson.startOffset) * ceilHeight).toInt()
+			measurable.measure(ceilConstraint.copy(minHeight = height, maxHeight = height))
+		}
+
 		layout(constraints.maxWidth, constraints.maxHeight) {
-			placeables.forEach { placeable ->
-				placeable.placeRelative(x = 0, y = yPosition)
-				yPosition += placeable.height
+			placeables.forEachIndexed { index, placeable ->
+				val lesson = lessonGroups[index]
+				placeable.place(x = lesson.week * maxWidth, y = (lesson.startOffset * ceilHeight).toInt())
 			}
 		}
 	}
@@ -145,10 +159,16 @@ fun LessonGroupItem(group: LessonGroupRenderAble){
 
 @Composable
 fun LessonItem(lesson: LessonRenderAble){
-	Column {
-		Text(lesson.name)
-		Text(lesson.place)
-		Text(lesson.teacher)
+	Column(
+		modifier = Modifier.padding(1.dp).background(color = LESSON_BACKGROUND_COLORS[lesson.colorIndex], RoundedCornerShape(4.dp)),
+		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.Center
+	) {
+		ProvideTextStyle(TextStyle.Default.copy(color = LESSON_TEXT_COLORS[lesson.colorIndex])){
+			Text(lesson.name, maxLines = 3)
+			Text(lesson.place, maxLines = 2)
+			Text(lesson.teacher, maxLines = 1)
+		}
 	}
 }
 
