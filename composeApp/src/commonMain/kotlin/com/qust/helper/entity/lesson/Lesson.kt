@@ -21,22 +21,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 open class Lesson(
 	val id: Long = 0L,
-
 	val type: Int = 0,
 	val reference: Long = 0L,
-
 	val lessonId: String = "",
-
 	val colorLabel: Int = 0,
-
 	val weeks: Long = 0L,
 	val week: Int = 0,
 	val startMinute: Int = 0,
 	val endMinute: Int = 0,
-
 	val name: String = "",
 	val place: String = "",
 	val teacher: String = "",
-
 	val remark: String = ""
 )

@@ -102,12 +102,12 @@ fun PickerUI(
 		) {
 			Text(text = title)
 
-			Spacer(Modifier.weight(1F))
+			Spacer(Modifier.weight(2F))
 
 			BasicTextField(
 				value = hour,
 				onValueChange = onHourChange,
-				modifier = Modifier.width(50.dp),
+				modifier = Modifier.weight(1F).padding(8.dp).width(50.dp),
 				textStyle = TextStyle.Default.copy(textAlign = TextAlign.End),
 				keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
 				maxLines = 1,
@@ -118,14 +118,14 @@ fun PickerUI(
 			BasicTextField(
 				value = minute,
 				onValueChange = onMinuteChange,
-				modifier = Modifier.width(50.dp),
+				modifier = Modifier.weight(1F).padding(8.dp).width(50.dp),
 				textStyle = TextStyle.Default.copy(textAlign = TextAlign.Start),
 				keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
 				maxLines = 1,
 			)
 
 			Box(modifier = Modifier.fillMaxHeight().clickable(onClick = onOpen)) {
-				Icon(Icons.Rounded.KeyboardArrowDown, null, modifier = Modifier.size(18.dp))
+				Icon(Icons.Rounded.KeyboardArrowDown, null, modifier = Modifier.align(Alignment.Center).size(18.dp), tint = LocalColor.current.primary)
 			}
 		}
 		DropdownMenu(modifier = Modifier.background(LocalColor.current.surface), expanded = showSpinner, onDismissRequest = onDismiss) {

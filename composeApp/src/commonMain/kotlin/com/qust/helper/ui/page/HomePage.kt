@@ -1,7 +1,6 @@
 package com.qust.helper.ui.page
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +37,7 @@ object HomePage: BasePage<HomeViewModel>("主页", Icons.Default.Home) {
 
 		AppContent(title = viewModel.pages[pagerState.currentPage].title) {
 			HorizontalPager(state = pagerState, modifier = Modifier.weight(1F)) { index ->
-				viewModel.pages[index].BaseContent(PaddingValues())
+				viewModel.pages[index].BaseContent()
 			}
 
 			BottomBar(viewModel.pages, pagerState.currentPage){

@@ -1,6 +1,5 @@
 package com.qust.helper.ui
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import com.qust.helper.ui.page.BasePage
@@ -16,7 +15,7 @@ class WindowPage(
             onCloseRequest = { ApplicationViewModel.close(this) },
             title = page.title,
         ) {
-            page.BaseContent(PaddingValues())
+            page.BaseContent()
         }
     }
 

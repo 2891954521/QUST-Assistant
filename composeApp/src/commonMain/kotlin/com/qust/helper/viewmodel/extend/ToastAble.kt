@@ -20,6 +20,8 @@ fun BaseViewModel.toast(msg: String, type: ToastData.Type = ToastData.Type.NORMA
 	}
 }
 
+fun BaseViewModel.toastOK(msg: String) = toast(msg, ToastData.Type.NORMAL)
+
 fun BaseViewModel.toastWarning(msg: String) = toast(msg, ToastData.Type.WARNING)
 
 fun BaseViewModel.toastError(msg: String) = toast(msg, ToastData.Type.ERROR)

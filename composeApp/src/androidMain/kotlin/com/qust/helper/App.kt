@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Looper
 import android.widget.Toast
 import com.qust.helper.model.Logger
+import com.qust.helper.room.AppDataBase
 import com.qust.helper.utils.UmengUtils
 import com.tencent.mmkv.MMKV
 
@@ -14,6 +15,8 @@ class App: Application() {
 		super.onCreate()
 
 		MMKV.initialize(this)
+
+		AppDataBase.init(this)
 
 		Logger.init(this)
 

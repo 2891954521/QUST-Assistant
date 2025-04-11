@@ -8,7 +8,7 @@ import com.qust.helper.model.lessonTable.LessonTableModel
 
 class LessonEditUIState {
 
-	val totalWeek by mutableStateOf(20)
+	val totalWeek by LessonTableModel._totalWeek
 
 	var lessonName by mutableStateOf("")
 	var lessonPlace by mutableStateOf("")
@@ -18,11 +18,13 @@ class LessonEditUIState {
 
 	val timeTable by LessonTableModel._timeTable
 
-	var startHour = mutableStateOf("")
-	var startMinute = mutableStateOf("")
+	val week = mutableStateOf(0)
 
-	var endHour = mutableStateOf("")
-	var endMinute = mutableStateOf("")
+	val startHour = mutableStateOf("")
+	val startMinute = mutableStateOf("")
+
+	val endHour = mutableStateOf("")
+	val endMinute = mutableStateOf("")
 
 	val weeks = List(totalWeek){ false }.toMutableStateList()
 }

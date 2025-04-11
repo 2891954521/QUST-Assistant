@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.qust.helper.data.i18n.Strings
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.theme.LocalColor
 
@@ -56,8 +57,8 @@ fun LessonEditUI(uiState: LessonEditUIState, uiEvent: LessonEditUIEvent, onDismi
 			EditItem("教室", uiState.lessonPlace){ uiState.lessonPlace = it }
 			EditItem("教师", uiState.lessonTeacher){ uiState.lessonTeacher = it }
 
+			LessonWeekPicker("上课时间", uiState.week, Strings.ARRAY_WEEK_NAME)
 			LessonTimePicker("开始时间", uiState.startHour, uiState.startMinute, uiState.timeTable.startTimeStr)
-
 			LessonTimePicker("结束时间", uiState.endHour, uiState.endMinute, uiState.timeTable.endTimeStr)
 
 			Row(
@@ -93,14 +94,18 @@ private fun EditItem(
 	value: String,
 	onValueChange: (String) -> Unit,
 ){
-	Row(Modifier.fillMaxWidth().border(1.dp, LocalColor.current.primary, RoundedCornerShape(6.dp)).padding(8.dp)) {
+	Row(
+		Modifier.fillMaxWidth().border(1.dp, LocalColor.current.primary, RoundedCornerShape(6.dp)).padding(8.dp),
+		horizontalArrangement = Arrangement.Center,
+		verticalAlignment = Alignment.CenterVertically
+	) {
 
 		Text(title)
 
 		BasicTextField(
 			value = value,
 			onValueChange = onValueChange,
-			modifier = Modifier.fillMaxWidth(),
+			modifier = Modifier.fillMaxWidth().padding(8.dp),
 			textStyle = TextStyle.Default.copy(textAlign = TextAlign.End),
 			maxLines = 1,
 		)

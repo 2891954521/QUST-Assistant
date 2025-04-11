@@ -4,9 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.entity.lesson.TimeTable
+import com.qust.helper.platform.model.lessonTable.LessonTableStorage
 import java.util.Date
 
-object LessonTableModel {
+expect fun getLessonTableStorage(): LessonTableStorage
+
+object LessonTableModel: LessonTableStorage by getLessonTableStorage() {
 
 	/** 时间表 */
 	val _timeTable = mutableStateOf(TimeTable.DEFAULT)
@@ -27,4 +30,7 @@ object LessonTableModel {
 	/** 当前星期 ( 0 - 6, 周一 —— 周日) */
 	var _dayOfWeek = mutableIntStateOf(0)
 	val dayOfWeek by _dayOfWeek
+
+
+
 }

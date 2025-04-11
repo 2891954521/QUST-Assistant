@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qust.helper.ui.page.BasePage
+import com.qust.helper.ui.theme.LocalColor
 import com.qust.helper.ui.widget.lesson.lessonEdit.LessonEditUI
 import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableUI
 import com.qust.helper.viewmodel.lesson.LessonTableViewModel
@@ -50,7 +51,12 @@ object LessonTablePage: BasePage<LessonTableViewModel>("课表", Icons.Default.H
 		if(viewModel.isEditLesson){
 			val scope = rememberCoroutineScope()
 			val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-			ModalBottomSheet(sheetState = sheetState, onDismissRequest = { viewModel.lessonEditUIEvent.cancel() }, modifier = Modifier.padding(top = 16.dp)) {
+			ModalBottomSheet(
+				sheetState = sheetState,
+				onDismissRequest = { viewModel.lessonEditUIEvent.cancel() },
+				modifier = Modifier.padding(top = 16.dp),
+				containerColor = LocalColor.current.surface
+			) {
 				LessonEditUI(
 					uiState = viewModel.lessonEditUIState,
 					uiEvent = viewModel.lessonEditUIEvent,

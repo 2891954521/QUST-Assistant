@@ -10,6 +10,9 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
+
     kotlin("plugin.serialization") version "2.0.0"
 }
 
@@ -58,12 +61,16 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            implementation(libs.androidx.room.runtime)
+
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
+            implementation(libs.sqlite.bundled)
             implementation(libs.ktor.client.core)
 
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
@@ -93,8 +100,6 @@ kotlin {
             implementation("androidx.navigation:navigation-compose:2.7.7")
 
             implementation("androidx.work:work-runtime-ktx:2.9.0")
-
-            implementation("androidx.room:room-runtime:2.6.1")
 
             implementation("org.jsoup:jsoup:1.12.1")
 
@@ -180,6 +185,7 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    ksp(libs.androidx.room.compiler)
 }
 
 compose.resources {
@@ -198,4 +204,8 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }

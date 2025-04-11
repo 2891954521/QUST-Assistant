@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import com.qust.helper.data.Pages
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.page.EmptyPage
@@ -30,13 +28,6 @@ class PageActivity: ComponentActivity() {
             this.page = page
         }
 
-        setContent { Content() }
-    }
-
-    @Composable
-    fun Content() {
-        Scaffold { contentPadding ->
-            page.BaseContent(contentPadding)
-        }
+        setContent { this.page.BaseContent() }
     }
 }
