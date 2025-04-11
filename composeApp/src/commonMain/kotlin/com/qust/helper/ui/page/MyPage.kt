@@ -30,6 +30,7 @@ import com.qust.helper.Res
 import com.qust.helper.icon_no_login_user
 import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.IconLogin
+import com.qust.helper.ui.page.lesson.LessonTablePage
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.viewmodel.MyViewModel
@@ -37,7 +38,7 @@ import org.jetbrains.compose.resources.painterResource
 
 object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
 
-    private val lesson = arrayOf<BasePage<*>>(EmptyPage)
+    private val lesson = arrayOf<BasePage<*>>(LessonTablePage)
 
     private val eas = arrayOf<BasePage<*>>(EmptyPage)
 
