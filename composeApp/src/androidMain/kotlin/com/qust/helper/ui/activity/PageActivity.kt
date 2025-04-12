@@ -28,6 +28,6 @@ class PageActivity: ComponentActivity() {
             this.page = page
         }
 
-        setContent { this.page.BaseContent() }
+        setContent { this.page.ComposePage() }
     }
 }

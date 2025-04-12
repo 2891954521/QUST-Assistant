@@ -14,6 +14,7 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,19 +32,32 @@ import kotlinx.coroutines.launch
 object HomePage: BasePage<HomeViewModel>("主页", Icons.Default.Home) {
 
 	@Composable
-	override fun Content(viewModel: HomeViewModel) {
+	override fun ComposePage() {
+		val viewModel = getViewModel()
 		val scope = rememberCoroutineScope()
 		val pagerState = rememberPagerState(initialPage = 0, pageCount = { viewModel.pages.size })
 
-		AppContent(title = viewModel.pages[pagerState.currentPage].title) {
-			HorizontalPager(state = pagerState, modifier = Modifier.weight(1F)) { index ->
-				viewModel.pages[index].BaseContent()
-			}
+		Scaffold { contentPadding ->
+			AppContent(title = viewModel.pages[pagerState.currentPage].title, contentPadding = contentPadding) {
+				HorizontalPager(state = pagerState, modifier = Modifier.weight(1F)) { index ->
+					viewModel.pages[index].BaseContent()
+				}
 
-			BottomBar(viewModel.pages, pagerState.currentPage){
-				scope.launch { pagerState.animateScrollToPage(it) }
+				BottomBar(viewModel.pages, pagerState.currentPage){
+					scope.launch { pagerState.animateScrollToPage(it) }
+				}
 			}
 		}
+	}
+
+	@Composable
+	override fun BaseContent() {
+		// 这个函数在此处无意义
+	}
+
+	@Composable
+	override fun Content(viewModel: HomeViewModel) {
+		// 这个函数在此处无意义
 	}
 
 	@Composable

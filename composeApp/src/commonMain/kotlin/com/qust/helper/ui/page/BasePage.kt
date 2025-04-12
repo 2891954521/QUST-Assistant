@@ -2,16 +2,16 @@ package com.qust.helper.ui.page
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.qust.helper.ui.widget.layout.AppContentWithBack
 import com.qust.helper.ui.widget.toast.ToastUI
 import com.qust.helper.viewmodel.BaseViewModel
 
-abstract class BasePage<T: BaseViewModel>(
+abstract class BasePage<T : BaseViewModel>(
 	val title: String,
 	val icon: ImageVector,
 ) {
@@ -22,15 +22,21 @@ abstract class BasePage<T: BaseViewModel>(
 	abstract fun getViewModel(): T
 
 	@Composable
-	fun BaseContent() {
-		val viewModel = getViewModel()
-
+	open fun ComposePage() {
+		val pageController = rememberPageController()
 		Scaffold { contentPadding ->
-			Box(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
-				Content(viewModel)
-
-				ToastUI(viewModel.toastData, Modifier.align(Alignment.Center))
+			AppContentWithBack(title = title, contentPadding = contentPadding, onBack = pageController::back) {
+				BaseContent()
 			}
+		}
+	}
+
+	@Composable
+	open fun BaseContent() {
+		val viewModel = getViewModel()
+		Box(modifier = Modifier.fillMaxSize()) {
+			Content(viewModel)
+			ToastUI(viewModel.toastData, Modifier.align(Alignment.Center))
 		}
 	}
 

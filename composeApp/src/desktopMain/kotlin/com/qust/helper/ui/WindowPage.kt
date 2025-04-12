@@ -15,7 +15,7 @@ class WindowPage(
             onCloseRequest = { ApplicationViewModel.close(this) },
             title = page.title,
         ) {
-            page.BaseContent()
+            page.ComposePage()
         }
     }
 

@@ -6,7 +6,6 @@ import com.qust.helper.ui.page.DrinkPage
 import com.qust.helper.ui.page.account.AccountManagerPage
 import com.qust.helper.ui.page.account.LoginPage
 import com.qust.helper.ui.page.app.AppPage
-import com.qust.helper.ui.page.app.SettingPage
 import com.qust.helper.ui.page.app.UpdatePage
 import com.qust.helper.ui.page.business.ElectricRecharge
 import com.qust.helper.ui.page.eas.GetAcademic
@@ -70,7 +69,7 @@ object Data {
 		Keys.Page.EasLogin to LoginPage.EasLoginPage,
 		Keys.Page.VpnLoginPage to LoginPage.VpnLoginPage,
 
-		Keys.Page.SettingPage to SettingPage.SettingPage,
+//		Keys.Page.SettingPage to SettingPage.SettingPage,
 		Keys.Page.UpdatePage to UpdatePage.UpdatePage,
 
 		Keys.Page.UserAgreementPage to AppPage.UserAgreementPage,

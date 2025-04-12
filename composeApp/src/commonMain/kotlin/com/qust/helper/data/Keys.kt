@@ -78,6 +78,12 @@ object Keys {
 	 */
 	const val LAST_NOTICE_ID = "last_notice_id"
 
+
+	/** 课表设置 */
+	const val SETTING_TOTAL_WEEK = "setting_total_week"
+
+
+
 	const val EAS_ACCOUNT = "eas_account"
 	const val EAS_PASSWORD = "eas_password"
 

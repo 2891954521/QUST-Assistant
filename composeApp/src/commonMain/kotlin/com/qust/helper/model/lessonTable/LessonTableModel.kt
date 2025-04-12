@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.entity.lesson.TimeTable
+import com.qust.helper.model.SettingModel
 import com.qust.helper.platform.model.lessonTable.LessonTableStorage
 import java.util.Date
 
@@ -20,7 +21,7 @@ object LessonTableModel: LessonTableStorage by getLessonTableStorage() {
 	val startDay by _startDay
 
 	/** 总周数 */
-	val _totalWeek = mutableIntStateOf(1)
+	val _totalWeek = mutableIntStateOf(SettingModel.totalWeek)
 	val totalWeek by _totalWeek
 
 	/** 当前周 (从 0 开始) */

@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.data.Keys
 import com.qust.helper.data.QustApi
-import com.qust.helper.data.Settings
 import com.qust.helper.data.lesson.LessonGroup
 import com.qust.helper.data.lesson.LessonTable
 import com.qust.helper.data.lesson.LessonTableQueryResult
@@ -155,8 +154,8 @@ object LessonTableRepository {
 	 */
 	@OptIn(ExperimentalSerializationApi::class)
 	private fun loadLesson() {
-		if(Settings.lessonTableFolder.exists()) {
-			Settings.lessonTableFolder.listFiles()?.let{
+		if(SettingModel.lessonTableFolder.exists()) {
+			SettingModel.lessonTableFolder.listFiles()?.let{
 				for(file in it){
 					if(file?.exists() == true) {
 						try{
@@ -171,7 +170,7 @@ object LessonTableRepository {
 				}
 			}
 		} else {
-			Settings.lessonTableFolder.mkdirs()
+			SettingModel.lessonTableFolder.mkdirs()
 		}
 	}
 
@@ -197,8 +196,8 @@ object LessonTableRepository {
 		_startDay.value = lessonTable.startDay
 		_totalWeek.intValue = lessonTable.totalWeek
 
-		if(!Settings.lessonTableFolder.exists()) Settings.lessonTableFolder.mkdirs()
-		val file = File(Settings.lessonTableFolder, "lessonTable")
+		if(!SettingModel.lessonTableFolder.exists()) SettingModel.lessonTableFolder.mkdirs()
+		val file = File(SettingModel.lessonTableFolder, "lessonTable")
 		return try{
 			FileOutputStream(file).use { stream ->
 				Json.encodeToStream<LessonTable>(lessonTable, stream)
