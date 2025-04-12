@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
@@ -35,12 +34,11 @@ import java.util.Date
 
 @Composable
 fun LessonTableUI(uiState: LessonTableUIState){
-	val density = LocalDensity.current
 	val pagerState = rememberPagerState(initialPage = 0, pageCount = { uiState.totalWeek })
 
 	Column {
 		Text(
-			text = "第 ${uiState.currentWeek + 1} 周",
+			text = "第 ${pagerState.currentPage + 1} 周",
 			modifier = Modifier.fillMaxWidth(),
 			style = MaterialTheme.typography.titleLarge,
 			textAlign = TextAlign.Center
