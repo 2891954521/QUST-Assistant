@@ -32,6 +32,9 @@ data class TimeTable(
 	val startMinute: List<Int>
 	val endMinute: List<Int>
 
+	/** 一节课的时间 */
+	val sliceLength: List<Float>
+
 	init {
 		if(startTime.size != endTime.size) {
 			throw RuntimeException("LessonTable startTime length most equal endTime length")
@@ -64,6 +67,51 @@ data class TimeTable(
 		this.endTimeStr = endTimeStr.toList()
 		this.startMinute = startMinute.toList()
 		this.endMinute = endMinute.toList()
+
+		sliceLength = List(count){ (endMinute[it] - startMinute[it]).toFloat() }
+	}
+
+	/**
+	 * 根据时间表计算一节课的时间位于时间表的第几节课
+	 * 例如：
+	 * [8:00 - 9:00, 9:00 - 10:00]
+	 * (8:00 - 8:30) => (8 * 60, 8 * 60 + 30)       => (0.0, 0.5)
+	 * (8:30 - 9:30) => (8 * 60 + 30, 9 * 60 + 30)  => (0.5, 1.5)
+	 * @return 时间表的位置
+	 */
+	fun calcOffset(lesson: Lesson): Pair<Float, Float> {
+		// 找开始的时间是时间表里的第几个，以小数表示不足一个的时间
+		val st = lesson.startMinute
+		var startOffset = 0F
+		var s = 0
+		while(s < sliceLength.size){
+			if(st <= startMinute[s]){
+				// 小于开始节点，即为第 s 个
+				startOffset = s.toFloat()
+				break
+			}else if(st < endMinute[s]){
+				// 小于结束节点，即为第 s + 多出的部分 个
+				startOffset = s + (st - startMinute[s]) / sliceLength[s]
+				break
+			}else{
+				// 大于结束节点的情况下继续查找下一个节点
+			}
+			s++
+		}
+
+		// 结束时间同理，从开始时间的位置往后找，防止无效查找
+		val ed = lesson.endMinute
+		var endOffset = count.toFloat()
+		for(i in s ..< sliceLength.size){
+			if(ed <= startMinute[i]){
+				endOffset = i.toFloat()
+				break
+			}else if(ed < endMinute[i]){
+				endOffset = (ed - startMinute[i]) / sliceLength[i] + i
+				break
+			}
+		}
+		return Pair(startOffset, endOffset)
 	}
 
 	override fun equals(other: Any?): Boolean {

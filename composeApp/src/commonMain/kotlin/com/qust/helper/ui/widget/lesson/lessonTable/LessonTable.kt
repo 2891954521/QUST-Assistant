@@ -1,6 +1,7 @@
 package com.qust.helper.ui.widget.lesson.lessonTable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.qust.helper.data.i18n.Strings
+import com.qust.helper.entity.lesson.Lesson
 import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
@@ -33,7 +35,7 @@ import java.util.Calendar
 import java.util.Date
 
 @Composable
-fun LessonTableUI(uiState: LessonTableUIState){
+fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> Unit = { _, _ -> }){
 	val pagerState = rememberPagerState(initialPage = 0, pageCount = { uiState.totalWeek })
 
 	Column {
@@ -52,7 +54,7 @@ fun LessonTableUI(uiState: LessonTableUIState){
 			}, {
 				LessonDate(uiState.startDay, page)
 			}, {
-				LessonContent(uiState.timeTable.count, uiState.lessonGroupRender)
+				LessonContent(uiState.timeTable.count, page, uiState.lessonGroupRender, onLessonClick)
 			})
 		}
 	}
@@ -112,12 +114,14 @@ fun LessonDate(startDay: Date, week: Int) {
 
 /**
  * 课表内容
+ * @param count 一天几节课
+ * @param weekOfTerm 第几周
  */
 @Composable
-fun LessonContent(count: Int, lessonGroups: List<LessonGroupRenderAble>){
+fun LessonContent(count: Int, weekOfTerm: Int, lessonGroups: List<LessonGroupRenderAble>, onLessonClick: (Int, Lesson) -> Unit){
 	Layout(content = {
 		lessonGroups.forEach {
-			LessonGroupItem(it)
+			LessonGroupItem(it, weekOfTerm, onLessonClick)
 		}
 	}) { measurables, constraints ->
 		val maxWidth = constraints.maxWidth / 7
@@ -141,28 +145,23 @@ fun LessonContent(count: Int, lessonGroups: List<LessonGroupRenderAble>){
 }
 
 @Composable
-fun LessonGroupItem(group: LessonGroupRenderAble){
-	if(group.lessons.isEmpty()){
-		Column {
-			Text("")
-			Text("")
-			Text("")
-		}
+fun LessonGroupItem(group: LessonGroupRenderAble, weekOfTerm: Int, onLessonClick: (Int, Lesson) -> Unit){
+	val index = group.current(weekOfTerm)
+	if(index == -1){
+		Box { }
 	}else{
-		val lesson = group.lessons[0]
-		LessonItem(lesson)
+		LessonItem(group.lessons[index]){ onLessonClick(group.lessonIndex[index], group.lessons[index]) }
 	}
-
 }
 
 @Composable
-fun LessonItem(lesson: LessonRenderAble){
+fun LessonItem(lesson: Lesson, onLessonClick: () -> Unit){
 	Column(
-		modifier = Modifier.padding(1.dp).background(color = LESSON_BACKGROUND_COLORS[lesson.colorIndex], RoundedCornerShape(4.dp)),
+		modifier = Modifier.padding(1.dp).background(color = LESSON_BACKGROUND_COLORS[lesson.colorLabel], RoundedCornerShape(4.dp)).clickable(onClick = onLessonClick),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
 	) {
-		ProvideTextStyle(TextStyle.Default.copy(color = LESSON_TEXT_COLORS[lesson.colorIndex])){
+		ProvideTextStyle(TextStyle.Default.copy(color = LESSON_TEXT_COLORS[lesson.colorLabel])){
 			Text(lesson.name, maxLines = 3)
 			Text(lesson.place, maxLines = 2)
 			Text(lesson.teacher, maxLines = 1)

@@ -19,7 +19,7 @@ import kotlinx.serialization.Serializable
  * @param remark 备注
  */
 @Serializable
-open class Lesson(
+data class Lesson(
 	val id: Long = 0L,
 	val type: Int = 0,
 	val reference: Long = 0L,

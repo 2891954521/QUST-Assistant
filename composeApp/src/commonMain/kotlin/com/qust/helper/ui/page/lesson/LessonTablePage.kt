@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.GridView
+import com.qust.helper.ui.page.BackHandler
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.widget.dialog.BottomDialog
 import com.qust.helper.ui.widget.lesson.lessonEdit.LessonEditUI
@@ -25,12 +26,18 @@ object LessonTablePage: BasePage<LessonTableViewModel>("学期课表", Drawables
 
 	@Composable
 	override fun Content(viewModel: LessonTableViewModel) {
+		BackHandler(viewModel.isEditLesson) {
+			viewModel.isEditLesson = false
+		}
+
 		Box(Modifier.fillMaxSize()) {
 
-			LessonTableUI(viewModel.lessonTableUIState)
+			LessonTableUI(viewModel.tableUIState){ i, it ->
+				viewModel.clickLesson(i, it)
+			}
 
 			Button(modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp), onClick = {
-				viewModel.isEditLesson = true
+				viewModel.clickLesson(-1, null)
 			}){
 				Text("添加课程")
 			}
@@ -44,9 +51,9 @@ object LessonTablePage: BasePage<LessonTableViewModel>("学期课表", Drawables
 	fun LessonEditDialog(viewModel: LessonTableViewModel) {
 		BottomDialog(isExpanded = viewModel.isEditLesson) {
 			LessonEditUI(
-				uiState = viewModel.lessonEditUIState,
-				uiEvent = viewModel.lessonEditUIEvent,
-				onDismiss = { viewModel.lessonEditUIEvent.cancel() },
+				uiState = viewModel.editUIState,
+				uiEvent = viewModel,
+				onDismiss = { viewModel.cancel() },
 			)
 		}
 	}

@@ -7,3 +7,7 @@ import com.qust.helper.viewmodel.ApplicationViewModel
 actual fun rememberPageController(): PageController {
     return ApplicationViewModel
 }
+
+@Composable
+actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
+}

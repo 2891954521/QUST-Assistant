@@ -13,13 +13,13 @@ interface LessonMapper {
 	fun selectAll(): List<LessonDao>
 
 	@Insert
-	fun insert(lesson: LessonDao)
+	fun insert(lesson: LessonDao): Long?
 
 	@Insert
 	fun insertAll(lessons: List<LessonDao>)
 
 	@Update
-	fun update(lesson: LessonDao)
+	fun update(lesson: LessonDao): Int
 
 	@Query("DELETE FROM lesson WHERE 1")
 	fun clearTable()

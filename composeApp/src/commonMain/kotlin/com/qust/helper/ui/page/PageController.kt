@@ -20,3 +20,6 @@ interface PageController {
 
 @Composable
 expect fun rememberPageController(): PageController
+
+@Composable
+expect fun BackHandler(enabled: Boolean = true, onBack: () -> Unit)

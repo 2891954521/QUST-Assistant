@@ -15,8 +15,11 @@ class LessonTableStorageImpl: LessonTableStorage {
 		return AppDataBase.INSTANCE.lessonDao().selectAll().map(LessonDao::toLesson)
 	}
 
-	override suspend fun saveLesson(lesson: Lesson): Boolean {
-		AppDataBase.INSTANCE.lessonDao().insert(lesson.toLessonDao())
-		return true
+	override suspend fun saveLesson(lesson: Lesson): Long? {
+		return AppDataBase.INSTANCE.lessonDao().insert(lesson.toLessonDao())
+	}
+
+	override suspend fun updateLesson(lesson: Lesson): Boolean {
+		return AppDataBase.INSTANCE.lessonDao().update(lesson.toLessonDao()) == 1
 	}
 }

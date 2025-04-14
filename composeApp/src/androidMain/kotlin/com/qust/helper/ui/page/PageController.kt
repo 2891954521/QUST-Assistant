@@ -30,3 +30,8 @@ actual fun rememberPageController(): PageController {
 
     return remember { AndroidPageController(context, backDispatcherOwner?.onBackPressedDispatcher) }
 }
+
+@Composable
+actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
+    androidx.activity.compose.BackHandler(enabled, onBack)
+}

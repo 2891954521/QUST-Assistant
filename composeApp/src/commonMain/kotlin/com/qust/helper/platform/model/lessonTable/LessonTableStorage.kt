@@ -8,7 +8,11 @@ interface LessonTableStorage {
 		return emptyList()
 	}
 
-	suspend fun saveLesson(lesson: Lesson): Boolean {
+	suspend fun saveLesson(lesson: Lesson): Long? {
+		return -1
+	}
+
+	suspend fun updateLesson(lesson: Lesson): Boolean {
 		return false
 	}
 }
