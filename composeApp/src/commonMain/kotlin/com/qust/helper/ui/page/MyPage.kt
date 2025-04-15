@@ -34,6 +34,7 @@ import com.qust.helper.ui.page.app.SettingPage
 import com.qust.helper.ui.page.lesson.LessonTablePage
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.ui.widget.click
 import com.qust.helper.viewmodel.MyViewModel
 import org.jetbrains.compose.resources.painterResource
 
@@ -95,7 +96,7 @@ object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
                             val page = pages[row * 4 + col]
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.weight(1F).padding(8.dp).clickable { clickItem(page) }
+                                modifier = Modifier.weight(1F).padding(8.dp).click { clickItem(page) }
                             ) {
                                 Icon(
                                     painter = rememberVectorPainter(page.icon),

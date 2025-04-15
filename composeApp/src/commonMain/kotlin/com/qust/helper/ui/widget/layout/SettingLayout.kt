@@ -1,6 +1,5 @@
 package com.qust.helper.ui.widget.layout
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.qust.helper.ui.theme.LocalColor
 import com.qust.helper.ui.widget.InputDialog
 import com.qust.helper.ui.widget.ListDialog
+import com.qust.helper.ui.widget.click
 
 
 @Composable
@@ -41,7 +41,7 @@ fun SettingGroupUI(title: String, content: @Composable () -> Unit) {
 
 @Composable
 fun SettingItemUI(title: String, description: String, enable: Boolean = true, onClick: () -> Unit) {
-	Box(modifier = Modifier.fillMaxWidth().clickable { onClick() }) {
+	Box(modifier = Modifier.fillMaxWidth().click(onClick)) {
 		Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
 			Text(text = title, style = MaterialTheme.typography.titleMedium, color = if(enable) Color.Unspecified else LocalColor.current.onSurfaceVariant)
 			if(description.isNotEmpty()) Text(text = description, color = LocalColor.current.onSurfaceVariant)
@@ -51,7 +51,7 @@ fun SettingItemUI(title: String, description: String, enable: Boolean = true, on
 
 @Composable
 fun SwitchItemUI(title: String, onText: String, offText: String? = null, value: Boolean, enable: Boolean = true, onChange: (Boolean) -> Unit) {
-	Box(modifier = Modifier.fillMaxWidth().clickable {  }) {
+	Box(modifier = Modifier.fillMaxWidth().click {  }) {
 		Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
 			Column(modifier = Modifier.weight(1F)) {
 				Text(text = title, style = MaterialTheme.typography.titleMedium, color = if(enable) Color.Unspecified else LocalColor.current.onSurfaceVariant)
@@ -70,7 +70,7 @@ fun SwitchItemUI(title: String, onText: String, offText: String? = null, value: 
 @Composable
 fun InputItemUI(title: String, value: String, keyboardOptions: KeyboardOptions = KeyboardOptions.Default, enable: Boolean = true, onInput: (String) -> Unit) {
 	var showInput by remember { mutableStateOf(false) }
-	Box(modifier = Modifier.fillMaxWidth().clickable { showInput = true }){
+	Box(modifier = Modifier.fillMaxWidth().click { showInput = true }){
 		Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
 			Text(text = title, style = MaterialTheme.typography.titleMedium, color = if(enable) Color.Unspecified else LocalColor.current.onSurfaceVariant)
 			Text(text = value, color = LocalColor.current.onSurfaceVariant)
@@ -87,7 +87,7 @@ fun InputItemUI(title: String, value: String, keyboardOptions: KeyboardOptions =
 @Composable
 fun ListItemUI(title: String, index: Int, items: Array<String>, enable: Boolean = true, onSelect: (Array<String>, Int) -> Unit) {
 	var showList by remember { mutableStateOf(false) }
-	Box(modifier = Modifier.fillMaxWidth().clickable { showList = true }){
+	Box(modifier = Modifier.fillMaxWidth().click { showList = true }){
 		Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
 			Text(text = title, style = MaterialTheme.typography.titleMedium, color = if(enable) Color.Unspecified else LocalColor.current.onSurfaceVariant)
 			Text(text = items[index], color = LocalColor.current.onSurfaceVariant)
