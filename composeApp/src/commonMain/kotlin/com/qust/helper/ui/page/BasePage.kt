@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.qust.helper.ui.widget.LoadingUI
 import com.qust.helper.ui.widget.layout.AppContentWithBack
 import com.qust.helper.ui.widget.toast.ToastUI
 import com.qust.helper.viewmodel.BaseViewModel
@@ -37,6 +38,7 @@ abstract class BasePage<T : BaseViewModel>(
 		Box(modifier = Modifier.fillMaxSize()) {
 			Content(viewModel)
 			ToastUI(viewModel.toastData, Modifier.align(Alignment.Center))
+			LoadingUI(viewModel)
 		}
 	}
 

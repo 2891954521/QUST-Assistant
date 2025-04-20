@@ -30,6 +30,7 @@ import com.qust.helper.Res
 import com.qust.helper.icon_no_login_user
 import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.IconLogin
+import com.qust.helper.ui.page.account.AccountManagerPage
 import com.qust.helper.ui.page.app.SettingPage
 import com.qust.helper.ui.page.lesson.LessonTablePage
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
@@ -63,7 +64,7 @@ object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
 
         Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
             Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clickable {
-//                pageController.startPage(AccountManager)
+                pageController.startPage(AccountManagerPage)
             }){
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(painter = painterResource(Res.drawable.icon_no_login_user), contentDescription = null, modifier = Modifier.size(84.dp))

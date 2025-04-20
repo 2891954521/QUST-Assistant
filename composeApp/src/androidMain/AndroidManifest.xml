@@ -31,10 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    
-        <activity
-            android:name=".ui.activity.GuideActivity"
-            android:exported="false" />
         
         <activity
             android:name=".ui.activity.PageActivity"
@@ -49,43 +45,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_apk" />
         </provider>
-        
-        <!-- 桌面小部件 -->
-        <receiver
-            android:name=".ui.appwidget.DailyLesson"
-            android:label="当日课表"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/daily_lesson" />
-        </receiver>
-        
-        <receiver
-            android:name=".ui.appwidget.TermLessonReceiver"
-            android:label="@string/text_term_lesson"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/term_lesson" />
-        </receiver>
-        
-        <receiver
-            android:name=".ui.appwidget.DrinkCodeReceiver"
-            android:label="@string/text_drink_code"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/drink_code" />
-        </receiver>
         
     </application>
 
