@@ -11,6 +11,7 @@ import com.qust.helper.model.eas.LessonTableQueryResult
 import com.qust.helper.model.lessonTable.LessonTableModel
 import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableUIState
 import com.qust.helper.utils.DateUtils
+import com.qust.helper.utils.LessonUtils
 import com.qust.helper.viewmodel.extend.toastError
 import com.qust.helper.viewmodel.extend.toastOK
 import kotlinx.datetime.TimeZone
@@ -18,7 +19,7 @@ import kotlinx.datetime.toLocalDateTime
 
 class QueryLessonViewModel: BaseEasViewModel() {
 
-	val tableUIState = LessonTableUIState()
+	val lessonUIState = LessonTableUIState()
 
 	var termText by mutableStateOf("")
 	var termTimeText by mutableStateOf("")
@@ -50,12 +51,21 @@ class QueryLessonViewModel: BaseEasViewModel() {
 				)
 
 				val lessons = result.lessons
-				if(lessons != null) tableUIState.setLessonTable(lessons)
+				if(lessons != null) lessonUIState.setLessonTable(lessons)
 
 				toastOK("获取课表成功！")
 			}else{
 				toastError(error)
 			}
 		})
+	}
+
+	fun saveLesson(){
+		request({
+			val lessonChange = LessonUtils.mergeLesson(LessonTableModel.getAllLesson(), lessonUIState.lessons)
+			LessonTableModel.mergeLesson(lessonChange.first, lessonChange.second, lessonChange.third)
+		}){
+			toastError("保存课表失败")
+		}
 	}
 }

@@ -66,19 +66,18 @@ object QueryLessonTable: BasePage<QueryLessonViewModel>("课表查询", Drawable
 				termText = viewModel.termText,
 				pickYear = viewModel.pickYear.value,
 				pickType = viewModel.pickType.intValue,
-				lessonTable = viewModel.tableUIState,
+				lessonTable = viewModel.lessonUIState,
 				onYearPick = { viewModel.pickYear.value = it },
 				onTypePick = { viewModel.pickType.intValue = it },
 				doQuery = { viewModel.queryLesson() }
 			)
 		}
 
-
 		if(askForSave) {
 			AskForSaveDialog(
 				termTimeText = viewModel.termTimeText,
 				onDismiss = { askForSave = false },
-				onConfirm = { askForSave = false }
+				onConfirm = { askForSave = false; viewModel.saveLesson() }
 			)
 		}
 	}

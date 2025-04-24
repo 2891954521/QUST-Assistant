@@ -22,4 +22,14 @@ class LessonTableStorageImpl: LessonTableStorage {
 	override suspend fun updateLesson(lesson: Lesson): Boolean {
 		return AppDataBase.INSTANCE.lessonDao().update(lesson.toLessonDao()) == 1
 	}
+
+	override suspend fun mergeLesson(new: List<Lesson>, update: List<Lesson>, delete: List<Lesson>): Boolean {
+		try{
+			AppDataBase.INSTANCE.lessonDao().mergeLesson(new.map(Lesson::toLessonDao), update.map(Lesson::toLessonDao), delete.map(Lesson::toLessonDao))
+			return true
+		}catch(e: Exception){
+			return false
+		}
+	}
+
 }

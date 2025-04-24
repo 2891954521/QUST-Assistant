@@ -15,4 +15,8 @@ interface LessonTableStorage {
 	suspend fun updateLesson(lesson: Lesson): Boolean {
 		return false
 	}
+
+	suspend fun mergeLesson(new: List<Lesson>, update: List<Lesson>, delete: List<Lesson>): Boolean {
+		return false
+	}
 }
