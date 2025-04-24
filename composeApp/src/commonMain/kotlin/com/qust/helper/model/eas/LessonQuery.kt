@@ -158,7 +158,7 @@ object LessonQuery {
 
 				val sp = js["jcs", ""].split("-")
 				val start = timeTable.startMinute[sp[0].toInt() - 1]
-				val end = timeTable.startMinute[sp[1].toInt()]
+				val end = timeTable.endMinute[sp[1].toInt() - 1]
 
 				val lessonID = js["kch", ""]
 				val j = colors[lessonID] ?: -1
