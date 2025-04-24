@@ -91,9 +91,8 @@ fun LessonTimeBar(timeTable: TimeTable) {
 @Composable
 fun LessonDate(startDay: LocalDate, week: Int) {
 	val currentDay = Clock.System.now().toLocalDateTime(TimeZone.UTC).date
-	val c = LocalDate(startDay.year, startDay.monthNumber, startDay.dayOfMonth)
-	c.plus(week, DateTimeUnit.WEEK)
-	c.plus(-c.dayOfWeek.ordinal, DateTimeUnit.DAY)
+	var c = LocalDate(startDay.year, startDay.monthNumber, startDay.dayOfMonth)
+	c = c.plus(week, DateTimeUnit.WEEK).plus(-c.dayOfWeek.ordinal, DateTimeUnit.DAY)
 
 	Box {
 		Text(
@@ -112,7 +111,7 @@ fun LessonDate(startDay: LocalDate, week: Int) {
 				Text(text = Strings.ARRAY_WEEK_NAME[it], style = MaterialTheme.typography.bodySmall, color = color)
 				Text(text = if(c.dayOfMonth == 1) "${c.month.number}月" else "${c.dayOfMonth}", style = MaterialTheme.typography.bodySmall, color = color)
 			}
-			c.plus(1, DateTimeUnit.DAY)
+			c = c.plus(1, DateTimeUnit.DAY)
 		}
 	}
 }
