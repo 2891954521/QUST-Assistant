@@ -9,7 +9,9 @@ androidxRoom = "2.7.0-alpha01"
 
 ksp = "2.1.10-1.0.31"
 kotlin = "2.1.0"
+kotlinx-datetime = "0.6.2"
 kotlinx-coroutines = "1.10.1"
+
 
 ktor = "3.0.3"
 mmkv = "1.2.15"
@@ -23,6 +25,8 @@ androidx-lifecycle-viewmodel-compose = { group = "org.jetbrains.androidx.lifecyc
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

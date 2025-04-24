@@ -40,7 +40,7 @@ object SettingPage: BasePage<SettingViewModel>("设置", Icons.Default.Settings)
 
 		LessonTableSetting(viewModel)
 
-//		EasSetting(viewModel = viewModel)
+		EasSetting(viewModel)
 
 //		SettingGroupUI("界面") {
 //			SwitchItemUI("主题跟随系统", "主题跟随系统", "主题跟随系统", viewModel.themeFollowSystem){ viewModel.setThemeFollowSystemValue(it) }
@@ -118,18 +118,18 @@ object SettingPage: BasePage<SettingViewModel>("设置", Icons.Default.Settings)
 	/**
 	 * 教务查询设置
 	 */
-//	@Composable
-//	fun EasSetting(viewModel: SettingViewModel) {
-//		SettingGroupUI("教务") {
+	@Composable
+	fun EasSetting(viewModel: SettingViewModel) {
+		SettingGroupUI("教务") {
 //			ListItemUI("教务节点", viewModel.eaHost, QustApi.EA_HOSTS){ _, it -> viewModel.setEaHostValue(it) }
-//
-//			InputItemUI("设置入学年份", viewModel.entranceTime, KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)){
-//					year -> year.toIntOrNull()?.let{ viewModel.setEntranceTimeValue(it) }
-//			}
-//
+
+			InputItemUI("设置入学年份", viewModel.entranceTime.value, KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)){
+					year -> year.toIntOrNull()?.let{ viewModel.setEntranceTime(it) }
+			}
+
 //			SwitchItemUI("使用VPN访问教务系统", "使用智慧青科大的VPN访问教务系统，可以解决校外访问教务失败的问题。会减慢查询速度，请仅在需要时打开。重启应用生效", value = viewModel.eaUseVpn) {
 //				viewModel.setEaUseVpnValue(it)
 //			}
-//		}
-//	}
+		}
+	}
 }

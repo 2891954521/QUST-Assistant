@@ -31,8 +31,13 @@ import com.qust.helper.entity.lesson.Lesson
 import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
-import java.util.Calendar
-import java.util.Date
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> Unit = { _, _ -> }){
@@ -84,30 +89,30 @@ fun LessonTimeBar(timeTable: TimeTable) {
  * 顶部日期栏
  */
 @Composable
-fun LessonDate(startDay: Date, week: Int) {
-	val currentDay = Calendar.getInstance()
-	val c = Calendar.getInstance().also { it.time = startDay }
-	c[Calendar.WEEK_OF_YEAR] += week
-	c[Calendar.DATE] -= (c[Calendar.DAY_OF_WEEK] - 2)
+fun LessonDate(startDay: LocalDate, week: Int) {
+	val currentDay = Clock.System.now().toLocalDateTime(TimeZone.UTC).date
+	val c = LocalDate(startDay.year, startDay.monthNumber, startDay.dayOfMonth)
+	c.plus(week, DateTimeUnit.WEEK)
+	c.plus(-c.dayOfWeek.ordinal, DateTimeUnit.DAY)
 
 	Box {
 		Text(
-			text = "${c[Calendar.MONTH] + 1}月",
+			text = "${c.month.number}月",
 			modifier = Modifier.align(Alignment.Center),
 		)
 	}
 
 	Row(modifier = Modifier.fillMaxWidth()) {
 		repeat(Strings.ARRAY_WEEK_NAME.size) {
-			val color = if(currentDay[Calendar.DATE] == c[Calendar.DATE] && currentDay[Calendar.MONTH] == c[Calendar.MONTH]) {
+			val color = if(currentDay == c) {
 				LESSON_TEXT_COLORS[0]
 			} else Color.Gray
 
 			Column(modifier = Modifier.weight(1F).padding(4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 				Text(text = Strings.ARRAY_WEEK_NAME[it], style = MaterialTheme.typography.bodySmall, color = color)
-				Text(text = if(c[Calendar.DATE] == 1) "${c[Calendar.MONTH] + 1}月" else "${c[Calendar.DATE]}", style = MaterialTheme.typography.bodySmall, color = color)
+				Text(text = if(c.dayOfMonth == 1) "${c.month.number}月" else "${c.dayOfMonth}", style = MaterialTheme.typography.bodySmall, color = color)
 			}
-			c[Calendar.DATE] += 1
+			c.plus(1, DateTimeUnit.DAY)
 		}
 	}
 }

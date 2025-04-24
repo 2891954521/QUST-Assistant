@@ -1,6 +1,8 @@
 package com.qust.helper.viewmodel.app
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import com.qust.helper.model.account.EasAccount
 import com.qust.helper.model.lessonTable.LessonTableModel
 import com.qust.helper.viewmodel.BaseViewModel
 
@@ -11,12 +13,11 @@ class SettingViewModel: BaseViewModel() {
 
 	}
 
-
-//	val entranceTime by mutableStateOf(EASAccount.getInstance().entranceTime.toString())
-//	fun setEntranceTimeValue(value: Int) {
-//		EASAccount.getInstance().entranceTime = value
-//		entranceTime = value.toString()
-//	}
+	val entranceTime = mutableStateOf(EasAccount.entranceDate.toString())
+	fun setEntranceTime(value: Int) {
+		entranceTime.value = value.toString()
+		EasAccount.entranceDate = value
+	}
 
 //	val eaHost by mutableIntStateOf(SettingUtils[Keys.EA_HOST, 0])
 //	fun setEaHostValue(value: Int){

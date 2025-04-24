@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  * @param lessonId 课程ID，用于自动创建的课程标识唯一ID
  * @param colorLabel 课程颜色，内置颜色的索引
  * @param weeks 第几周有课, long形式的boolean数组
- * @param week 周几
+ * @param week 周几（从0开始）
  * @param startMinute 上课时间
  * @param endMinute 下课时间
  * @param name 课程名称

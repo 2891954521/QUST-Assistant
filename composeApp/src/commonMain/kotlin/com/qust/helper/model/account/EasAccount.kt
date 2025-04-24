@@ -2,8 +2,11 @@ package com.qust.helper.model.account
 
 import com.qust.helper.data.Keys
 import com.qust.helper.data.QustApi
+import com.qust.helper.data.i18n.Strings
 import com.qust.helper.entity.vo.EasPublicKey
+import com.qust.helper.model.network.NeedLoginException
 import com.qust.helper.utils.CodeUtils
+import com.qust.helper.utils.SettingUtils
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
@@ -14,16 +17,22 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.HttpStatement
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import io.ktor.http.parameters
 import io.ktor.util.decodeBase64Bytes
 import io.ktor.util.encodeBase64
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import java.io.IOException
 import java.math.BigInteger
 import java.net.HttpURLConnection
 import java.security.KeyFactory
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.RSAPublicKeySpec
+import java.time.Month
 import javax.crypto.Cipher
 
 /**
@@ -36,9 +45,44 @@ object EasAccount: Account(
 	passwordKey = Keys.EAS_PASSWORD,
 	cookieKey = "easCookie"
 ) {
+	/**
+	 * 入学年份
+	 * eg. 2020
+	 */
+	var entranceDate: Int = SettingUtils[Keys.ENTRANCE_TIME, -1]
+		set(date) {
+			SettingUtils[Keys.ENTRANCE_TIME] = date
+			field = date
+		}
+
+	/**
+	 * 获取当前年级
+	 */
+	fun getCurrentGrade(): Int {
+		val current: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+		val y = current.year
+		return if(y < entranceDate) {
+			0
+		} else {
+			((y - entranceDate) * 2 - if(current.month < Month.AUGUST) 1 else 0).coerceAtMost(Strings.ARRAY_TERM_NAME.size - 1)
+		}
+	}
 
 	override suspend fun execute(request: HttpRequestBuilder): HttpResponse {
-		return HttpStatement(request, client).execute()
+		val response = HttpStatement(request, client).execute()
+		if(response.status == HttpStatusCode.Found){
+			if(response.headers["location"]?.contains(QustApi.EA_LOGIN) == true){
+				if(login()){
+					return HttpStatement(request, client).execute()
+				}else{
+					throw NeedLoginException()
+				}
+			}else{
+				throw NeedLoginException()
+			}
+		}else{
+			return response
+		}
 	}
 
 	override suspend fun baseLogin(account: String, password: String): Boolean {

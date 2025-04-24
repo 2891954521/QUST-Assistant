@@ -62,6 +62,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            implementation(libs.kotlinx.datetime)
+            
             implementation(libs.androidx.room.runtime)
 
             implementation(libs.androidx.lifecycle.viewmodel)
@@ -72,8 +74,6 @@ kotlin {
 
             implementation(libs.sqlite.bundled)
             implementation(libs.ktor.client.core)
-
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
             implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")

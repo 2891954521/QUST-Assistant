@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.model.SettingModel
 import com.qust.helper.platform.model.lessonTable.LessonTableStorage
-import java.util.Date
+import kotlinx.datetime.Clock
 
 expect fun getLessonTableStorage(): LessonTableStorage
 
@@ -17,7 +17,7 @@ object LessonTableModel: LessonTableStorage by getLessonTableStorage() {
 	val timeTable by _timeTable
 
 	/** 开学时间 */
-	val _startDay = mutableStateOf(Date())
+	val _startDay = mutableStateOf(Clock.System.now())
 	val startDay by _startDay
 
 	/** 总周数 */

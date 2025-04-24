@@ -59,7 +59,7 @@ private val bText = Color(0xFF909090)
 fun LessonWeekPicker(
 	title: String,
 	content: MutableState<Int>,
-	data: Array<String>,
+	data: List<String>,
 	onSelect: (Int) -> Unit = { }
 ) {
 	var showSpinner by remember { mutableStateOf(false) }
@@ -85,7 +85,7 @@ fun LessonWeekPicker(
 private fun LessonWeekPickerUI(
 	title: String,
 	content: String = "",
-	spinnerData: Array<String>,
+	spinnerData: List<String>,
 	showSpinner: Boolean,
 	onOpen: () -> Unit = { },
 	onDismiss: () -> Unit = { },
