@@ -1,20 +1,15 @@
 package com.qust.helper.ui.page.eas
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -62,15 +57,22 @@ object QueryLessonTable: BasePage<QueryLessonViewModel>("课表查询", Drawable
 				}
 			}
 		) { _ ->
-			GetLessonTableUI(
-				termText = viewModel.termText,
+			BaseEasQueryUI(
 				pickYear = viewModel.pickYear.value,
-				pickType = viewModel.pickType.intValue,
-				lessonTable = viewModel.lessonUIState,
 				onYearPick = { viewModel.pickYear.value = it },
-				onTypePick = { viewModel.pickType.intValue = it },
-				doQuery = { viewModel.queryLesson() }
-			)
+				doQuery = { viewModel.queryLesson() },
+				searchBar = {
+					SearchBar(
+						pickType = viewModel.pickType.intValue,
+						onTypePick = { viewModel.pickType.intValue = it },
+					)
+				},
+			){
+				GetLessonTableUI(
+					termText = viewModel.termText,
+					lessonTable = viewModel.lessonUIState,
+				)
+			}
 		}
 
 		if(askForSave) {
@@ -82,62 +84,41 @@ object QueryLessonTable: BasePage<QueryLessonViewModel>("课表查询", Drawable
 		}
 	}
 
+
 	@Composable
-	fun GetLessonTableUI(
+	private fun GetLessonTableUI(
 		termText: String = "",
-		pickYear: Int = 0,
-		pickType: Int = 0,
 		lessonTable: LessonTableUIState,
-		onYearPick: (Int) -> Unit = { },
-		onTypePick: (Int) -> Unit = { },
-		doQuery: () -> Unit = { },
 	){
-		Column(modifier = Modifier.fillMaxSize()) {
-				Row(
-					modifier = Modifier.fillMaxWidth(),
-					horizontalArrangement = Arrangement.Center,
-					verticalAlignment = Alignment.CenterVertically
-				) {
 
-					Text(text = Strings.TEXT_TERM)
+		Text(
+			text = termText,
+			color = colorSecondaryText,
+			style = MaterialTheme.typography.bodySmall,
+			modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp)
+		)
 
-					Spacer(Modifier.width(4.dp))
-
-					ListItemPicker(
-						value = Strings.ARRAY_TERM_NAME[pickYear],
-						list = Strings.ARRAY_TERM_NAME,
-						onValueChange = { i, _ -> onYearPick(i) },
-						horizontalPadding = 8.dp
-					)
-
-					Spacer(Modifier.width(4.dp))
-
-					ListItemPicker(
-						value = Strings.ARRAY_QUERY_LESSON_TYPE[pickType],
-						list = Strings.ARRAY_QUERY_LESSON_TYPE,
-						onValueChange = { i, _ -> onTypePick(i) },
-						horizontalPadding = 8.dp
-					)
-
-					Button(modifier = Modifier.wrapContentSize().padding(8.dp), onClick = { doQuery() }) {
-						Text(text = Strings.TEXT_OK, maxLines = 1)
-					}
-				}
-
-				Text(
-					text = termText,
-					color = colorSecondaryText,
-					style = MaterialTheme.typography.bodySmall,
-					modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp)
-				)
-
-				LessonTableUI(lessonTable)
-			}
+		LessonTableUI(lessonTable)
 	}
+
+
+	@Composable
+	private fun SearchBar(
+		pickType: Int,
+		onTypePick: (Int) -> Unit
+	){
+		ListItemPicker(
+			value = Strings.ARRAY_QUERY_LESSON_TYPE[pickType],
+			list = Strings.ARRAY_QUERY_LESSON_TYPE,
+			onValueChange = { i, _ -> onTypePick(i) },
+			horizontalPadding = 8.dp
+		)
+	}
+
 
 	@Composable
 	@OptIn(ExperimentalMaterial3Api::class)
-	fun AskForSaveDialog(
+	private fun AskForSaveDialog(
 		termTimeText: String = "",
 		onDismiss: () -> Unit = { },
 		onConfirm: () -> Unit = { }

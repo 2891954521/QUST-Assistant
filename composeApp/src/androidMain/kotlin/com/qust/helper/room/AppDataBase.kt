@@ -5,19 +5,24 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.qust.helper.room.dao.LessonMapper
+import com.qust.helper.room.dao.MarkMapper
 import com.qust.helper.room.entity.LessonDao
+import com.qust.helper.room.entity.MarkDao
 
 
 @Database(
 	version = 1,
 	exportSchema = false,
 	entities = [
-		LessonDao::class
+		LessonDao::class,
+		MarkDao::class
 	]
 )
 abstract class AppDataBase : RoomDatabase() {
 
 	abstract fun lessonDao(): LessonMapper
+
+	abstract fun markDao(): MarkMapper
 
 	companion object {
 		lateinit var INSTANCE: AppDataBase

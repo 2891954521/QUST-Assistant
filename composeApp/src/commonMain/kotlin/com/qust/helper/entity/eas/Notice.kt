@@ -1,4 +1,4 @@
-package com.qust.helper.entity
+package com.qust.helper.entity.eas
 
 import kotlinx.serialization.Serializable
 

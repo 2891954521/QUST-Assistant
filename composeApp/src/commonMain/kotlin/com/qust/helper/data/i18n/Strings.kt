@@ -14,6 +14,8 @@ open class I18nStrings {
 	open val TEXT_TERM = "学期"
 	open val TEXT_SAVE_LESSON_TABLE = "保存课表"
 
+	open val TEXT_NEW = "新"
+
 
 	open val MSG_NEED_LOGIN: String = "需要登录"
 

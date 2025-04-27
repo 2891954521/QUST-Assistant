@@ -61,6 +61,8 @@ object DateUtils {
 
 	fun today() = Clock.System.now().toLocalDateTime().date
 
+	fun currentTime() = Clock.System.now().toLocalDateTime()
+
 	/**
 	 * 计算时间差
 	 */

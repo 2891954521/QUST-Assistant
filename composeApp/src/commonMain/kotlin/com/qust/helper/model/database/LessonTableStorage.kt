@@ -1,6 +1,8 @@
-package com.qust.helper.platform.model.lessonTable
+package com.qust.helper.model.database
 
 import com.qust.helper.entity.lesson.Lesson
+
+expect fun getLessonTableStorage(): LessonTableStorage
 
 interface LessonTableStorage {
 

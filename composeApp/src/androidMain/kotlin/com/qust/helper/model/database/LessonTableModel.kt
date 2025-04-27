@@ -1,7 +1,6 @@
-package com.qust.helper.model.lessonTable
+package com.qust.helper.model.database
 
 import com.qust.helper.entity.lesson.Lesson
-import com.qust.helper.platform.model.lessonTable.LessonTableStorage
 import com.qust.helper.room.AppDataBase
 import com.qust.helper.room.entity.LessonDao
 import com.qust.helper.room.entity.toLesson

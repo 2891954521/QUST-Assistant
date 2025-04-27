@@ -5,11 +5,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.model.SettingModel
+import com.qust.helper.model.database.LessonTableStorage
+import com.qust.helper.model.database.getLessonTableStorage
 import com.qust.helper.model.eas.LessonTableQueryResult
-import com.qust.helper.platform.model.lessonTable.LessonTableStorage
 import com.qust.helper.utils.LessonUtils
-
-expect fun getLessonTableStorage(): LessonTableStorage
 
 object LessonTableModel: LessonTableStorage by getLessonTableStorage() {
 

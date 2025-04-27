@@ -16,6 +16,8 @@ object JsonUtils {
 
 	val json = Json { ignoreUnknownKeys = true }
 
+	fun <T> parseString(string: String) = json.parseToJsonElement(string) as T
+
 	operator fun JsonObject.get(key: String, def: Int) = (this[key] as? JsonPrimitive)?.int ?: def
 	operator fun JsonObject.get(key: String, def: Long) = (this[key] as? JsonPrimitive)?.long ?: def
 	operator fun JsonObject.get(key: String, def: String) = (this[key] as? JsonPrimitive)?.content ?: def
@@ -24,5 +26,4 @@ object JsonUtils {
 	operator fun JsonObject.get(key: String, type: JSONObject) = (this[key] as? JsonObject)
 	operator fun JsonObject.get(key: String, type: JSONArray) = (this[key] as? JsonArray)
 	operator fun JsonObject.get(key: String, type: JSONParam) = (this[key] as? JsonPrimitive)
-
 }
