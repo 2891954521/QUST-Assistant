@@ -11,11 +11,9 @@ import com.qust.helper.model.eas.LessonTableQueryResult
 import com.qust.helper.model.lessonTable.LessonTableModel
 import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableUIState
 import com.qust.helper.utils.DateUtils
-import com.qust.helper.utils.LessonUtils
 import com.qust.helper.viewmodel.extend.toastError
 import com.qust.helper.viewmodel.extend.toastOK
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import com.qust.helper.viewmodel.extend.toastWarning
 
 class QueryLessonViewModel: BaseEasViewModel() {
 
@@ -23,49 +21,58 @@ class QueryLessonViewModel: BaseEasViewModel() {
 
 	var termText by mutableStateOf("")
 	var termTimeText by mutableStateOf("")
-	var startDay by mutableStateOf(LessonTableModel.startDay)
 	var totalWeek by mutableIntStateOf(LessonTableModel.totalWeek)
 
 	var needSave by mutableStateOf(false)
 
 	val pickType = mutableIntStateOf(0)
 
+	var queryResult: LessonTableQueryResult? = null
+
 	fun queryLesson(){
 		request({
 			val pair = getPickTerm()
-			val result: LessonTableQueryResult
 
-			result = LessonQuery.queryLessonTable(easAccount = EasAccount, pair.first, pair.second)
+			val result = LessonQuery.queryLessonTable(easAccount = EasAccount, pair.first, pair.second)
 
 			val error = result.error
-			if(error == null) {
-				needSave = true
-
-				termText = result.termText
-				startDay = result.startDay
-				totalWeek = result.totalWeek
-
-				termTimeText = Strings.MSG_QUERY_TERM_START_TIME.format(
-					DateUtils.YMD.format(LessonTableModel.startDay.toLocalDateTime(TimeZone.UTC)),
-					DateUtils.YMD.format(result.startDay.toLocalDateTime(TimeZone.UTC))
-				)
-
-				val lessons = result.lessons
-				if(lessons != null) lessonUIState.setLessonTable(lessons)
-
-				toastOK("获取课表成功！")
-			}else{
+			if(error != null) {
 				toastError(error)
+				return@request
 			}
+
+			needSave = true
+
+			termText = result.termText
+			totalWeek = result.totalWeek
+
+			termTimeText = Strings.MSG_QUERY_TERM_START_TIME.format(
+				DateUtils.YMD.format(LessonTableModel.startDay),
+				DateUtils.YMD.format(result.startDay)
+			)
+
+			val lessons = result.lessons
+			if(lessons != null) lessonUIState.setLessonTable(lessons)
+
+			queryResult = result
+			needSave = true
+
+			toastOK("获取课表成功！")
 		})
 	}
 
 	fun saveLesson(){
-		request({
-			val lessonChange = LessonUtils.mergeLesson(LessonTableModel.getAllLesson(), lessonUIState.lessons)
-			LessonTableModel.mergeLesson(lessonChange.first, lessonChange.second, lessonChange.third)
-		}){
-			toastError("保存课表失败")
+		val result = queryResult
+
+		if(result == null) {
+			toastWarning("请先查询课表")
+			return
 		}
+
+		request({
+			LessonTableModel.saveLessonTable(result)
+		}, {
+			toastError("保存课表失败")
+		})
 	}
 }

@@ -5,17 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qust.helper.entity.lesson.Lesson
 import com.qust.helper.model.lessonTable.LessonTableModel
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import java.util.Arrays
 
 class LessonTableUIState {
 
 	val timeTable by LessonTableModel._timeTable
 
-	val startDay by mutableStateOf(LessonTableModel._startDay.value.toLocalDateTime(TimeZone.UTC).date)
+	val startDay by mutableStateOf(LessonTableModel.startDay)
 
-	val currentWeek by LessonTableModel._currentWeek
+	val currentWeek by mutableStateOf(LessonTableModel.currentWeek)
 
 	val totalWeek by LessonTableModel._totalWeek
 

@@ -11,8 +11,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.qust.helper.model.SettingModel
-import com.qust.helper.model.lessonTable.LessonTableModel
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.widget.layout.InputItemUI
 import com.qust.helper.ui.widget.layout.SettingGroupUI
@@ -74,10 +72,6 @@ object SettingPage: BasePage<SettingViewModel>("设置", Icons.Default.Settings)
 	 */
 	@Composable
 	fun LessonTableSetting(viewModel: SettingViewModel) {
-//		var showTimePicker by remember { mutableStateOf(false) }
-
-//		var startDayStr by remember { mutableStateOf(DateUtils.YMD.format(LessonTableRepository.startDay)) }
-
 		SettingGroupUI("课表") {
 
 //			SwitchItemUI("显示非本周课程", "是否将非本周课程以灰色显示", value = LessonTableRepository.showAllLesson) { LessonTableRepository.setShowAllLessonValue(it) }
@@ -88,30 +82,24 @@ object SettingPage: BasePage<SettingViewModel>("设置", Icons.Default.Settings)
 //
 //			SwitchItemUI("锁定课表", "不允许编辑课表", "允许编辑课表", LessonTableRepository.lockLesson) { LessonTableRepository.setLockLessonValue(it)}
 
-//			SettingItemUI("设置开学时间", startDayStr){ showTimePicker = true }
+			InputItemUI(
+				title = "设置开学时间",
+				value = viewModel.startDay,
+				onInput = viewModel::setStartDay
+			)
 
-			InputItemUI("设置总周数", value = viewModel.totalWeek.toString(),
-				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
-			){ week ->
-				week.toIntOrNull()?.let {
-					LessonTableModel._totalWeek.value = it
-					SettingModel.totalWeek = it
-				}
-			}
+			InputItemUI(
+				title = "设置总周数",
+				value = viewModel.totalWeek.toString(),
+				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+				onInput = viewModel::setTotalWeek
+			)
 
 //			SwitchItemUI("使用高密时间表（重启app生效）", "使用高密时间表", "使用默认时间表",value = LessonTableRepository.gaomiTimeTable) { LessonTableRepository.setGaomiTimeTable(it) }
 
 
 //			ListItemUI("设置时间表\n（重启app生效）", LessonTableRepository.currentTimeTable, timeTableList){ _, it -> LessonTableRepository.setTimeTableValue(it) }
 		}
-
-//		if(showTimePicker){
-//			DatePickerDialog(currentDate = LessonTableRepository.startDay, onDismissRequest = { showTimePicker = false }){
-//				LessonTableRepository.setStartDayValue(it)
-//				startDayStr = DateUtils.YMD.format(it)
-//				showTimePicker = false
-//			}
-//		}
 	}
 
 

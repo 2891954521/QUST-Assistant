@@ -81,6 +81,7 @@ object Keys {
 
 	/** 课表设置 */
 	const val SETTING_TOTAL_WEEK = "setting_total_week"
+	const val SETTING_START_DAY = "setting_start_day"
 
 
 

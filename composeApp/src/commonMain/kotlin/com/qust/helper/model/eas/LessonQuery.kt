@@ -10,13 +10,12 @@ import com.qust.helper.utils.JSONArray
 import com.qust.helper.utils.JsonUtils
 import com.qust.helper.utils.JsonUtils.get
 import com.qust.helper.utils.Logger
+import com.qust.helper.utils.toLocalDateTime
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.setBody
 import io.ktor.http.parameters
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import java.util.regex.Pattern
@@ -96,11 +95,11 @@ object LessonQuery {
 			// 学年信息
 			val matcher = TIME_MATCHER.matcher(response)
 			if(matcher.find()) {
-				val startDay = try { DateUtils.YMD.parse(matcher.group(3)!!).toInstant(TimeZone.UTC) } catch(_: Exception) { Clock.System.now() }
-				val endDay = try { DateUtils.YMD.parse(matcher.group(4)!!).toInstant(TimeZone.UTC) } catch(_: Exception){ Clock.System.now() }
+				val startDay = try { DateUtils.YMD.parse(matcher.group(3)!!) } catch(_: Exception) { DateUtils.today() }
+				val endDay = try { DateUtils.YMD.parse(matcher.group(4)!!) } catch(_: Exception){ DateUtils.today() }
 				result.termText = matcher.group()
 				result.startDay = startDay
-				result.totalWeek = DateUtils.calcWeekOffset(startDay, endDay).coerceAtLeast(1L).toInt()
+				result.totalWeek = DateUtils.calcWeekOffset(startDay, endDay).coerceAtLeast(1)
 			}
 		} catch(e: Exception) {
 			e.printStackTrace()
@@ -200,7 +199,7 @@ object LessonQuery {
 data class LessonTableQueryResult(
 	var error: String? = null,
 	var termText: String = "",
-	var startDay: Instant = Clock.System.now(),
+	var startDay: LocalDate = Clock.System.now().toLocalDateTime().date,
 	var totalWeek: Int = 1,
 	var lessons: List<Lesson>? = null
 )

@@ -2,15 +2,41 @@ package com.qust.helper.viewmodel.app
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import com.qust.helper.model.SettingModel
 import com.qust.helper.model.account.EasAccount
 import com.qust.helper.model.lessonTable.LessonTableModel
+import com.qust.helper.utils.DateUtils
+import com.qust.helper.utils.Logger
 import com.qust.helper.viewmodel.BaseViewModel
+import com.qust.helper.viewmodel.extend.toastWarning
 
 class SettingViewModel: BaseViewModel() {
 
 	val totalWeek by LessonTableModel._totalWeek
-	fun setTotalWeek(week: Int){
+	fun setTotalWeek(weekStr: String){
+		val week = weekStr.toIntOrNull()
+		if(week == null){
+			toastWarning("请输入正确的数字")
+			return
+		}
+		SettingModel.totalWeek = week
+		LessonTableModel._totalWeek.value = week
+	}
 
+	val _startDay = mutableStateOf(DateUtils.YMD.format(LessonTableModel.startDay))
+	val startDay by _startDay
+	fun setStartDay(startDayStr: String){
+		try {
+			val date = DateUtils.YMD.parse(startDayStr)
+
+			_startDay.value = startDayStr
+
+			SettingModel.startDay = date
+			LessonTableModel._startDay.value = date
+		} catch(e: Exception) {
+			Logger.e("", e)
+			toastWarning("请输入正确的日期")
+		}
 	}
 
 	val entranceTime = mutableStateOf(EasAccount.entranceDate.toString())

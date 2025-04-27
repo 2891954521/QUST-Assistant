@@ -5,8 +5,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.model.SettingModel
+import com.qust.helper.model.eas.LessonTableQueryResult
 import com.qust.helper.platform.model.lessonTable.LessonTableStorage
-import kotlinx.datetime.Clock
+import com.qust.helper.utils.LessonUtils
 
 expect fun getLessonTableStorage(): LessonTableStorage
 
@@ -17,7 +18,7 @@ object LessonTableModel: LessonTableStorage by getLessonTableStorage() {
 	val timeTable by _timeTable
 
 	/** 开学时间 */
-	val _startDay = mutableStateOf(Clock.System.now())
+	val _startDay = mutableStateOf(SettingModel.startDay)
 	val startDay by _startDay
 
 	/** 总周数 */
@@ -33,5 +34,18 @@ object LessonTableModel: LessonTableStorage by getLessonTableStorage() {
 	val dayOfWeek by _dayOfWeek
 
 
+	suspend fun saveLessonTable(result: LessonTableQueryResult){
+		val lessons = result.lessons ?: return
+
+		val lessonChange = LessonUtils.mergeLesson(lessons, getAllLesson())
+
+		mergeLesson(lessonChange.first, lessonChange.second, lessonChange.third)
+
+		_startDay.value = result.startDay
+		_totalWeek.value = result.totalWeek
+
+		SettingModel.startDay = result.startDay
+		SettingModel.totalWeek = result.totalWeek
+	}
 
 }

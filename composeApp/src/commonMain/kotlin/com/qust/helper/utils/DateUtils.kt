@@ -1,10 +1,14 @@
 package com.qust.helper.utils
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.minus
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
 object DateUtils {
@@ -35,7 +39,7 @@ object DateUtils {
 		minute()
 	}
 
-	val YMD = LocalDateTime.Format {
+	val YMD = LocalDate.Format {
 		year()
 		char('-')
 		monthNumber()
@@ -43,7 +47,7 @@ object DateUtils {
 		dayOfMonth()
 	}
 
-	val MD = LocalDateTime.Format {
+	val MD = LocalDate.Format {
 		monthNumber()
 		char('-')
 		dayOfMonth()
@@ -54,6 +58,8 @@ object DateUtils {
 		char(':')
 		minute()
 	}
+
+	fun today() = Clock.System.now().toLocalDateTime().date
 
 	/**
 	 * 计算时间差
@@ -80,12 +86,13 @@ object DateUtils {
 //		}
 //	}
 
-	fun calcDayOffset(startTime: Instant, endTime: Instant): Long {
-		return startTime.minus(endTime).inWholeDays
+	fun calcDayOffset(startTime: LocalDate, endTime: LocalDate): Int {
+		val offset = endTime.minus(startTime)
+		return offset.days + offset.months * 30
 	}
 
-	fun calcWeekOffset(startTime: Instant, endTime: Instant): Long {
-		val dayOfWeek = startTime.toLocalDateTime(TimeZone.UTC).dayOfWeek.isoDayNumber
+	fun calcWeekOffset(startTime: LocalDate, endTime: LocalDate): Int {
+		val dayOfWeek = startTime.dayOfWeek.isoDayNumber
 		val dayOffset = calcDayOffset(startTime, endTime)
 		return dayOffset / 7 + if(dayOffset > 0) {
 			if((dayOffset % 7 + dayOfWeek) > 7) 1 else 0
@@ -94,3 +101,9 @@ object DateUtils {
 		}
 	}
 }
+
+fun Instant.toLocalDateTime() = this.toLocalDateTime(TimeZone.UTC)
+
+fun LocalDateTime.toInstant() = this.toInstant(TimeZone.UTC)
+
+
