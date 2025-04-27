@@ -100,9 +100,9 @@ class QueryMarkViewModel : BaseEasViewModel() {
 	}
 
 	fun clearNew(index: Int) {
-		val data = marksData[pickYear.intValue] ?: return
-		data[index] = data[index].copy(isNew = 0)
-		runBackGround { MarkModel.setRead(marks[index].id) }
+		runBackGround {
+			MarkModel.setRead(marks[index].id)
+		}
 	}
 
 	private fun setMark(index: Int, array: MutableList<Mark>) {

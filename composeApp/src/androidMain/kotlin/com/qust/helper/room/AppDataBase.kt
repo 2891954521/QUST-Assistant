@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.qust.helper.room.dao.ExamMapper
 import com.qust.helper.room.dao.LessonMapper
 import com.qust.helper.room.dao.MarkMapper
+import com.qust.helper.room.entity.ExamDao
 import com.qust.helper.room.entity.LessonDao
 import com.qust.helper.room.entity.MarkDao
 
@@ -15,7 +17,8 @@ import com.qust.helper.room.entity.MarkDao
 	exportSchema = false,
 	entities = [
 		LessonDao::class,
-		MarkDao::class
+		MarkDao::class,
+		ExamDao::class
 	]
 )
 abstract class AppDataBase : RoomDatabase() {
@@ -23,6 +26,8 @@ abstract class AppDataBase : RoomDatabase() {
 	abstract fun lessonDao(): LessonMapper
 
 	abstract fun markDao(): MarkMapper
+
+	abstract fun examDao(): ExamMapper
 
 	companion object {
 		lateinit var INSTANCE: AppDataBase
