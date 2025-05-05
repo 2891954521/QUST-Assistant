@@ -187,7 +187,7 @@ object QueryMarkPage: BasePage<QueryMarkViewModel>("成绩查询", Drawables.Sch
 	}
 
 	@Composable
-	private fun MarkItems(mark: Mark) {
+	fun MarkItems(mark: Mark) {
 		Column(
 			modifier = Modifier.fillMaxWidth(),
 			horizontalAlignment = Alignment.CenterHorizontally,

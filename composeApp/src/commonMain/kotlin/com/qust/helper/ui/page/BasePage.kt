@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.qust.helper.ui.widget.LoadingUI
+import com.qust.helper.ui.widget.components.LoadingUI
 import com.qust.helper.ui.widget.layout.AppContentWithBack
 import com.qust.helper.ui.widget.toast.ToastUI
 import com.qust.helper.viewmodel.BaseViewModel

@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.qust.helper.data.i18n.Strings
-import com.qust.helper.ui.widget.picker.ListItemPicker
+import com.qust.helper.ui.widget.components.ListItemPicker
 
 
 @Composable

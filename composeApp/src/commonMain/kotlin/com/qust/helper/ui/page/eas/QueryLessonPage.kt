@@ -33,13 +33,13 @@ import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.School
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.ui.widget.components.ListItemPicker
 import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableUI
 import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableUIState
-import com.qust.helper.ui.widget.picker.ListItemPicker
 import com.qust.helper.viewmodel.eas.QueryLessonViewModel
 
 
-object QueryLessonTable: BasePage<QueryLessonViewModel>("课表查询", Drawables.School) {
+object QueryLessonPage: BasePage<QueryLessonViewModel>("课表查询", Drawables.School) {
 
 	@Composable
 	override fun getViewModel() = viewModel<QueryLessonViewModel>()

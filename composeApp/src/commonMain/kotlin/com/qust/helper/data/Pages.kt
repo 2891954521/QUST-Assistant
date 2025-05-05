@@ -7,8 +7,9 @@ import com.qust.helper.ui.page.MyPage
 import com.qust.helper.ui.page.account.AccountManagerPage
 import com.qust.helper.ui.page.account.EasLoginPage
 import com.qust.helper.ui.page.app.SettingPage
+import com.qust.helper.ui.page.eas.QueryAcademicPage
 import com.qust.helper.ui.page.eas.QueryExamPage
-import com.qust.helper.ui.page.eas.QueryLessonTable
+import com.qust.helper.ui.page.eas.QueryLessonPage
 import com.qust.helper.ui.page.eas.QueryMarkPage
 import com.qust.helper.ui.page.lesson.LessonTablePage
 
@@ -24,9 +25,10 @@ object Pages {
         AccountManagerPage.key to AccountManagerPage,
         EasLoginPage.key to EasLoginPage,
 
-        QueryLessonTable.key to QueryLessonTable,
+        QueryLessonPage.key to QueryLessonPage,
         QueryMarkPage.key to QueryMarkPage,
         QueryExamPage.key to QueryExamPage,
+        QueryAcademicPage.key to QueryAcademicPage,
 
         SettingPage.key to SettingPage
     )
