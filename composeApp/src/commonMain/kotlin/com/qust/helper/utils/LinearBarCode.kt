@@ -1,11 +1,5 @@
 package com.qust.helper.utils
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
-
 /**
  * 条形码库
  */
@@ -30,37 +24,9 @@ object LinearBarCode {
 	private const val CODE_FNC_4_B = 100 // Code B
 
 	/**
-	 * 创建Code128格式的条形码
-	 * @return
-	 */
-	fun createCode128Barcode(data: String, height: Int): Bitmap {
-		val code = encode(data)
-		val inputWidth = code.size
-		val outputWidth = inputWidth * 10 + 50
-		val outputHeight = 1.coerceAtLeast(height)
-		val bitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888)
-		val canvas = Canvas(bitmap)
-		val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-		paint.color = Color.WHITE
-		paint.strokeWidth = 0f
-		canvas.drawRect(Rect(0, 0, outputWidth, outputHeight), paint)
-		paint.color = Color.BLACK
-		var i = 0
-		var outputX = 25
-		while(i < inputWidth) {
-			if(code[i]) {
-				canvas.drawRect(outputX.toFloat(), 0f, (outputX + 10).toFloat(), outputHeight.toFloat(), paint)
-			}
-			i++
-			outputX += 10
-		}
-		return bitmap
-	}
-
-	/**
 	 * @return a byte array of horizontal pixels (0 = white, 1 = black)
 	 */
-	private fun encode(contents: String): BooleanArray {
+	fun encode(contents: String): BooleanArray {
 		val length = contents.length
 		// Check length
 		// require(!(length < 1 || length > 80)) { "Contents length should be between 1 and 80 characters, but got $length" }

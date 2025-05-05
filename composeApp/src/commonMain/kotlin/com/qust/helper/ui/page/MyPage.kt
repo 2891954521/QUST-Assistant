@@ -38,6 +38,7 @@ import com.qust.helper.ui.page.eas.QueryLessonPage
 import com.qust.helper.ui.page.eas.QueryMarkPage
 import com.qust.helper.ui.page.eas.QueryNoticePage
 import com.qust.helper.ui.page.lesson.LessonTablePage
+import com.qust.helper.ui.page.third.DrinkPage
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.click
@@ -52,7 +53,7 @@ object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
 
     private val business = arrayOf<BasePage<*>>(EmptyPage)
 
-    private val otherSystem = arrayOf<BasePage<*>>(EmptyPage)
+    private val otherSystem = arrayOf<BasePage<*>>(DrinkPage)
 
     private val web = arrayOf<BasePage<*>>(EmptyPage)
 
