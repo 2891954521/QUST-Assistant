@@ -1,6 +1,8 @@
 package com.qust.helper.entity.eas
 
+import com.qust.helper.utils.JsonUtils.get
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 /**
  * 教务系统消息
@@ -14,5 +16,13 @@ data class Notice(
 	val time: String = "",
 	val content: String = "",
 ){
-
+	companion object {
+		fun createFromJson(js: JsonObject): Notice {
+			return Notice(
+				id = js["id", ""],
+				time = js["cjsj", ""],
+				content = js["xxnr", ""]
+			)
+		}
+	}
 }

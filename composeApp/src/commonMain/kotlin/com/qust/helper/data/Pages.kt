@@ -11,6 +11,7 @@ import com.qust.helper.ui.page.eas.QueryAcademicPage
 import com.qust.helper.ui.page.eas.QueryExamPage
 import com.qust.helper.ui.page.eas.QueryLessonPage
 import com.qust.helper.ui.page.eas.QueryMarkPage
+import com.qust.helper.ui.page.eas.QueryNoticePage
 import com.qust.helper.ui.page.lesson.LessonTablePage
 
 object Pages {
@@ -29,6 +30,7 @@ object Pages {
         QueryMarkPage.key to QueryMarkPage,
         QueryExamPage.key to QueryExamPage,
         QueryAcademicPage.key to QueryAcademicPage,
+        QueryNoticePage.key to QueryNoticePage,
 
         SettingPage.key to SettingPage
     )

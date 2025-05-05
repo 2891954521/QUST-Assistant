@@ -36,6 +36,7 @@ import com.qust.helper.ui.page.eas.QueryAcademicPage
 import com.qust.helper.ui.page.eas.QueryExamPage
 import com.qust.helper.ui.page.eas.QueryLessonPage
 import com.qust.helper.ui.page.eas.QueryMarkPage
+import com.qust.helper.ui.page.eas.QueryNoticePage
 import com.qust.helper.ui.page.lesson.LessonTablePage
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.ui.theme.colorSecondaryText
@@ -47,7 +48,7 @@ object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
 
     private val lesson = arrayOf<BasePage<*>>(LessonTablePage)
 
-    private val eas = arrayOf<BasePage<*>>(QueryLessonPage, QueryMarkPage, QueryExamPage, QueryAcademicPage)
+    private val eas = arrayOf<BasePage<*>>(QueryLessonPage, QueryMarkPage, QueryExamPage, QueryAcademicPage, QueryNoticePage)
 
     private val business = arrayOf<BasePage<*>>(EmptyPage)
 

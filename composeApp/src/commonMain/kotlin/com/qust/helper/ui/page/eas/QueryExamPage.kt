@@ -23,12 +23,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qust.helper.data.i18n.Strings
 import com.qust.helper.entity.eas.Exam
 import com.qust.helper.ui.drawables.Drawables
-import com.qust.helper.ui.drawables.School
+import com.qust.helper.ui.drawables.InsertInvitation
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.theme.LocalColor
 import com.qust.helper.viewmodel.eas.QueryExamViewModel
 
-object QueryExamPage: BasePage<QueryExamViewModel>("考试查询", Drawables.School) {
+object QueryExamPage: BasePage<QueryExamViewModel>("考试查询", Drawables.InsertInvitation) {
 
 	@Composable
 	override fun getViewModel() = viewModel<QueryExamViewModel>()
