@@ -1,6 +1,5 @@
 package com.qust.helper.utils
 
-import com.qust.helper.utils.CodeUtils.byteToHexString
 import java.math.BigInteger
 import java.nio.charset.StandardCharsets
 import java.security.NoSuchAlgorithmException
@@ -241,7 +240,7 @@ object VpnEncodeUtils {
 	init {
 		try {
 			val KeyBytes = "wrdvpnisthebest!".toByteArray()
-			IVHex = byteToHexString(KeyBytes)
+			IVHex = CodeUtils.byteToHexString(KeyBytes)
 			cipher = Cipher.getInstance("AES/CFB/NoPadding")
 			cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(KeyBytes, "AES"), IvParameterSpec(KeyBytes))
 		} catch(e: NoSuchAlgorithmException) {
@@ -252,7 +251,7 @@ object VpnEncodeUtils {
 	@Throws(Exception::class)
 	private fun encrypt(text: String): String {
 		val encryptedBytes = cipher.doFinal(text.toByteArray(StandardCharsets.UTF_8))
-		return IVHex + byteToHexString(encryptedBytes)
+		return IVHex + CodeUtils.byteToHexString(encryptedBytes)
 	}
 
 	/**

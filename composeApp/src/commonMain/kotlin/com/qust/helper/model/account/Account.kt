@@ -39,7 +39,7 @@ open class Account(
 
 	open val clientNoRedirect by lazy {
 		httpClient {
-			followRedirects = true
+			followRedirects = false
 			createHttpClient(this)
 		}
 	}
@@ -134,6 +134,13 @@ open class Account(
 	 * 获取账号
 	 */
 	open fun getAccountName() = SettingUtils[accountKey, ""]
+
+	/** 退出登录 */
+	suspend fun logout() {
+		cookieStorage.clear()
+		SettingUtils.removeKey(accountKey)
+		SettingUtils.removeKey(passwordKey)
+	}
 
 
 	/**

@@ -34,6 +34,26 @@ object AccountManagerPage: BasePage<AccountManagerViewModel>("账号管理", Dra
 
 		Column {
 			Card(modifier = Modifier.padding(8.dp)) {
+				Text(text = "智慧青科大", fontWeight = FontWeight.W700, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp))
+				Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically){
+					if(viewModel.iPassAccountName.isEmpty()){
+						Text(text = "未登录", modifier = Modifier.weight(1F), color = colorSecondaryText)
+						TextButton({  pageController.startPage(IpassLoginPage) }){
+							Text(text = "点击登录", color = colorSecondaryText)
+						}
+					}else{
+						Text(text = viewModel.iPassAccountName, modifier = Modifier.weight(1F))
+						TextButton({  pageController.startPage(IpassLoginPage) }){
+							Text(text = "更换账号", color = colorSecondaryText)
+						}
+						TextButton({ viewModel.askForLogoutIpass = true }){
+							Text(text = "退出登录", color = MaterialTheme.colorScheme.error)
+						}
+					}
+				}
+			}
+
+			Card(modifier = Modifier.padding(8.dp)) {
 				Text(text = "教务系统", fontWeight = FontWeight.W700, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp))
 				Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
 					if(viewModel.easAccountName.isEmpty()) {
@@ -58,6 +78,13 @@ object AccountManagerPage: BasePage<AccountManagerViewModel>("账号管理", Dra
 			AskDialog("退出登录", "是否确定退出登录，储存的账号登录信息会被删除", { viewModel.askForLogoutEas = false }){
 				viewModel.easLogout()
 				viewModel.askForLogoutEas = false
+			}
+		}
+
+		if(viewModel.askForLogoutIpass){
+			AskDialog("退出登录", "是否确定退出登录，储存的账号登录信息会被删除", { viewModel.askForLogoutIpass = false }){
+				viewModel.ipassLogout()
+				viewModel.askForLogoutIpass = false
 			}
 		}
 	}

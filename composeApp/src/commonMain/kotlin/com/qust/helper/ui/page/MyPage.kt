@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -27,7 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qust.helper.Res
+import com.qust.helper.icon_login_user_male
 import com.qust.helper.icon_no_login_user
+import com.qust.helper.model.account.EasAccount
+import com.qust.helper.model.account.IPassAccount
 import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.IconLogin
 import com.qust.helper.ui.page.account.AccountManagerPage
@@ -68,15 +72,30 @@ object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
         val scrollState = rememberScrollState()
         val pageController = rememberPageController()
 
+        LaunchedEffect(Unit){
+            val eas = EasAccount.getAccountName()
+            val ipass = IPassAccount.getAccountName()
+            if(eas.isNotEmpty()){
+                viewModel.hasLogin = true
+                viewModel.userName = eas
+            }else if(ipass.isNotEmpty()){
+                viewModel.hasLogin = true
+                viewModel.userName = ipass
+            }else{
+                viewModel.hasLogin = false
+                viewModel.userName = "未登录"
+            }
+        }
+
         Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
             Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clickable {
                 pageController.startPage(AccountManagerPage)
             }){
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(painter = painterResource(Res.drawable.icon_no_login_user), contentDescription = null, modifier = Modifier.size(84.dp))
+                    Image(painter = painterResource(if(viewModel.hasLogin) Res.drawable.icon_login_user_male else Res.drawable.icon_no_login_user), contentDescription = null, modifier = Modifier.size(84.dp))
                     Column(modifier = Modifier.padding(start = 8.dp)){
-                        Text(text = "未登录", style = MaterialTheme.typography.titleLarge)
-                        Text(text = "请先登录", style = MaterialTheme.typography.titleSmall, color = colorSecondaryText)
+                        Text(text = viewModel.userName, style = MaterialTheme.typography.titleLarge)
+                        Text(text = if(viewModel.hasLogin) "" else "请先登录", style = MaterialTheme.typography.titleSmall, color = colorSecondaryText)
                     }
                 }
                 Icon(contentDescription = null, imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight, tint = colorSecondaryText, modifier = Modifier.align(Alignment.CenterEnd))

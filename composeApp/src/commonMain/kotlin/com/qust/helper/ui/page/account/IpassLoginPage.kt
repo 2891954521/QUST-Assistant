@@ -17,16 +17,16 @@ import com.qust.helper.ui.drawables.IconLogin
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.page.rememberPageController
 import com.qust.helper.ui.widget.form.AccountInput
-import com.qust.helper.viewmodel.account.EasLoginViewModel
+import com.qust.helper.viewmodel.account.IpassLoginViewModel
 import kotlinx.coroutines.launch
 
-object EasLoginPage: BasePage<EasLoginViewModel>("教务登陆", Drawables.IconLogin) {
+object IpassLoginPage: BasePage<IpassLoginViewModel>("智慧青科大登陆", Drawables.IconLogin) {
 
 	@Composable
-	override fun getViewModel() = viewModel<EasLoginViewModel>()
+	override fun getViewModel() = viewModel<IpassLoginViewModel>()
 
 	@Composable
-	override fun Content(viewModel: EasLoginViewModel) {
+	override fun Content(viewModel: IpassLoginViewModel) {
 		val scope = rememberCoroutineScope()
 		val pageController = rememberPageController()
 		val keyboardController = LocalSoftwareKeyboardController.current
@@ -38,7 +38,7 @@ object EasLoginPage: BasePage<EasLoginViewModel>("教务登陆", Drawables.IconL
 				accountError = viewModel.accountError,
 				passwordError = viewModel.passwordError,
 				"学号",
-				"教务系统密码",
+				"智慧青科大密码",
 				login = {
 					keyboardController?.hide()
 					viewModel.login { scope.launch { pageController.back() } }
