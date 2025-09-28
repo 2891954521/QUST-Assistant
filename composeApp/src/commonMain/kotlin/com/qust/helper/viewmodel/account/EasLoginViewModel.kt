@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qust.helper.data.Keys
 import com.qust.helper.model.account.EasAccount
+import com.qust.helper.repository.AccountRepository
 import com.qust.helper.utils.DateUtils
 import com.qust.helper.utils.SettingUtils
 import com.qust.helper.viewmodel.RequestViewModel
@@ -28,17 +29,13 @@ class EasLoginViewModel : RequestViewModel() {
 		passwordError = ""
 
 		request({
-			val result = EasAccount.login(account.value, password.value, true)
+			val result = AccountRepository.easLogin(account.value, password.value)
 			if(result){
 				toastOK("登录成功")
-				val year = DateUtils.today().year.toString()
-				val currentYear = (year.substring(0, year.length - 2) + account.value.substring(0, 2)).toInt()
-				EasAccount.entranceDate = currentYear
 				onLogin()
 			}else{
 				toastError("用户名或密码错误")
 			}
-
 		})
 	}
 }

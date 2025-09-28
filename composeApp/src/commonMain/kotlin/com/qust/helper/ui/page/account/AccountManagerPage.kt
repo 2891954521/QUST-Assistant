@@ -9,10 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.IconLogin
@@ -30,19 +32,21 @@ object AccountManagerPage: BasePage<AccountManagerViewModel>("账号管理", Dra
 
 	@Composable
 	override fun Content(viewModel: AccountManagerViewModel) {
+		val accountInfo by viewModel.accountInfo.collectAsStateWithLifecycle()
+
 		val pageController = rememberPageController()
 
 		Column {
 			Card(modifier = Modifier.padding(8.dp)) {
 				Text(text = "智慧青科大", fontWeight = FontWeight.W700, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp))
 				Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically){
-					if(viewModel.iPassAccountName.isEmpty()){
+					if(accountInfo.ipassAccount.isEmpty()){
 						Text(text = "未登录", modifier = Modifier.weight(1F), color = colorSecondaryText)
 						TextButton({  pageController.startPage(IpassLoginPage) }){
 							Text(text = "点击登录", color = colorSecondaryText)
 						}
 					}else{
-						Text(text = viewModel.iPassAccountName, modifier = Modifier.weight(1F))
+						Text(text = accountInfo.ipassAccount, modifier = Modifier.weight(1F))
 						TextButton({  pageController.startPage(IpassLoginPage) }){
 							Text(text = "更换账号", color = colorSecondaryText)
 						}
@@ -56,13 +60,13 @@ object AccountManagerPage: BasePage<AccountManagerViewModel>("账号管理", Dra
 			Card(modifier = Modifier.padding(8.dp)) {
 				Text(text = "教务系统", fontWeight = FontWeight.W700, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp))
 				Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-					if(viewModel.easAccountName.isEmpty()) {
+					if(accountInfo.easAccount.isEmpty()) {
 						Text(text = "未登录", modifier = Modifier.weight(1F), color = colorSecondaryText)
 						TextButton({ pageController.startPage(EasLoginPage) }) {
 							Text(text = "点击登录", color = colorSecondaryText)
 						}
 					} else {
-						Text(text = viewModel.easAccountName, modifier = Modifier.weight(1F))
+						Text(text = accountInfo.easAccount, modifier = Modifier.weight(1F))
 						TextButton({ pageController.startPage(EasLoginPage) }) {
 							Text(text = "更换账号", color = colorSecondaryText)
 						}

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qust.helper.data.Keys
 import com.qust.helper.model.account.IPassAccount
+import com.qust.helper.repository.AccountRepository
 import com.qust.helper.utils.SettingUtils
 import com.qust.helper.viewmodel.RequestViewModel
 import com.qust.helper.viewmodel.extend.toastError
@@ -27,7 +28,7 @@ class IpassLoginViewModel : RequestViewModel() {
 		passwordError = ""
 
 		request({
-			val result = IPassAccount.login(account.value, password.value, true)
+			val result = AccountRepository.ipassLogin(account.value, password.value)
 			if(result){
 				toastOK("登录成功")
 				onLogin()
