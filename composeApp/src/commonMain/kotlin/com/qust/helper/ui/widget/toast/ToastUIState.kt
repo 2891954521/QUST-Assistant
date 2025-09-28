@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 
 @Stable
@@ -22,9 +23,11 @@ class ToastUIState {
 
 	suspend fun show(toastData: ToastData): Unit = mutex.withLock {
 		try {
-			suspendCancellableCoroutine { continuation ->
-				this.continuation = continuation
-				currentData = toastData
+			withTimeoutOrNull<Unit>(3_000L) {
+				suspendCancellableCoroutine { continuation ->
+					this@ToastUIState.continuation = continuation
+					currentData = toastData
+				}
 			}
 		} finally {
 			currentData = null

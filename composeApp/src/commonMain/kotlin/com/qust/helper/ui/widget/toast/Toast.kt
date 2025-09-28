@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.qust.helper.ui.theme.LocalColor
+import com.qust.helper.ui.theme.LocalTypography
 
 data class ToastData(
 	val message: String,
@@ -85,37 +86,37 @@ fun Toast(toastData: ToastData) {
 
 	val colorData = when (toastData.type) {
 		ToastData.Type.NORMAL -> ColorData(
-			backgroundColor = LocalColor.current.background,
-			textColor = LocalColor.current.onBackground,
-			iconColor = LocalColor.current.onBackground,
+			backgroundColor = LocalColor.current.toastBackground,
+			textColor = LocalColor.current.toastTextColor,
+			iconColor = LocalColor.current.toastIconColor,
 			icon = Icons.Rounded.Notifications
 		)
 
 		ToastData.Type.SUCCESS -> ColorData(
-			backgroundColor = LocalColor.current.background,
-			textColor = LocalColor.current.onBackground,
-			iconColor = LocalColor.current.onBackground,
+			backgroundColor = LocalColor.current.toastBackground,
+			textColor = LocalColor.current.toastTextColor,
+			iconColor = LocalColor.current.toastIconColor,
 			icon = Icons.Rounded.Check
 		)
 
 		ToastData.Type.INFO -> ColorData(
-			backgroundColor = LocalColor.current.background,
-			textColor = LocalColor.current.onBackground,
-			iconColor = LocalColor.current.onBackground,
+			backgroundColor = LocalColor.current.toastBackground,
+			textColor = LocalColor.current.toastTextColor,
+			iconColor = LocalColor.current.toastIconColor,
 			icon = Icons.Rounded.Info
 		)
 
 		ToastData.Type.WARNING -> ColorData(
-			backgroundColor = LocalColor.current.background,
-			textColor = LocalColor.current.onBackground,
-			iconColor = LocalColor.current.onBackground,
+			backgroundColor = LocalColor.current.toastBackground,
+			textColor = LocalColor.current.toastTextColor,
+			iconColor = LocalColor.current.toastIconColor,
 			icon = Icons.Rounded.Warning
 		)
 
 		ToastData.Type.ERROR -> ColorData(
-			backgroundColor = LocalColor.current.background,
-			textColor = LocalColor.current.onBackground,
-			iconColor = LocalColor.current.onBackground,
+			backgroundColor = LocalColor.current.toastBackground,
+			textColor = LocalColor.current.toastTextColor,
+			iconColor = LocalColor.current.toastIconColor,
 			icon = Icons.Rounded.Warning
 		)
 	}
@@ -142,22 +143,21 @@ private fun Toast(
 	iconColor: Color,
 	textColor: Color,
 ) {
-	val roundedValue = 26.dp
+	val roundedValue = 8.dp
 	Surface(
 		modifier = Modifier.defaultMinSize(minWidth = 100.dp),
 		color = backgroundColor,
-		shape = RoundedCornerShape(roundedValue),
-		tonalElevation = 2.dp,
+		shape = RoundedCornerShape(roundedValue)
 	) {
 		Column(
-			modifier = Modifier.padding(32.dp),
+			modifier = Modifier.padding(16.dp),
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center
 		) {
 			if (icon != null) {
-				Icon(icon, contentDescription = null, Modifier.size(64.dp), tint = iconColor)
+				Icon(icon, contentDescription = null, Modifier.size(32.dp), tint = iconColor)
 			}
-			Text(message, modifier = Modifier.padding(8.dp), color = textColor, fontSize = 24.sp)
+			Text(message, modifier = Modifier.padding(8.dp), color = textColor, style = LocalTypography.current.bodyMedium)
 		}
 	}
 }

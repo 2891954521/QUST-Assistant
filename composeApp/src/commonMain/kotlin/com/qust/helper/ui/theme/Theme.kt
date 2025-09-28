@@ -2,11 +2,14 @@ package com.qust.helper.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 
 val LocalColor = staticCompositionLocalOf { LightColors }
+
+val LocalTypography = staticCompositionLocalOf { Typography() }
 
 @Composable
 fun AppTheme(
@@ -18,11 +21,13 @@ fun AppTheme(
 		else -> LightColors.colorScheme
 	}
 	CompositionLocalProvider(LocalColor provides LightColors) {
-		MaterialTheme(
-			colorScheme = colorScheme,
-//			typography = Typography,
-			content = content
-		)
+		CompositionLocalProvider(LocalTypography provides createTypography()) {
+			MaterialTheme(
+				colorScheme = colorScheme,
+				typography = LocalTypography.current,
+				content = content
+			)
+		}
 	}
 }
 

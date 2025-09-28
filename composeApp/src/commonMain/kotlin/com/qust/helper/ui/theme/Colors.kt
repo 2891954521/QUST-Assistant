@@ -74,6 +74,10 @@ open class AppColors(
 	val surfaceTint: Color,
 	val outlineVariant: Color,
 	val scrim: Color,
+
+	val toastBackground: Color = Color(0x9A000000),
+	val toastIconColor: Color = Color(0xFFFFFFFF),
+	val toastTextColor: Color = Color(0xFFCDCDCD),
 ){
 	val colorScheme = ColorScheme(
 		primary = primary,
