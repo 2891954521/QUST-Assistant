@@ -4,68 +4,42 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qust.helper.entity.lesson.Lesson
-import com.qust.helper.model.lessonTable.LessonTableModel
+import com.qust.helper.entity.lesson.TimeTable
+import com.qust.helper.model.SettingModel
+import com.qust.helper.repository.LessonTableRepository
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.datetime.LocalDate
 import java.util.Arrays
 
-class LessonTableUIState {
+data class LessonTableInfo(
+	/** 时间表 */
+	val timeTable: TimeTable = TimeTable.Companion.DEFAULT,
+	/** 开学时间 */
+	val startDay: LocalDate = SettingModel.startDay,
+	/** 总周数 */
+	val totalWeek: Int = SettingModel.totalWeek,
+	/** 当前周 (从 0 开始) */
+	val currentWeek: Int = 0,
 
-	val timeTable by LessonTableModel._timeTable
+	val lessons: List<Lesson> = emptyList()
+)
 
-	val startDay by mutableStateOf(LessonTableModel.startDay)
-
-	val currentWeek by mutableStateOf(LessonTableModel.currentWeek)
-
-	val totalWeek by LessonTableModel._totalWeek
-
+class LessonTableUIState(
+	val lessonTableInfo: StateFlow<LessonTableInfo> = LessonTableRepository.currentLessonTable
+) {
 	var lessonGroupRender by mutableStateOf(emptyList<LessonGroupRenderAble>())
 
-	var lessons: List<Lesson> = mutableListOf()
-
-	fun setLessonTable(lessons: List<Lesson>){
-		this.lessons = lessons
-		lessonGroupRender = lessons.mapIndexed { i, lesson ->
-			val offset = timeTable.calcOffset(lesson)
+	fun refreshLessonTable(){
+		lessonGroupRender = lessonTableInfo.value.lessons.mapIndexed { i, lesson ->
+			val offset = lessonTableInfo.value.timeTable.calcOffset(lesson)
 			LessonGroupRenderAble(
-				totalWeek,
+				lessonTableInfo.value.totalWeek,
 				lesson.week,
 				offset.first,
 				offset.second,
 				arrayOf(lesson),
 				arrayOf(i)
 			)
-		}
-	}
-
-	fun appendLesson(newLesson: Lesson){
-		val count = lessons.size
-		lessons = List(count + 1){ if(it < count) lessons[it] else newLesson }
-		lessonGroupRender = List(count + 1) { if(it < count) lessonGroupRender[it] else {
-				val offset = timeTable.calcOffset(newLesson)
-				LessonGroupRenderAble(
-					totalWeek,
-					newLesson.week,
-					offset.first,
-					offset.second,
-					arrayOf(newLesson),
-					arrayOf(count)
-				)
-			}
-		}
-	}
-
-	fun updateLesson(index: Int, newLesson: Lesson){
-		lessons = lessons.mapIndexed { i, lesson -> if(i == index) newLesson else lesson }
-		lessonGroupRender = lessonGroupRender.mapIndexed { i, oldLesson -> if(i == index) {
-				val offset = timeTable.calcOffset(newLesson)
-				LessonGroupRenderAble(
-					totalWeek,
-					newLesson.week,
-					offset.first,
-					offset.second,
-					arrayOf(newLesson),
-					arrayOf(index)
-				)
-			}else oldLesson
 		}
 	}
 }

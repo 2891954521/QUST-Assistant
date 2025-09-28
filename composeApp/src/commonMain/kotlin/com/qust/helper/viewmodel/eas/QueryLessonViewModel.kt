@@ -5,23 +5,34 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qust.helper.data.i18n.Strings
+import com.qust.helper.entity.lesson.TimeTable
+import com.qust.helper.model.SettingModel
 import com.qust.helper.model.account.EasAccount
 import com.qust.helper.model.eas.LessonQuery
 import com.qust.helper.model.eas.LessonTableQueryResult
-import com.qust.helper.model.lessonTable.LessonTableModel
+import com.qust.helper.repository.LessonTableRepository
+import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableInfo
 import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableUIState
 import com.qust.helper.utils.DateUtils
 import com.qust.helper.viewmodel.extend.toastError
 import com.qust.helper.viewmodel.extend.toastOK
 import com.qust.helper.viewmodel.extend.toastWarning
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 class QueryLessonViewModel: BaseEasViewModel() {
 
-	val lessonUIState = LessonTableUIState()
+	val lessonTableInfo = MutableStateFlow(LessonTableInfo(
+		timeTable = TimeTable.Companion.DEFAULT,
+		startDay = SettingModel.startDay,
+		currentWeek = 0,
+		totalWeek = 1
+	))
+
+	val lessonUIState = LessonTableUIState(lessonTableInfo)
 
 	var termText by mutableStateOf("")
 	var termTimeText by mutableStateOf("")
-	var totalWeek by mutableIntStateOf(LessonTableModel.totalWeek)
 
 	var needSave by mutableStateOf(false)
 
@@ -44,15 +55,19 @@ class QueryLessonViewModel: BaseEasViewModel() {
 			needSave = true
 
 			termText = result.termText
-			totalWeek = result.totalWeek
 
 			termTimeText = Strings.MSG_QUERY_TERM_START_TIME.format(
-				DateUtils.YMD.format(LessonTableModel.startDay),
+				DateUtils.YMD.format(lessonTableInfo.value.startDay),
 				DateUtils.YMD.format(result.startDay)
 			)
 
 			val lessons = result.lessons
-			if(lessons != null) lessonUIState.setLessonTable(lessons)
+			if(lessons != null){
+				lessonTableInfo.update { it.copy(
+					totalWeek = result.totalWeek,
+					lessons = lessons
+				) }
+			}
 
 			queryResult = result
 			needSave = true
@@ -70,7 +85,7 @@ class QueryLessonViewModel: BaseEasViewModel() {
 		}
 
 		request({
-			LessonTableModel.saveLessonTable(result)
+			LessonTableRepository.saveLessonTable(result)
 		}, {
 			toastError("保存课表失败")
 		})

@@ -4,17 +4,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qust.helper.entity.lesson.Lesson
-import com.qust.helper.model.lessonTable.LessonTableModel
+import com.qust.helper.repository.LessonTableRepository
 import com.qust.helper.ui.widget.lesson.lessonEdit.LessonEditUIEvent
 import com.qust.helper.ui.widget.lesson.lessonEdit.LessonEditUIState
+import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableInfo
 import com.qust.helper.ui.widget.lesson.lessonTable.LessonTableUIState
 import com.qust.helper.utils.LessonUtils
 import com.qust.helper.viewmodel.BaseViewModel
 import com.qust.helper.viewmodel.extend.toastError
 import com.qust.helper.viewmodel.extend.toastOK
 import com.qust.helper.viewmodel.extend.toastWarning
+import kotlinx.coroutines.flow.StateFlow
 
 open class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
+
+	val lessonTableInfo: StateFlow<LessonTableInfo> = LessonTableRepository.currentLessonTable
 
 	val tableUIState = LessonTableUIState()
 
@@ -23,6 +27,12 @@ open class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 	var isEditLesson by mutableStateOf(false)
 
 	private var selectLessonIndex: Int = -1
+
+	init {
+		runBackGround {
+			LessonTableRepository.refreshCurrentLessonTable()
+		}
+	}
 
 	fun clickLesson(index: Int, lesson: Lesson?){
 		val selectLesson: Lesson
@@ -47,7 +57,7 @@ open class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 
 		editUIState.colorIndex = selectLesson.colorLabel
 
-		for(i in 0..< tableUIState.totalWeek){
+		for(i in 0..< lessonTableInfo.value.totalWeek){
 			editUIState.weeks[i] = (1L shl i) and selectLesson.weeks > 0
 		}
 		isEditLesson = true
@@ -83,7 +93,7 @@ open class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 
 		runBackGround {
 			if(selectLessonIndex == -1){
-				val lesson = Lesson(
+				val newLesson = Lesson(
 					type = 1,
 					colorLabel = uiState.colorIndex,
 					weeks = weeks,
@@ -95,15 +105,14 @@ open class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 					teacher = uiState.lessonTeacher,
 					remark = "",
 				)
-				val success = LessonTableModel.saveLesson(lesson)
-				if(success != null && success != -1L){
+				val success = LessonTableRepository.appendLessonToLessonTable(newLesson)
+				if(success){
 					toastOK("保存完成")
-					tableUIState.appendLesson(lesson.copy(id = success))
 				}else{
 					toastError("保存课程失败")
 				}
 			}else{
-				val newLesson = tableUIState.lessons[selectLessonIndex].copy(
+				val newLesson = lessonTableInfo.value.lessons[selectLessonIndex].copy(
 					colorLabel = uiState.colorIndex,
 					weeks = weeks,
 					week = uiState.week.value,
@@ -114,9 +123,10 @@ open class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 					teacher = uiState.lessonTeacher,
 				)
 
-				if(LessonTableModel.updateLesson(newLesson)){
+				if(LessonTableRepository.updateLessonTableLesson(newLesson)){
 					toastOK("保存完成")
-					tableUIState.updateLesson(selectLessonIndex, newLesson)
+					// 更新课程不会自动触发UI更新，需要手动刷新
+					tableUIState.refreshLessonTable()
 				}else{
 					toastError("保存课程失败")
 				}
@@ -127,11 +137,5 @@ open class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 
 	override fun cancel() {
 		isEditLesson = false
-	}
-
-	init {
-		runBackGround {
-			tableUIState.setLessonTable(LessonTableModel.getAllLesson())
-		}
 	}
 }

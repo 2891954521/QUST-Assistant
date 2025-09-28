@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,11 +28,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qust.helper.data.i18n.Strings
 import com.qust.helper.entity.lesson.Lesson
 import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
+import com.qust.helper.utils.Logger
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -41,7 +45,13 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> Unit = { _, _ -> }){
-	val pagerState = rememberPagerState(initialPage = 0, pageCount = { uiState.totalWeek })
+	val lessonTableInfo by uiState.lessonTableInfo.collectAsStateWithLifecycle()
+
+	LaunchedEffect(lessonTableInfo.lessons){
+		uiState.refreshLessonTable()
+	}
+
+	val pagerState = rememberPagerState(initialPage = 0, pageCount = { lessonTableInfo.totalWeek })
 
 	Column {
 		Text(
@@ -55,11 +65,11 @@ fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> U
 			modifier = Modifier.fillMaxSize()
 		) { page ->
 			LessonViewLayout({
-				LessonTimeBar(uiState.timeTable)
+				LessonTimeBar(lessonTableInfo.timeTable)
 			}, {
-				LessonDate(uiState.startDay, page)
+				LessonDate(lessonTableInfo.startDay, page)
 			}, {
-				LessonContent(uiState.timeTable.count, page, uiState.lessonGroupRender, onLessonClick)
+				LessonContent(lessonTableInfo.timeTable.count, page, uiState.lessonGroupRender, onLessonClick)
 			})
 		}
 	}

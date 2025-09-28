@@ -3,7 +3,7 @@ package com.qust.helper.model.eas
 import com.qust.helper.data.QustApi
 import com.qust.helper.entity.lesson.Lesson
 import com.qust.helper.model.account.EasAccount
-import com.qust.helper.model.lessonTable.LessonTableModel
+import com.qust.helper.repository.LessonTableRepository
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.utils.DateUtils
 import com.qust.helper.utils.JSONArray
@@ -111,7 +111,7 @@ object LessonQuery {
 	 * 从json中解析课表
 	 */
 	fun loadFromJson(json: JsonObject): List<Lesson>? {
-		val timeTable = LessonTableModel.timeTable
+		val timeTable = LessonTableRepository.currentLessonTable.value.timeTable
 		return try {
 			var index = 0
 			val colors = mutableMapOf<String, Int>()
