@@ -28,6 +28,14 @@ jobs:
     
     - name: Build Debug APK
       run: ./gradlew assembleDebug
+
+    - name: Debug - List all APK files
+      run: |
+        echo "Current directory: $(pwd)"
+        echo "=== Finding all .apk files ==="
+        find . -name "*.apk" -type f
+        echo "=== Listing build/outputs directories ==="
+        find . -type d -path "*/build/outputs" -exec ls -lR {} \;
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
