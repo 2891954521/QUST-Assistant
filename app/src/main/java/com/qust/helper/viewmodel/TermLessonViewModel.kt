@@ -67,7 +67,7 @@ class TermLessonViewModel: ViewModel() {
 
 	fun longClickLesson(select: LessonRender.SelectLesson, week: Int){
 		if(LessonTableRepository.lockLesson) {
-			toastWarning("当前课表已被锁定")
+			uiEvent.toastWarning("当前课表已被锁定")
 			return
 		}
 		currentDayOfWeek = select.dayOfWeek
