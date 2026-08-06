@@ -262,7 +262,7 @@ object WebPage {
 			webView.isVerticalScrollBarEnabled = true
 			webView.settings.also { webSettings ->
 				webSettings.allowFileAccess = true
-				webSettings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+				webSettings.cacheMode = WebSettings.LOAD_NO_CACHE
 				webSettings.domStorageEnabled = true
 				webSettings.javaScriptEnabled = true
 				webSettings.loadWithOverviewMode = true
