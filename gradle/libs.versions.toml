@@ -23,7 +23,8 @@ androidx-lifecycle = "2.11.0-beta01"
 androidx-espresso = "3.7.0"
 
 composeMultiplatform = "1.11.1"
-material3 = "1.11.0-alpha07"
+compose-material = "1.11.1"
+compose-material3 = "1.9.0"
 
 ksp = "2.3.10"
 kotlinpoet = "2.3.0"
@@ -57,7 +58,8 @@ androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecyc
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-espresso" }
 
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-material" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 

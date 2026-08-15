@@ -1,5 +1,6 @@
 package com.qust.helper.next.network.client
 
+import com.qust.helper.next.network.client.base.BaseAppHttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.parameter
 import io.ktor.http.takeFrom

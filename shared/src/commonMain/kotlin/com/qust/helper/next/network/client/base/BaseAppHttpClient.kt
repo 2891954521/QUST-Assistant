@@ -1,8 +1,7 @@
-package com.qust.helper.next.network.client
+package com.qust.helper.next.network.client.base
 
 import com.qust.helper.next.common.json.JsonUtils
 import com.qust.helper.next.common.json.parseToJson
-import com.qust.helper.next.network.client.BaseHttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -54,14 +53,14 @@ abstract class BaseAppHttpClient: BaseHttpClient() {
      * 执行POST请求
      * @param body 请求体，可选类型：
      * - data class / Map / [JsonElement] 对应 application/json
-     * - [io.ktor.client.request.forms.FormDataContent] 对应 application/x-www-form-urlencoded
+     * - [FormDataContent] 对应 application/x-www-form-urlencoded
      * ```
      * FormDataContent(parameters {
      *     append("username", "JetBrains")
      *     append("email", "example@jetbrains.com")
      * })
      * ```
-     * - [io.ktor.client.request.forms.MultiPartFormDataContent] 对应 multipart/form-data
+     * - [MultiPartFormDataContent] 对应 multipart/form-data
      * ```
      * MultiPartFormDataContent(formData {
      *     append("name", "JetBrains logo")
@@ -77,6 +76,8 @@ abstract class BaseAppHttpClient: BaseHttpClient() {
      * ```
      */
     suspend inline fun <reified T, reified R> post(url: String, body: T? = null): R = post(url, body, typeInfo<T>(), typeOf<R>())
+
+    suspend inline fun <reified R> post(url: String): R = post(url, null, typeInfo<Unit>(), typeOf<R>())
 
     /**
      * 执行POST请求
@@ -101,7 +102,6 @@ abstract class BaseAppHttpClient: BaseHttpClient() {
     @OptIn(InternalAPI::class)
     private fun <T: Any> buildBody(builder: HttpRequestBuilder, body: T? = null, bodyType: TypeInfo): HttpRequestBuilder {
         if(body == null){
-            builder.body = NullBody
             return builder
         }
 

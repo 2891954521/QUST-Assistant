@@ -1,4 +1,4 @@
-package com.qust.helper.next.network.client
+package com.qust.helper.next.network.client.base
 
 import com.qust.helper.next.AppConfig
 import com.qust.helper.next.common.Platform
@@ -22,22 +22,7 @@ import kotlin.reflect.typeOf
 
 abstract class BaseHttpClient {
 
-	val client by lazy {
-		HttpClient {
-			install(ContentNegotiation) {
-				json()
-			}
-
-			engine {
-				if(AppConfig.HTTP_PROXY.isNotEmpty() && Platform.currentPlatform() != Platform.PlatformType.WEB) {
-					Logger.i("use proxy: ${AppConfig.HTTP_PROXY}")
-					proxy = ProxyBuilder.http(AppConfig.HTTP_PROXY)
-				}
-			}
-
-			buildClient(this)
-		}
-	}
+	val client by lazy { createHttpClient(::buildClient) }
 
 	/**
 	 * 子类扩展 HttpClient 功能的函数
@@ -114,5 +99,21 @@ abstract class BaseHttpClient {
 	 */
 	protected open suspend fun <T> execute(builder: HttpRequestBuilder, type: TypeInfo): T {
 		return client.request(buildRequest(builder)).body(type)
+	}
+
+
+	protected fun createHttpClient(block: HttpClientConfig<*>.() -> Unit) = HttpClient {
+		install(ContentNegotiation) {
+			json()
+		}
+
+		engine {
+			if(AppConfig.HTTP_PROXY.isNotEmpty() && Platform.currentPlatform() != Platform.PlatformType.WEB) {
+				Logger.i("use proxy: ${AppConfig.HTTP_PROXY}")
+				proxy = ProxyBuilder.http(AppConfig.HTTP_PROXY)
+			}
+		}
+
+		block(this)
 	}
 }

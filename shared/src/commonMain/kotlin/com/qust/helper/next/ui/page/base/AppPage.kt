@@ -1,6 +1,7 @@
 package com.qust.helper.next.ui.page.base
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.qust.helper.next.ui.component.overlay.OverlayProvider
 import com.qust.helper.next.ui.theme.AppThemeProvider
 import com.qust.helper.next.ui.viewmodel.BaseViewModel
@@ -8,6 +9,7 @@ import kotlin.reflect.KClass
 
 abstract class AppPage<T: BaseViewModel>(
     title: String,
+    val icon: ImageVector? = null,
     viewModelClass: KClass<T>
 ): BasePage<T>(
     title = title,

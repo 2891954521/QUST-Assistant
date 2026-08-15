@@ -8,6 +8,39 @@ val LocalColor = staticCompositionLocalOf { AppColors() }
 
 object Colors {
 
+    val LESSON_BACKGROUND_COLORS = arrayOf(
+        Color(0xFFE6F4FF),
+        Color(0xFFFDEBDD),
+        Color(0xFFDEFBF7),
+        Color(0xFFEEEDFF),
+        Color(0xFFFCEBCD),
+        Color(0xFFFFEFF0),
+        Color(0xFFEAF2FF),
+        Color(0xFFFFEEF8),
+        Color(0xFFE2F9F3),
+        Color(0xFFFFF9C9),
+        Color(0xFFFAEDFF),
+        Color(0xFFF4F2FD),
+    )
+
+    val LESSON_TEXT_COLORS = arrayOf(
+        Color(0xFF1F9DD0),
+        Color(0xFFDA7762),
+        Color(0xFF54AEB9),
+        Color(0xFF817CCC),
+        Color(0xFFE39B2D),
+        Color(0xFFD8637D),
+
+        Color(0xFF6A8ED8),
+        Color(0xFFDD73B3),
+        Color(0xFF44AF9F),
+        Color(0xFFC5A723),
+        Color(0xFFAF70CB),
+        Color(0xFF768AC5),
+    )
+
+    val TEXT_COLOR_SECOND_COLOR = Color(0xFF909090)
+
 }
 
 open class AppColors {
