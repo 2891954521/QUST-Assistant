@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.qust.helper.next.ui.theme.Theme
+import com.qust.helper.next.ui.theme.color.ContainerColors
 
 @Composable
 fun AppContentWithBack(
@@ -29,7 +32,7 @@ fun AppContentWithBack(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(Modifier.fillMaxSize().then(if(contentPadding != null) Modifier.padding(contentPadding) else Modifier)) {
-        Row(modifier = Modifier.heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically) {
+        SurfaceRow(modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp), colors = ContainerColors.Primary, verticalAlignment = Alignment.CenterVertically) {
             if(onBack != null){
                 Box(modifier = Modifier.padding(start = 8.dp).clip(RoundedCornerShape(32.dp)).clickable(onClick = onBack)){
                     Icon(
@@ -42,7 +45,7 @@ fun AppContentWithBack(
             Text(
                 text = title,
                 modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.titleLarge,
+                style = Theme.textStyles.titleLarge,
                 maxLines = 1,
             )
         }
@@ -58,7 +61,7 @@ fun AppContent(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(Modifier.fillMaxSize().then(if(contentPadding != null) Modifier.padding(contentPadding) else Modifier)) {
-        Row(modifier = Modifier.heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically) {
+        SurfaceRow(modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp), colors = ContainerColors.Primary, verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = title,
                 modifier = Modifier.padding(16.dp),

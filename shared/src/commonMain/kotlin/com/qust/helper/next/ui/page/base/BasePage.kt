@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qust.helper.next.page.AbstractPage
 import com.qust.helper.next.ui.component.overlay.OverlayProvider
 import com.qust.helper.next.ui.router.params.PageParam
+import com.qust.helper.next.ui.theme.AppThemeProvider
 import com.qust.helper.next.ui.viewmodel.AppViewModelFactory
 import com.qust.helper.next.ui.viewmodel.BaseViewModel
 import kotlin.reflect.KClass
@@ -31,18 +32,18 @@ abstract class BasePage<T: BaseViewModel>(
     })
 
     @Composable
-    fun PageContent() {
-        BaseContent(getViewModel())
+    open fun PageContent() {
+		BaseContent(getViewModel())
     }
 
     @Composable
     @Suppress("UNCHECKED_CAST")
-    fun PageContent(viewModel: BaseViewModel) {
+    open fun PageContent(viewModel: BaseViewModel) {
         BaseContent(viewModel as T)
     }
 
     @Composable
-    protected open fun BaseContent(viewModel: T) {
+    open fun BaseContent(viewModel: T) {
 	    OverlayProvider(viewModel.overlay) {
 		    Box(Modifier.statusBarsPadding()) {
 			    Content(viewModel)
