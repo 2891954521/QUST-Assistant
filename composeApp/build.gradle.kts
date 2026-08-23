@@ -88,6 +88,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
 
             implementation("androidx.core:core-ktx:1.12.0")
+            implementation(libs.androidx.security.crypto)
             implementation("androidx.compose.foundation:foundation-layout")
             implementation("androidx.compose.ui:ui-util")
             implementation("androidx.compose.ui:ui-graphics")
