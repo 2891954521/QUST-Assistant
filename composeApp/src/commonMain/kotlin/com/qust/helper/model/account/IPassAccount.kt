@@ -56,9 +56,9 @@ object IPassAccount: Account(
 	}
 
 	override fun createHttpClient(config: HttpClientConfig<*>) = with(config){
-		val protocol = resolveProtocol()
 		install(DefaultRequest) {
 			url {
+				val protocol = resolveProtocol()
 				this.protocol = protocol
 				host = this@IPassAccount.host
 				port = if (protocol == URLProtocol.HTTPS) 443 else 80
