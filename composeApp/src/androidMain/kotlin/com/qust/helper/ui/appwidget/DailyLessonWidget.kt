@@ -9,14 +9,15 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.action.Action
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
+import androidx.glance.layout.defaultWeight
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
@@ -32,6 +33,7 @@ import com.qust.helper.ui.activity.MainActivity
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.utils.DateUtils
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.isoDayNumber
 
 private val WEEK_NAMES = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
 
