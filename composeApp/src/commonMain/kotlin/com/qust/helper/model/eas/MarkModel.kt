@@ -8,6 +8,7 @@ import com.qust.helper.model.database.getMarkStorage
 import com.qust.helper.utils.JSONArray
 import com.qust.helper.utils.JsonUtils
 import com.qust.helper.utils.JsonUtils.get
+import com.qust.helper.utils.Logger
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.setBody
 import io.ktor.http.parameters
@@ -65,7 +66,7 @@ object MarkModel: MarkStorage by getMarkStorage()  {
 				mark.addItemMark(js)
 			}
 		} catch(e: Exception) {
-			e.printStackTrace()
+			Logger.e(e = e)
 		}
 		return markMap.values.map { it.build(term, true) }
 	}

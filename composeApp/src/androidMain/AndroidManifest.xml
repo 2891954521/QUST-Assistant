@@ -36,6 +36,10 @@
             android:name=".ui.activity.PageActivity"
             android:exported="false" />
         
+        <activity
+            android:name=".ui.activity.GuideActivity"
+            android:exported="false" />
+        
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.qust.helper"
@@ -45,6 +49,43 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_apk" />
         </provider>
+        
+        <!-- 桌面小组件 -->
+        <receiver
+            android:name=".ui.appwidget.DailyLessonWidgetReceiver"
+            android:label="当日课表"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/daily_lesson" />
+        </receiver>
+        
+        <receiver
+            android:name=".ui.appwidget.TermLessonWidgetReceiver"
+            android:label="@string/text_term_lesson"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/term_lesson" />
+        </receiver>
+        
+        <receiver
+            android:name=".ui.appwidget.DrinkCodeWidgetReceiver"
+            android:label="@string/text_drink_code"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/drink_code" />
+        </receiver>
         
     </application>
 

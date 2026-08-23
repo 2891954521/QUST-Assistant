@@ -1,5 +1,6 @@
 package com.qust.helper.viewmodel
 
+import com.qust.helper.utils.Logger
 import com.qust.helper.viewmodel.extend.RequestAble
 import com.qust.helper.viewmodel.extend.RequestsImpl
 import com.qust.helper.viewmodel.extend.toastError
@@ -11,7 +12,7 @@ open class RequestViewModel: BaseViewModel() {
 	fun request(
 		block: suspend RequestAble.() -> Unit,
 		onError: (Exception) -> Unit = {
-			it.printStackTrace()
+			Logger.e(e = it)
 			toastError("网络错误: ${it.message}")
 		}
 	) {

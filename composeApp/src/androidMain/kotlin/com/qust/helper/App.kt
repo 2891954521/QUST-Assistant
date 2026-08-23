@@ -3,6 +3,7 @@ package com.qust.helper
 import android.app.Application
 import android.os.Looper
 import android.widget.Toast
+import com.qust.helper.model.AutoQueryRepository
 import com.qust.helper.room.AppDataBase
 import com.qust.helper.utils.UmengUtils
 import com.tencent.mmkv.MMKV
@@ -10,12 +11,20 @@ import com.tencent.mmkv.MMKV
 
 class App: Application() {
 
+	companion object {
+		lateinit var instance: App
+	}
+
 	override fun onCreate() {
 		super.onCreate()
+		instance = this
 
 		MMKV.initialize(this)
 
 		AppDataBase.init(this)
+
+		// 启动后台自动查询课表（WorkManager 每 12 小时）
+		AutoQueryRepository.startAutoQuery(this)
 
 		if(!BuildConfig.DEBUG) UmengUtils.init(this)
 

@@ -3,6 +3,7 @@ package com.qust.helper.model.account
 import com.qust.helper.model.network.AppCookiesStorage
 import com.qust.helper.model.network.NeedLoginException
 import com.qust.helper.model.network.httpClient
+import com.qust.helper.utils.SecureStorage
 import com.qust.helper.utils.SettingUtils
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
@@ -70,9 +71,10 @@ open class Account(
 	 * @return 是否登录成功
 	 */
 	suspend fun login(): Boolean {
+		val password = getPassword()
 		return login(
 			SettingUtils[accountKey, ""],
-			SettingUtils[passwordKey, ""],
+			password,
 			saveData = false
 		)
 	}
@@ -86,9 +88,25 @@ open class Account(
 		val isLogin = if(account.isNullOrEmpty() || password.isNullOrEmpty()) false else baseLogin(account, password)
 		if(saveData && isLogin){
 			SettingUtils[accountKey] = account
-			SettingUtils[passwordKey] = password
+			if (!password.isNullOrEmpty()) {
+				SecureStorage.putString(passwordKey, password)
+				SettingUtils.removeKey(passwordKey)
+			}
 		}
 		return isLogin
+	}
+
+	private suspend fun getPassword(): String {
+		return if (SecureStorage.contains(passwordKey)) {
+			SecureStorage.getString(passwordKey, "")
+		} else {
+			val plainPassword = SettingUtils[passwordKey, ""]
+			if (plainPassword.isNotEmpty()) {
+				SecureStorage.putString(passwordKey, plainPassword)
+				SettingUtils.removeKey(passwordKey)
+			}
+			plainPassword
+		}
 	}
 
 	/**
@@ -140,6 +158,7 @@ open class Account(
 		cookieStorage.clear()
 		SettingUtils.removeKey(accountKey)
 		SettingUtils.removeKey(passwordKey)
+		SecureStorage.remove(passwordKey)
 	}
 
 

@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -41,7 +42,9 @@ import com.qust.helper.ui.drawables.School
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.theme.LocalColor
 import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.ui.widget.AskDialog
 import com.qust.helper.utils.DateUtils
+import com.qust.helper.utils.HtmlUtils
 import com.qust.helper.viewmodel.eas.QueryMarkViewModel
 
 object QueryMarkPage: BasePage<QueryMarkViewModel>("成绩查询", Drawables.School) {
@@ -52,6 +55,8 @@ object QueryMarkPage: BasePage<QueryMarkViewModel>("成绩查询", Drawables.Sch
 	@Composable
 	override fun Content(viewModel: QueryMarkViewModel) {
 
+		var showClearDialog by remember { mutableStateOf(false) }
+
 		BaseEasQueryUI(
 			pickYear = viewModel.pickYear.value,
 			onYearPick = {
@@ -59,6 +64,11 @@ object QueryMarkPage: BasePage<QueryMarkViewModel>("成绩查询", Drawables.Sch
 				viewModel.selectData(it)
 			 },
 			doQuery = { viewModel.query() },
+			searchBar = {
+				Button(onClick = { showClearDialog = true }) {
+					Text(text = "清空", maxLines = 1)
+				}
+			}
 		){
 
 			SortBar(viewModel)
@@ -70,6 +80,18 @@ object QueryMarkPage: BasePage<QueryMarkViewModel>("成绩查询", Drawables.Sch
 					}
 				}
 			}
+		}
+
+		if(showClearDialog) {
+			AskDialog(
+				title = "确认清空",
+				content = "这将清空 ${viewModel.getTerm()} 的成绩查询结果，你可以重新查询新的成绩",
+				onDismiss = { showClearDialog = false },
+				onConfirm = {
+					viewModel.clearMarks()
+					showClearDialog = false
+				}
+			)
 		}
 	}
 
@@ -204,8 +226,8 @@ object QueryMarkPage: BasePage<QueryMarkViewModel>("成绩查询", Drawables.Sch
 				for(i in 0 until mark.items.size) {
 					HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
 					Row {
-						Text(text = mark.items[i].name, modifier = Modifier.weight(2F), textAlign = TextAlign.Center)
-						Text(text = mark.items[i].mark, modifier = Modifier.weight(1F), textAlign = TextAlign.Center)
+						Text(text = HtmlUtils.escapeHtml(mark.items[i].name), modifier = Modifier.weight(2F), textAlign = TextAlign.Center)
+						Text(text = HtmlUtils.escapeHtml(mark.items[i].mark), modifier = Modifier.weight(1F), textAlign = TextAlign.Center)
 					}
 				}
 

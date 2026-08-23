@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import com.qust.helper.data.Pages
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.page.EmptyPage
+import com.qust.helper.ui.theme.AppTheme
 
 class PageActivity: ComponentActivity() {
 
@@ -28,6 +29,6 @@ class PageActivity: ComponentActivity() {
             this.page = page
         }
 
-        setContent { this.page.ComposePage() }
+        setContent { AppTheme { this.page.ComposePage() } }
     }
 }

@@ -6,6 +6,7 @@ import com.qust.helper.entity.eas.Exam
 import com.qust.helper.model.account.EasAccount
 import com.qust.helper.model.eas.ExamModel
 import com.qust.helper.model.eas.MarkModel
+import com.qust.helper.utils.Logger
 import com.qust.helper.viewmodel.extend.toastError
 import com.qust.helper.viewmodel.extend.toastOK
 
@@ -46,7 +47,7 @@ class QueryExamViewModel: BaseEasViewModel() {
 				toastOK("未查询到新考试")
 			}
 		}) {
-			it.printStackTrace()
+			Logger.e(e = it)
 			toastError("查询失败：${it.message}")
 		}
 	}

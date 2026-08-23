@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
 
-    kotlin("plugin.serialization") version "2.0.0"
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 kotlin {
@@ -70,13 +70,17 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+            implementation(libs.kotlinx.coroutines.core)
 
             implementation(libs.sqlite.bundled)
             implementation(libs.ktor.client.core)
 
-            implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
+            implementation("io.ktor:ktor-client-content-negotiation:3.1.0")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.0")
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
 
         androidMain.dependencies {
@@ -84,6 +88,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
 
             implementation("androidx.core:core-ktx:1.12.0")
+            implementation("androidx.compose.foundation:foundation-layout")
             implementation("androidx.compose.foundation:foundation-layout")
             implementation("androidx.compose.ui:ui-util")
             implementation("androidx.compose.ui:ui-graphics")
@@ -101,7 +106,7 @@ kotlin {
 
             implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-            implementation("org.jsoup:jsoup:1.12.1")
+            implementation("org.jsoup:jsoup:1.17.2")
 
             implementation("com.umeng.umsdk:common:9.6.8")
             implementation("com.umeng.umsdk:asms:1.8.2")
@@ -132,8 +137,8 @@ android {
         applicationId = "com.qust.helper"
         minSdk = 26
         targetSdk = 34
-        versionCode = 15
-        versionName = "v3.6.0127"
+        versionCode = 16
+        versionName = "v3.6.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

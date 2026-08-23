@@ -25,6 +25,7 @@ import com.qust.helper.entity.eas.Notice
 import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.Notification
 import com.qust.helper.ui.page.BasePage
+import com.qust.helper.utils.HtmlUtils
 import com.qust.helper.viewmodel.eas.QueryNoticeViewModel
 
 object QueryNoticePage: BasePage<QueryNoticeViewModel>("教务通知", Drawables.Notification) {
@@ -64,7 +65,7 @@ object QueryNoticePage: BasePage<QueryNoticeViewModel>("教务通知", Drawables
 
 				Text(
 					modifier = Modifier.fillMaxWidth().padding(16.dp, 8.dp),
-					text = notice.content,
+					text = HtmlUtils.escapeHtml(notice.content),
 					style = MaterialTheme.typography.bodyMedium,
 				)
 
