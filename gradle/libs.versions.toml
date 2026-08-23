@@ -13,9 +13,10 @@ kotlinx-datetime = "0.6.2"
 kotlinx-coroutines = "1.10.1"
 
 
-ktor = "3.0.3"
+ktor = "3.1.0"
 mmkv = "1.2.15"
 sqlite = "2.5.0-SNAPSHOT"
+kotlinx-coroutines = "1.10.1"
 
 
 [libraries]
@@ -27,6 +28,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
 
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
