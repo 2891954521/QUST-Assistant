@@ -3,6 +3,7 @@ package com.qust.helper.utils
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.qust.helper.App
 
 actual object SecureStorage {
 
