@@ -16,9 +16,6 @@ kotlinx-coroutines = "1.10.1"
 ktor = "3.1.0"
 mmkv = "1.2.15"
 sqlite = "2.5.0-SNAPSHOT"
-kotlinx-coroutines = "1.10.1"
-
-
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }

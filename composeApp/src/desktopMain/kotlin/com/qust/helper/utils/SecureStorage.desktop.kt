@@ -6,7 +6,7 @@ import java.security.Key
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
-actual class SecureStorage {
+actual object SecureStorage {
 
     private val file = File(System.getProperty("user.home"), ".qust-helper/secure.dat")
     private val key: Key = SecretKeySpec("qust_helper_desktop_2024_v1.0.0".toByteArray(), "AES")

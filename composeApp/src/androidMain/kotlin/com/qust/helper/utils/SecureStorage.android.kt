@@ -3,7 +3,7 @@ package com.qust.helper.utils
 import com.qust.helper.App
 import com.tencent.mmkv.MMKV
 
-actual class SecureStorage {
+actual object SecureStorage {
 
     private val secureMmkv: MMKV by lazy {
         val key = "qust_helper_secure_key_2024_v1.0.0"

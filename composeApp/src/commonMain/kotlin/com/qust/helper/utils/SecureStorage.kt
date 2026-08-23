@@ -6,7 +6,7 @@ package com.qust.helper.utils
  * Android: 使用 MMKV 加密存储
  * Desktop: 使用 JCE AES 加密文件存储
  */
-expect class SecureStorage {
+expect object SecureStorage {
     fun putString(key: String, value: String)
     fun getString(key: String, defValue: String): String
     fun remove(key: String)
