@@ -90,6 +90,7 @@ object Keys {
 
 	const val IPASS_ACCOUNT = "ipass_account"
 	const val IPASS_PASSWORD = "ipass_password"
+	const val IPASS_USE_HTTPS = "ipass_use_https"
 
 	const val DRINK_ACCOUNT = "drink_account"
 	const val DRINK_PASSWORD = "drink_password"

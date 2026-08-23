@@ -5,6 +5,7 @@ import com.qust.helper.data.Keys
 import com.qust.helper.utils.JSONObject
 import com.qust.helper.utils.JsonUtils
 import com.qust.helper.utils.JsonUtils.get
+import com.qust.helper.utils.Logger
 import com.qust.helper.utils.SettingUtils
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.setBody
@@ -48,7 +49,7 @@ object DrinkAccount: Account(
 				return false
 			}
 		}catch(e: Exception){
-			e.printStackTrace()
+			Logger.e(e = e)
 			return false
 		}
 	}

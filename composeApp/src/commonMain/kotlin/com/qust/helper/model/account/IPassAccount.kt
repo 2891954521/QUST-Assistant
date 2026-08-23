@@ -5,7 +5,12 @@ import com.qust.helper.data.QustApi
 import com.qust.helper.model.network.NeedLoginException
 import com.qust.helper.model.network.httpClient
 import com.qust.helper.utils.CodeUtils
+import com.qust.helper.utils.SettingUtils
 import com.qust.helper.utils.VpnEncodeUtils
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
@@ -19,6 +24,8 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import io.ktor.http.parameters
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.net.HttpURLConnection
 
@@ -30,6 +37,43 @@ object IPassAccount: Account(
 	cookieKey = "ipassCookie",
 ){
 	val redirectList = mutableListOf<HttpResponse>()
+
+	private fun resolveProtocol(): URLProtocol {
+		return if (SettingUtils[Keys.IPASS_USE_HTTPS, true]) URLProtocol.HTTPS else URLProtocol.HTTP
+	}
+
+	override val client by lazy {
+		httpClient {
+			createHttpClient(this)
+		}
+	}
+
+	override val clientNoRedirect by lazy {
+		httpClient {
+			followRedirects = false
+			createHttpClient(this)
+		}
+	}
+
+	override fun createHttpClient(config: HttpClientConfig<*>) = with(config){
+		val protocol = resolveProtocol()
+		install(DefaultRequest) {
+			url {
+				this.protocol = protocol
+				host = this@IPassAccount.host
+				port = if (protocol == URLProtocol.HTTPS) 443 else 80
+			}
+		}
+		install(HttpCookies) {
+			storage = cookieStorage
+		}
+		install(ContentNegotiation) {
+			json(Json {
+				ignoreUnknownKeys = true
+				isLenient = true
+			})
+		}
+	}
 
 	val loginClient = httpClient {
 		followRedirects = true

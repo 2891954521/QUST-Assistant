@@ -6,6 +6,7 @@ import com.qust.helper.data.i18n.Strings
 import com.qust.helper.entity.vo.EasPublicKey
 import com.qust.helper.model.network.NeedLoginException
 import com.qust.helper.utils.CodeUtils
+import com.qust.helper.utils.Logger
 import com.qust.helper.utils.SettingUtils
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -105,7 +106,7 @@ object EasAccount: Account(
 		try {
 			publicKey = client.get(QustApi.EA_LOGIN_PUBLIC_KEY).body()
 		} catch(e: Exception) {
-			e.printStackTrace()
+			Logger.e(e = e)
 			throw IOException("无法获取 publicKey", e)
 		}
 

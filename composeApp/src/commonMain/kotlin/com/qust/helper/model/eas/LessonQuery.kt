@@ -102,7 +102,7 @@ object LessonQuery {
 				result.totalWeek = DateUtils.calcWeekOffset(startDay, endDay).coerceAtLeast(1)
 			}
 		} catch(e: Exception) {
-			e.printStackTrace()
+			Logger.e(e = e)
 		}
 		return result
 	}

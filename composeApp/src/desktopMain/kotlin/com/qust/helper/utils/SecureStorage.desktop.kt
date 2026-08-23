@@ -3,7 +3,9 @@ package com.qust.helper.utils
 import java.io.File
 import java.nio.charset.Charset
 import java.security.Key
+import java.security.SecureRandom
 import javax.crypto.Cipher
+import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 actual object SecureStorage {
@@ -11,6 +13,7 @@ actual object SecureStorage {
     private val file = File(System.getProperty("user.home"), ".qust-helper/secure.dat")
     private val key: Key = SecretKeySpec("qust_helper_desktop_2024_v1.0.0".toByteArray(), "AES")
     private val charset = Charsets.UTF_8
+    private val secureRandom = SecureRandom()
 
     init {
         file.parentFile?.mkdirs()
@@ -68,16 +71,20 @@ actual object SecureStorage {
     }
 
     private fun encrypt(text: String): String {
-        val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
-        cipher.init(Cipher.ENCRYPT_MODE, key)
+        val iv = ByteArray(12).also { secureRandom.nextBytes(it) }
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(128, iv))
         val bytes = cipher.doFinal(text.toByteArray(charset))
-        return bytes.joinToString("") { "%02x".format(it) }
+        val combined = iv + bytes
+        return combined.joinToString("") { "%02x".format(it) }
     }
 
     private fun decrypt(hex: String): String {
-        val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
-        cipher.init(Cipher.DECRYPT_MODE, key)
         val bytes = hex.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
-        return String(cipher.doFinal(bytes), charset)
+        val iv = bytes.copyOfRange(0, 12)
+        val cipherText = bytes.copyOfRange(12, bytes.size)
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
+        return String(cipher.doFinal(cipherText), charset)
     }
 }

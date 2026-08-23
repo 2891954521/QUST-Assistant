@@ -13,6 +13,7 @@ import com.qust.helper.entity.eas.Mark
 import com.qust.helper.model.account.EasAccount
 import com.qust.helper.model.eas.AcademicModel
 import com.qust.helper.model.eas.MarkModel
+import com.qust.helper.utils.Logger
 import com.qust.helper.viewmodel.extend.toastWarning
 
 class QueryAcademicViewModel: BaseEasViewModel(), AcademicUIEvent {
@@ -26,7 +27,7 @@ class QueryAcademicViewModel: BaseEasViewModel(), AcademicUIEvent {
 			try {
 				showModeGroup[0] = AcademicModel.getGroups().map { AcademicGroupUIState(it) }
 				uiState.lessonGroups = showModeGroup[0]
-			}catch(e: Exception){ e.printStackTrace() }
+			}catch(e: Exception){ Logger.e(e = e) }
 		}
 	}
 

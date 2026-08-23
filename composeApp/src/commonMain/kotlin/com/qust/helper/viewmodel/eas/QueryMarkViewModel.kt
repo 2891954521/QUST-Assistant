@@ -8,6 +8,7 @@ import com.qust.helper.data.i18n.Strings
 import com.qust.helper.entity.eas.Mark
 import com.qust.helper.model.account.EasAccount
 import com.qust.helper.model.eas.MarkModel
+import com.qust.helper.utils.Logger
 import com.qust.helper.viewmodel.extend.toastError
 import com.qust.helper.viewmodel.extend.toastOK
 
@@ -61,7 +62,7 @@ class QueryMarkViewModel : BaseEasViewModel() {
 				toastOK("查询完成，未查询到新成绩")
 			}
 		}, {
-			it.printStackTrace()
+			Logger.e(e = it)
 			toastError("查询失败：${it.message}")
 		})
 	}
