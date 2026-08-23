@@ -23,6 +23,8 @@ import com.qust.helper.viewmodel.app.SettingViewModel
 
 object SettingPage: BasePage<SettingViewModel>("设置", Icons.Default.Settings) {
 
+	private val timeTableList = arrayOf("冬季 (13:30上课)", "夏季 (14:00上课)" )
+
 	@Composable
 	override fun getViewModel() = viewModel<SettingViewModel>()
 
@@ -96,6 +98,10 @@ object SettingPage: BasePage<SettingViewModel>("设置", Icons.Default.Settings)
 				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
 				onInput = viewModel::setTotalWeek
 			)
+
+			SwitchItemUI("使用高密时间表（重启app生效）", "使用高密时间表", "使用默认时间表", value = LessonTableRepository.gaomiTimeTable) { LessonTableRepository.setGaomiTimeTable(it) }
+
+			ListItemUI("设置时间表\n（重启app生效）", LessonTableRepository.currentTimeTable, timeTableList){ _, it -> LessonTableRepository.setTimeTableValue(it) }
 		}
 	}
 

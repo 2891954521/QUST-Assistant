@@ -1,7 +1,8 @@
 package com.qust.helper.ui.widget.lesson.lessonTable
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +20,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +43,7 @@ import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.repository.LessonTableRepository
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
+import com.qust.helper.ui.theme.LocalColor
 import com.qust.helper.utils.Logger
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -45,7 +54,12 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> Unit = { _, _ -> }){
+fun LessonTableUI(
+	uiState: LessonTableUIState,
+	onLessonClick: (Int, Lesson) -> Unit = { _, _ -> },
+	onLessonLongClick: (Int, Lesson, Offset) -> Unit = { _, _, _ -> },
+	onBlankLongClick: (Int, Int, Offset) -> Unit = { _, _, _ -> },
+){
 	val lessonTableInfo by uiState.lessonTableInfo.collectAsStateWithLifecycle()
 
 	LaunchedEffect(lessonTableInfo.lessons){
@@ -70,7 +84,7 @@ fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> U
 			}, {
 				LessonDate(lessonTableInfo.startDay, page)
 			}, {
-				LessonContent(lessonTableInfo.timeTable.count, page, uiState.lessonGroupRender, onLessonClick)
+				LessonContent(lessonTableInfo.timeTable.count, page, uiState.lessonGroupRender, onLessonClick, onLessonLongClick, onBlankLongClick)
 			})
 		}
 	}
@@ -133,46 +147,75 @@ fun LessonDate(startDay: LocalDate, week: Int) {
  * @param weekOfTerm 第几周
  */
 @Composable
-fun LessonContent(count: Int, weekOfTerm: Int, lessonGroups: List<LessonGroupRenderAble>, onLessonClick: (Int, Lesson) -> Unit){
+fun LessonContent(count: Int, weekOfTerm: Int, lessonGroups: List<LessonGroupRenderAble>, onLessonClick: (Int, Lesson) -> Unit, onLessonLongClick: (Int, Lesson, Offset) -> Unit, onBlankLongClick: (Int, Int, Offset) -> Unit){
 	Layout(content = {
+		// 空白格，长按弹出 粘贴/添加新课 菜单
+		repeat(count){ timeSlot ->
+			repeat(7){ week ->
+				LessonBlankCell(week, timeSlot, onBlankLongClick)
+			}
+		}
+		// 课程
 		lessonGroups.forEach {
-			LessonGroupItem(it, weekOfTerm, onLessonClick)
+			LessonGroupItem(it, weekOfTerm, onLessonClick, onLessonLongClick)
 		}
 	}) { measurables, constraints ->
 		val maxWidth = constraints.maxWidth / 7
 		val ceilHeight = constraints.maxHeight / count
 
+		val blankCount = 7 * count
 		val ceilConstraint = Constraints(minWidth = maxWidth, maxWidth = maxWidth, minHeight = 0, maxHeight = constraints.maxHeight)
 
 		val placeables = measurables.mapIndexed { i, measurable ->
-			val lesson = lessonGroups[i]
-			val height = ((lesson.endOffset - lesson.startOffset) * ceilHeight).toInt()
+			val height = if(i < blankCount) ceilHeight
+			else {
+				val lesson = lessonGroups[i - blankCount]
+				((lesson.endOffset - lesson.startOffset) * ceilHeight).toInt()
+			}
 			measurable.measure(ceilConstraint.copy(minHeight = height, maxHeight = height))
 		}
 
 		layout(constraints.maxWidth, constraints.maxHeight) {
 			placeables.forEachIndexed { index, placeable ->
-				val lesson = lessonGroups[index]
-				placeable.place(x = lesson.week * maxWidth, y = (lesson.startOffset * ceilHeight).toInt())
+				if(index < blankCount){
+					placeable.place(x = (index % 7) * maxWidth, y = (index / 7) * ceilHeight)
+				}else{
+					val lesson = lessonGroups[index - blankCount]
+					placeable.place(x = lesson.week * maxWidth, y = (lesson.startOffset * ceilHeight).toInt())
+				}
 			}
 		}
 	}
 }
 
 @Composable
-fun LessonGroupItem(group: LessonGroupRenderAble, weekOfTerm: Int, onLessonClick: (Int, Lesson) -> Unit){
+fun LessonGroupItem(group: LessonGroupRenderAble, weekOfTerm: Int, onLessonClick: (Int, Lesson) -> Unit, onLessonLongClick: (Int, Lesson, Offset) -> Unit){
 	val index = group.current(weekOfTerm)
 	if(index == -1){
 		Box { }
 	}else{
-		LessonItem(group.lessons[index]){ onLessonClick(group.lessonIndex[index], group.lessons[index]) }
+		val lessonIndex = group.lessonIndex[index]
+		val lesson = group.lessons[index]
+		LessonItem(
+			lesson = lesson,
+			onLessonClick = { onLessonClick(lessonIndex, lesson) },
+			onLessonLongClick = { offset -> onLessonLongClick(lessonIndex, lesson, offset) },
+		)
 	}
 }
 
 @Composable
-fun LessonItem(lesson: Lesson, onLessonClick: () -> Unit){
+fun LessonItem(lesson: Lesson, onLessonClick: () -> Unit, onLessonLongClick: (Offset) -> Unit = {}){
+	var cellPosition by remember { mutableStateOf(Offset.Zero) }
 	Column(
-		modifier = Modifier.padding(1.dp).background(color = LESSON_BACKGROUND_COLORS[lesson.colorLabel], RoundedCornerShape(4.dp)).clickable(onClick = onLessonClick),
+		modifier = Modifier.padding(1.dp).background(color = LESSON_BACKGROUND_COLORS[lesson.colorLabel], RoundedCornerShape(4.dp))
+			.onGloballyPositioned { cellPosition = it.positionInWindow() }
+			.pointerInput(Unit) {
+				detectTapGestures(
+					onTap = { onLessonClick() },
+					onLongPress = { offset -> onLessonLongClick(cellPosition + offset) },
+				)
+			},
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
 	) {
@@ -182,6 +225,19 @@ fun LessonItem(lesson: Lesson, onLessonClick: () -> Unit){
 			if(!LessonTableRepository.hideTeacher) Text(lesson.teacher, maxLines = 1)
 		}
 	}
+}
+
+@Composable
+fun LessonBlankCell(week: Int, timeSlot: Int, onBlankLongClick: (Int, Int, Offset) -> Unit){
+	var cellPosition by remember { mutableStateOf(Offset.Zero) }
+	Box(
+		modifier = Modifier.padding(1.dp)
+			.border(1.dp, LocalColor.current.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
+			.onGloballyPositioned { cellPosition = it.positionInWindow() }
+			.pointerInput(week, timeSlot) {
+				detectTapGestures(onLongPress = { offset -> onBlankLongClick(week, timeSlot, cellPosition + offset) })
+			}
+	)
 }
 
 

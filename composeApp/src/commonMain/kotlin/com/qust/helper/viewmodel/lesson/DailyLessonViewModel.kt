@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qust.helper.entity.lesson.Lesson
+import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.repository.LessonTableRepository
 import com.qust.helper.utils.DateUtils
 import com.qust.helper.viewmodel.BaseViewModel
@@ -22,6 +23,7 @@ class DailyLessonViewModel : BaseViewModel() {
 	var lessons by mutableStateOf(emptyList<Lesson>())
 	var dayOfWeekText by mutableStateOf("")
 	var currentWeek by mutableStateOf(0)
+	var timeTable by mutableStateOf(TimeTable.DEFAULT)
 
 	init {
 		runBackGround {
@@ -36,6 +38,7 @@ class DailyLessonViewModel : BaseViewModel() {
 				val dayLessons = info.lessons.filter { it.week == week && (it.weeks and (1L shl currentW)) > 0 }
 					.sortedBy { it.startMinute }
 				lessons = dayLessons
+				timeTable = info.timeTable
 				currentWeek = currentW
 				dayOfWeekText = when(week) {
 					0 -> "周一"; 1 -> "周二"; 2 -> "周三"; 3 -> "周四"

@@ -52,6 +52,38 @@ object LessonTableRepository: LessonTableStorage by getLessonTableStorage() {
 		SettingUtils[Keys.KEY_LOCK_LESSON] = value
 	}
 
+	/** 当前时间表 0: 冬季 1: 夏季 */
+	val _currentTimeTable = mutableIntStateOf(SettingUtils[Keys.KEY_TIME_TABLE, 0])
+	val currentTimeTable by _currentTimeTable
+	fun setTimeTableValue(value: Int) {
+		_currentTimeTable.value = value
+		SettingUtils[Keys.KEY_TIME_TABLE] = value
+		refreshTimeTable()
+	}
+
+	/** 使用高密时间表 */
+	val _gaomiTimeTable = mutableStateOf(SettingUtils[Keys.KEY_GAOMI_TIME_TABLE, false])
+	val gaomiTimeTable by _gaomiTimeTable
+	fun setGaomiTimeTable(value: Boolean) {
+		_gaomiTimeTable.value = value
+		SettingUtils[Keys.KEY_GAOMI_TIME_TABLE] = value
+		refreshTimeTable()
+	}
+
+	/** 根据当前设置解析时间表 */
+	fun resolveTimeTable(): TimeTable {
+		return when {
+			gaomiTimeTable && currentTimeTable == 1 -> TimeTable.Companion.GAOMI_SUMMER
+			gaomiTimeTable -> TimeTable.Companion.GAOMI_WINTER
+			currentTimeTable == 1 -> TimeTable.Companion.SUMMER
+			else -> TimeTable.Companion.DEFAULT
+		}
+	}
+
+	private fun refreshTimeTable() {
+		_currentLessonTable.update { it.copy(timeTable = resolveTimeTable()) }
+	}
+
 	val _currentLessonTable = MutableStateFlow(LessonTableInfo(
 		timeTable = TimeTable.Companion.DEFAULT,
 		startDay = SettingModel.startDay,
@@ -69,7 +101,7 @@ object LessonTableRepository: LessonTableStorage by getLessonTableStorage() {
 	 */
 	suspend fun refreshCurrentLessonTable(){
 		_currentLessonTable.value = LessonTableInfo(
-			timeTable = TimeTable.Companion.DEFAULT,
+			timeTable = resolveTimeTable(),
 			startDay = SettingModel.startDay,
 			currentWeek = 0,
 			totalWeek = SettingModel.totalWeek,
@@ -135,6 +167,19 @@ object LessonTableRepository: LessonTableStorage by getLessonTableStorage() {
 		}else{
 			return false
 		}
+	}
+
+	/**
+	 * 删除课表中的课程
+	 */
+	suspend fun deleteLesson(lesson: Lesson): Boolean {
+		val success = mergeLesson(emptyList(), emptyList(), listOf(lesson))
+		if(success){
+			_currentLessonTable.update { it.copy(
+				lessons = it.lessons.filterNot { old -> old.id == lesson.id }
+			) }
+		}
+		return success
 	}
 
 }
