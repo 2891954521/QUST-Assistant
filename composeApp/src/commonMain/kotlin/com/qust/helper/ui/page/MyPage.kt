@@ -35,14 +35,20 @@ import com.qust.helper.model.account.IPassAccount
 import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.IconLogin
 import com.qust.helper.ui.page.account.AccountManagerPage
+import com.qust.helper.ui.page.app.AppPage
 import com.qust.helper.ui.page.app.SettingPage
+import com.qust.helper.ui.page.app.UpdatePage
+import com.qust.helper.ui.page.business.ElectricRechargePage
+import com.qust.helper.ui.page.business.SportTestPage
 import com.qust.helper.ui.page.eas.QueryAcademicPage
 import com.qust.helper.ui.page.eas.QueryExamPage
 import com.qust.helper.ui.page.eas.QueryLessonPage
 import com.qust.helper.ui.page.eas.QueryMarkPage
 import com.qust.helper.ui.page.eas.QueryNoticePage
+import com.qust.helper.ui.page.lesson.DailyLessonPage
 import com.qust.helper.ui.page.lesson.LessonTablePage
 import com.qust.helper.ui.page.third.DrinkPage
+import com.qust.helper.ui.page.web.WebPage
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.ui.widget.click
@@ -51,17 +57,17 @@ import org.jetbrains.compose.resources.painterResource
 
 object MyPage: BasePage<MyViewModel>("我的", Drawables.IconLogin) {
 
-    private val lesson = arrayOf<BasePage<*>>(LessonTablePage)
+    private val lesson = arrayOf<BasePage<*>>(LessonTablePage, DailyLessonPage)
 
     private val eas = arrayOf<BasePage<*>>(QueryLessonPage, QueryMarkPage, QueryExamPage, QueryAcademicPage, QueryNoticePage)
 
-    private val business = arrayOf<BasePage<*>>(EmptyPage)
+    private val business = arrayOf<BasePage<*>>(ElectricRechargePage, SportTestPage, DrinkPage)
 
-    private val otherSystem = arrayOf<BasePage<*>>(DrinkPage)
+    private val otherSystem = arrayOf<BasePage<*>>(EmptyPage)
 
-    private val web = arrayOf<BasePage<*>>(EmptyPage)
+    private val web = arrayOf<BasePage<*>>(WebPage.EasWebPage, WebPage.IpassWebPage)
 
-    private val other = arrayOf<BasePage<*>>(SettingPage)
+    private val other = arrayOf<BasePage<*>>(SettingPage, UpdatePage, AppPage.UserAgreementPage, AppPage.PolicyPage)
 
 
     @Composable
