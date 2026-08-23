@@ -18,6 +18,14 @@ actual object SecureStorage {
         return secureMmkv.getString(key, defValue) ?: defValue
     }
 
+    actual fun putStringSet(key: String, value: Set<String>) {
+        secureMmkv.putStringSet(key, value)
+    }
+
+    actual fun getStringSet(key: String, defValue: Set<String>): Set<String> {
+        return secureMmkv.getStringSet(key, defValue) ?: defValue
+    }
+
     actual fun remove(key: String) {
         secureMmkv.removeValueForKey(key)
     }

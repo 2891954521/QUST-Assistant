@@ -79,6 +79,10 @@ kotlin {
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.0")
         }
 
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+
         androidMain.dependencies {
             implementation(libs.mmkv)
             implementation(libs.ktor.client.okhttp)

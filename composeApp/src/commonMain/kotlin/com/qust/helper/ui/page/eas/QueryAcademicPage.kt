@@ -40,6 +40,7 @@ import com.qust.helper.ui.drawables.Drawables
 import com.qust.helper.ui.drawables.School
 import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.theme.colorSecondaryText
+import com.qust.helper.utils.HtmlUtils
 import com.qust.helper.ui.widget.components.IconText
 import com.qust.helper.ui.widget.components.TripleProgressBar
 import com.qust.helper.viewmodel.eas.AcademicGroupUIState
@@ -219,12 +220,12 @@ object QueryAcademicPage: BasePage<QueryAcademicViewModel>("学业查询", Drawa
 					)
 				}
 
-				Row {
-					Text(
-						text = "${lessonInfo.category} | ${lessonInfo.content}",
-						style = MaterialTheme.typography.bodySmall,
-						color = colorSecondaryText,
-					)
+			Row {
+				Text(
+					text = HtmlUtils.escapeHtml("${lessonInfo.category} | ${lessonInfo.content}"),
+					style = MaterialTheme.typography.bodySmall,
+					color = colorSecondaryText,
+				)
 
 					Spacer(modifier = Modifier.fillMaxWidth().weight(1F))
 

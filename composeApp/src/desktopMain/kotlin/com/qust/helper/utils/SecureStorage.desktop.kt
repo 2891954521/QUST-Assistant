@@ -31,6 +31,16 @@ actual object SecureStorage {
         return current[key] ?: defValue
     }
 
+    actual fun putStringSet(key: String, value: Set<String>) {
+        putString(key, value.joinToString("§"))
+    }
+
+    actual fun getStringSet(key: String, defValue: Set<String>): Set<String> {
+        val raw = getString(key, "")
+        if (raw.isBlank()) return defValue
+        return raw.split("§").toSet()
+    }
+
     actual fun remove(key: String) {
         val current = readAll().toMutableMap()
         current.remove(key)

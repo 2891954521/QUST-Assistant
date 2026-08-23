@@ -9,6 +9,8 @@ package com.qust.helper.utils
 expect object SecureStorage {
     fun putString(key: String, value: String)
     fun getString(key: String, defValue: String): String
+    fun putStringSet(key: String, value: Set<String>)
+    fun getStringSet(key: String, defValue: Set<String>): Set<String>
     fun remove(key: String)
     fun contains(key: String): Boolean
 }

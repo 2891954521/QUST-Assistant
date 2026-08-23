@@ -42,6 +42,7 @@ import com.qust.helper.ui.page.BasePage
 import com.qust.helper.ui.theme.LocalColor
 import com.qust.helper.ui.theme.colorSecondaryText
 import com.qust.helper.utils.DateUtils
+import com.qust.helper.utils.HtmlUtils
 import com.qust.helper.viewmodel.eas.QueryMarkViewModel
 
 object QueryMarkPage: BasePage<QueryMarkViewModel>("成绩查询", Drawables.School) {
@@ -204,8 +205,8 @@ object QueryMarkPage: BasePage<QueryMarkViewModel>("成绩查询", Drawables.Sch
 				for(i in 0 until mark.items.size) {
 					HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
 					Row {
-						Text(text = mark.items[i].name, modifier = Modifier.weight(2F), textAlign = TextAlign.Center)
-						Text(text = mark.items[i].mark, modifier = Modifier.weight(1F), textAlign = TextAlign.Center)
+						Text(text = HtmlUtils.escapeHtml(mark.items[i].name), modifier = Modifier.weight(2F), textAlign = TextAlign.Center)
+						Text(text = HtmlUtils.escapeHtml(mark.items[i].mark), modifier = Modifier.weight(1F), textAlign = TextAlign.Center)
 					}
 				}
 
