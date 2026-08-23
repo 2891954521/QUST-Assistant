@@ -153,3 +153,48 @@ val LESSON_TEXT_COLORS = arrayOf(
 )
 
 val TEXT_COLOR_SECOND_COLOR = Color(0xFF909090)
+
+
+object DarkColors: AppColors(
+	primary = Color(0xFFA4C9FF),
+	onPrimary = Color(0xFF003258),
+	primaryContainer = Color(0xFF00497D),
+	onPrimaryContainer = Color(0xFFD4E3FF),
+	inversePrimary = Color(0xFF0E60A9),
+
+	secondary = Color(0xFFA4C9FF),
+	onSecondary = Color(0xFF00344C),
+	secondaryContainer = Color(0xFF004C71),
+	onSecondaryContainer = Color(0xFFC9E6FF),
+
+	tertiary = Color(0xFFA4C9FF),
+	onTertiary = Color(0xFF003258),
+	tertiaryContainer = Color(0xFF01579B),
+	onTertiaryContainer = Color(0xFFD4E3FF),
+
+	background = Color(0xFF121316),
+	onBackground = Color(0xFFE2E2E5),
+
+	surface = Color(0xFF1A1C1E),
+	onSurface = Color(0xFFE2E2E5),
+	surfaceVariant = Color(0xFF2B2E31),
+	onSurfaceVariant = Color(0xFFC4C7CC),
+	surfaceTint = Color(0xFFA4C9FF),
+	inverseSurface = Color(0xFFE2E2E5),
+	inverseOnSurface = Color(0xFF2F3033),
+
+	error = Color(0xFFFFB4AB),
+	onError = Color(0xFF690005),
+
+	errorContainer = Color(0xFF93000A),
+	onErrorContainer = Color(0xFFFFDAD6),
+
+	outline = Color(0xFF8D9199),
+	outlineVariant = Color(0xFF43474E),
+
+	scrim = Color(0xFF000000),
+
+	toastBackground = Color(0x9AFFFFFF),
+	toastIconColor = Color(0xFF000000),
+	toastTextColor = Color(0xFFE2E2E5),
+)

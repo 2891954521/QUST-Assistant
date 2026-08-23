@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qust.helper.data.i18n.Strings
 import com.qust.helper.entity.lesson.Lesson
 import com.qust.helper.entity.lesson.TimeTable
+import com.qust.helper.repository.LessonTableRepository
 import com.qust.helper.ui.theme.LESSON_BACKGROUND_COLORS
 import com.qust.helper.ui.theme.LESSON_TEXT_COLORS
 import com.qust.helper.utils.Logger
@@ -178,7 +179,7 @@ fun LessonItem(lesson: Lesson, onLessonClick: () -> Unit){
 		ProvideTextStyle(TextStyle.Default.copy(color = LESSON_TEXT_COLORS[lesson.colorLabel])){
 			Text(lesson.name, maxLines = 3)
 			Text(lesson.place, maxLines = 2)
-			Text(lesson.teacher, maxLines = 1)
+			if(!LessonTableRepository.hideTeacher) Text(lesson.teacher, maxLines = 1)
 		}
 	}
 }

@@ -36,6 +36,10 @@
             android:name=".ui.activity.PageActivity"
             android:exported="false" />
         
+        <activity
+            android:name=".ui.activity.GuideActivity"
+            android:exported="false" />
+        
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.qust.helper"
