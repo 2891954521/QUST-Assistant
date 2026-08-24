@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
 
     alias(libs.plugins.ksp)
+
+    alias(libs.plugins.room3)
 }
 
 val env: String = run {
@@ -91,6 +93,8 @@ kotlin {
                 implementation(libs.ktor.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
 
+                implementation(libs.room3.runtime)
+
                 implementation(libs.third.multiplatform.settings)
             }
         }
@@ -114,6 +118,8 @@ kotlin {
         jvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)
 
+            implementation(libs.sqlite.bundled.jvm)
+
             implementation(libs.jvm.third.log4j)
 
             implementation(compose.desktop.currentOs)
@@ -126,5 +132,12 @@ dependencies {
     add("kspJvm", projects.sharedKsp)
     add("kspAndroid", projects.sharedKsp)
 
+    add("kspJvm", libs.room3.compiler)
+    add("kspAndroid", libs.room3.compiler)
+
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+room3 {
+    schemaDirectory("$projectDir/schemas")
 }
