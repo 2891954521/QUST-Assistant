@@ -3,6 +3,7 @@ package com.qust.helper.next.ui.component.input
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.qust.helper.next.ui.theme.color.ContainerColors
 import com.qust.helper.next.ui.theme.Theme
+import io.github.composefluent.component.TextField
 
 
 @Composable
@@ -28,27 +30,26 @@ fun TextInput(
 	value: String,
 	onValueChange: (String) -> Unit,
 	hint: String? = null,
-	textStyle: TextStyle = Theme.textStyles.bodyMedium,
+	maxLines: Int = 1,
+	textStyle: TextStyle = Theme.textStyles.body,
 	keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-	content: (@Composable BoxScope.() -> Unit)? = null
+	header: (@Composable () -> Unit)? = null,
+	leadingIcon: (@Composable () -> Unit)? = null,
+	trailing: (@Composable RowScope.() -> Unit)? = null,
 ) {
-	BasicTextField(
+	TextField(
 		value = value,
 		onValueChange = onValueChange,
 		modifier = modifier,
 		keyboardOptions = keyboardOptions,
-		textStyle = textStyle,
-		maxLines = 1,
-		cursorBrush = SolidColor(Color.Gray),
-	) { innerTextField ->
-		Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
-			Box(modifier = Modifier.padding(8.dp)){
-				if(hint != null && value.isEmpty()) Text(text = hint, style = textStyle)
-				innerTextField()
-			}
-			content?.invoke(this)
+		maxLines = maxLines,
+		header = header,
+		leadingIcon = leadingIcon,
+		trailing = trailing,
+		placeholder = {
+			if(hint != null && value.isEmpty()) Text(text = hint, style = textStyle)
 		}
-	}
+	)
 }
 
 
@@ -62,7 +63,7 @@ fun TextInput(
 	keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
 	content: (@Composable BoxScope.() -> Unit)? = null
 ) {
-	val textStyle = Theme.textStyles.bodyMedium.copy(color = colors.content)
+	val textStyle = Theme.textStyles.body.copy(color = colors.content)
 	BasicTextField(
 		value = value,
 		onValueChange = onValueChange,

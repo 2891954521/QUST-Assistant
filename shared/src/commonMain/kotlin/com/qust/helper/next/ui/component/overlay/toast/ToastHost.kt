@@ -108,7 +108,7 @@ private fun Toast(
             if (icon != null) {
                 Icon(icon, contentDescription = null, Modifier.size(32.dp), tint = iconColor)
             }
-            Text(message, modifier = Modifier.padding(8.dp), color = textColor, style = Theme.textStyles.bodyMedium)
+            Text(message, modifier = Modifier.padding(8.dp), color = textColor, style = Theme.textStyles.body)
         }
     }
 }

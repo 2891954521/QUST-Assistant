@@ -49,7 +49,7 @@ fun NumberPicker(
     range: Iterable<Int>,
     label: (Int) -> String = { it.toString() },
     onValueChange: (Int) -> Unit,
-    textStyle: TextStyle = Theme.textStyles.bodySmall,
+    textStyle: TextStyle = Theme.textStyles.caption,
     dividersColor: Color = MaterialTheme.colorScheme.primary,
     horizontalPadding: Dp = 16.dp,
 ) {
@@ -71,7 +71,7 @@ internal fun DatePicker(
     title: String,
     value: Int,
     range: Iterable<Int>,
-    style: TextStyle = Theme.textStyles.bodyMedium,
+    style: TextStyle = Theme.textStyles.body,
     width: Dp = 64.dp,
     valueChange: (Int) -> Unit = { }
 ) {
@@ -95,7 +95,7 @@ fun <T> ListPicker(
     label: (T) -> String = { it.toString() },
     onValueChange: (T) -> Unit,
 
-    textStyle: TextStyle = Theme.textStyles.bodySmall,
+    textStyle: TextStyle = Theme.textStyles.caption,
     dividersColor: Color = MaterialTheme.colorScheme.primary,
     horizontalPadding: Dp = 16.dp,
 ) {

@@ -42,7 +42,7 @@ fun DatePickerDialog(
         DatePicker(
             uiState = uiState,
             modifier = Modifier.wrapContentWidth(),
-            style = Theme.textStyles.bodyMedium.copy(color = Color.Black)
+            style = Theme.textStyles.body.copy(color = Color.Black)
         )
     }
 }
@@ -54,7 +54,7 @@ fun DatePickerDialog(
 fun DatePicker(
     uiState: DatePickerUIState,
     modifier: Modifier = Modifier,
-    style: TextStyle = Theme.textStyles.bodyMedium
+    style: TextStyle = Theme.textStyles.body
 ) {
     Row(
         modifier = modifier,

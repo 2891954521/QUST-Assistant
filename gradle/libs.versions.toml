@@ -29,6 +29,8 @@ compose-material3 = "1.9.0"
 ksp = "2.3.10"
 kotlinpoet = "2.3.0"
 
+ui-fluent = "v0.1.0"
+
 ktor = "3.5.1"
 room3 = "3.0.0"
 sqlite = "2.6.2"
@@ -78,6 +80,8 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+ui-fluent = { module = "io.github.compose-fluent:fluent", version.ref = "ui-fluent" }
 
 room3-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room3" }
 room3-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room3" }

@@ -41,7 +41,7 @@ fun YearMonthPickDialog(
         onSelectDone(formatDate)
         onDismiss()
     }) {
-        YearMonthPicker(uiState, modifier = Modifier.wrapContentWidth(), style = Theme.textStyles.bodyMedium.copy(color = Color.Black))
+        YearMonthPicker(uiState, modifier = Modifier.wrapContentWidth(), style = Theme.textStyles.body.copy(color = Color.Black))
     }
 }
 
@@ -52,7 +52,7 @@ fun YearMonthPickDialog(
 fun YearMonthPicker(
     uiState: YearMonthPickerUIState,
     modifier: Modifier = Modifier,
-    style: TextStyle = Theme.textStyles.bodyMedium
+    style: TextStyle = Theme.textStyles.body
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
 

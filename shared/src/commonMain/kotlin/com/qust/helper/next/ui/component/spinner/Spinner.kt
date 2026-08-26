@@ -53,7 +53,7 @@ fun SpinnerWidget(
 	data: List<String>,
 	onSelect: (Int, String) -> Unit,
 	onDismiss: () -> Unit,
-	textStyle: TextStyle = Theme.textStyles.bodyMedium,
+	textStyle: TextStyle = Theme.textStyles.body,
 	colors: ContainerColors = ContainerColors.BlackOnWhite,
 	content: @Composable BoxScope.() -> Unit
 ) {

@@ -55,14 +55,14 @@ class Scale(
 ) {
 
     companion object {
-        const val DESIGN_WIDTH = 1920F // 设计稿宽度
-        const val DESIGN_HEIGHT = 1080F // 设计稿高度
+        const val DESIGN_WIDTH = 1024F // 设计稿宽度
+        const val DESIGN_HEIGHT = 640F // 设计稿高度
 
         val INSTANCE = Scale(DESIGN_WIDTH.toInt(), DESIGN_HEIGHT.toInt(), 1F, 1F, UiOrientation.LANDSCAPE)
     }
 
-    var screenWidth: Int = 1920
-    var screenHeight: Int = 1080
+    var screenWidth: Int = 1024
+    var screenHeight: Int = 640
 
     /**
      * UI显示到当前屏幕上需要的缩放比例

@@ -169,14 +169,14 @@ data class ButtonType(
 		val Small: ButtonType
 			@Composable
 			get() = ButtonType(
-				textStyle = Theme.textStyles.bodySmall,
+				textStyle = Theme.textStyles.caption,
 				innerPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
 			)
 
 		val Normal: ButtonType
 			@Composable
 			get() = ButtonType(
-				textStyle = Theme.textStyles.bodyMedium,
+				textStyle = Theme.textStyles.body,
 				innerPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
 			)
 

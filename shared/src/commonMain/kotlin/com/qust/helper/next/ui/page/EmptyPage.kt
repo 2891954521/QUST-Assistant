@@ -29,7 +29,7 @@ object EmptyPage: BasePage<EmptyViewModel>(title = "", viewModelClass = EmptyVie
             Button(onClick = {
                 router.finish()
             }){
-                Text(text = "返回", style = Theme.textStyles.bodyMedium)
+                Text(text = "返回", style = Theme.textStyles.body)
             }
         }
     }
