@@ -85,6 +85,8 @@ open class AppColors {
     val outline = Color(0xFF73777F)
     val outlineVariant = Color(0xFFC3C6CF)
 
+    val hover = Color(0x09000000)
+
     val colorScheme = ColorScheme(
         primary = primary,
         onPrimary = onPrimary,

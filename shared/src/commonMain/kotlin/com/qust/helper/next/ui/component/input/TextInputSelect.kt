@@ -42,20 +42,14 @@ fun InputSelectableWidget(
 	hint: String? = null,
 	data: List<String>,
 	colors: ContainerColors = ContainerColors.BlackOnWhite,
-	popColors: ContainerColors = ContainerColors.BlackOnWhite,
 	keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
 	onInput: (String) -> Unit,
 	onSelect: (Int, String) -> Unit
 ) {
-	var showSpinner by remember { mutableStateOf(false) }
-
 	SpinnerWidget(
 		modifier = modifier,
-		show = showSpinner,
 		data = data,
 		onSelect = onSelect,
-		onDismiss = { showSpinner = false },
-		colors = popColors,
 	){
 		TextInput(
 			modifier = Modifier.fillMaxWidth(),
@@ -65,7 +59,7 @@ fun InputSelectableWidget(
 			colors = colors,
  			keyboardOptions = keyboardOptions
 		){
-			Box(modifier = Modifier.align(Alignment.CenterEnd).clickable { showSpinner = true }) {
+			Box(modifier = Modifier.align(Alignment.CenterEnd).clickable { isFlyoutVisible = true }) {
 				Icon(Icons.Default.ArrowDropDown, null, Modifier.padding(8.dp), tint = colors.content)
 			}
 		}

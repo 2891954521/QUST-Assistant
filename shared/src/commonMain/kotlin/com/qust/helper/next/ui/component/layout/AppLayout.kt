@@ -45,7 +45,7 @@ fun AppContentWithBack(
             Text(
                 text = title,
                 modifier = Modifier.padding(16.dp),
-                style = Theme.textStyles.titleLarge,
+                style = Theme.textStyles.title,
                 maxLines = 1,
             )
         }

@@ -57,8 +57,6 @@ class Scale(
     companion object {
         const val DESIGN_WIDTH = 1024F // 设计稿宽度
         const val DESIGN_HEIGHT = 640F // 设计稿高度
-
-        val INSTANCE = Scale(DESIGN_WIDTH.toInt(), DESIGN_HEIGHT.toInt(), 1F, 1F, UiOrientation.LANDSCAPE)
     }
 
     var screenWidth: Int = 1024

@@ -45,4 +45,25 @@ class AppTypography(
 		display = display
 	)
 
+	val mdTypography = androidx.compose.material3.Typography(
+		displayLarge = titleLarge,
+		displayMedium = title,
+		displaySmall = subtitle,
+
+		headlineLarge = bodyLarge,
+		headlineMedium = body,
+		headlineSmall = caption,
+
+		titleLarge = titleLarge,
+		titleMedium = title,
+		titleSmall = subtitle,
+
+		bodyLarge = body,
+		bodyMedium = body,
+		bodySmall = caption,
+
+		labelLarge = bodyLarge,
+		labelMedium = body,
+		labelSmall = caption
+	)
 }

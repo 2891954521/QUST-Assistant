@@ -1,6 +1,7 @@
 package com.qust.helper.next.ui.theme
 
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -58,7 +59,10 @@ fun AppThemeProvider(content: @Composable () -> Unit) {
 			FluentTheme(
 				typography = Theme.textStyles.typography
 			) {
-				MaterialTheme(colorScheme = LocalColor.current.colorScheme) {
+				MaterialTheme(
+					colorScheme = LocalColor.current.colorScheme,
+					typography = Theme.textStyles.mdTypography
+				) {
 					PlatformAppTheme(content = content)
 				}
 			}
@@ -70,12 +74,14 @@ fun AppThemeProvider(content: @Composable () -> Unit) {
 @Composable
 fun LightAppTheme(content: @Composable () -> Unit) {
 	val color = remember { AppColors() }
+	val typography = remember { AppTypography(TextStyle(fontWeight = FontWeight.Normal)) }
+
 	CompositionLocalProvider(
 		LocalColor provides color,
-
-		LocalTypography provides AppTypography(TextStyle(fontWeight = FontWeight.Normal)),
+		LocalTypography provides typography,
 
 		LocalContentColor provides color.textPrimary,
+		LocalTextStyle provides typography.body,
 
 		content = content
 	)
