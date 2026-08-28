@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import com.qust.helper.next.ui.component.AppScale
 import com.qust.helper.next.ui.component.LocalScaleProvider
 import com.qust.helper.next.ui.theme.color.AppColors
 import com.qust.helper.next.ui.theme.color.LocalColor
@@ -54,7 +55,7 @@ object Theme {
 
 @Composable
 fun AppThemeProvider(content: @Composable () -> Unit) {
-	LocalScaleProvider {
+	AppScale {
 		LightAppTheme {
 			FluentTheme(
 				typography = Theme.textStyles.typography

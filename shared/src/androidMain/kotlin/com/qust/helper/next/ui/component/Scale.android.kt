@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 
 @Composable
-actual fun LocalScaleProvider(content: @Composable (() -> Unit)) {
+actual fun LocalScaleProvider(uiScale: Float, fontScale: Float, content: @Composable (() -> Unit)) {
     val window = LocalWindowInfo.current
     val orientation = LocalConfiguration.current.orientation
 
@@ -16,8 +16,8 @@ actual fun LocalScaleProvider(content: @Composable (() -> Unit)) {
         Scale(
             widthPixels = window.containerSize.width,
             heightPixels = window.containerSize.height,
-            uiScale = AppUIScale * 1.25F,
-            fontScale = AppFontScale * 1.25F,
+            uiScale = uiScale,
+            fontScale = fontScale,
             orientation = UiOrientation.from(orientation)
         )
     }

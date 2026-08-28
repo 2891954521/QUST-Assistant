@@ -45,7 +45,7 @@ fun InputDialog(
 		if(title != null) Text(
 			text = title,
 			modifier = Modifier.padding(16.dp),
-			style = Theme.textStyles.title,
+			style = Theme.textStyles.bodyLarge,
 			maxLines = 1
 		)
 

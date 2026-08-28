@@ -67,4 +67,19 @@ object SettingKeys {
 	/** 课表设置 */
 	const val SETTING_TOTAL_WEEK = "setting_total_week"
 	const val SETTING_START_DAY = "setting_start_day"
+
+	/**
+	 * 使用百分比布局
+	 */
+	const val SETTING_UI_PERCENTAGE_LAYOUT = "setting_ui_percentage_layout"
+
+	/**
+	 * UI缩放
+	 */
+	const val SETTING_UI_UI_SCALE = "setting_ui_ui_scale"
+
+	/**
+	 * 字体缩放
+	 */
+	const val SETTING_UI_FONT_SCALE = "setting_ui_font_scale"
 }

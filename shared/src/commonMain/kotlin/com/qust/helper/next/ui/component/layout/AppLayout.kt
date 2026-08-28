@@ -45,7 +45,7 @@ fun AppContentWithBack(
             Text(
                 text = title,
                 modifier = Modifier.padding(16.dp),
-                style = Theme.textStyles.title,
+                style = Theme.textStyles.bodyLarge,
                 maxLines = 1,
             )
         }
@@ -65,7 +65,7 @@ fun AppContent(
             Text(
                 text = title,
                 modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.titleLarge,
+                style = Theme.textStyles.bodyLarge,
                 maxLines = 1,
             )
         }

@@ -24,12 +24,12 @@ object EmptyPage: BasePage<EmptyViewModel>(title = "", viewModelClass = EmptyVie
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "空白页", style = Theme.textStyles.titleLarge)
+            Text(text = "空白页", style = Theme.textStyles.bodyLarge)
 
             Button(onClick = {
                 router.finish()
             }){
-                Text(text = "返回", style = Theme.textStyles.body)
+                Text(text = "返回")
             }
         }
     }

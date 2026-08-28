@@ -20,6 +20,8 @@ object AppSetting: Settings by platformSettings() {
 
 	operator fun get(key: String, defaultValue: Boolean): Boolean = getBoolean(key, defaultValue)
 
+	operator fun get(key: String, default: () -> Boolean): Boolean = getBooleanOrNull(key) ?: default()
+
 	operator fun set(key: String, value: Int): Unit = putInt(key, value)
 
 	operator fun set(key: String, value: Long): Unit = putLong(key, value)

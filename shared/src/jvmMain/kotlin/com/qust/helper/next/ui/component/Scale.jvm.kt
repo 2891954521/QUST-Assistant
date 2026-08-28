@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 
 @Composable
-actual fun LocalScaleProvider(content: @Composable (() -> Unit)) {
+actual fun LocalScaleProvider(uiScale: Float, fontScale: Float, content: @Composable (() -> Unit)) {
     val pixels = Windows.windowsPixels
     val windowSize = Windows.windowsSize
 
@@ -15,8 +15,8 @@ actual fun LocalScaleProvider(content: @Composable (() -> Unit)) {
         Scale(
             widthPixels = pixels.width,
             heightPixels = pixels.height,
-            uiScale = AppUIScale,
-            fontScale = AppFontScale,
+            uiScale = uiScale,
+            fontScale = fontScale,
             orientation = if(windowSize.widthSizeClass == WindowWidthSizeClass.Compact) UiOrientation.PORTRAIT else UiOrientation.LANDSCAPE
         )
     }

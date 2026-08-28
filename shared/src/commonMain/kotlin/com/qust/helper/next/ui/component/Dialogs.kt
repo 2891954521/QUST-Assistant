@@ -173,7 +173,7 @@ fun ConfirmDialog(
             PrimaryButton(modifier = Modifier.padding(24.dp), text = okText, colors = ContainerColors.Secondary, onClick = onConfirm)
         }
     ) {
-        if(title != null) Text(text = title, style = Theme.textStyles.title, maxLines = 1)
+        if(title != null) Text(text = title, style = Theme.textStyles.bodyLarge, maxLines = 1)
         content()
     }
 }
@@ -241,7 +241,7 @@ fun MessageDialog(
             PrimaryButton(modifier = Modifier.padding(24.dp), text = okText, onClick = onDismiss)
         }
     ) {
-        if(title != null) Text(text = title, style = Theme.textStyles.title, maxLines = 1)
+        if(title != null) Text(text = title, style = Theme.textStyles.bodyLarge, maxLines = 1)
         content()
     }
 }

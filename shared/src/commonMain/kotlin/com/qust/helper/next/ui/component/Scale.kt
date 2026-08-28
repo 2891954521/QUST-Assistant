@@ -2,22 +2,26 @@ package com.qust.helper.next.ui.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Density
-import com.russhwolf.settings.get
-import com.qust.helper.next.common.setting.AppSetting
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.qust.helper.next.repository.SettingRepository
 import kotlin.math.min
 
 val LocalScale = staticCompositionLocalOf { Scale() }
 
-var AppUIScale by mutableFloatStateOf(AppSetting["uiScale", 1F])
-
-var AppFontScale by mutableFloatStateOf(AppSetting["fontScale", 1F])
+@Composable
+fun AppScale(content: @Composable (() -> Unit)){
+    val setting by SettingRepository.uiSetting.collectAsStateWithLifecycle()
+    if(setting.percentageLayout){
+        LocalScaleProvider(setting.uiScale, setting.fontScale, content)
+    }else{
+        content()
+    }
+}
 
 @Composable
-expect fun LocalScaleProvider(content: @Composable (() -> Unit))
+expect fun LocalScaleProvider(uiScale: Float, fontScale: Float, content: @Composable (() -> Unit))
 
 enum class UiScale(val title: String, val scale: Float) {
     SMALLEST("最小", 0.5F),

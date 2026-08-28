@@ -2,16 +2,19 @@ package com.qust.helper.next.entity
 
 open class I18nStrings {
 
+	open val TEXT_ON = "开"
+	open val TEXT_OFF = "关"
+
+	open val TEXT_NEW = "新"
+
 	open val TEXT_OK = "确定"
 	open val TEXT_CANCEL = "取消"
+
 
 	open val TEXT_LOGIN = "登录"
 
 	open val TEXT_TERM = "学期"
 	open val TEXT_SAVE_LESSON_TABLE = "保存课表"
-
-	open val TEXT_NEW = "新"
-
 
 	open val MSG_NEED_LOGIN: String = "需要登录"
 

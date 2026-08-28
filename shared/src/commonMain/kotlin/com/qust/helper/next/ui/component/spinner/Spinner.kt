@@ -72,7 +72,7 @@ fun SpinnerWidget(
 	data: List<String>,
 	onSelect: (Int, String) -> Unit,
 	textStyle: TextStyle = Theme.textStyles.body,
-	placement: FlyoutPlacement = FlyoutPlacement.BottomAlignedStart,
+	placement: FlyoutPlacement = FlyoutPlacement.Auto,
 	content: @Composable FlyoutContainerScope.() -> Unit
 ) {
 	MenuFlyoutContainer(
