@@ -1,6 +1,5 @@
 package com.qust.helper.next.network.client
 
-import com.qust.helper.next.App
 import com.qust.helper.next.common.exception.NeedLoginException
 import com.qust.helper.next.common.setting.AppSetting
 import com.qust.helper.next.entity.DataKeys
@@ -13,8 +12,6 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
-import io.ktor.client.request.get
-import io.ktor.client.request.post
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -30,13 +27,17 @@ import java.security.interfaces.RSAPublicKey
 import java.security.spec.RSAPublicKeySpec
 import javax.crypto.Cipher
 import kotlin.io.encoding.Base64
-import kotlin.text.clear
 
 object EasHttpClient: BaseAppHttpClient() {
 
-	override var baseUrl = QustApi.EA_HOSTS[0]
+	override var baseUrl = "https://" + QustApi.EA_HOSTS[0]
 
-	private val clientNoRedirect by lazy { createHttpClient { followRedirects = false } }
+	private val clientNoRedirect by lazy {
+		createHttpClient {
+			followRedirects = false
+			buildClient(this)
+		}
+	}
 
 	private val cookieStorage = AppCookiesStorage(DataKeys.EAS_TOKEN)
 
@@ -100,7 +101,10 @@ object EasHttpClient: BaseAppHttpClient() {
 	private suspend fun baseLogin(account: String, password: String): Boolean {
 		cookieStorage.clear()
 
-		val html = client.get(QustApi.EA_LOGIN).bodyAsText()
+		val html = client.request( HttpRequestBuilder().apply {
+			method = HttpMethod.Get
+			buildUrl(this, QustApi.EA_LOGIN)
+		}).bodyAsText()
 
 		var token: String? = null
 		val matcher = "<input (.*?)>".toPattern().matcher(html)
@@ -115,7 +119,10 @@ object EasHttpClient: BaseAppHttpClient() {
 
 		val publicKey: EasPublicKey
 		try {
-			publicKey = client.get(QustApi.EA_LOGIN_PUBLIC_KEY).body()
+			publicKey = client.request(HttpRequestBuilder().apply {
+				method = HttpMethod.Get
+				buildUrl(this, QustApi.EA_LOGIN_PUBLIC_KEY)
+			}).body()
 		} catch(e: Exception) {
 			e.printStackTrace()
 			throw IOException("无法获取 publicKey", e)
@@ -123,14 +130,15 @@ object EasHttpClient: BaseAppHttpClient() {
 
 		val rsaPassword = encrypt(password, publicKey.modulus) ?: throw IOException("RSA加密出错")
 
-		val response = clientNoRedirect.post(QustApi.EA_LOGIN){
+		val response = clientNoRedirect.request(HttpRequestBuilder().apply {
 			method = HttpMethod.Post
+			buildUrl(this, QustApi.EA_LOGIN)
 			setBody(FormDataContent(parameters {
 				append("csrftoken", csrfToken)
 				append("yhm", account)
 				append("mm", rsaPassword)
 			}))
-		}
+		})
 
 		val code: Int = response.status.value
 		return code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_MOVED_TEMP || code == 307
