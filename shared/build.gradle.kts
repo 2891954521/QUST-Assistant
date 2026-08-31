@@ -18,8 +18,9 @@ val env: String = run {
     val e = project.findProperty("env") as? String
     if(!e.isNullOrEmpty()) return@run e
     val taskNames = gradle.startParameter.taskNames
+    val devReg = Regex("(Debug)|(run)|(hot)")
     return@run when {
-        taskNames.any { it.contains("Debug", true) || it.contains("run", true) } -> "dev"
+        taskNames.any { devReg.find(it) != null } -> "dev"
         taskNames.any { it.contains("Release", true) } -> "prod"
         else -> "prod"
     }
