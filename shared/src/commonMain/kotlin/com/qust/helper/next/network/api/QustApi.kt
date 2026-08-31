@@ -123,11 +123,6 @@ object QustApi {
 	const val GET_MARK_DETAIL = "jwglxt/cjcx/cjcx_cxXsKccjList.html"
 
 	/**
-	 * 考试查询
-	 */
-	const val GET_EXAM = "jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query"
-
-	/**
 	 * 学业情况查询界面
 	 */
 	const val ACADEMIC_PAGE = "jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default"

@@ -11,7 +11,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
-import io.ktor.http.content.NullBody
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.reflect.TypeInfo
@@ -75,18 +74,18 @@ abstract class BaseAppHttpClient: BaseHttpClient() {
      * })
      * ```
      */
-    suspend inline fun <reified T, reified R> post(url: String, body: T? = null): R = post(url, body, typeInfo<T>(), typeOf<R>())
+    suspend inline fun <reified T, reified R> post(url: String, params: Map<String, Any?>? = null, body: T? = null): R = post(url, params, body, typeInfo<T>(), typeOf<R>())
 
-    suspend inline fun <reified R> post(url: String): R = post(url, null, typeInfo<Unit>(), typeOf<R>())
+    suspend inline fun <reified R> post(url: String): R = post(url, null, null, typeInfo<Unit>(), typeOf<R>())
 
     /**
      * 执行POST请求
      * @param body 请求体
      */
-    suspend fun <T, R> post(url: String, body: T? = null, bodyType: TypeInfo, respType: KType): R {
+    suspend fun <T, R> post(url: String, params: Map<String, Any?>? = null, body: T? = null, bodyType: TypeInfo, respType: KType): R {
         val builder = HttpRequestBuilder()
         builder.method = HttpMethod.Post
-        buildUrl(builder, url, null)
+        buildUrl(builder, url, params)
         buildBody(builder, body, bodyType)
         return executeAs(builder, respType)
     }

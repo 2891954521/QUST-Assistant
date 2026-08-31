@@ -38,9 +38,11 @@ import com.qust.helper.next.ui.component.AppPreview
 import com.qust.helper.next.ui.component.onClick
 import com.qust.helper.next.ui.drawables.Drawables
 import com.qust.helper.next.ui.drawables.GridView
+import com.qust.helper.next.ui.drawables.InsertInvitation
 import com.qust.helper.next.ui.page.account.AccountManagerPage
 import com.qust.helper.next.ui.page.base.AppPage
 import com.qust.helper.next.ui.page.base.BasePage
+import com.qust.helper.next.ui.page.eas.QueryExamPage
 import com.qust.helper.next.ui.page.lesson.LessonTablePage
 import com.qust.helper.next.ui.page.setting.SettingPage
 import com.qust.helper.next.ui.theme.Theme
@@ -97,6 +99,8 @@ private fun MyUI(viewModel: MyViewModel) {
 
 		ContentGridView("课表", viewModel.lesson){ router.startPage(it) }
 
+		ContentGridView("教务系统", viewModel.eas){ router.startPage(it) }
+
 		ContentGridView("其他", viewModel.other){ router.startPage(it) }
 	}
 }
@@ -141,6 +145,8 @@ class MyViewModel : BaseViewModel() {
 	var userName by mutableStateOf("未登录")
 
 	val lesson = listOf(PageEntrance(title = "课表", icon = Drawables.GridView, page = LessonTablePage::class))
+
+	val eas = listOf(PageEntrance(title = "考试查询", icon = Drawables.InsertInvitation, page = QueryExamPage::class))
 
 	val other = listOf(PageEntrance(title = "设置", icon = Icons.Default.Settings, page = SettingPage::class))
 }
