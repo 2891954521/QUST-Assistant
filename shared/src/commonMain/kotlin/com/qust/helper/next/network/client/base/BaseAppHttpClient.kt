@@ -31,6 +31,25 @@ abstract class BaseAppHttpClient: BaseHttpClient() {
 
     val baseHttpUrl: URLBuilder by lazy { URLBuilder().takeFrom(baseUrl) }
 
+    fun buildGetRequest(url: String, params: Map<String, Any?>? = null): HttpRequestBuilder {
+        val builder = HttpRequestBuilder()
+        builder.method = HttpMethod.Get
+        buildUrl(builder, url, params)
+        return builder
+    }
+
+    inline fun <reified T> buildPostRequest(url: String, params: Map<String, Any?>? = null, body: T? = null): HttpRequestBuilder {
+        return buildPostRequest(url, params, body, typeInfo<T>())
+    }
+
+    fun buildPostRequest(url: String, params: Map<String, Any?>? = null, body: Any? = null, bodyType: TypeInfo): HttpRequestBuilder {
+        val builder = HttpRequestBuilder()
+        builder.method = HttpMethod.Post
+        buildUrl(builder, url, params)
+        buildBody(builder, body, bodyType)
+        return builder
+    }
+
     /**
      * 执行GET请求
      * @param params url参数
@@ -42,10 +61,7 @@ abstract class BaseAppHttpClient: BaseHttpClient() {
      * @param params url参数
      */
     suspend fun <T> get(url: String, params: Map<String, Any?>? = null, type: KType): T {
-        val builder = HttpRequestBuilder()
-        builder.method = HttpMethod.Get
-        buildUrl(builder, url, params)
-        return executeAs(builder, type)
+        return executeAs(buildGetRequest(url, params), type)
     }
 
     /**
@@ -83,11 +99,7 @@ abstract class BaseAppHttpClient: BaseHttpClient() {
      * @param body 请求体
      */
     suspend fun <T, R> post(url: String, params: Map<String, Any?>? = null, body: T? = null, bodyType: TypeInfo, respType: KType): R {
-        val builder = HttpRequestBuilder()
-        builder.method = HttpMethod.Post
-        buildUrl(builder, url, params)
-        buildBody(builder, body, bodyType)
-        return executeAs(builder, respType)
+        return executeAs(buildPostRequest(url, params, body, bodyType), respType)
     }
 
     protected open fun buildUrl(builder: HttpRequestBuilder, url: String, params: Map<String, Any?>? = null): HttpRequestBuilder {

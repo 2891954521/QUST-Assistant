@@ -8,13 +8,8 @@ import com.qust.helper.next.entity.eas.AcademicInfo
 import com.qust.helper.next.network.api.QustApi
 import com.qust.helper.next.network.client.EasHttpClient
 import com.qust.helper.next.repository.AccountRepository
-import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
-import io.ktor.client.request.parameter
-import io.ktor.http.HttpMethod
-import io.ktor.http.appendPathSegments
 import io.ktor.http.parameters
-import io.ktor.http.takeFrom
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.jsonObject
 
@@ -38,7 +33,10 @@ object AcademicModel {
 		val lessonGroups = LinkedHashMap<String, AcademicGroup.Builder>()
 
 		try {
-			val html = getAcademicPageHtml()
+			val html = EasHttpClient.executeAsString(EasHttpClient.buildGetRequest(
+				url = "jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html", 
+				params = mapOf("gnmkdm" to "N105515", "layout" to "default")
+			))
 
 			xfyqjdId.findAll(html).forEach { match ->
 				val id = match.groupValues[1]
@@ -91,16 +89,5 @@ object AcademicModel {
 		}
 
 		return Pair(emptyList(), emptyList())
-	}
-
-	private suspend fun getAcademicPageHtml(): String {
-		val builder = HttpRequestBuilder().apply {
-			method = HttpMethod.Get
-			url.takeFrom(EasHttpClient.baseHttpUrl)
-			url.appendPathSegments("jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html")
-			parameter("gnmkdm", "N105515")
-			parameter("layout", "default")
-		}
-		return EasHttpClient.executeAsString(builder)
 	}
 }
