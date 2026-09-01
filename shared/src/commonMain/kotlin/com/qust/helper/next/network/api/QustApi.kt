@@ -113,16 +113,6 @@ object QustApi {
 	const val RECOMMENDED_LESSON_TABLE_PRINTING = "jwglxt/kbdy/bjkbdy_cxBjkbdyIndex.html?gnmkdm=0&layout=default"
 
 	/**
-	 * 成绩查询
-	 */
-	const val GET_MARK = "jwglxt/cjcx/cjcx_cxXsgrcj.html?doType=query"
-
-	/**
-	 * 成绩明细查询
-	 */
-	const val GET_MARK_DETAIL = "jwglxt/cjcx/cjcx_cxXsKccjList.html"
-
-	/**
 	 * 学业情况查询界面
 	 */
 	const val ACADEMIC_PAGE = "jwglxt/xsxy/xsxyqk_cxXsxyqkIndex.html?gnmkdm=N105515&layout=default"

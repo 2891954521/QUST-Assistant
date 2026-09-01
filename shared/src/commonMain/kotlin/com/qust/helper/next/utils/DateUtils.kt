@@ -96,9 +96,9 @@ object DateUtils {
 
 	fun currentTime() = Clock.System.now().toLocalDateTime()
 
-	fun Instant.toLocalDateTime() = this.toLocalDateTime(TimeZone.UTC)
+	fun Instant.toLocalDateTime() = this.toLocalDateTime(timeZone)
 
-	fun LocalDateTime.toInstant() = this.toInstant(TimeZone.UTC)
+	fun LocalDateTime.toInstant() = this.toInstant(timeZone)
 
 	fun LocalDateTime.dayOfWeekText() = when(dayOfWeek){
 		DayOfWeek.MONDAY -> "周一"
@@ -109,6 +109,8 @@ object DateUtils {
 		DayOfWeek.SATURDAY -> "周六"
 		DayOfWeek.SUNDAY -> "周日"
 	}
+
+	fun Long.epochMillisecondsToDateTime() = Instant.fromEpochMilliseconds(this).toLocalDateTime()
 
 	fun Long.epochSecondsToDateTime() = Instant.fromEpochSeconds(this).toLocalDateTime(timeZone)
 

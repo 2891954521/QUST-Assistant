@@ -4,8 +4,10 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.qust.helper.next.module.database.dao.ExamDao
 import com.qust.helper.next.module.database.dao.LessonDao
+import com.qust.helper.next.module.database.dao.MarkDao
 import com.qust.helper.next.module.database.mapper.ExamMapper
 import com.qust.helper.next.module.database.mapper.LessonMapper
+import com.qust.helper.next.module.database.mapper.MarkMapper
 
 expect fun createAppDataBase(): AppDataBase
 
@@ -15,6 +17,7 @@ expect fun createAppDataBase(): AppDataBase
 	entities = [
 		LessonDao::class,
 		ExamDao::class,
+		MarkDao::class,
 	]
 )
 abstract class AppDataBase : RoomDatabase() {
@@ -26,4 +29,6 @@ abstract class AppDataBase : RoomDatabase() {
 	abstract fun lessonDao(): LessonMapper
 
 	abstract fun examDao(): ExamMapper
+
+	abstract fun markDao(): MarkMapper
 }
