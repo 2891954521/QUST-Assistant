@@ -54,7 +54,11 @@ object EasHttpClient: BaseAppHttpClient() {
 		val response = client.request(request)
 
 		return if(response.status == HttpStatusCode.Found){
-			if(response.headers["location"]?.contains(QustApi.EA_LOGIN) == true){
+			val location = response.headers["location"] ?: throw NeedLoginException("请先登录")
+			if(
+				location.contains("jwglxt/xtgl/login_slogin.html") ||
+				location.contains("ydxg.qust.edu.cn/cas/login")
+			){
 				if(login()){
 					client.request(request).body(type)
 				}else{
