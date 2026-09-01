@@ -3,7 +3,6 @@ package com.qust.helper.next.ui.page.eas
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,13 +36,13 @@ import com.qust.helper.next.entity.eas.Mark
 import com.qust.helper.next.module.eas.MarkModel
 import com.qust.helper.next.repository.MarkRepository
 import com.qust.helper.next.ui.business.eas.EasQueryLayout
+import com.qust.helper.next.ui.business.eas.MarkDetailsUI
 import com.qust.helper.next.ui.component.AppPreview
 import com.qust.helper.next.ui.component.spinner.SpinnerWidget
 import com.qust.helper.next.ui.page.base.AppPage
 import com.qust.helper.next.ui.router.params.PageParam
 import com.qust.helper.next.ui.theme.Theme
 import com.qust.helper.next.ui.viewmodel.eas.BaseEasViewModel
-import com.qust.helper.next.utils.DateUtils
 
 
 @Preview
@@ -190,7 +188,7 @@ private fun MarkItem(mark: Mark, onClickNew: () -> Unit = {}) {
 				}
 
 				AnimatedVisibility(visible = isExpanded) {
-					MarkItems(mark = mark)
+					MarkDetailsUI(mark = mark)
 				}
 			}
 		}
@@ -213,40 +211,6 @@ private fun MarkItem(mark: Mark, onClickNew: () -> Unit = {}) {
 	}
 }
 
-@Composable
-private fun MarkItems(mark: Mark) {
-	Column(
-		modifier = Modifier.fillMaxWidth(),
-		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.spacedBy(8.dp),
-	) {
-		if(mark.items.isNotEmpty()) {
-			HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
-
-			Row {
-				Text(text = "项目", modifier = Modifier.weight(2F), textAlign = TextAlign.Center)
-				Text(text = "成绩", modifier = Modifier.weight(1F), textAlign = TextAlign.Center)
-			}
-
-			for(i in mark.items.indices) {
-				HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
-				Row {
-					Text(text = mark.items[i].name, modifier = Modifier.weight(2F), textAlign = TextAlign.Center)
-					Text(text = mark.items[i].mark, modifier = Modifier.weight(1F), textAlign = TextAlign.Center)
-				}
-			}
-
-			HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
-		}
-
-		Text(
-			text = "发布时间: ${DateUtils.YMD_HMS.format(mark.time)}",
-			modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-			style = Theme.textStyles.caption,
-			color = Theme.color.textSecondary,
-		)
-	}
-}
 
 class QueryMarkViewModel : BaseEasViewModel() {
 

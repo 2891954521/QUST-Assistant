@@ -12,6 +12,10 @@ object MarkRepository {
 		return AppDataBase.INSTANCE.markDao().selectByTerm(term).map(MarkDao::toMark)
 	}
 
+	suspend fun getMarksByKchId(kchId: String): List<Mark> {
+		return AppDataBase.INSTANCE.markDao().selectByKchId(kchId).map(MarkDao::toMark)
+	}
+
 	suspend fun setRead(id: Int) {
 		AppDataBase.INSTANCE.markDao().setRead(id)
 	}

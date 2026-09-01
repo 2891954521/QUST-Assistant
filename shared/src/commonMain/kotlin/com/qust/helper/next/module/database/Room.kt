@@ -2,9 +2,12 @@ package com.qust.helper.next.module.database
 
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
+import com.qust.helper.next.module.database.dao.AcademicGroupDao
+import com.qust.helper.next.module.database.dao.AcademicInfoDao
 import com.qust.helper.next.module.database.dao.ExamDao
 import com.qust.helper.next.module.database.dao.LessonDao
 import com.qust.helper.next.module.database.dao.MarkDao
+import com.qust.helper.next.module.database.mapper.AcademicMapper
 import com.qust.helper.next.module.database.mapper.ExamMapper
 import com.qust.helper.next.module.database.mapper.LessonMapper
 import com.qust.helper.next.module.database.mapper.MarkMapper
@@ -18,6 +21,8 @@ expect fun createAppDataBase(): AppDataBase
 		LessonDao::class,
 		ExamDao::class,
 		MarkDao::class,
+		AcademicInfoDao::class,
+		AcademicGroupDao::class,
 	]
 )
 abstract class AppDataBase : RoomDatabase() {
@@ -31,4 +36,6 @@ abstract class AppDataBase : RoomDatabase() {
 	abstract fun examDao(): ExamMapper
 
 	abstract fun markDao(): MarkMapper
+
+	abstract fun academicDao(): AcademicMapper
 }

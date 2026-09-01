@@ -12,6 +12,9 @@ interface MarkMapper {
 	@Query("SELECT * FROM marks WHERE `term` = :term")
 	suspend fun selectByTerm(term: Int): List<MarkDao>
 
+	@Query("SELECT * FROM marks WHERE kchId = :kchId")
+	suspend fun selectByKchId(kchId: String): List<MarkDao>
+
 	@Query("UPDATE marks SET isNew = 0 WHERE id = :id")
 	suspend fun setRead(id: Int)
 
