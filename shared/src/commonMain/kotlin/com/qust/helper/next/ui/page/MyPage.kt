@@ -39,6 +39,7 @@ import com.qust.helper.next.ui.component.onClick
 import com.qust.helper.next.ui.drawables.Drawables
 import com.qust.helper.next.ui.drawables.GridView
 import com.qust.helper.next.ui.drawables.InsertInvitation
+import com.qust.helper.next.ui.drawables.Notification
 import com.qust.helper.next.ui.drawables.School
 import com.qust.helper.next.ui.page.account.AccountManagerPage
 import com.qust.helper.next.ui.page.base.AppPage
@@ -46,6 +47,7 @@ import com.qust.helper.next.ui.page.base.BasePage
 import com.qust.helper.next.ui.page.eas.QueryAcademicPage
 import com.qust.helper.next.ui.page.eas.QueryExamPage
 import com.qust.helper.next.ui.page.eas.QueryMarkPage
+import com.qust.helper.next.ui.page.eas.QueryNoticePage
 import com.qust.helper.next.ui.page.lesson.LessonTablePage
 import com.qust.helper.next.ui.page.setting.SettingPage
 import com.qust.helper.next.ui.theme.Theme
@@ -153,6 +155,7 @@ class MyViewModel : BaseViewModel() {
 		PageEntrance(title = "考试查询", icon = Drawables.InsertInvitation, page = QueryExamPage::class),
 		PageEntrance(title = "成绩查询", icon = Drawables.School, page = QueryMarkPage::class),
 		PageEntrance(title = "学业查询", icon = Drawables.School, page = QueryAcademicPage::class),
+		PageEntrance(title = "教务通知", icon = Drawables.Notification, page = QueryNoticePage::class),
 	)
 
 	val other = listOf(PageEntrance(title = "设置", icon = Icons.Default.Settings, page = SettingPage::class))
