@@ -41,6 +41,7 @@ import com.qust.helper.next.ui.drawables.GridView
 import com.qust.helper.next.ui.drawables.InsertInvitation
 import com.qust.helper.next.ui.drawables.Notification
 import com.qust.helper.next.ui.drawables.School
+import com.qust.helper.next.ui.drawables.Water
 import com.qust.helper.next.ui.page.account.AccountManagerPage
 import com.qust.helper.next.ui.page.base.AppPage
 import com.qust.helper.next.ui.page.base.BasePage
@@ -51,6 +52,7 @@ import com.qust.helper.next.ui.page.eas.QueryMarkPage
 import com.qust.helper.next.ui.page.eas.QueryNoticePage
 import com.qust.helper.next.ui.page.lesson.LessonTablePage
 import com.qust.helper.next.ui.page.setting.SettingPage
+import com.qust.helper.next.ui.page.thrid.DrinkCodePage
 import com.qust.helper.next.ui.theme.Theme
 import com.qust.helper.next.ui.theme.color.Colors
 import com.qust.helper.next.ui.viewmodel.BaseViewModel
@@ -160,7 +162,10 @@ class MyViewModel : BaseViewModel() {
 		PageEntrance(title = "教务通知", icon = Drawables.Notification, page = QueryNoticePage::class),
 	)
 
-	val other = listOf(PageEntrance(title = "设置", icon = Icons.Default.Settings, page = SettingPage::class))
+	val other = listOf(
+		PageEntrance(title = "饮水码", icon = Drawables.Water, page = DrinkCodePage::class),
+		PageEntrance(title = "设置", icon = Icons.Default.Settings, page = SettingPage::class),
+	)
 }
 
 data class PageEntrance(

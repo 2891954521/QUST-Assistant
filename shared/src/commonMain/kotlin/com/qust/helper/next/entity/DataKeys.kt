@@ -27,4 +27,6 @@ object DataKeys {
 
 	const val DRINK_ACCOUNT = "drink_account"
 	const val DRINK_PASSWORD = "drink_password"
+	const val DRINK_TOKEN = "drink_token"
+	const val DRINK_CODE = "drink_code"
 }

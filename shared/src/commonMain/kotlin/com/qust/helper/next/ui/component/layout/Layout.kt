@@ -25,7 +25,7 @@ fun SurfaceBox(
 ) {
 	CompositionLocalProvider(LocalContentColor provides colors.content) {
 		Box(modifier) {
-			Box(modifier = Modifier.fillMaxWidth().background(colors.background)) {
+			Box(modifier = Modifier.background(colors.background)) {
 				content()
 			}
 		}
