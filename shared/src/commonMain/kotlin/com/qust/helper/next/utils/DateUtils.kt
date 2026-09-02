@@ -4,8 +4,10 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.format.DayOfWeekNames
 import kotlinx.datetime.format.char
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import java.util.Calendar
@@ -125,6 +127,20 @@ object DateUtils {
 	fun Calendar.toLocalDate() = this.time.toLocalDate()
 
 	fun Calendar.toLocalDateTime() = this.time.toLocalDateTime()
+
+	fun calcDayOffset(startTime: LocalDate, endTime: LocalDate): Int {
+		return startTime.daysUntil(endTime)
+	}
+
+	fun calcWeekOffset(startTime: LocalDate, endTime: LocalDate): Int {
+		val dayOfWeek = startTime.dayOfWeek.isoDayNumber
+		val dayOffset = calcDayOffset(startTime, endTime)
+		return dayOffset / 7 + if(dayOffset > 0) {
+			if((dayOffset % 7 + dayOfWeek) > 7) 1 else 0
+		} else {
+			if((dayOffset % 7 + dayOfWeek) < 1) -1 else 0
+		}
+	}
 }
 
 

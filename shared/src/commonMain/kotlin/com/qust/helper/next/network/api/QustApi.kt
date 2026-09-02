@@ -82,27 +82,6 @@ object QustApi {
 	const val EA_MAIN_MENU = "jwglxt/xtgl/index_initMenu.html"
 
 	/**
-	 * 教务系统消息查询
-	 *
-	 * Post:
-	 * - queryModel.showCount: 一页显示几条
-	 * - queryModel.currentPage: 第几页
-	 * - queryModel.sortName: cjsj
-	 * - queryModel.sortOrder: desc
-	 */
-	const val EA_SYSTEM_NOTICE = "jwglxt/xtgl/index_cxDbsy.html?doType=query"
-
-	/**
-	 * 学年信息
-	 */
-	const val EA_YEAR_DATA = "jwglxt/xtgl/index_cxAreaFive.html?localeKey=zh_CN&gnmkdm=index"
-
-	/**
-	 * 查询学生课表
-	 */
-	const val GET_LESSON_TABLE = "jwglxt/kbcx/xskbcx_cxXsgrkb.html"
-
-	/**
 	 * 查询班级课表
 	 */
 	const val GET_CLASS_LESSON_TABLE = "jwglxt/kbdy/bjkbdy_cxBjKb.html"

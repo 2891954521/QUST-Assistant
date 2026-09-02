@@ -14,13 +14,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,12 +35,10 @@ import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.next.common.Platform
 import com.qust.helper.next.common.Platform.PlatformType
 import com.qust.helper.next.entity.Strings
-import com.qust.helper.next.ui.component.PrimaryButton
 import com.qust.helper.next.ui.theme.Theme
 import com.qust.helper.next.ui.theme.color.Colors.LESSON_BACKGROUND_COLORS
 import com.qust.helper.next.ui.theme.color.Colors.LESSON_TEXT_COLORS
 import com.qust.helper.next.utils.DateUtils
-import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
@@ -50,7 +46,6 @@ import kotlinx.datetime.plus
 
 @Composable
 fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> Unit = { _, _ -> }){
-	val scope = rememberCoroutineScope()
 	val lessonTableInfo by uiState.lessonTableInfo.collectAsStateWithLifecycle()
 
 	LaunchedEffect(lessonTableInfo.lessons){

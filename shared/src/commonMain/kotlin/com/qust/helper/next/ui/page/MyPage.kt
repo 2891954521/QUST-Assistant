@@ -46,6 +46,7 @@ import com.qust.helper.next.ui.page.base.AppPage
 import com.qust.helper.next.ui.page.base.BasePage
 import com.qust.helper.next.ui.page.eas.QueryAcademicPage
 import com.qust.helper.next.ui.page.eas.QueryExamPage
+import com.qust.helper.next.ui.page.eas.QueryLessonTablePage
 import com.qust.helper.next.ui.page.eas.QueryMarkPage
 import com.qust.helper.next.ui.page.eas.QueryNoticePage
 import com.qust.helper.next.ui.page.lesson.LessonTablePage
@@ -152,6 +153,7 @@ class MyViewModel : BaseViewModel() {
 	val lesson = listOf(PageEntrance(title = "课表", icon = Drawables.GridView, page = LessonTablePage::class))
 
 	val eas = listOf(
+		PageEntrance(title = "课表查询", icon = Drawables.School, page = QueryLessonTablePage::class),
 		PageEntrance(title = "考试查询", icon = Drawables.InsertInvitation, page = QueryExamPage::class),
 		PageEntrance(title = "成绩查询", icon = Drawables.School, page = QueryMarkPage::class),
 		PageEntrance(title = "学业查询", icon = Drawables.School, page = QueryAcademicPage::class),
