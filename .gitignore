@@ -27,3 +27,5 @@ captures/
 node_modules/
 
 local.properties
+
+*.code-workspace

@@ -29,7 +29,7 @@ compose-material3 = "1.9.0"
 ksp = "2.3.10"
 kotlinpoet = "2.3.0"
 
-ui-fluent = "v0.1.0"
+ui-fluent = "0.2.0-SNAPSHOT"
 
 ktor = "3.5.1"
 room3 = "3.0.0"

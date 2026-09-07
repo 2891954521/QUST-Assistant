@@ -7,6 +7,7 @@ pluginManagement {
         maven { url = uri("https://maven.aliyun.com/repository/central") }
         maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
 
+        maven("https://central.sonatype.com/repository/maven-snapshots/")
         maven("https://jitpack.io")
 
         google {
@@ -27,6 +28,7 @@ dependencyResolutionManagement {
         maven { url = uri("https://maven.aliyun.com/repository/google") }
         maven { url = uri("https://maven.aliyun.com/repository/central") }
 
+        maven("https://central.sonatype.com/repository/maven-snapshots/")
         maven("https://jitpack.io")
 
         google {
