@@ -4,6 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import com.qust.helper.entity.lesson.Lesson
 import com.qust.helper.entity.lesson.TimeTable
+import com.qust.helper.next.common.setting.AppSetting
+import com.qust.helper.next.entity.SettingKeys
 import com.qust.helper.next.entity.lesson.LessonTableInfo
 import com.qust.helper.next.module.database.AppDataBase
 import com.qust.helper.next.module.database.dao.LessonDao
@@ -30,6 +32,11 @@ object LessonTableRepository {
 	/** 当前星期 ( 0 - 6, 周一 —— 周日) */
 	var _dayOfWeek = mutableIntStateOf(0)
 	val dayOfWeek by _dayOfWeek
+
+	/**
+	 * 课表显示设置
+	 */
+	val setting: StateFlow<LessonTableSetting> field = MutableStateFlow(LessonTableSetting())
 
 	/**
 	 * 刷新当前课表，从数据库重新加载
@@ -72,6 +79,11 @@ object LessonTableRepository {
 	fun updateTotalWeek(totalWeek: Int){
 		SettingRepository.totalWeek = totalWeek
 		_currentLessonTable.update { it.copy(totalWeek = totalWeek) }
+	}
+
+	fun updateSetting(setting: LessonTableSetting){
+		this.setting.value = setting
+		setting.save()
 	}
 
 	/**
@@ -123,6 +135,18 @@ object LessonTableRepository {
 			return true
 		}catch(e: Exception){
 			return false
+		}
+	}
+
+	data class LessonTableSetting(
+		val showAllLesson: Boolean = AppSetting[SettingKeys.SETTING_LESSON_SHOW_ALL_LESSON, false],
+		val showFinishedLesson: Boolean = AppSetting[SettingKeys.SETTING_LESSON_SHOW_FINISHED_LESSON, false],
+		val hideTeacher: Boolean = AppSetting[SettingKeys.SETTING_LESSON_HIDE_TEACHER, false]
+	){
+		fun save(){
+			AppSetting[SettingKeys.SETTING_LESSON_SHOW_ALL_LESSON] = showAllLesson
+			AppSetting[SettingKeys.SETTING_LESSON_SHOW_FINISHED_LESSON] = showFinishedLesson
+			AppSetting[SettingKeys.SETTING_LESSON_HIDE_TEACHER] = hideTeacher
 		}
 	}
 }

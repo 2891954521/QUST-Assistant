@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +38,9 @@ import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.next.common.Platform
 import com.qust.helper.next.common.Platform.PlatformType
 import com.qust.helper.next.entity.Strings
+import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.ui.theme.Theme
+import com.qust.helper.next.ui.theme.color.Colors
 import com.qust.helper.next.ui.theme.color.Colors.LESSON_BACKGROUND_COLORS
 import com.qust.helper.next.ui.theme.color.Colors.LESSON_TEXT_COLORS
 import com.qust.helper.next.utils.DateUtils
@@ -47,6 +52,7 @@ import kotlinx.datetime.plus
 @Composable
 fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> Unit = { _, _ -> }){
 	val lessonTableInfo by uiState.lessonTableInfo.collectAsStateWithLifecycle()
+	val setting by LessonTableRepository.setting.collectAsStateWithLifecycle()
 
 	LaunchedEffect(lessonTableInfo.lessons){
 		uiState.refreshLessonTable()
@@ -54,35 +60,37 @@ fun LessonTableUI(uiState: LessonTableUIState, onLessonClick: (Int, Lesson) -> U
 
 	val pagerState = rememberPagerState(initialPage = 0, pageCount = { lessonTableInfo.totalWeek })
 
-	Column {
-		Row {
-			Text(
-				text = "第 ${pagerState.currentPage + 1} 周",
-				modifier = Modifier.weight(1F),
-				style = Theme.textStyles.subtitle,
-				textAlign = TextAlign.Center
-			)
-		}
-
-		if(Platform.currentPlatform() == PlatformType.JVM){
-			VerticalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-				LessonViewLayout({
-					LessonTimeBar(lessonTableInfo.timeTable)
-				}, {
-					LessonDate(lessonTableInfo.startDay, page)
-				}, {
-					LessonContent(lessonTableInfo.timeTable.count, page, uiState.lessonGroupRender, onLessonClick)
-				})
+	CompositionLocalProvider(LocalLessonTableSetting provides setting){
+		Column {
+			Row {
+				Text(
+					text = "第 ${pagerState.currentPage + 1} 周",
+					modifier = Modifier.weight(1F),
+					style = Theme.textStyles.subtitle,
+					textAlign = TextAlign.Center
+				)
 			}
-		}else{
-			HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-				LessonViewLayout({
-					LessonTimeBar(lessonTableInfo.timeTable)
-				}, {
-					LessonDate(lessonTableInfo.startDay, page)
-				}, {
-					LessonContent(lessonTableInfo.timeTable.count, page, uiState.lessonGroupRender, onLessonClick)
-				})
+
+			if(Platform.currentPlatform() == PlatformType.JVM){
+				VerticalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+					LessonViewLayout({
+						LessonTimeBar(lessonTableInfo.timeTable)
+					}, {
+						LessonDate(lessonTableInfo.startDay, page)
+					}, {
+						LessonContent(lessonTableInfo.timeTable.count, page, uiState.lessonGroupRender, onLessonClick)
+					})
+				}
+			}else{
+				HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+					LessonViewLayout({
+						LessonTimeBar(lessonTableInfo.timeTable)
+					}, {
+						LessonDate(lessonTableInfo.startDay, page)
+					}, {
+						LessonContent(lessonTableInfo.timeTable.count, page, uiState.lessonGroupRender, onLessonClick)
+					})
+				}
 			}
 		}
 	}
@@ -172,28 +180,38 @@ fun LessonContent(count: Int, weekOfTerm: Int, lessonGroups: List<LessonGroupRen
 
 @Composable
 fun LessonGroupItem(group: LessonGroupRenderUIState, weekOfTerm: Int, onLessonClick: (Int, Lesson) -> Unit){
-	val index = group.current(weekOfTerm)
+	val setting = LocalLessonTableSetting.current
+	val (index, hasLesson) = group.current(weekOfTerm, setting.showAllLesson, setting.showFinishedLesson)
 	if(index == -1){
-		Box { }
+		Spacer(Modifier)
 	}else{
-		LessonItem(group.lessons[index]){ onLessonClick(group.lessonIndex[index], group.lessons[index]) }
+		val lesson = group.lessons[index]
+		val background = if(hasLesson) LESSON_BACKGROUND_COLORS[lesson.colorLabel] else Colors.LESSON_BACKGROUND_COLOR_SECOND
+		val textColor = if(hasLesson) LESSON_TEXT_COLORS[lesson.colorLabel] else Colors.LESSON_TEXT_COLOR_SECOND
+		LessonItem(
+			lesson.name,
+			lesson.place,
+			lesson.teacher,
+			background,
+			textColor,
+		){ onLessonClick(group.lessonIndex[index], lesson) }
 	}
 }
 
 @Composable
-fun LessonItem(lesson: Lesson, onLessonClick: () -> Unit){
+fun LessonItem(name: String, place: String, teacher: String, background: Color, textColor: Color, onLessonClick: () -> Unit){
 	Column(
 		modifier = Modifier.padding(1.dp)
-			.background(color = LESSON_BACKGROUND_COLORS[lesson.colorLabel], RoundedCornerShape(4.dp))
+			.background(color = background, RoundedCornerShape(4.dp))
 			.clip(RoundedCornerShape(4.dp))
 			.clickable(onClick = onLessonClick),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
 	) {
-		ProvideTextStyle(TextStyle.Default.copy(color = LESSON_TEXT_COLORS[lesson.colorLabel])){
-			Text(lesson.name, maxLines = 3)
-			Text(lesson.place, maxLines = 2)
-			Text(lesson.teacher, maxLines = 1)
+		ProvideTextStyle(TextStyle.Default.copy(color = textColor)){
+			Text(name, maxLines = 3)
+			Text(place, maxLines = 2)
+			if(!LocalLessonTableSetting.current.hideTeacher) Text(teacher, maxLines = 1)
 		}
 	}
 }
@@ -241,5 +259,6 @@ fun LessonViewLayout(timeBar: @Composable () -> Unit, dateBar: @Composable () ->
 	})
 }
 
+val LocalLessonTableSetting = compositionLocalOf { LessonTableRepository.LessonTableSetting() }
 
 internal enum class SlotsEnum { Dependent, Time, Date, Main }

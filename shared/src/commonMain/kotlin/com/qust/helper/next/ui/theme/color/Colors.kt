@@ -39,7 +39,8 @@ object Colors {
         Color(0xFF768AC5),
     )
 
-    val TEXT_COLOR_SECOND_COLOR = Color(0xFF909090)
+    val LESSON_BACKGROUND_COLOR_SECOND = Color(0xC0F5F5F5)
+    val LESSON_TEXT_COLOR_SECOND = Color(0xFF909090)
 
 }
 

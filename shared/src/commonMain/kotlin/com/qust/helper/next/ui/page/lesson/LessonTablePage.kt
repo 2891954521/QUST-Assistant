@@ -25,6 +25,8 @@ import com.qust.helper.next.ui.business.lesson.lessonEdit.LessonEditUIEvent
 import com.qust.helper.next.ui.business.lesson.lessonEdit.LessonEditUIState
 import com.qust.helper.next.ui.component.AppPreview
 import com.qust.helper.next.ui.component.BackHandler
+import com.qust.helper.next.ui.drawables.Drawables
+import com.qust.helper.next.ui.drawables.GridView
 import com.qust.helper.next.ui.page.base.AppPage
 import com.qust.helper.next.ui.router.params.PageParam
 import com.qust.helper.next.ui.viewmodel.BaseViewModel
@@ -35,7 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 private fun LessonTablePreview() = AppPreview(::LessonTableUI)
 
-class LessonTablePage : AppPage<LessonTableViewModel>(title = "学期课表", viewModelClass = LessonTableViewModel::class) {
+class LessonTablePage : AppPage<LessonTableViewModel>(title = "学期课表", icon = Drawables.GridView, viewModelClass = LessonTableViewModel::class) {
 	@Composable
 	override fun Content(viewModel: LessonTableViewModel) = LessonTableUI(viewModel)
 }

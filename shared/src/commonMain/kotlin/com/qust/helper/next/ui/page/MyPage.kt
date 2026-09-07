@@ -38,6 +38,7 @@ import com.qust.helper.next.ui.component.AppPreview
 import com.qust.helper.next.ui.component.onClick
 import com.qust.helper.next.ui.drawables.Drawables
 import com.qust.helper.next.ui.drawables.GridView
+import com.qust.helper.next.ui.drawables.IconLogin
 import com.qust.helper.next.ui.drawables.InsertInvitation
 import com.qust.helper.next.ui.drawables.Notification
 import com.qust.helper.next.ui.drawables.School
@@ -67,7 +68,7 @@ import kotlin.reflect.KClass
 @Composable
 private fun MyPreview() = AppPreview(::MyUI)
 
-class MyPage : AppPage<MyViewModel>(title = "我的", viewModelClass = MyViewModel::class) {
+class MyPage : AppPage<MyViewModel>(title = "我的", icon = Drawables.IconLogin, viewModelClass = MyViewModel::class) {
 	@Composable
 	override fun Content(viewModel: MyViewModel) = MyUI(viewModel)
 }

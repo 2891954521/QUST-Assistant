@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -27,12 +28,10 @@ import com.qust.helper.next.ui.business.setting.SwitchItemUI
 import com.qust.helper.next.ui.component.AppPreview
 import com.qust.helper.next.ui.component.ColumnVerticalScroll
 import com.qust.helper.next.ui.component.FontScale
-import com.qust.helper.next.ui.component.RowVerticalScroll
 import com.qust.helper.next.ui.component.UiScale
 import com.qust.helper.next.ui.page.base.AppPage
 import com.qust.helper.next.ui.viewmodel.BaseViewModel
 import com.qust.helper.next.utils.DateUtils
-import io.github.composefluent.component.ExpanderItem
 import io.github.composefluent.component.ExpanderItemSeparator
 
 
@@ -66,10 +65,44 @@ private fun SettingUI(viewModel: SettingViewModel) {
  */
 @Composable
 private fun LessonTableSetting(viewModel: SettingViewModel) {
+	val setting by viewModel.lessonTableSetting.collectAsState()
+
 	SettingGroupUI(
 		title = "课表设置",
 		description = "配置课表的展示样式"
 	) {
+
+		SwitchItemUI(
+			title = "显示非本周课程",
+			description = "是否将非本周课程以灰色显示",
+			value = setting.showAllLesson
+		) {
+			LessonTableRepository.updateSetting(setting.copy(showAllLesson = it))
+		}
+
+		ExpanderItemSeparator()
+
+		SwitchItemUI(
+			title = "显示后续无课课程",
+			description = "是否将后续周无课课程以灰色显示",
+			value = setting.showFinishedLesson,
+			enable = setting.showAllLesson
+		) {
+			LessonTableRepository.updateSetting(setting.copy(showFinishedLesson = it))
+		}
+
+		ExpanderItemSeparator()
+
+		SwitchItemUI(
+			title = "隐藏教师",
+			description = "每周课表是否显示教师信息",
+			value = setting.hideTeacher
+		) {
+			LessonTableRepository.updateSetting(setting.copy(hideTeacher = it))
+		}
+
+		ExpanderItemSeparator()
+
 		InputItemUI(
 			title = "设置开学时间",
 			label = "开学时间",
@@ -92,7 +125,6 @@ private fun LessonTableSetting(viewModel: SettingViewModel) {
 @Composable
 private fun UISetting(){
 	val setting by SettingRepository.uiSetting.collectAsStateWithLifecycle()
-
 	SettingGroupUI(
 		title = "界面设置",
 		description = "配置应用界面"
@@ -106,6 +138,8 @@ private fun UISetting(){
 			}
 		)
 
+		ExpanderItemSeparator()
+
 		SpinnerItemUI(
 			title = "界面大小",
 			description = "调整应用界面大小",
@@ -115,6 +149,8 @@ private fun UISetting(){
 				SettingRepository.setUiSetting(SettingRepository.uiSetting.value.copy(uiScale = UiScale.entries[index].scale))
 			}
 		)
+
+		ExpanderItemSeparator()
 
 		SpinnerItemUI(
 			title = "字体大小",
@@ -155,5 +191,7 @@ class SettingViewModel : BaseViewModel() {
 		LessonTableRepository.updateTotalWeek(week)
 		toastSuccess("设置成功")
 	}
+
+	val lessonTableSetting = LessonTableRepository.setting
 
 }

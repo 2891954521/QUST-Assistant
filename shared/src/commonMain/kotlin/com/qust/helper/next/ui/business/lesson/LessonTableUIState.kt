@@ -50,13 +50,14 @@ class LessonGroupRenderUIState(
 	val lessonCount = IntArray(totalWeek)
 
 	/**
-	 * 当前正在展示的是第几节课，从0开始
+	 * 当前正在展示的是第几节课，存放的 lessons 的索引
 	 */
 	val index = IntArray(totalWeek).also { Arrays.fill(it, -1) }
 
 	/**
 	 * 某一周的这个时间点同时有课的课
-	 * 5 = 101，表示当第1，3课会上，第2课不会上
+	 * 以二进制存储的布尔值列表
+	 * 例如：13 = 0b1101，表示这个时间点 index 存放的第1、3、4课会上，第2课不会上
 	 */
 	private val lessonTime = IntArray(totalWeek)
 
@@ -65,7 +66,7 @@ class LessonGroupRenderUIState(
 		lessons.forEachIndexed { i, lesson ->
 			var week = 1L
 			for(j in 0 until totalWeek) {
-				if(lesson.weeks and week > 0) {
+				if((lesson.weeks and week) > 0) {
 					if(index[j] == -1) index[j] = i
 					lessonTime[j] = lessonTime[j] or offset
 					lessonCount[j]++
@@ -76,8 +77,36 @@ class LessonGroupRenderUIState(
 		}
 	}
 
-	fun current(weekOfTerm: Int): Int {
-		return if(lessonCount[weekOfTerm] == 0) -1 else index[weekOfTerm]
+	/**
+	 * 获取当前周的课程的索引和是否是本周的课程
+	 * 
+	 * @param weekOfTerm 当前周
+	 * @param showAllLesson 是否显示所有课程
+	 * @param showFinish 是否显示已完成课程
+	 */
+	fun current(weekOfTerm: Int, showAllLesson: Boolean, showFinish: Boolean): Pair<Int, Boolean> {
+		val lessonIndex = index[weekOfTerm]
+		if(lessonIndex != -1) return Pair(lessonIndex, true)
+
+		// 向后查找课程
+		if(showAllLesson){
+			for(i in (weekOfTerm + 1) until lessonTime.size) {
+				if(lessonTime[i] > 0) {
+					return Pair(Integer.numberOfTrailingZeros(lessonTime[i]), false)
+				}
+			}
+		}
+
+		// 向前查找课程
+		if(showFinish && weekOfTerm > 0) {
+			for(i in (weekOfTerm - 1) downTo 0) {
+				if(lessonTime[i] > 0) {
+					return Pair(Integer.numberOfTrailingZeros(lessonTime[i]), false)
+				}
+			}
+		}
+
+		return Pair(-1, false)
 	}
 
 	override fun toString(): String {

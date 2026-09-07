@@ -34,7 +34,7 @@ fun SettingGroupUI(title: String, description: String? = null, modifier: Modifie
 		onExpandedChanged = { expanded.value = it },
 		modifier = modifier,
 		heading = { Text(title) },
-		caption = { description?.let { Text(it, color = Theme.color.textSecondary) } },
+		caption = { description?.let { CaptionText(it) } },
 		expandContent = content
 	)
 }
@@ -44,20 +44,29 @@ fun SettingItemUI(title: String, description: String, onClick: () -> Unit) {
 	ExpanderItem(
 		modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
 		heading = { Text(title) },
-		caption = { Text(description, color = Theme.color.textSecondary) }
+		caption = { CaptionText(description) }
 	)
 }
 
 @Composable
-fun SwitchItemUI(title: String, description: String, onText: String = Strings.TEXT_ON, offText: String = Strings.TEXT_OFF, value: Boolean, onChange: (Boolean) -> Unit) {
+fun SwitchItemUI(
+	title: String,
+	description: String,
+	enable: Boolean = true,
+	onText: String = Strings.TEXT_ON,
+	offText: String = Strings.TEXT_OFF,
+	value: Boolean, 
+	onChange: (Boolean) -> Unit
+) {
 	ExpanderItem(
 		modifier = Modifier.fillMaxWidth(),
 		heading = { Text(title) },
-		caption = { Text(description, color = Theme.color.textSecondary) },
+		caption = { CaptionText(description) },
 		trailing = {
 			Switcher(
 				checked = value,
 				onCheckStateChange = { onChange(it) },
+				enabled = enable,
 				textBefore = true,
 				text = if (value) onText else offText
 			)
@@ -70,7 +79,7 @@ fun SpinnerItemUI(title: String, description: String, value: String, items: List
 	ExpanderItem(
 		modifier = Modifier.fillMaxWidth(),
 		heading = { Text(title) },
-		caption = { Text(description, color = Theme.color.textSecondary) },
+		caption = { CaptionText(description) },
 		trailing = {
 			Spinner(
 				content = value,
@@ -89,7 +98,7 @@ fun InputItemUI(title: String, label: String, value: String, keyboardOptions: Ke
 	ExpanderItem(
 		modifier = Modifier.fillMaxWidth().clickable { showInput = true },
 		heading = { Text(title) },
-		caption = { Text(value) }
+		caption = { CaptionText(value) }
 	)
 
 	InputDialog(
@@ -122,4 +131,10 @@ fun ListItemUI(title: String, index: Int, items: Array<String>, enable: Boolean 
 //			showList = false
 //		}
 	}
+}
+
+
+@Composable
+private fun CaptionText(text: String){
+	Text(text = text, modifier = Modifier.padding(end = 8.dp), color = Theme.color.textSecondary)
 }
