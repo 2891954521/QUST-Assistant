@@ -16,17 +16,18 @@ class LessonTableUIState(
 	var lessonGroupRender by mutableStateOf(emptyList<LessonGroupRenderUIState>())
 
 	fun refreshLessonTable(){
-		lessonGroupRender = lessonTableInfo.value.lessons.mapIndexed { i, lesson ->
-			val offset = lessonTableInfo.value.timeTable.calcOffset(lesson)
-			LessonGroupRenderUIState(
-				lessonTableInfo.value.totalWeek,
-				lesson.week,
-				offset.first,
-				offset.second,
-				arrayOf(lesson),
-				arrayOf(i)
-			)
+		val info = lessonTableInfo.value
+		val render = mutableMapOf<Float, LessonGroupRenderUIState.Builder>()
+		
+		info.lessons.forEachIndexed { i, lesson ->
+			val (st, ed) = info.timeTable.calcOffset(lesson)
+			val key = (lesson.week shl 16) + st
+
+			val builder = render.getOrPut(key) {LessonGroupRenderUIState.Builder(st, ed) }
+			builder.addLesson(i, lesson)
 		}
+
+		lessonGroupRender = render.values.mapNotNull { it.build(info.totalWeek) }
 	}
 }
 
@@ -41,8 +42,8 @@ class LessonGroupRenderUIState(
 	val week: Int,
 	val startOffset: Float,
 	val endOffset: Float,
-	val lessons: Array<Lesson> = emptyArray(),
-	val lessonIndex: Array<Int> = emptyArray()
+	val lessons: List<Lesson>,
+	val lessonIndex: List<Int>
 ){
 	/**
 	 * 某一周的这个时间点同时有几节课
@@ -110,6 +111,32 @@ class LessonGroupRenderUIState(
 	}
 
 	override fun toString(): String {
-		return lessons.contentToString()
+		return lessons.joinToString(", ")
+	}
+
+	class Builder(
+		val startOffset: Float,
+		val endOffset: Float
+	) {
+		private val lessonIndex = mutableListOf<Int>()
+		private val lessons = mutableListOf<Lesson>()
+
+		fun addLesson(index: Int, lesson: Lesson){
+			lessonIndex.add(index)
+			lessons.add(lesson)
+		}
+
+		fun build(totalWeek: Int): LessonGroupRenderUIState? {
+			if(lessons.isEmpty()) return null
+
+			return LessonGroupRenderUIState(
+				totalWeek,
+				lessons.first().week,
+				startOffset,
+				endOffset,
+				lessons,
+				lessonIndex
+			)
+		}
 	}
 }

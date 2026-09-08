@@ -189,17 +189,17 @@ fun LessonGroupItem(group: LessonGroupRenderUIState, weekOfTerm: Int, onLessonCl
 		val background = if(hasLesson) LESSON_BACKGROUND_COLORS[lesson.colorLabel] else Colors.LESSON_BACKGROUND_COLOR_SECOND
 		val textColor = if(hasLesson) LESSON_TEXT_COLORS[lesson.colorLabel] else Colors.LESSON_TEXT_COLOR_SECOND
 		LessonItem(
-			lesson.name,
-			lesson.place,
-			lesson.teacher,
-			background,
-			textColor,
+			group = group,
+			lesson = lesson,
+			weekOfTerm = weekOfTerm,
+			background = background,
+			textColor = textColor,
 		){ onLessonClick(group.lessonIndex[index], lesson) }
 	}
 }
 
 @Composable
-fun LessonItem(name: String, place: String, teacher: String, background: Color, textColor: Color, onLessonClick: () -> Unit){
+fun LessonItem(group: LessonGroupRenderUIState, lesson: Lesson, weekOfTerm: Int, background: Color, textColor: Color, onLessonClick: () -> Unit){
 	Column(
 		modifier = Modifier.padding(1.dp)
 			.background(color = background, RoundedCornerShape(4.dp))
@@ -209,9 +209,9 @@ fun LessonItem(name: String, place: String, teacher: String, background: Color, 
 		verticalArrangement = Arrangement.Center
 	) {
 		ProvideTextStyle(TextStyle.Default.copy(color = textColor)){
-			Text(name, maxLines = 3)
-			Text(place, maxLines = 2)
-			if(!LocalLessonTableSetting.current.hideTeacher) Text(teacher, maxLines = 1)
+			Text(lesson.name, textAlign = TextAlign.Center, maxLines = 3)
+			Text(lesson.place, textAlign = TextAlign.Center, maxLines = 2)
+			if(!LocalLessonTableSetting.current.hideTeacher) Text(lesson.teacher, textAlign = TextAlign.Center, maxLines = 1)
 		}
 	}
 }
