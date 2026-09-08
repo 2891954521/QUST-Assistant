@@ -18,8 +18,8 @@ import com.qust.helper.next.entity.lesson.LessonTableInfo
 import com.qust.helper.next.module.lesson.LessonUtils
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.ui.business.dialog.BottomDialog
-import com.qust.helper.next.ui.business.lesson.LessonTableUI
-import com.qust.helper.next.ui.business.lesson.LessonTableUIState
+import com.qust.helper.next.ui.business.lesson.legacy.LessonTableUI
+import com.qust.helper.next.ui.business.lesson.legacy.LessonTableUIState
 import com.qust.helper.next.ui.business.lesson.lessonEdit.LessonEditUI
 import com.qust.helper.next.ui.business.lesson.lessonEdit.LessonEditUIEvent
 import com.qust.helper.next.ui.business.lesson.lessonEdit.LessonEditUIState

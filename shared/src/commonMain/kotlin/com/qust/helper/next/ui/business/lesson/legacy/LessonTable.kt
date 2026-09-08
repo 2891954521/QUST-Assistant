@@ -1,4 +1,4 @@
-package com.qust.helper.next.ui.business.lesson
+package com.qust.helper.next.ui.business.lesson.legacy
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

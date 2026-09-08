@@ -26,8 +26,8 @@ import com.qust.helper.next.network.entity.lesson.LessonTableQueryResult
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.repository.SettingRepository
 import com.qust.helper.next.ui.business.eas.EasQueryLayout
-import com.qust.helper.next.ui.business.lesson.LessonTableUI
-import com.qust.helper.next.ui.business.lesson.LessonTableUIState
+import com.qust.helper.next.ui.business.lesson.legacy.LessonTableUI
+import com.qust.helper.next.ui.business.lesson.legacy.LessonTableUIState
 import com.qust.helper.next.ui.component.AppPreview
 import com.qust.helper.next.ui.component.ListItemPicker
 import com.qust.helper.next.ui.page.base.AppPage
