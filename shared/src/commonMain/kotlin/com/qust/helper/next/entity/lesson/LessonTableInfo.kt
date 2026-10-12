@@ -1,7 +1,5 @@
 package com.qust.helper.next.entity.lesson
 
-import com.qust.helper.entity.lesson.Lesson
-import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.next.repository.SettingRepository
 import kotlinx.datetime.LocalDate
 

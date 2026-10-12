@@ -1,4 +1,4 @@
-package com.qust.helper.entity.lesson
+package com.qust.helper.next.entity.lesson
 
 /**
  * 时间表

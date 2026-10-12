@@ -67,8 +67,8 @@ object SettingKeys {
 	/** 课表设置 */
 	const val SETTING_TOTAL_WEEK = "setting_total_week"
 	const val SETTING_START_DAY = "setting_start_day"
-	const val SETTING_LESSON_SHOW_ALL_LESSON = "setting_lesson_show_all_lesson"
-	const val SETTING_LESSON_SHOW_FINISHED_LESSON = "setting_lesson_show_finished_lesson"
+	const val SETTING_LESSON_SHOW_NON_CURRENT_WEEK = "setting_lesson_show_non_current_week"
+	const val SETTING_LESSON_SHOW_FINISHED = "setting_lesson_show_finished"
 	const val SETTING_LESSON_HIDE_TEACHER = "setting_lesson_hide_teacher"
 
 

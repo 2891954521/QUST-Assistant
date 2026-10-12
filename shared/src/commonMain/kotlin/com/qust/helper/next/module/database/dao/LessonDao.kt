@@ -3,7 +3,7 @@ package com.qust.helper.next.module.database.dao
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
-import com.qust.helper.entity.lesson.Lesson
+import com.qust.helper.next.entity.lesson.Lesson
 
 @Entity(tableName = "lesson")
 class LessonDao(

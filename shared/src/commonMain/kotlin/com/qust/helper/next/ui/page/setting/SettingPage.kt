@@ -75,9 +75,9 @@ private fun LessonTableSetting(viewModel: SettingViewModel) {
 		SwitchItemUI(
 			title = "显示非本周课程",
 			description = "是否将非本周课程以灰色显示",
-			value = setting.showAllLesson
+			value = setting.showNonCurrentWeek
 		) {
-			LessonTableRepository.updateSetting(setting.copy(showAllLesson = it))
+			LessonTableRepository.updateSetting(setting.copy(showNonCurrentWeek = it))
 		}
 
 		ExpanderItemSeparator()
@@ -85,10 +85,10 @@ private fun LessonTableSetting(viewModel: SettingViewModel) {
 		SwitchItemUI(
 			title = "显示后续无课课程",
 			description = "是否将后续周无课课程以灰色显示",
-			value = setting.showFinishedLesson,
-			enable = setting.showAllLesson
+			value = setting.showFinished,
+			enable = setting.showNonCurrentWeek
 		) {
-			LessonTableRepository.updateSetting(setting.copy(showFinishedLesson = it))
+			LessonTableRepository.updateSetting(setting.copy(showFinished = it))
 		}
 
 		ExpanderItemSeparator()

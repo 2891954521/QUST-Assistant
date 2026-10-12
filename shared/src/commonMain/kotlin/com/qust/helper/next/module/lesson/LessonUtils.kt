@@ -1,6 +1,6 @@
 package com.qust.helper.next.module.lesson
 
-import com.qust.helper.entity.lesson.Lesson
+import com.qust.helper.next.entity.lesson.Lesson
 
 object LessonUtils {
 

@@ -1,12 +1,13 @@
 package com.qust.helper.next.repository
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import com.qust.helper.entity.lesson.Lesson
-import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.next.common.setting.AppSetting
 import com.qust.helper.next.entity.SettingKeys
+import com.qust.helper.next.entity.lesson.Lesson
 import com.qust.helper.next.entity.lesson.LessonTableInfo
+import com.qust.helper.next.entity.lesson.TimeTable
 import com.qust.helper.next.module.database.AppDataBase
 import com.qust.helper.next.module.database.dao.LessonDao
 import com.qust.helper.next.module.database.dao.toLesson
@@ -138,14 +139,16 @@ object LessonTableRepository {
 		}
 	}
 
+	@Immutable
 	data class LessonTableSetting(
-		val showAllLesson: Boolean = AppSetting[SettingKeys.SETTING_LESSON_SHOW_ALL_LESSON, false],
-		val showFinishedLesson: Boolean = AppSetting[SettingKeys.SETTING_LESSON_SHOW_FINISHED_LESSON, false],
-		val hideTeacher: Boolean = AppSetting[SettingKeys.SETTING_LESSON_HIDE_TEACHER, false]
+		val showNonCurrentWeek: Boolean = AppSetting[SettingKeys.SETTING_LESSON_SHOW_NON_CURRENT_WEEK, false],
+		val showFinished: Boolean = AppSetting[SettingKeys.SETTING_LESSON_SHOW_FINISHED, false],
+		val hideTeacher: Boolean = AppSetting[SettingKeys.SETTING_LESSON_HIDE_TEACHER, false],
+		val showWeekend: Boolean = true
 	){
 		fun save(){
-			AppSetting[SettingKeys.SETTING_LESSON_SHOW_ALL_LESSON] = showAllLesson
-			AppSetting[SettingKeys.SETTING_LESSON_SHOW_FINISHED_LESSON] = showFinishedLesson
+			AppSetting[SettingKeys.SETTING_LESSON_SHOW_NON_CURRENT_WEEK] = showNonCurrentWeek
+			AppSetting[SettingKeys.SETTING_LESSON_SHOW_FINISHED] = showFinished
 			AppSetting[SettingKeys.SETTING_LESSON_HIDE_TEACHER] = hideTeacher
 		}
 	}

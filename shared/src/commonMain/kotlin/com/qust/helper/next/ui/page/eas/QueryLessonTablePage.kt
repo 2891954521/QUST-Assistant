@@ -18,9 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.next.entity.Strings
 import com.qust.helper.next.entity.lesson.LessonTableInfo
+import com.qust.helper.next.entity.lesson.TimeTable
 import com.qust.helper.next.module.eas.LessonModel
 import com.qust.helper.next.network.entity.lesson.LessonTableQueryResult
 import com.qust.helper.next.repository.LessonTableRepository

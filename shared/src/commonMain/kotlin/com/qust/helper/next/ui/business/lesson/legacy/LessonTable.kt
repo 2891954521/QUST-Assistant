@@ -33,11 +33,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.qust.helper.entity.lesson.Lesson
-import com.qust.helper.entity.lesson.TimeTable
 import com.qust.helper.next.common.Platform
 import com.qust.helper.next.common.Platform.PlatformType
 import com.qust.helper.next.entity.Strings
+import com.qust.helper.next.entity.lesson.Lesson
+import com.qust.helper.next.entity.lesson.TimeTable
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.ui.theme.Theme
 import com.qust.helper.next.ui.theme.color.Colors
@@ -181,7 +181,7 @@ fun LessonContent(count: Int, weekOfTerm: Int, lessonGroups: List<LessonGroupRen
 @Composable
 fun LessonGroupItem(group: LessonGroupRenderUIState, weekOfTerm: Int, onLessonClick: (Int, Lesson) -> Unit){
 	val setting = LocalLessonTableSetting.current
-	val (index, hasLesson) = group.current(weekOfTerm, setting.showAllLesson, setting.showFinishedLesson)
+	val (index, hasLesson) = group.current(weekOfTerm, setting.showNonCurrentWeek, setting.showFinished)
 	if(index == -1){
 		Spacer(Modifier)
 	}else{

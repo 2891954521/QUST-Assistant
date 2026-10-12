@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.qust.helper.entity.lesson.Lesson
+import com.qust.helper.next.entity.lesson.Lesson
 import com.qust.helper.next.entity.lesson.LessonTableInfo
 import com.qust.helper.next.repository.LessonTableRepository
 import kotlinx.coroutines.flow.StateFlow

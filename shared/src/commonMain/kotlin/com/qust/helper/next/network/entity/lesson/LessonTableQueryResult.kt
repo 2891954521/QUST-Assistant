@@ -1,6 +1,6 @@
 package com.qust.helper.next.network.entity.lesson
 
-import com.qust.helper.entity.lesson.Lesson
+import com.qust.helper.next.entity.lesson.Lesson
 import com.qust.helper.next.utils.DateUtils
 import kotlinx.datetime.LocalDate
 
