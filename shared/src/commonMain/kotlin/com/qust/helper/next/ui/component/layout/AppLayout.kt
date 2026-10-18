@@ -4,17 +4,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,27 +26,19 @@ import com.qust.helper.next.ui.theme.color.ContainerColors
 @Composable
 fun AppContentWithBack(
     title: String,
-    contentPadding: PaddingValues? = null,
     onBack: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Column(Modifier.fillMaxSize().then(if(contentPadding != null) Modifier.padding(contentPadding) else Modifier)) {
-        SurfaceRow(modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp), colors = ContainerColors.Primary, verticalAlignment = Alignment.CenterVertically) {
-            if(onBack != null){
-                Box(modifier = Modifier.padding(start = 8.dp).clip(RoundedCornerShape(32.dp)).clickable(onClick = onBack)){
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        modifier = Modifier.padding(8.dp)
-                    )
+    Column(Modifier.fillMaxSize()) {
+        SurfaceBox(modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp), colors = ContainerColors.Primary) {
+            Row(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(start = 16.dp, bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                if(onBack != null){
+                    Box(modifier = Modifier.clip(RoundedCornerShape(32.dp)).clickable(onClick = onBack)){
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
                 }
+                Text(text = title, modifier = Modifier.padding(start = 16.dp), style = Theme.textStyles.bodyLarge, maxLines = 1)
             }
-            Text(
-                text = title,
-                modifier = Modifier.padding(16.dp),
-                style = Theme.textStyles.bodyLarge,
-                maxLines = 1,
-            )
         }
 
         Column(Modifier.weight(1F), content = content)
@@ -57,17 +48,13 @@ fun AppContentWithBack(
 @Composable
 fun AppContent(
     title: String,
-    contentPadding: PaddingValues? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Column(Modifier.fillMaxSize().then(if(contentPadding != null) Modifier.padding(contentPadding) else Modifier)) {
-        SurfaceRow(modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp), colors = ContainerColors.Primary, verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = title,
-                modifier = Modifier.padding(16.dp),
-                style = Theme.textStyles.bodyLarge,
-                maxLines = 1,
-            )
+    Column(Modifier.fillMaxSize()) {
+        SurfaceBox(modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp), colors = ContainerColors.Primary) {
+            Row(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(start = 16.dp, bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(text = title, modifier = Modifier.padding(start = 16.dp), style = Theme.textStyles.bodyLarge, maxLines = 1)
+            }
         }
         Column(Modifier.weight(1F), content = content)
     }
