@@ -1,6 +1,6 @@
 package com.qust.helper.next.ui.business.lesson.table.model
 
-import com.qust.helper.next.ui.business.lesson.table.LessonTableSettings
+import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.ui.business.lesson.table.axis.hm
 import com.qust.helper.next.ui.business.lesson.table.axis.lesson
 import kotlin.test.Test
@@ -19,7 +19,7 @@ class LessonGroupResolveTest {
 				entry("未来", hm(8, 0), hm(8, 50), weeks = 1L shl 2),
 			),
 		)
-		val resolved = group.resolve(0, LessonTableSettings())
+		val resolved = group.resolve(0, LessonTableRepository.LessonTableSetting())
 		assertEquals(listOf("本周A", "本周B"), resolved.map { it.entry.lesson.name })
 		assertTrue(resolved.all { it.status == LessonStatus.CURRENT })
 	}
@@ -33,7 +33,7 @@ class LessonGroupResolveTest {
 				entry("过去", hm(8, 0), hm(8, 50), weeks = 1L),
 			),
 		)
-		assertTrue(group.resolve(1, LessonTableSettings()).isEmpty())
+		assertTrue(group.resolve(1, LessonTableRepository.LessonTableSetting(showNonCurrentWeek = false)).isEmpty())
 	}
 
 	@Test
@@ -46,7 +46,7 @@ class LessonGroupResolveTest {
 				entry("过去", hm(8, 0), hm(8, 50), weeks = 1L),
 			),
 		)
-		val resolved = group.resolve(1, LessonTableSettings(showNonCurrentWeek = true))
+		val resolved = group.resolve(1, LessonTableRepository.LessonTableSetting(showNonCurrentWeek = true, showFinished = false))
 		assertEquals(listOf("最近未来", "更远未来"), resolved.map { it.entry.lesson.name })
 		assertTrue(resolved.all { it.status == LessonStatus.UPCOMING })
 	}
@@ -60,7 +60,7 @@ class LessonGroupResolveTest {
 				entry("过去", hm(8, 0), hm(8, 50), weeks = 1L),
 			),
 		)
-		assertTrue(group.resolve(1, LessonTableSettings(showFinished = true)).isEmpty())
+		assertTrue(group.resolve(1, LessonTableRepository.LessonTableSetting(showFinished = true, showNonCurrentWeek = false)).isEmpty())
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class LessonGroupResolveTest {
 		)
 		val resolved = group.resolve(
 			week = 3,
-			settings = LessonTableSettings(showNonCurrentWeek = true, showFinished = true),
+			settings = LessonTableRepository.LessonTableSetting(showNonCurrentWeek = true, showFinished = true),
 		)
 		assertEquals(
 			listOf("最近未来", "两边都有", "更远未来", "最近过去", "更早过去"),
