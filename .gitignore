@@ -20,6 +20,8 @@ xcuserdata
 .idea
 !.idea/fileTemplates
 
+.cursor/
+
 config/
 !config/prod.properties
 
