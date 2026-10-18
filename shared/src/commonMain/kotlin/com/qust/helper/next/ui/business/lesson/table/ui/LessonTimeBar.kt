@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
 import com.qust.helper.next.entity.lesson.Lesson
-import com.qust.helper.next.entity.lesson.TimeTable
+import com.qust.helper.next.entity.lesson.TimeTablePresets
 import com.qust.helper.next.ui.business.lesson.LessonTableDefaults
 import com.qust.helper.next.ui.business.lesson.table.LessonTableColors
 import com.qust.helper.next.ui.business.lesson.table.axis.LessonTimeAxis
@@ -39,7 +39,7 @@ import com.qust.helper.next.ui.theme.Theme
 @Composable
 private fun LessonTimeBarPreview(){
 	val lesson = remember { listOf<Lesson>() }
-	val timeTable = remember { TimeTable.DEFAULT }
+	val timeTable = remember { TimeTablePresets.WINTER_NEW.timeTable }
 	val axis = remember(lesson) { SlotTimeAxis.create(timeTable, lesson) }
 
 	LessonTimeBar(axis, LessonTableDefaults.colors(), modifier = Modifier.width(64.dp))

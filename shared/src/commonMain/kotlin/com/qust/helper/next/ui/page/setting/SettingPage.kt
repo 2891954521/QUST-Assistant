@@ -1,6 +1,8 @@
 package com.qust.helper.next.ui.page.setting
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -21,8 +23,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qust.helper.next.common.log.Logger
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.repository.SettingRepository
+import com.qust.helper.next.repository.TimeTableRepository
+import com.qust.helper.next.ui.business.dialog.BottomDialog
+import com.qust.helper.next.ui.business.lesson.timeTableEdit.TimeTableEditController
+import com.qust.helper.next.ui.business.lesson.timeTableEdit.TimeTableEditMode
+import com.qust.helper.next.ui.business.lesson.timeTableEdit.TimeTableEditUI
 import com.qust.helper.next.ui.business.setting.InputItemUI
 import com.qust.helper.next.ui.business.setting.SettingGroupUI
+import com.qust.helper.next.ui.business.setting.SettingItemUI
 import com.qust.helper.next.ui.business.setting.SpinnerItemUI
 import com.qust.helper.next.ui.business.setting.SwitchItemUI
 import com.qust.helper.next.ui.component.AppPreview
@@ -50,12 +58,21 @@ class SettingPage : AppPage<SettingViewModel>(
 
 @Composable
 private fun SettingUI(viewModel: SettingViewModel) {
-	ColumnVerticalScroll(
-		modifier = Modifier.padding(16.dp),
-		verticalArrangement = Arrangement.spacedBy(16.dp),
-	) {
-		LessonTableSetting(viewModel)
-		UISetting()
+	Box(modifier = Modifier.fillMaxSize()) {
+		ColumnVerticalScroll(
+			modifier = Modifier.padding(16.dp),
+			verticalArrangement = Arrangement.spacedBy(16.dp),
+		) {
+			LessonTableSetting(viewModel)
+			UISetting()
+		}
+
+		BottomDialog(isExpanded = viewModel.showTimeTableEditor) {
+			TimeTableEditUI(
+				editor = viewModel.timeTableEditor,
+				onDismiss = viewModel::closeTimeTableEditor,
+			)
+		}
 	}
 }
 
@@ -66,6 +83,7 @@ private fun SettingUI(viewModel: SettingViewModel) {
 @Composable
 private fun LessonTableSetting(viewModel: SettingViewModel) {
 	val setting by viewModel.lessonTableSetting.collectAsState()
+	val timeTableCatalog by TimeTableRepository.catalog.collectAsStateWithLifecycle()
 
 	SettingGroupUI(
 		title = "课表设置",
@@ -100,6 +118,14 @@ private fun LessonTableSetting(viewModel: SettingViewModel) {
 		) {
 			LessonTableRepository.updateSetting(setting.copy(hideTeacher = it))
 		}
+
+		ExpanderItemSeparator()
+
+		SettingItemUI(
+			title = "时间表",
+			description = "${timeTableCatalog.active().name} · 共 ${timeTableCatalog.active().count} 节",
+			onClick = { viewModel.openTimeTableEditor() },
+		)
 
 		ExpanderItemSeparator()
 
@@ -194,4 +220,17 @@ class SettingViewModel : BaseViewModel() {
 
 	val lessonTableSetting = LessonTableRepository.setting
 
+	// 时间表设置
+	val timeTableEditor = TimeTableEditController(overlay, async)
+
+	var showTimeTableEditor by mutableStateOf(false)
+
+	fun openTimeTableEditor() {
+		timeTableEditor.state.mode = TimeTableEditMode.LIST
+		showTimeTableEditor = true
+	}
+
+	fun closeTimeTableEditor() {
+		showTimeTableEditor = false
+	}
 }

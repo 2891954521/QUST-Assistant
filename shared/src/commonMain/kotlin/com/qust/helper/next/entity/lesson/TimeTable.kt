@@ -10,13 +10,6 @@ data class TimeTable(
 	val endTime: Array<Int>
 ) {
 
-	companion object {
-		val DEFAULT = TimeTable(
-			arrayOf(8_00, 9_00, 10_10, 11_10, 13_30, 14_30, 15_40, 16_40, 18_30, 19_30),
-			arrayOf(8_50, 9_50, 11_00, 12_00, 14_20, 15_20, 16_30, 17_30, 19_20, 20_20)
-		)
-	}
-
 	/** 一天有几节课 */
 	val count: Int
 
@@ -69,6 +62,31 @@ data class TimeTable(
 		this.endMinute = endMinute.toList()
 
 		sliceLength = List(count){ (endMinute[it] - startMinute[it]).toFloat() }
+	}
+
+	/**
+	 * 把一节课按「节次」从本表映射到 [to] 表
+	 *
+	 * 规则：
+	 * - 开始时间早于本表第一节 → 保持不动（返回 null）
+	 * - 按本表节次下标定位，跨节连堂保留跨度
+	 * - 目标节次超出 [to] 范围 → 保持不动（返回 null）
+	 *
+	 * @return [to] 表中的 (startMinute, endMinute)；null 表示保持不动
+	 */
+	fun mapLessonMinutes(lessonStart: Int, lessonEnd: Int, to: TimeTable): Pair<Int, Int>? {
+		if(count == 0 || to.count == 0) return null
+		if(lessonStart < startMinute.first()) return null
+
+		// 本表中包含开始时间的节次
+		val startIndex = startMinute.indexOfLast { it <= lessonStart }
+		if(startIndex < 0 || startIndex > to.count - 1) return null
+
+		// 结束时间按「严格小于下一节开始」定位，避免 lessonEnd 正好等于下一节开始时多算一节
+		val endIndex = startMinute.indexOfLast { it < lessonEnd }.coerceAtLeast(startIndex)
+		val targetEndIndex = endIndex.coerceAtMost(to.count - 1)
+
+		return to.startMinute[startIndex] to to.endMinute[targetEndIndex]
 	}
 
 	override fun equals(other: Any?): Boolean {

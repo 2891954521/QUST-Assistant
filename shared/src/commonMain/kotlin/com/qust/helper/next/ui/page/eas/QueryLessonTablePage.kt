@@ -21,11 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qust.helper.next.entity.Strings
 import com.qust.helper.next.entity.lesson.LessonTableData
-import com.qust.helper.next.entity.lesson.TimeTable
 import com.qust.helper.next.module.eas.LessonModel
 import com.qust.helper.next.network.entity.lesson.LessonTableQueryResult
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.repository.SettingRepository
+import com.qust.helper.next.repository.TimeTableRepository
 import com.qust.helper.next.ui.business.eas.EasQueryLayout
 import com.qust.helper.next.ui.business.lesson.LessonTable
 import com.qust.helper.next.ui.component.AppPreview
@@ -98,7 +98,7 @@ class QueryLessonTableViewModel : BaseEasViewModel() {
 
 	private val _lessonTableInfo = MutableStateFlow(
 		LessonTableData(
-			timeTable = TimeTable.DEFAULT,
+			timeTable = TimeTableRepository.currentTimeTable.value,
 			startDay = SettingRepository.startDay,
 			totalWeek = 1,
 		)

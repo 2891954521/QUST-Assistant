@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.dp
 import com.qust.helper.next.entity.lesson.Lesson
 import com.qust.helper.next.entity.lesson.LessonTableData
-import com.qust.helper.next.entity.lesson.TimeTable
+import com.qust.helper.next.entity.lesson.TimeTablePresets
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.ui.business.lesson.table.LessonCellInfo
 import com.qust.helper.next.ui.business.lesson.table.LessonTableColors
@@ -120,7 +120,7 @@ private fun LessonTablePreviewFinished() = AppPreview {
 }
 
 private val PreviewLessonTableData = LessonTableData(
-	timeTable = TimeTable.DEFAULT,
+	timeTable = TimeTablePresets.WINTER_NEW.timeTable,
 	startDay = LocalDate(2026, 3, 2),
 	totalWeek = 4,
 	lessons = listOf(

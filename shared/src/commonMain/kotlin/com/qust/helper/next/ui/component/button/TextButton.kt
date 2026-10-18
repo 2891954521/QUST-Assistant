@@ -25,6 +25,14 @@ object TextButtonColors {
 			content = Theme.color.textPrimary
 		)
 
+	val Primary: ContainerColors
+		@Composable
+		@ReadOnlyComposable
+		get() = ContainerColors(
+			background = Theme.color.hover,
+			content = Theme.color.primary
+		)
+
 	val Secondary: ContainerColors
 		@Composable
 		@ReadOnlyComposable

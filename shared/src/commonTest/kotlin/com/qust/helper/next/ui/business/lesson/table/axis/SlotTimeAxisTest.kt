@@ -1,7 +1,7 @@
 package com.qust.helper.next.ui.business.lesson.table.axis
 
 import com.qust.helper.next.entity.lesson.Lesson
-import com.qust.helper.next.entity.lesson.TimeTable
+import com.qust.helper.next.entity.lesson.TimeTablePresets
 import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -9,11 +9,12 @@ import kotlin.test.assertTrue
 
 class SlotTimeAxisTest {
 
-	private val timeTable = TimeTable.DEFAULT
+	// 旧版冬季（10 节作息）：本文件的分段/空档期望值都按这份时间表算
+	private val timeTable = TimeTablePresets.WINTER_OLD.timeTable
 	private val avgSlot = 50f
 
 	@Test
-	fun defaultTimetableSegmentsAndWeights() {
+	fun winterOldSegmentsAndWeights() {
 		val axis = SlotTimeAxis.create(timeTable, emptyList())
 		val slots = axis.segments.filter { it.kind == TimeSegment.Kind.SLOT }
 		val gaps = axis.segments.filter { it.kind == TimeSegment.Kind.GAP }

@@ -3,6 +3,7 @@ package com.qust.helper.next.module.eas
 import com.qust.helper.next.common.json.get
 import com.qust.helper.next.common.log.Logger
 import com.qust.helper.next.entity.lesson.Lesson
+import com.qust.helper.next.entity.lesson.TimeTable
 import com.qust.helper.next.network.client.EasHttpClient
 import com.qust.helper.next.network.entity.lesson.LessonTableQueryResult
 import com.qust.helper.next.repository.LessonTableRepository
@@ -109,8 +110,11 @@ object LessonModel {
 	/**
 	 * 从 json 中解析课表
 	 */
-	fun loadFromJson(json: JsonObject): List<Lesson>? {
-		val timeTable = LessonTableRepository.currentLessonTable.value.timeTable
+	fun loadFromJson(
+		json: JsonObject,
+		timeTable: TimeTable = LessonTableRepository.currentLessonTable.value.timeTable,
+	): List<Lesson>? {
+		if(timeTable.count == 0) return null
 		return try {
 			var index = 0
 			val colors = mutableMapOf<String, Int>()
@@ -155,9 +159,14 @@ object LessonModel {
 					}
 				}
 
+				// 节次 → 时间：教务可能返回超出当前时间表的节次（例如 10 节配置遇到 11 节课），
+				// 夹取到表内，避免整张课表解析失败
 				val sp = js["jcs", ""].split("-")
-				val start = timeTable.startMinute[sp[0].toInt() - 1]
-				val end = timeTable.endMinute[sp[1].toInt() - 1]
+				val count = timeTable.count
+				val startIndex = (sp.getOrNull(0)?.toIntOrNull() ?: 1).coerceIn(1, count)
+				val endIndex = (sp.getOrNull(1)?.toIntOrNull() ?: startIndex).coerceIn(startIndex, count)
+				val start = timeTable.startMinute[startIndex - 1]
+				val end = timeTable.endMinute[endIndex - 1]
 
 				val lessonID = js["kch", ""]
 				val j = colors[lessonID] ?: -1

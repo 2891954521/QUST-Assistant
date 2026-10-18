@@ -18,29 +18,14 @@ object SettingKeys {
 	const val ENTRANCE_TIME = "key_entrance_time"
 
 	/**
-	 * 显示所有课程
+	 * 时间表配置集合（JSON：用户配置 + 当前选中项）
 	 */
-	const val KEY_SHOW_ALL_LESSON = "key_show_all_lesson"
+	const val SETTING_TIME_TABLES = "setting_time_tables"
 
 	/**
-	 * 隐藏已结课课程
+	 * 已保存课程所对应的时间表，用于「按新时间表对齐课程」
 	 */
-	const val KEY_HIDE_FINISH_LESSON = "key_hide_finish_lesson"
-
-	/**
-	 * 隐藏教师
-	 */
-	const val KEY_HIDE_TEACHER = "key_hide_teacher"
-
-	/**
-	 * 课表时间表 0：冬季， 1：夏季
-	 */
-	const val KEY_TIME_TABLE = "key_time_table"
-
-	/**
-	 * 高密时间表
-	 */
-	const val KEY_GAOMI_TIME_TABLE = "key_gaomi_time_table"
+	const val SETTING_LESSON_TIME_TABLE = "setting_lesson_time_table"
 
 	/**
 	 * 锁定课表

@@ -25,7 +25,7 @@ xcuserdata
 config/
 !config/prod.properties
 
-captures/
+doc/plan/
 node_modules/
 
 local.properties

@@ -1,7 +1,7 @@
 package com.qust.helper.next.ui.business.lesson.table.model
 
 import com.qust.helper.next.entity.lesson.LessonTableData
-import com.qust.helper.next.entity.lesson.TimeTable
+import com.qust.helper.next.entity.lesson.TimeTablePresets
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.ui.business.lesson.table.axis.SlotTimeAxis
 import com.qust.helper.next.ui.business.lesson.table.axis.hm
@@ -17,7 +17,7 @@ class LessonTableLayoutTest {
 	fun startDayNormalizedToMonday() {
 		val layout = computeLessonTableLayout(
 			data = LessonTableData(
-				timeTable = TimeTable.DEFAULT,
+				timeTable = TimeTablePresets.WINTER_NEW.timeTable,
 				startDay = LocalDate(2026, 3, 4),
 				totalWeek = 4,
 				lessons = emptyList(),
@@ -31,7 +31,7 @@ class LessonTableLayoutTest {
 	@Test
 	fun dayCountFollowsShowWeekend() {
 		val data = LessonTableData(
-			timeTable = TimeTable.DEFAULT,
+			timeTable = TimeTablePresets.WINTER_NEW.timeTable,
 			startDay = LocalDate(2026, 3, 2),
 			totalWeek = 4,
 			lessons = emptyList(),
@@ -46,7 +46,7 @@ class LessonTableLayoutTest {
 	fun outOfRangeWeekIsFiltered() {
 		val layout = computeLessonTableLayout(
 			data = LessonTableData(
-				timeTable = TimeTable.DEFAULT,
+				timeTable = TimeTablePresets.WINTER_NEW.timeTable,
 				startDay = LocalDate(2026, 3, 2),
 				totalWeek = 4,
 				lessons = listOf(
@@ -65,7 +65,7 @@ class LessonTableLayoutTest {
 	fun totalWeekBelowOneBecomesOne() {
 		val layout = computeLessonTableLayout(
 			data = LessonTableData(
-				timeTable = TimeTable.DEFAULT,
+				timeTable = TimeTablePresets.WINTER_NEW.timeTable,
 				startDay = LocalDate(2026, 3, 2),
 				totalWeek = 0,
 				lessons = emptyList(),
@@ -80,7 +80,7 @@ class LessonTableLayoutTest {
 	fun weekendLessonsAreDroppedWhenHidden() {
 		val layout = computeLessonTableLayout(
 			data = LessonTableData(
-				timeTable = TimeTable.DEFAULT,
+				timeTable = TimeTablePresets.WINTER_NEW.timeTable,
 				startDay = LocalDate(2026, 3, 2),
 				totalWeek = 4,
 				lessons = listOf(

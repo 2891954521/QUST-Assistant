@@ -3,17 +3,20 @@ package com.qust.helper.next.repository
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import com.qust.helper.next.common.log.Logger
 import com.qust.helper.next.common.setting.AppSetting
 import com.qust.helper.next.entity.SettingKeys
 import com.qust.helper.next.entity.lesson.Lesson
 import com.qust.helper.next.entity.lesson.LessonTableData
 import com.qust.helper.next.entity.lesson.TimeTable
+import com.qust.helper.next.entity.lesson.TimeTableStoreCodec
 import com.qust.helper.next.module.database.AppDataBase
 import com.qust.helper.next.module.database.dao.LessonDao
 import com.qust.helper.next.module.database.dao.toLesson
 import com.qust.helper.next.module.database.dao.toLessonDao
 import com.qust.helper.next.module.lesson.LessonUtils
 import com.qust.helper.next.network.entity.lesson.LessonTableQueryResult
+import com.qust.helper.next.repository.LessonTableRepository.lessonTimeTable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -22,12 +25,22 @@ import kotlinx.datetime.LocalDate
 object LessonTableRepository {
 
 	val _currentLessonTable = MutableStateFlow(LessonTableData(
-			timeTable = TimeTable.DEFAULT,
+			timeTable = TimeTableRepository.currentTimeTable.value,
 			startDay = SettingRepository.startDay,
 			totalWeek = SettingRepository.totalWeek
 		)
 	)
 	val currentLessonTable: StateFlow<LessonTableData> = _currentLessonTable
+
+	/**
+	 * 已保存课程所对应的时间表，用于「按新时间表对齐课程」
+	 *
+	 * 切换时间表不会改变它；只有教务导入与显式对齐会更新。
+	 */
+	var lessonTimeTable: TimeTable = TimeTableStoreCodec.decodeTimeTable(
+			AppSetting.getString(SettingKeys.SETTING_LESSON_TIME_TABLE, "")
+		) ?: TimeTableRepository.currentTimeTable.value
+		private set
 
 	/** 当前星期 ( 0 - 6, 周一 —— 周日) */
 	var _dayOfWeek = mutableIntStateOf(0)
@@ -43,11 +56,58 @@ object LessonTableRepository {
 	 */
 	suspend fun refreshCurrentLessonTable(){
 		_currentLessonTable.value = LessonTableData(
-			timeTable = TimeTable.DEFAULT,
+			timeTable = TimeTableRepository.currentTimeTable.value,
 			startDay = SettingRepository.startDay,
 			totalWeek = SettingRepository.totalWeek,
 			lessons = getAllLesson()
 		)
+	}
+
+	/**
+	 * 应用新的时间表，由 [TimeTableRepository] 在配置变更后调用
+	 */
+	fun applyTimeTable(timeTable: TimeTable) {
+		_currentLessonTable.update { it.copy(timeTable = timeTable) }
+	}
+
+	private fun setLessonTimeTable(timeTable: TimeTable) {
+		lessonTimeTable = timeTable
+		AppSetting[SettingKeys.SETTING_LESSON_TIME_TABLE] = TimeTableStoreCodec.encodeTimeTable(timeTable)
+	}
+
+	/**
+	 * 按节次把已保存课程对齐到当前生效的时间表
+	 *
+	 * 起点为 [lessonTimeTable]（上次导入/对齐使用的时间表），终点为当前时间表；
+	 * 早于起点第一节、或终点缺少对应节次的课程保持不动。
+	 *
+	 * @return 实际更新的课程数
+	 */
+	suspend fun alignLessonsToTimeTable(): Int {
+		val to = _currentLessonTable.value.timeTable
+		val from = lessonTimeTable
+		if(from == to) return 0
+
+		val aligned = getAllLesson().mapNotNull { lesson ->
+			val mapped = from.mapLessonMinutes(lesson.startMinute, lesson.endMinute, to) ?: return@mapNotNull null
+			if(mapped.first == lesson.startMinute && mapped.second == lesson.endMinute) {
+				null
+			}else {
+				lesson.copy(startMinute = mapped.first, endMinute = mapped.second)
+			}
+		}
+		if(aligned.isEmpty()) return 0
+
+		val updated = try {
+			AppDataBase.INSTANCE.lessonDao().updateAll(aligned.map(Lesson::toLessonDao))
+		}catch(e: Exception) {
+			Logger.e("alignLessonsToTimeTable", e)
+			return 0
+		}
+
+		setLessonTimeTable(to)
+		if(updated > 0) refreshCurrentLessonTable()
+		return updated
 	}
 
 	/**
@@ -59,6 +119,9 @@ object LessonTableRepository {
 		val lessonChange = LessonUtils.mergeLesson(getAllLesson(), lessons)
 
 		mergeLesson(lessonChange.first, lessonChange.second, lessonChange.third)
+
+		// 导入的课程是按当前时间表映射的，记录来源以便之后按新时间表对齐
+		setLessonTimeTable(_currentLessonTable.value.timeTable)
 
 		_currentLessonTable.update { it.copy(
 			startDay = result.startDay,
