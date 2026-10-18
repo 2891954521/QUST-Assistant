@@ -11,11 +11,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.dp
 import com.qust.helper.next.entity.lesson.Lesson
+import com.qust.helper.next.entity.lesson.LessonTableData
 import com.qust.helper.next.entity.lesson.TimeTable
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.ui.business.lesson.table.LessonCellInfo
 import com.qust.helper.next.ui.business.lesson.table.LessonTableColors
-import com.qust.helper.next.ui.business.lesson.table.LessonTableData
 import com.qust.helper.next.ui.business.lesson.table.axis.LessonTimeAxisFactory
 import com.qust.helper.next.ui.business.lesson.table.axis.SlotTimeAxis
 import com.qust.helper.next.ui.business.lesson.table.model.computeLessonTableLayout

@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import com.qust.helper.next.common.setting.AppSetting
 import com.qust.helper.next.entity.SettingKeys
 import com.qust.helper.next.entity.lesson.Lesson
-import com.qust.helper.next.entity.lesson.LessonTableInfo
+import com.qust.helper.next.entity.lesson.LessonTableData
 import com.qust.helper.next.entity.lesson.TimeTable
 import com.qust.helper.next.module.database.AppDataBase
 import com.qust.helper.next.module.database.dao.LessonDao
@@ -21,14 +21,13 @@ import kotlinx.datetime.LocalDate
 
 object LessonTableRepository {
 
-	val _currentLessonTable = MutableStateFlow(LessonTableInfo(
+	val _currentLessonTable = MutableStateFlow(LessonTableData(
 			timeTable = TimeTable.DEFAULT,
 			startDay = SettingRepository.startDay,
-			currentWeek = 0,
 			totalWeek = SettingRepository.totalWeek
 		)
 	)
-	val currentLessonTable: StateFlow<LessonTableInfo> = _currentLessonTable
+	val currentLessonTable: StateFlow<LessonTableData> = _currentLessonTable
 
 	/** 当前星期 ( 0 - 6, 周一 —— 周日) */
 	var _dayOfWeek = mutableIntStateOf(0)
@@ -43,10 +42,9 @@ object LessonTableRepository {
 	 * 刷新当前课表，从数据库重新加载
 	 */
 	suspend fun refreshCurrentLessonTable(){
-		_currentLessonTable.value = LessonTableInfo(
+		_currentLessonTable.value = LessonTableData(
 			timeTable = TimeTable.DEFAULT,
 			startDay = SettingRepository.startDay,
-			currentWeek = 0,
 			totalWeek = SettingRepository.totalWeek,
 			lessons = getAllLesson()
 		)

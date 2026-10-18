@@ -8,18 +8,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.qust.helper.entity.lesson.Lesson
-import com.qust.helper.next.entity.lesson.LessonTableInfo
+import com.qust.helper.next.entity.lesson.Lesson
+import com.qust.helper.next.entity.lesson.LessonTableData
 import com.qust.helper.next.module.lesson.LessonUtils
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.ui.business.dialog.BottomDialog
-import com.qust.helper.next.ui.business.lesson.legacy.LessonTableUI
-import com.qust.helper.next.ui.business.lesson.legacy.LessonTableUIState
+import com.qust.helper.next.ui.business.lesson.LessonTable
 import com.qust.helper.next.ui.business.lesson.lessonEdit.LessonEditUI
 import com.qust.helper.next.ui.business.lesson.lessonEdit.LessonEditUIEvent
 import com.qust.helper.next.ui.business.lesson.lessonEdit.LessonEditUIState
@@ -31,6 +31,7 @@ import com.qust.helper.next.ui.page.base.AppPage
 import com.qust.helper.next.ui.router.params.PageParam
 import com.qust.helper.next.ui.viewmodel.BaseViewModel
 import kotlinx.coroutines.flow.StateFlow
+import androidx.compose.runtime.collectAsState
 
 
 @Preview
@@ -44,18 +45,26 @@ class LessonTablePage : AppPage<LessonTableViewModel>(title = "学期课表", ic
 
 @Composable
 private fun LessonTableUI(viewModel: LessonTableViewModel) {
+	val lessonTableInfo by viewModel.lessonTableInfo.collectAsState()
+
 	BackHandler(viewModel.isEditLesson) {
 		viewModel.isEditLesson = false
 	}
 
 	Box(Modifier.fillMaxSize()) {
 
-		LessonTableUI(viewModel.tableUIState){ i, it ->
-			viewModel.clickLesson(i, it)
+		LessonTable(
+			data = lessonTableInfo,
+			settings = remember { LessonTableRepository.LessonTableSetting() },
+			onCellClick = {
+				viewModel.clickLesson(it.lesson)
+			}
+		){ i, it ->
+
 		}
 
 		Button(modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp), onClick = {
-			viewModel.clickLesson(-1, null)
+			viewModel.clickLesson(null)
 		}){
 			Text("添加课程")
 		}
@@ -78,15 +87,13 @@ private fun LessonEditDialog(viewModel: LessonTableViewModel) {
 
 class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 
-	val lessonTableInfo: StateFlow<LessonTableInfo> = LessonTableRepository.currentLessonTable
-
-	val tableUIState = LessonTableUIState()
+	val lessonTableInfo: StateFlow<LessonTableData> = LessonTableRepository.currentLessonTable
 
 	val editUIState = LessonEditUIState()
 
 	var isEditLesson by mutableStateOf(false)
 
-	private var selectLessonIndex: Int = -1
+	private var selectLesson: Lesson? = null
 
 	override fun onCreate(param: PageParam) {
 		super.onCreate(param)
@@ -95,32 +102,43 @@ class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 		}
 	}
 
-	fun clickLesson(index: Int, lesson: Lesson?){
-		val selectLesson: Lesson
+	fun clickLesson(lesson: Lesson?){
 		if(lesson != null){
-			selectLesson = lesson
-			selectLessonIndex = index
+			editUIState.lessonName = lesson.name
+			editUIState.lessonPlace = lesson.place
+			editUIState.lessonTeacher = lesson.teacher
+
+			editUIState.week.value = lesson.week
+
+			editUIState.startHour.value = (lesson.startMinute / 60).toString()
+			editUIState.startMinute.value = (lesson.startMinute % 60).toString()
+			editUIState.endHour.value = (lesson.endMinute / 60).toString()
+			editUIState.endMinute.value = (lesson.endMinute % 60).toString()
+
+			editUIState.colorIndex = lesson.colorLabel
+
+			for(i in 0..< lessonTableInfo.value.totalWeek){
+				editUIState.weeks[i] = (1L shl i) and lesson.weeks > 0
+			}
 		}else{
-			selectLesson = Lesson()
-			selectLessonIndex = -1
+			editUIState.lessonName = ""
+			editUIState.lessonPlace = ""
+			editUIState.lessonTeacher = ""
+
+			editUIState.week.value = 0
+
+			editUIState.startHour.value = "8"
+			editUIState.startMinute.value = "00"
+			editUIState.endHour.value = "9"
+			editUIState.endMinute.value = "00"
+
+			editUIState.colorIndex = 0
+
+			for(i in 0..< lessonTableInfo.value.totalWeek){
+				editUIState.weeks[i] = false
+			}
 		}
 
-		editUIState.lessonName = selectLesson.name
-		editUIState.lessonPlace = selectLesson.place
-		editUIState.lessonTeacher = selectLesson.teacher
-
-		editUIState.week.value = selectLesson.week
-
-		editUIState.startHour.value = (selectLesson.startMinute / 60).toString()
-		editUIState.startMinute.value = (selectLesson.startMinute % 60).toString()
-		editUIState.endHour.value = (selectLesson.endMinute / 60).toString()
-		editUIState.endMinute.value = (selectLesson.endMinute % 60).toString()
-
-		editUIState.colorIndex = selectLesson.colorLabel
-
-		for(i in 0..< lessonTableInfo.value.totalWeek){
-			editUIState.weeks[i] = (1L shl i) and selectLesson.weeks > 0
-		}
 		isEditLesson = true
 	}
 
@@ -153,7 +171,8 @@ class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 		}
 
 		runInBackground {
-			if(selectLessonIndex == -1){
+			val selectLesson = selectLesson
+			if(selectLesson == null){
 				val newLesson = Lesson(
 					type = 1,
 					colorLabel = uiState.colorIndex,
@@ -173,7 +192,7 @@ class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 					toastError("保存课程失败")
 				}
 			}else{
-				val newLesson = lessonTableInfo.value.lessons[selectLessonIndex].copy(
+				val newLesson = selectLesson.copy(
 					colorLabel = uiState.colorIndex,
 					weeks = weeks,
 					week = uiState.week.value,
@@ -186,8 +205,6 @@ class LessonTableViewModel : BaseViewModel(), LessonEditUIEvent {
 
 				if(LessonTableRepository.updateLessonTableLesson(newLesson)){
 					toastSuccess("保存完成")
-					// 更新课程不会自动触发UI更新，需要手动刷新
-					tableUIState.refreshLessonTable()
 				}else{
 					toastError("保存课程失败")
 				}

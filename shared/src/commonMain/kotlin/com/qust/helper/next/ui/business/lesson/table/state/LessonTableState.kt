@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.qust.helper.next.ui.business.lesson.table.LessonCellInfo
-import com.qust.helper.next.ui.business.lesson.table.LessonTableData
+import com.qust.helper.next.entity.lesson.LessonTableData
 import com.qust.helper.next.ui.business.lesson.table.model.LessonCandidate
 import com.qust.helper.next.ui.business.lesson.table.model.LessonGroup
 import com.qust.helper.next.ui.business.lesson.table.model.LessonKey

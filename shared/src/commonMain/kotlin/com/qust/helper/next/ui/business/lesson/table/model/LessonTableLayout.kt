@@ -3,7 +3,7 @@ package com.qust.helper.next.ui.business.lesson.table.model
 import androidx.compose.runtime.Immutable
 import com.qust.helper.next.common.log.Logger
 import com.qust.helper.next.repository.LessonTableRepository
-import com.qust.helper.next.ui.business.lesson.table.LessonTableData
+import com.qust.helper.next.entity.lesson.LessonTableData
 import com.qust.helper.next.ui.business.lesson.table.axis.LessonTimeAxis
 import com.qust.helper.next.ui.business.lesson.table.axis.LessonTimeAxisFactory
 import com.qust.helper.next.ui.business.lesson.table.axis.SlotTimeAxis

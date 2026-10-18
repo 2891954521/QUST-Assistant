@@ -18,22 +18,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qust.helper.next.entity.Strings
-import com.qust.helper.next.entity.lesson.LessonTableInfo
+import com.qust.helper.next.entity.lesson.LessonTableData
 import com.qust.helper.next.entity.lesson.TimeTable
 import com.qust.helper.next.module.eas.LessonModel
 import com.qust.helper.next.network.entity.lesson.LessonTableQueryResult
 import com.qust.helper.next.repository.LessonTableRepository
 import com.qust.helper.next.repository.SettingRepository
 import com.qust.helper.next.ui.business.eas.EasQueryLayout
-import com.qust.helper.next.ui.business.lesson.legacy.LessonTableUI
-import com.qust.helper.next.ui.business.lesson.legacy.LessonTableUIState
+import com.qust.helper.next.ui.business.lesson.LessonTable
 import com.qust.helper.next.ui.component.AppPreview
 import com.qust.helper.next.ui.component.ListItemPicker
 import com.qust.helper.next.ui.page.base.AppPage
 import com.qust.helper.next.ui.theme.Theme
 import com.qust.helper.next.ui.viewmodel.eas.BaseEasViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 
@@ -51,6 +52,9 @@ class QueryLessonTablePage : AppPage<QueryLessonTableViewModel>(
 
 @Composable
 private fun QueryLessonTableUI(viewModel: QueryLessonTableViewModel) {
+	val lessonTableInfo by viewModel.lessonTableInfo.collectAsStateWithLifecycle()
+	val settings by LessonTableRepository.setting.collectAsStateWithLifecycle()
+
 	Box(modifier = Modifier.fillMaxSize()) {
 		EasQueryLayout(
 			pickYear = viewModel.pickYear,
@@ -65,9 +69,17 @@ private fun QueryLessonTableUI(viewModel: QueryLessonTableViewModel) {
 				)
 			},
 		) {
-			GetLessonTableUI(
-				termText = viewModel.termText,
-				lessonTable = viewModel.lessonUIState,
+			Text(
+				text = viewModel.termText,
+				color = Theme.color.textSecondary,
+				style = Theme.textStyles.caption,
+				modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp),
+			)
+
+			LessonTable(
+				data = lessonTableInfo,
+				settings = settings,
+				modifier = Modifier.weight(1f),
 			)
 		}
 
@@ -82,33 +94,17 @@ private fun QueryLessonTableUI(viewModel: QueryLessonTableViewModel) {
 	}
 }
 
-@Composable
-private fun GetLessonTableUI(
-	termText: String = "",
-	lessonTable: LessonTableUIState,
-) {
-	Text(
-		text = termText,
-		color = Theme.color.textSecondary,
-		style = Theme.textStyles.caption,
-		modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp),
-	)
-
-	LessonTableUI(lessonTable)
-}
-
 class QueryLessonTableViewModel : BaseEasViewModel() {
 
-	private val lessonTableInfo = MutableStateFlow(
-		LessonTableInfo(
+	private val _lessonTableInfo = MutableStateFlow(
+		LessonTableData(
 			timeTable = TimeTable.DEFAULT,
 			startDay = SettingRepository.startDay,
-			currentWeek = 0,
 			totalWeek = 1,
 		)
 	)
 
-	val lessonUIState = LessonTableUIState(lessonTableInfo)
+	val lessonTableInfo: StateFlow<LessonTableData> = _lessonTableInfo
 
 	var termText by mutableStateOf("")
 
@@ -135,8 +131,9 @@ class QueryLessonTableViewModel : BaseEasViewModel() {
 
 			val lessons = result.lessons
 			if(lessons != null) {
-				lessonTableInfo.update {
+				_lessonTableInfo.update {
 					it.copy(
+						startDay = result.startDay,
 						totalWeek = result.totalWeek,
 						lessons = lessons,
 					)
