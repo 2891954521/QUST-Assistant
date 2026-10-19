@@ -123,41 +123,7 @@ object LessonModel {
 			List(array.size) { i ->
 				val js = array[i].jsonObject
 
-				var weeks = 0L
-				val times = js["zcd", "1周"].split(",")
-				for(time in times) {
-					var _time = time
-					val type: Int
-					if(_time.endsWith(")")) {
-						type = if(_time[_time.length - 2] == '单') 0 else 1
-						_time = _time.substring(0, _time.length - 4)
-					} else {
-						type = -1
-						_time = _time.substring(0, _time.length - 1)
-					}
-
-					if(_time.contains("-")) {
-						val p = _time.split("-")
-						var start = p[0].toInt() - 1
-						val end = p[1].toInt()
-						val mask: Long
-						if(type == -1) {
-							mask = (1L shl end - start) - 1 shl start
-						} else {
-							var m = 0L
-							if(type == 0 && start % 2 == 1 || type == 1 && start % 2 == 0) start += 1
-							var j = start
-							while(j < end) {
-								m = m or (1L shl j)
-								j += 2
-							}
-							mask = m
-						}
-						weeks = weeks xor mask
-					} else {
-						weeks = weeks or (1L shl (_time.toInt() - 1))
-					}
-				}
+				val weeks = parseWeeks(js["zcd", "第1周"])
 
 				// 节次 → 时间：教务可能返回超出当前时间表的节次（例如 10 节配置遇到 11 节课），
 				// 夹取到表内，避免整张课表解析失败
@@ -196,4 +162,71 @@ object LessonModel {
 			null
 		}
 	}
+
+	/**
+	 * 解析 zcd（周次段）为周次位掩码，bit0 对应第 1 周
+	 *
+	 * 支持的格式：
+	 * 只有一周上课：第x周
+	 * 连续多周：x-x周
+	 * 间断多周：x-x周,x周,x-x周
+	 * 单双周：x-x周(单),x-x周(双)
+	 */
+	fun parseWeeks(zcd: String): Long {
+		var weeks = 0L
+
+		// "第"、"周"只起修饰/分隔作用，先整体去掉再逐段解析，
+		// 这样 第3周 / 1-16周 / 1,2,3周 都能正确处理
+		val normalized = zcd.replace("第", "").replace("周", "")
+		for(segment in normalized.split(",", "，", "、")) {
+			val seg = segment.trim()
+			if(seg.isEmpty()) continue
+
+			// 单双周：(单) 取奇数周，(双) 取偶数周，无标记则是整段连续周
+			var type = -1
+			var body = seg
+			val cut = seg.indexOfAny(charArrayOf('(', '（'))
+			if(cut >= 0) {
+				val flag = seg.substring(cut)
+				type = when {
+					flag.contains('单') -> 0
+					flag.contains('双') -> 1
+					else -> -1
+				}
+				body = seg.substring(0, cut).trim()
+			}
+
+			// 单周 "3"、连续 "1-16"、异常 "1-"（按单周处理）
+			val point = body.split("-")
+			val first = point.getOrNull(0)?.trim()?.toIntOrNull() ?: continue
+			val last = point.getOrNull(1)?.trim()?.toIntOrNull() ?: first
+			val from = first.coerceIn(1, MAX_WEEK)
+			val to = last.coerceIn(from, MAX_WEEK)
+
+			var start = from - 1
+			val mask: Long
+			if(type == -1) {
+				// 连续周次：bit[start, to) 全部置位
+				mask = ((1L shl (to - start)) - 1L) shl start
+			} else {
+				// 单双周：先把起点对齐到目标奇偶性，再每隔 2 周置位
+				if(type == 0 && start % 2 == 1 || type == 1 && start % 2 == 0) start += 1
+				var m = 0L
+				var j = start
+				while(j < to) {
+					m = m or (1L shl j)
+					j += 2
+				}
+				mask = m
+			}
+			// 多段之间取并集：同一周被重复描述时不能互相抵消
+			weeks = weeks or mask
+		}
+		return weeks
+	}
+
+	/**
+	 * 位掩码最多能表示 [1, 63] 周（Long 只有 63 个可用位）
+	 */
+	private const val MAX_WEEK = 63
 }
