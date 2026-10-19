@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.qust.helper.next.common.Platform
 import com.qust.helper.next.ui.theme.Theme
 import com.qust.helper.next.ui.theme.color.ContainerColors
 
@@ -31,7 +32,7 @@ fun AppContentWithBack(
 ) {
     Column(Modifier.fillMaxSize()) {
         SurfaceBox(modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp), colors = ContainerColors.Primary) {
-            Row(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(start = 16.dp, bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier.fillMaxWidth().statusBarsPadding().then(if(Platform.isJVM()) Modifier.padding(16.dp) else Modifier.padding(start = 16.dp, bottom = 16.dp)), verticalAlignment = Alignment.CenterVertically) {
                 if(onBack != null){
                     Box(modifier = Modifier.clip(RoundedCornerShape(32.dp)).clickable(onClick = onBack)){
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -52,7 +53,7 @@ fun AppContent(
 ) {
     Column(Modifier.fillMaxSize()) {
         SurfaceBox(modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp), colors = ContainerColors.Primary) {
-            Row(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(start = 16.dp, bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier.fillMaxWidth().statusBarsPadding().then(if(Platform.isJVM()) Modifier.padding(16.dp) else Modifier.padding(start = 16.dp, bottom = 16.dp)), verticalAlignment = Alignment.CenterVertically) {
                 Text(text = title, modifier = Modifier.padding(start = 16.dp), style = Theme.textStyles.bodyLarge, maxLines = 1)
             }
         }

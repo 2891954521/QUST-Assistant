@@ -21,4 +21,9 @@ object Platform: BasePlatform by getBasePlatform() {
         WEB
     }
 
+    fun isAndroid(): Boolean = currentPlatform() == PlatformType.ANDROID
+
+    fun isJVM(): Boolean = currentPlatform() == PlatformType.JVM
+
+    fun isPlatform(platformType: PlatformType): Boolean = currentPlatform() == platformType
 }
