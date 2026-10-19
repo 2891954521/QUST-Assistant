@@ -4,11 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowOverflow
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LocalContentColor
@@ -24,11 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.qust.helper.next.ui.component.overlay.LocalOverlayController
-import com.qust.helper.next.App
-import com.qust.helper.next.ui.theme.color.ContainerColors
 import com.qust.helper.next.ui.theme.Theme
+import com.qust.helper.next.ui.theme.color.ContainerColors
 import java.util.UUID
 
 
@@ -75,6 +79,7 @@ fun BaseDialog(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BaseDialog(
     colors: ContainerColors = ContainerColors.BlackOnWhite,
@@ -89,9 +94,25 @@ fun BaseDialog(
         ) {
             CompositionLocalProvider(LocalContentColor provides colors.content){
                 DialogContent({
-                    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, content = content)
+                    val scrollState = rememberScrollState()
+
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            // 高度不够时内容可以滚动，避免把下方的操作按钮顶出对话框。
+                            // 内容放得下时（maxValue == 0）不接管手势，避免影响内容内部的拖拽组件
+                            .verticalScroll(scrollState, enabled = scrollState.maxValue > 0),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        content = content
+                    )
                 }, {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, content = buttonContent)
+                    // 宽度不足时按钮换行显示，而不是被压缩到 0 宽度
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        overflow = FlowRowOverflow.Clip,
+                        content = buttonContent
+                    )
                 })
             }
         }
@@ -249,31 +270,50 @@ fun MessageDialog(
 
 @Composable
 private fun DialogContent(content: @Composable () -> Unit, options: @Composable () -> Unit) {
-    val scale = App.scale
-
     SubcomposeLayout(measurePolicy = { constraints ->
+        // 这里的宽高单位是当前 Density 下的 dp，
+        // 不能使用 Scale.screenWidthPx / screenHeightPx，那是屏幕像素值，单位不一致
+        val availableWidth = constraints.maxWidth
+        val availableHeight = constraints.maxHeight
 
-        val minWidth = scale.screenWidth / 2
-        val maxWidth = scale.screenWidth / 10 * 9
+        val minDialogWidth = availableWidth / 2
+        val maxDialogWidth = availableWidth / 10 * 9
 
-        val heightUnit = scale.screenHeight / 10
+        // 内容加按钮整体最多占用可用高度的 80%
+        val maxDialogHeight = availableHeight / 10 * 8
 
-        val optionsPre = subcompose("options_pre", options).first().measure(constraints.copy(
-            minWidth = minWidth,
-            maxWidth = maxWidth,
-            maxHeight = heightUnit * 2
+        // 把约束夹紧到父级给出的可用区域内。
+        // Constraints.copy 要求 maxWidth >= minWidth 且 maxHeight >= minHeight，
+        // 所以每个取值都必须先限制范围，否则会直接抛异常
+        fun Constraints.limit(minWidth: Int, maxWidth: Int, maxHeight: Int): Constraints {
+            val widthMin = minWidth.coerceIn(0, this.maxWidth)
+            val widthMax = maxWidth.coerceIn(widthMin, this.maxWidth)
+            return copy(
+                minWidth = widthMin,
+                maxWidth = widthMax,
+                maxHeight = maxHeight.coerceAtLeast(this.minHeight)
+            )
+        }
+
+        // 先按「对话框可能的最窄宽度」量一次按钮区域，为内容预留出高度。
+        // 取最窄宽度是因为宽度越小按钮换行越多、高度越大，这样预留的高度一定够用，
+        // 内容加按钮的高度总和不会超过可用区域
+        val optionsPre = subcompose("options_pre", options).first().measure(constraints.limit(
+            minWidth = 0,
+            maxWidth = minDialogWidth,
+            maxHeight = availableHeight / 5
         ))
 
-        val contentPlaceAble = subcompose("content", content).first().measure(constraints.copy(
-            minWidth = minWidth,
-            maxWidth = maxWidth,
-            maxHeight = heightUnit * 8 - optionsPre.height
+        val contentPlaceAble = subcompose("content", content).first().measure(constraints.limit(
+            minWidth = minDialogWidth,
+            maxWidth = maxDialogWidth,
+            maxHeight = maxDialogHeight - optionsPre.height
         ))
 
-        val optionsPlaceAble = subcompose("options", options).first().measure(constraints.copy(
+        val optionsPlaceAble = subcompose("options", options).first().measure(constraints.limit(
             minWidth = contentPlaceAble.width,
             maxWidth = contentPlaceAble.width,
-            maxHeight = heightUnit * 8 - contentPlaceAble.height
+            maxHeight = maxDialogHeight - contentPlaceAble.height
         ))
 
         layout(contentPlaceAble.width, contentPlaceAble.height + optionsPlaceAble.height) {
