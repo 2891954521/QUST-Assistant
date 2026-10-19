@@ -6,6 +6,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Density
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qust.helper.next.repository.SettingRepository
+import kotlin.math.max
 import kotlin.math.min
 
 val LocalScale = staticCompositionLocalOf { Scale() }
@@ -39,40 +40,46 @@ enum class FontScale(val title: String, val scale: Float) {
     BIGGEST("最大", 2F),
 }
 
-enum class UiOrientation(val code: Int) {
-    PORTRAIT(1),
-    LANDSCAPE(2);
-
-    companion object {
-        fun from(code: Int) = if(code == 1) PORTRAIT else LANDSCAPE
-    }
-}
-
 class Scale(
     widthPixels: Int = -1,
     heightPixels: Int = -1,
 
+    /**
+     * 设计稿尺寸，单位是 dp，由各平台按自己的参考机型传入
+     *
+     * 注意：百分比布局下界面的观感尺度是由这两个值决定的。
+     * 数值越大 = 设计空间越大 = 每个 dp 在屏幕上占的像素越少 = 界面看起来越小
+     */
+    designWidth: Float = DESIGN_WIDTH,
+    designHeight: Float = DESIGN_HEIGHT,
+
     uiScale: Float = 1F,
     fontScale: Float = 1F,
-
-    orientation: UiOrientation = UiOrientation.LANDSCAPE,
 ) {
 
     companion object {
-        const val DESIGN_WIDTH = 1024F // 设计稿宽度
-        const val DESIGN_HEIGHT = 640F // 设计稿高度
+        // 兜底设计稿尺寸：只有在百分比布局关闭、没有真实窗口尺寸时才会用到
+        const val DESIGN_WIDTH = 1024F // 设计稿宽度（dp）
+        const val DESIGN_HEIGHT = 640F // 设计稿高度（dp）
     }
 
-    var screenWidth: Int = 1024
-    var screenHeight: Int = 640
+    /**
+     * 窗口的像素尺寸，单位是 px。
+     *
+     * 组成界面时使用的是 dp（当前 Density 下的单位），换算关系是 `dp = px * uiReScale`。
+     */
+    var screenWidthPx: Int = DESIGN_WIDTH.toInt()
+    var screenHeightPx: Int = DESIGN_HEIGHT.toInt()
 
     /**
-     * UI显示到当前屏幕上需要的缩放比例
+     * 界面使用的密度，等于 窗口(px) / 设计稿(dp)，已经包含平台密度和用户的 UI 缩放设置
      */
     var uiScale: Float = 1F
 
     /**
-     * 反向缩放比例，在正常页面计算弹出层的大小时需要额外乘以这个值才是正确的大小
+     * px 转到 dp 的比例，即 1 / uiScale。
+     *
+     * 用像素值（例如窗口像素尺寸）计算弹出的内容大小时，必须乘上这个值才是 dp 单位下正确的大小
      */
     var uiReScale: Float = 1F
 
@@ -85,43 +92,37 @@ class Scale(
         this.uiScaleRate = uiScale
         this.fontScaleRate = fontScale
 
-        setDensity(widthPixels, heightPixels, orientation)
+        setDensity(widthPixels, heightPixels, designWidth, designHeight)
     }
 
     fun setDensity(
         widthPixels: Int,
         heightPixels: Int,
-        orientation: UiOrientation
+        designWidth: Float = DESIGN_WIDTH,
+        designHeight: Float = DESIGN_HEIGHT,
     ) {
-        val designWidth: Int
-        val designHeight: Int
+        val width: Int = if(widthPixels <= 0) designWidth.toInt() else widthPixels
+        val height: Int = if(heightPixels <= 0) designHeight.toInt() else heightPixels
 
-        // 由于屏幕旋转系统会自动交换宽高，而设计稿常量是固定的，所以这里要手动交换
-        if(orientation == UiOrientation.PORTRAIT) {
-            designWidth = DESIGN_HEIGHT.toInt()
-            designHeight = DESIGN_WIDTH.toInt()
-        } else {
-            designWidth = DESIGN_WIDTH.toInt()
-            designHeight = DESIGN_HEIGHT.toInt()
-        }
+        // 让设计稿的长边对齐窗口的长边，设计稿宽高比和窗口不一致时会按短边缩放
+        val landscape: Boolean = width >= height
+        val designLong: Float = max(designWidth, designHeight)
+        val designShort: Float = min(designWidth, designHeight)
 
-        val screenWidth: Int = if(widthPixels <= 0) designWidth else widthPixels
-        val screenHeight: Int = if(heightPixels <= 0) designHeight else heightPixels
+        val dw: Float = if(landscape) designLong else designShort
+        val dh: Float = if(landscape) designShort else designLong
 
-        val scale: Float = min(screenWidth / DESIGN_WIDTH, screenHeight / DESIGN_HEIGHT)
-        val reScale: Float = 1 / scale
+        // 窗口尺寸是像素、设计稿是 dp，所以这里算出来的正好就是该用的 Density.density
+        val scale: Float = min(width / dw, height / dh)
 
-        this.screenWidth = screenWidth // (screenWidth * uiScaleRate).toInt()
-        this.screenHeight = screenHeight // (screenHeight * uiScaleRate).toInt()
+        this.screenWidthPx = width
+        this.screenHeightPx = height
 
         this.uiScale = scale * uiScaleRate
-        this.uiReScale = reScale / uiScaleRate
+        this.uiReScale = 1 / this.uiScale
 
-        this.fontScale = fontScaleRate // scale * fontScaleRate
-
-//        Logger.i("device width: ${this.screenWidth}, height: ${this.screenHeight}")
-//        Logger.i("scale: ${scale}, reScale: $reScale")
-//        Logger.i("uiScale: ${this.uiScale}, uiReScale: ${this.uiReScale}")
+        // 这里不能再乘 scale：Density.density 已经把整个界面（包括 sp 字号）缩放了一次
+        this.fontScale = fontScaleRate
     }
 
     fun getDensity() = Density(density = uiScale, fontScale = fontScale)
