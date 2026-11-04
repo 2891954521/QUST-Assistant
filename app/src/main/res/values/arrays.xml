@@ -56,11 +56,11 @@
 
     <array name="time">
         <item>@null</item>
-        <item>08:00\n09:50</item>
-        <item>10:10\n12:00</item>
-        <item>13:30\n15:20</item>
-        <item>15:40\n17:30</item>
-        <item>18:00\n19:50</item>
+        <item>08:00\n09:40</item>
+        <item>10:00\n11:40</item>
+        <item>13:30\n15:10</item>
+        <item>15:30\n17:10</item>
+        <item>18:00\n19:40</item>
     </array>
 
 </resources>

@@ -59,7 +59,8 @@ public class LessonLargeViewBuilder{
 	}
 	
 	public void setTime(int minute){
-		if(minute > 50){
+		int duration = LessonTableViewModel.LESSON_DURATION;
+		if(minute > duration){
 			TextView t = view.findViewById(R.id.item_lesson_status);
 			t.setAlpha(0.5f);
 			t.setText("已结束");
@@ -69,7 +70,7 @@ public class LessonLargeViewBuilder{
 			view.findViewById(R.id.item_lesson_color).setAlpha(0.5f);
 		}else if(minute >= 0){
 			TextView t = view.findViewById(R.id.item_lesson_status);
-			t.setText((50 - minute) + "min后下课");
+			t.setText((duration - minute) + "min后下课");
 			t.setTextColor(ColorUtil.TEXT_COLORS[0]);
 			TextView n = view.findViewById(R.id.item_lesson_name);
 			n.getPaint().setFakeBoldText(true);

@@ -25,26 +25,34 @@ public class LessonTableViewModel extends AndroidViewModel{
 	
 	
 	/**
+	 * 每节课的时长（分钟）
+	 * 大节内课间 10 分钟，大节间课间 20 分钟，午休与晚饭时间保持不变
+	 */
+	public static final int LESSON_DURATION = 45;
+	
+	/**
 	 * 课程时间表
+	 * [0] 为开始时间，[1] 为结束时间
 	 */
 	public static final String[][][] LESSON_TIME_TEXT = new String[][][]{
 		{
-			{"08:00", "09:00", "10:10", "11:10", "13:30", "14:30", "15:40", "16:40", "18:00", "19:00"},
-			{"08:50", "09:50", "11:00", "12:00", "14:20", "15:20", "16:30", "17:30", "18:50", "19:50"}
+			{"08:00", "08:55", "10:00", "10:55", "13:30", "14:25", "15:30", "16:25", "18:00", "18:55"},
+			{"08:45", "09:40", "10:45", "11:40", "14:15", "15:10", "16:15", "17:10", "18:45", "19:40"}
 		},{
-			{"08:00", "09:00", "10:10", "11:10", "14:00", "15:00", "16:10", "17:10", "18:30", "19:30"},
-			{"08:50", "09:50", "11:00", "12:00", "14:50", "15:50", "17:00", "18:00", "19:20", "20:20"}
+			{"08:00", "08:55", "10:00", "10:55", "14:00", "14:55", "16:00", "16:55", "18:30", "19:25"},
+			{"08:45", "09:40", "10:45", "11:40", "14:45", "15:40", "16:45", "17:40", "19:15", "20:10"}
 		}
 	};
 	
 	/**
 	 * 课程时间差 (单位：分钟)
+	 * 第 n 项为第 n 节课开始时间与第 n-1 节课开始时间的间隔，第 0 项固定为 0
 	 */
 	public static final int[][] LESSON_TIME = {
 		// 冬季
-		{ 0, 60, 70, 60, 140, 60, 70, 60, 80, 60 },
+		{ 0, 55, 65, 55, 155, 55, 65, 55, 95, 55 },
 		// 夏季
-		{ 0, 60, 70, 60, 170, 60, 70, 60, 80, 60 }
+		{ 0, 55, 65, 55, 185, 55, 65, 55, 95, 55 }
 	};
 	
 	
@@ -101,6 +109,7 @@ public class LessonTableViewModel extends AndroidViewModel{
 		updateDate();
 		
 		currentTime = SettingUtil.getInt(application.getString(R.string.KEY_TIME_TABLE), 0);
+		if(currentTime < 0 || currentTime >= LESSON_TIME.length) currentTime = 0;
 		lessonTime = LESSON_TIME[currentTime];
 		lessonTimeText = LESSON_TIME_TEXT[currentTime];
 		lessonTableLiveData = new MutableLiveData<>(lessonTable);
@@ -185,6 +194,7 @@ public class LessonTableViewModel extends AndroidViewModel{
 	 * 设置课程时间表
 	 */
 	public void setCurrentTime(int index){
+		if(index < 0 || index >= LESSON_TIME.length) return;
 		currentTime = index;
 		lessonTime = LESSON_TIME[index];
 		lessonTimeText = LESSON_TIME_TEXT[index];
