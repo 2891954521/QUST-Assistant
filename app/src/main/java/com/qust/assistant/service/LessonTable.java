@@ -83,6 +83,9 @@ public class LessonTable extends AppWidgetProvider{
 		int h = c.get(Calendar.HOUR_OF_DAY) - 8;
 		int m = c.get(Calendar.MINUTE);
 		
+		// 每节课的时长，用于判断是否已经下课
+		final int duration = LessonTableViewModel.LESSON_DURATION;
+		
 		int pass = 0;
 		int count = 0;
 		
@@ -114,13 +117,13 @@ public class LessonTable extends AppWidgetProvider{
 						lessonView[count].setTextViewText(R.id.widget_lesson_status, "已结束");
 					}
 				}else if(h == 0){
-					if(m > 50){
+					if(m > duration){
 						if(pass == 1){
 							lessonView[count].setTextViewText(R.id.widget_lesson_status, "已结束");
 						}
 					}else{
 						lessonView[count].setTextColor(R.id.widget_lesson_status, ColorUtil.TEXT_COLORS[0]);
-						lessonView[count].setTextViewText(R.id.widget_lesson_status, (50 - m) + "min后下课");
+						lessonView[count].setTextViewText(R.id.widget_lesson_status, (duration - m) + "min后下课");
 						hasUpdateTime = true;
 					}
 				}else{

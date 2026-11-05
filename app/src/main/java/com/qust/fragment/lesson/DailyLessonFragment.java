@@ -103,7 +103,7 @@ public class DailyLessonFragment extends BaseFragment{
 			if(pass > 0){
 				pass--;
 				if(cur == null) continue;
-				if(minute > 50){
+				if(minute > LessonTableViewModel.LESSON_DURATION){
 					// pass为 0 表示课程已经结束，否则为只结束了n节课
 					if(pass == 0){
 						cur.setTime(minute);
